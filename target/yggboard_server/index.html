@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="robots" content="index, follow" />
+    <meta name="description" content="" />
+    <meta name="keywords" content="" />        
+	<link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+	<link href="css/tether.min.css" rel="stylesheet" media="screen">
+	<link href="css/app.css" rel="stylesheet" media="screen">
+	<title>Testa server</title>
+</head>
+<body>
+<div class="container">
+    <div class="col-sm-6">
+	    <div class="[ row ]">
+	        <h2>Rotinas</h2>
+	    </div>
+        <div class="radio tools">
+          <label>
+            <input class="teste " data-teste="testaIncluir" type="radio" name="o1" value="">
+            <span class="cr"><i class="cr-icon glyphicon glyphicon-ok-sign"></i></span>
+            Testa incluir
+          </label>
+        </div>
+        <div class="radio tools">
+          <label>
+            <input class="teste " data-teste="testaAtualizar" type="radio" name="o1" value="">
+            <span class="cr"><i class="cr-icon glyphicon glyphicon-ok-sign"></i></span>
+            Testa Atualizar
+          </label>
+        </div>
+        <div class="radio tools">
+          <label>
+            <input class="teste " data-teste="testaObter" type="radio" name="o1" value="" >
+            <span class="cr"><i class="cr-icon glyphicon glyphicon-ok-sign"></i></span>
+            Testa Obter
+          </label>
+        </div>
+        <div class="radio tools">
+          <label>
+            <input class="teste " data-teste="testaObter" type="radio" name="o1" value="" >
+            <span class="cr"><i class="cr-icon glyphicon glyphicon-ok-sign"></i></span>
+            Testa Obter
+          </label>
+        </div>
+        <div class="radio tools" >
+          <label>
+            <input class="teste "  data-teste="testaLista" type="radio" name="o1" value="" >
+            <span class="cr"><i class="cr-icon glyphicon glyphicon-ok-sign"></i></span>
+            Testa Lista
+          </label>
+        </div>
+        <div class="radio tools" >
+          <label>
+            <input class="teste "  data-teste="testaAtualizaPerfil" type="radio" name="o1" value="" >
+            <span class="cr"><i class="cr-icon glyphicon glyphicon-ok-sign"></i></span>
+            Testa atualiza perfil
+          </label>
+        </div>
+        <div class="radio tools" >
+          <label>
+            <input class="teste "  data-teste="atualizaCursosHabilidade" type="radio" name="o1" value="" >
+            <span class="cr"><i class="cr-icon glyphicon glyphicon-ok-sign"></i></span>
+            Atualiza habilidades cursos
+          </label>
+        </div>
+        <div class="radio tools" >
+          <label>
+            <input class="teste "  data-teste="atualizaObjetivosHabilidade" type="radio" name="o1" value="" >
+            <span class="cr"><i class="cr-icon glyphicon glyphicon-ok-sign"></i></span>
+            Atualiza habilidades objetivos
+          </label>
+        </div>
+        <div class="radio tools" >
+          <label>
+            <input class="teste "  data-teste="atualizaBadges" type="radio" name="o1" value="" >
+            <span class="cr"><i class="cr-icon glyphicon glyphicon-ok-sign"></i></span>
+            Atualiza badges
+          </label>
+        </div>
+        <div class="radio tools">
+          <label>
+            <input class="teste " data-teste="usuarios" type="radio" name="o1" value="" >
+            <span class="cr"><i class="cr-icon glyphicon glyphicon-ok-sign"></i></span>
+            Copia usuário
+          </label>
+        </div>
+        <div class="radio tools">
+          <label>
+            <input class="teste " data-teste="userPerfil" type="radio" name="o1" value="" >
+            <span class="cr"><i class="cr-icon glyphicon glyphicon-ok-sign"></i></span>
+            Copia user perfil
+          </label>
+        </div>
+        <div class="radio tools">
+          <label>
+            <input class="teste " data-teste="setup" type="radio" name="o1" value="" >
+            <span class="cr"><i class="cr-icon glyphicon glyphicon-ok-sign"></i></span>
+            Copia setup
+          </label>
+        </div>
+        <div class="radio">
+          <label>
+            <input class="teste" data-teste="index-cria" type="radio" name="o1" value="" >
+            <span class="cr"><i class="cr-icon glyphicon glyphicon-ok-sign"></i></span>
+            Cria index
+          </label>
+        </div>
+    </div>            
+    <div class="col-sm-6">
+    <div class="[ row ]">
+        <h2>Importação da tabelas (escolha o assunto depois o arquivo .csv)</h2>
+    </div>
+        <div class="radio">
+          <label>
+            <input class="escolha" data-escolha="habilidades" type="radio" name="o1" value="">
+            <span class="cr"><i class="cr-icon glyphicon glyphicon-ok-sign"></i></span>
+            Habilidades
+          </label>
+        </div>
+        <div class="radio">
+          <label>
+            <input class="escolha" data-escolha="cursos" type="radio" name="o1" value="">
+            <span class="cr"><i class="cr-icon glyphicon glyphicon-ok-sign"></i></span>
+            Cursos
+          </label>
+        </div>
+        <div class="radio">
+          <label>
+            <input class="escolha" data-escolha="objetivos" type="radio" name="o1" value="" >
+            <span class="cr"><i class="cr-icon glyphicon glyphicon-ok-sign"></i></span>
+            Objetivos
+          </label>
+        </div>
+        <div class="radio">
+          <label>
+            <input class="escolha" data-escolha="badges" type="radio" name="o1" value="" >
+            <span class="cr"><i class="cr-icon glyphicon glyphicon-ok-sign"></i></span>
+            Badges
+          </label>
+        </div>
+        <div class="radio">
+          <label>
+            <input class="escolha" data-escolha="areaAtuacao" type="radio" name="o1" value="" >
+            <span class="cr"><i class="cr-icon glyphicon glyphicon-ok-sign"></i></span>
+            Área atuação
+          </label>
+        </div>
+        <div class="radio">
+          <label>
+            <input class="escolha" data-escolha="areaConhecimento" type="radio" name="o1" value="" >
+            <span class="cr"><i class="cr-icon glyphicon glyphicon-ok-sign"></i></span>
+            Área conhecimento
+          </label>
+        </div>
+		<div class="[ form-group ]" id="filesInput">
+			<input class="reader" type="file" id="files" name="file" accept=".csv"/>
+			<button class="hide" onclick="abortRead();">Cancel read</button>
+ 			<div class="hide" id="progress_bar"><div class="percent">0%</div></div>
+		</div>
+		<div class="[ form-group ]" id="filesOutput">
+			<output id="records"></output>
+		</div>
+    </div>
+</div>
+
+
+	<!--  bibliotecas -->
+    <!--jQuery [ REQUIRED ]-->
+    <script src="js/jquery-3.2.1.min.js"></script>
+
+    <!--Tether -->
+    <script src="js/tether.min.js"></script>
+
+    <!--BootstrapJS -->
+    <script src="js/bootstrap.min.js"></script>
+
+    <!--Main -->
+    <script src="js/main.js"></script>
+
+    <!--Rest -->
+    <script src="js/commons.js"></script>
+
+    <!--Rest -->
+    <script src="js/rest_commands.js"></script>
+
+    <!--Testa rest -->
+    <script src="js/testa-rest.js"></script>
+
+    <!--ler arquivo -->
+    <script src="js/processa-file.js"></script>
+
+    <!--grava na base -->
+    <script src="js/processa-dados.js"></script>
+
+    <!--grava na base -->
+    <script src="js/cria-index.js"></script>
+
+    <!--grava na base -->
+    <script src="js/copias.js"></script>
+
+</body>
+</html>
