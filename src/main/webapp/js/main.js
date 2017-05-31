@@ -32,6 +32,24 @@ if (localStorage.urlServidor == "localhost"){
 	})
 	.always(function(data) {
 	});
+	
+	$.ajax({
+        url: "http://" + localStorage.urlServidor + ":8080/yggboard_server/rest/badges/lista",
+        contentType: "application/json; charset=utf-8",
+        dataType: 'json'
+	})
+	.done(function( data ) {
+		if (data){
+			sessionStorage.setItem("badges", JSON.stringify(data));
+		}else{
+			action_not_ok (data, var1, var2);	
+		};
+	})
+	.fail(function(data) {
+		console.log ("erro");
+	})
+	.always(function(data) {
+	});
 
 localStorage.APP = "yggboard_server";
 
@@ -69,6 +87,9 @@ $( ".teste" ).click(function() {
 		break;
 	case "atualizaBadges":
 		atualizaBadges();
+		break;
+	case "atualizaPerfil":
+		atualizaPerfil();
 		break;
 	case "usuarios":
 		copiaUsuarios();

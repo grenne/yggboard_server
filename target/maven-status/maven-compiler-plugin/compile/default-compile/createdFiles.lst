@@ -1,3 +1,11 @@
+com\yggboard\yggboard_server\Rest_Badge.class
+com\yggboard\yggboard_server\Rest_Index.class
 com\yggboard\yggboard_server\Rest_Crud.class
+com\yggboard\yggboard_server\Rest_UserPerfil.class
 com\yggboard\yggboard_server\App.class
+com\yggboard\yggboard_server\Rest_Carreira.class
+com\yggboard\yggboard_server\Commons.class
 com\yggboard\yggboard_server\ApplicationConfig.class
+com\yggboard\yggboard_server\Rest_Habilidade.class
+com\yggboard\yggboard_server\Commons_DB.class
+com\yggboard\yggboard_server\Rest_Curso.class

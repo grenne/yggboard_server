@@ -41,7 +41,7 @@ function rest_atualizar (objJson, action_ok, action_not_ok, var1, var2, var3){
 
 	$.ajax({
 		type: "POST",
-        url: "http://localhost:8080/yggboard_server/rest/crud/atualizar",
+        url: "http://" + localStorage.urlServidor + ":8080/yggboard_server/rest/crud/atualizar",
         contentType: "application/json; charset=utf-8",
         dataType: 'json',
         data : JSON.stringify(objJson),
@@ -63,7 +63,7 @@ function rest_lista (objJson, action_ok, action_not_ok, var1, var2, var3){
 
 	$.ajax({
 		type: "POST",
-        url: "http://localhost:8080/yggboard_server/rest/crud/lista",
+        url: "http://" + localStorage.urlServidor + ":8080/yggboard_server/rest/crud/lista",
         contentType: "application/json; charset=utf-8",
         dataType: 'json',
         data : JSON.stringify(objJson),
@@ -77,13 +77,12 @@ function rest_lista (objJson, action_ok, action_not_ok, var1, var2, var3){
 		action_not_ok (data, var1, var2, var3);
 	})
 	.always(function(data) {
-		action_ok (data, var1, var2, var3);		
 	});
 
 };
 function rest_get (url, objJson, action_ok, action_not_ok, var1, var2, var3){
 	$.ajax({
-        url: "http://" + localStorage.URLServidor + "/" + localStorage.APP + "/rest/" + url,
+        url: "http://" + localStorage.urlServidor + "/" + localStorage.APP + "/rest/" + url,
         contentType: "application/json; charset=utf-8",
         dataType: 'json',
         async:false	

@@ -124,12 +124,12 @@ public class Rest_UserPerfil {
 					};
 					mongoCarreiras.close();				
 				};
-				if (item.equals("badges") | item.equals("badges-interesse")){
+				if (item.equals("badges") | item.equals("show-badges")){
 					ArrayList arrayList = new ArrayList(); 
 					if (item.equals("badges")){
 						arrayList = (ArrayList) jsonPerfil.get("badges");
 					}else{
-						arrayList = (ArrayList) jsonPerfil.get("badgesInteresse");
+						arrayList = (ArrayList) jsonPerfil.get("showBadges");
 					};
 					if (arrayList != null){
 				    	Object array[] = arrayList.toArray(); 
@@ -138,12 +138,13 @@ public class Rest_UserPerfil {
 							Mongo mongoBadges = new Mongo();
 							DB dbBadges = (DB) mongoBadges.getDB("yggboard");
 							DBCollection collectionBadges = dbBadges.getCollection("badges");
-							BasicDBObject searchQueryBadges = new BasicDBObject("documento.nome", array[w]);
+							BasicDBObject searchQueryBadges = new BasicDBObject("documento.id", array[w]);
 							DBObject cursorBadges = collectionBadges.findOne(searchQueryBadges);
 							if (cursorBadges != null){
 								BasicDBObject objBadges = (BasicDBObject) cursorBadges.get("documento");
 								JSONObject jsonDocumento = new JSONObject();
 								jsonDocumento.put("_id", objBadges.getString("_id"));
+								jsonDocumento.put("id", objBadges.get("id"));
 								jsonDocumento.put("nome", objBadges.get("nome"));
 								jsonDocumento.put("badge", objBadges.get("badge"));
 								jsonDocumento.put("entidadeCertificadora", objBadges.get("entidadeCertificadora"));
@@ -201,8 +202,8 @@ public class Rest_UserPerfil {
 							DB dbBadge = (DB) mongoBadge.getDB("yggboard");
 		
 							DBCollection collectionBadge = dbBadge.getCollection("badges");
-							
-							DBCursor cursorBadge = collectionBadge.find();
+							BasicDBObject searchQueryBadge = new BasicDBObject();
+							DBCursor cursorBadge = collectionBadge.find(searchQueryBadge);
 							while (((Iterator<DBObject>) cursorBadge).hasNext()) {
 								BasicDBObject objBadges = (BasicDBObject) ((Iterator<DBObject>) cursorBadge).next();
 								String documento = objBadges.getString("documento");
@@ -422,8 +423,11 @@ public class Rest_UserPerfil {
 							DBObject cursorCursos = collectionCursos.findOne(searchQueryCursos);
 							if (cursorCursos != null){
 								BasicDBObject objCursos = (BasicDBObject) cursorCursos.get("documento");
-								jsonDocumento.put("documento", objCursos);
-								documentos.add(jsonDocumento);
+								List arrayParent = (List) objCursos.get("parents");
+								if (arrayParent.size() == 0){
+									jsonDocumento.put("documento", objCursos);
+									documentos.add(jsonDocumento);
+								};
 							};
 							mongoCursos.close();
 							++w;
@@ -951,10 +955,12 @@ public class Rest_UserPerfil {
 						mongo.close();
 						return Response.status(404).build();
 					};
-					BasicDBObject objUserPerfil = (BasicDBObject) cursor.get("documento");
-					objUserPerfil.remove("cursosSugeridos");
-					objUserPerfil.put("cursosSugeridos", cursosSugeridos.get("cursos"));
-					BasicDBObject update = new BasicDBObject("$set", new BasicDBObject(objUserPerfil));
+					BasicDBObject objUserPerfilUpdate = (BasicDBObject) cursor.get("documento");
+					objUserPerfilUpdate.remove("cursosSugeridos");
+					objUserPerfilUpdate.put("cursosSugeridos", cursosSugeridos.get("cursos"));
+					BasicDBObject objUserPerfilDocumento = new BasicDBObject();
+					objUserPerfilDocumento.put("documento", objUserPerfilUpdate);
+					BasicDBObject update = new BasicDBObject("$set", new BasicDBObject(objUserPerfilDocumento));
 					searchQuery = new BasicDBObject("documento.usuario", usuario);
 					cursor = collection.findAndModify(searchQuery,
 			                null,
@@ -1003,10 +1009,12 @@ public class Rest_UserPerfil {
 						mongo.close();
 						return Response.status(404).build();
 					};
-					BasicDBObject objUserPerfil = (BasicDBObject) cursor.get("documento");
-					objUserPerfil.remove("carreirasSugeridas");
-					objUserPerfil.put("carreirasSugeridas", carreirasSugeridos.get("carreiras"));
-					BasicDBObject update = new BasicDBObject("$set", new BasicDBObject(objUserPerfil));
+					BasicDBObject objUserPerfilUpdate = (BasicDBObject) cursor.get("documento");
+					objUserPerfilUpdate.remove("carreirasSugeridas");
+					objUserPerfilUpdate.put("carreirasSugeridas", carreirasSugeridos.get("carreiras"));
+					BasicDBObject objUserPerfilDocumento = new BasicDBObject();
+					objUserPerfilDocumento.put("documento", objUserPerfilUpdate);
+					BasicDBObject update = new BasicDBObject("$set", new BasicDBObject(objUserPerfilDocumento));
 					searchQuery = new BasicDBObject("documento.usuario", usuario);
 					cursor = collection.findAndModify(searchQuery,
 			                null,

@@ -171,36 +171,32 @@ function testaAtualizaPerfil (){
 	
 function testaFiltro (){
  			
- 			var tipo = prompt("Tipo");
- 			var inout = prompt("Inout");
+ 			var assunto = prompt("Assunto");
  			var id = prompt("Id");
  			var objJson = 
-	 			{	
-	 				usuario : "grenneglr@gmail.com",
-	 				tipo : tipo,
-	 				id: id,
-	 				inout: inout
- 				};
+ 					[
+ 						{	 					
+ 							assunto : assunto,	 				
+ 							id : id	 				
+ 						}
+ 					];
  			$.ajax({
  				type: "POST",
- 	            url: "http://localhost:8080/yggboard_server/rest/userPerfil/atualizar/perfil",
+ 	            url: "http://localhost:8080/yggboard_server/rest/index/obter/filtro",
  	            contentType: "application/json; charset=utf-8",
  	            dataType: 'json',
  	            data : JSON.stringify(objJson),
  	            global: false,
- 	            async:false
- 	    	
+ 	            async:false   	
  			})        	
  			.done(function( data ) {
+ 	    		if (data){
+ 	    			console.log ("ok");
+ 	    		};
  	    	})
  	    	.fail(function(data) {
  	    	})
  	    	.always(function(data) {
- 	        	if (data.status == 200) {
- 	        		console.log("atualizou")
- 	        	}else{
- 	        		console.log("deu pau")
- 	        	};
  	    	});
 };
 

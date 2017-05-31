@@ -56,7 +56,8 @@ function processaCursos (data){
 					badges:[],
 					parents:[],
 					tags:[],
-					logo:fields[20]
+					logo:fields[20],
+					classificacao:fields[21]
 					}
 				}
 		};
@@ -183,7 +184,8 @@ function processaObjetivos (data){
 					necessarios:[],
 					necessariosNome:[],
 					recomendados:[],
-					recomendadosNome:[]
+					recomendadosNome:[],
+					classificacao:fields[16]
 					}
 				}
 		};

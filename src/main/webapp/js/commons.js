@@ -27,8 +27,8 @@ function atualizaCursoHablidadeProcess (cursos){
 		    $.each(curso.habilidades, function (i, cursoIdHabilidade) {
 		    	if (habilidade.documento.id == cursoIdHabilidade){
 		    		var curso = cursos[i]
-		    		habilidadadesCursos.push(curso.id);
-		    		habilidadadesCursosNome.push(curso.nome);
+		    		habilidadadesCursos = testaDuplicidade(curso.id, habilidadadesCursos);
+		    		habilidadadesCursosNome = testaDuplicidade(curso.nome, habilidadadesCursosNome);
 		    	};
 		    });
 		});
@@ -86,8 +86,8 @@ function atualizaObjetivosHablidadeProcess (objetivos){
 		    $.each(objetivo.necessarios, function (i, objetivoIdHabilidade) {
 		    	if (habilidade.documento.id == objetivoIdHabilidade){
 		    		var objetivo = objetivos[i]
-		    		habilidadadesObjetivos.push(objetivo.id);
-		    		habilidadadesObjetivosNome.push(objetivo.nome);
+		    		habilidadadesObjetivos = testaDuplicidade(objetivo.id, habilidadadesObjetivos);
+		    		habilidadadesObjetivosNome = testaDuplicidade(objetivo.nome, habilidadadesObjetivosNome);
 		    	};
 		    });
 		});
@@ -118,4 +118,73 @@ function atualizaObjetivosHablidadeProcess (objetivos){
 		rest_atualizar (objJson, semAcao, semAcao);
 	});
 	console.log ("terminou objetivos");
+};
+
+function testaDuplicidade (id, array){
+	var existe = false;
+	for (var i = 0; i < array.length; i++) {
+		if (array[i] == id){
+			existe = true;
+		}
+	};
+	
+	if (!existe){
+		array.push(id);
+	}
+	
+	return array;
+};
+
+
+function atualizaPerfil (){
+	
+		var objJson = 
+			{	
+				collection : "userPerfil",
+				keys : 
+					[
+					]
+			};
+
+		rest_lista (objJson, atualizaPerfilProcess, semAcao);
+};
+
+
+function atualizaPerfilProcess (usersPerfil){
+	
+	var badgesInput = JSON.parse(sessionStorage.getItem("badges"));
+	
+	$.each( usersPerfil, function( i, userPerfil) {		
+		var badges = [];
+	    $.each(userPerfil.badges, function (i, userBadge) {
+		    $.each(badgesInput, function (i, badge) {
+		    	if (badge.documento.nome == userBadge){
+		    		badges.push(badge.documento.id);
+		    	};
+		    });
+		});
+    	delete userPerfil["badges"];
+    	userPerfil.badges = badges;
+		var badgesInteresse = [];
+	    $.each(userPerfil.badgesInteresse, function (i, userBadge) {
+		    $.each(badgesInput, function (i, badge) {
+		    	if (badge.documento.nome == userBadge){
+		    		badgesInteresse.push(badge.documento.id);
+		    	};
+		    });
+		});
+    	delete userPerfil["badgesInteresse"];
+    	userPerfil.badgesInteresse = badgesInteresse;
+    	userPerfil.showBadges = [];
+		var objJson = 
+			{	
+				collection : "userPerfil",
+				insert :
+					{
+						documento: userPerfil
+					}
+			};	    
+		rest_incluir (objJson, semAcao, semAcao);
+	});
+	console.log ("terminou user perfil");
 };

@@ -130,7 +130,7 @@ public class Rest_Index {
 		JSONArray areaAtuacaoFiltro = new JSONArray();
 		JSONArray areaConhecimentoFiltro = new JSONArray();
 
-
+/*
 		for (int i = 0; i < objFiltros.size(); i++) {
 			JSONParser parser = new JSONParser(); 
 			@SuppressWarnings("rawtypes")
@@ -161,7 +161,7 @@ public class Rest_Index {
 				e.printStackTrace();
 			}
 		};
-
+*/
 		for (int i = 0; i < objFiltros.size(); i++) {
 			JSONParser parser = new JSONParser(); 
 			@SuppressWarnings("rawtypes")
@@ -223,8 +223,8 @@ public class Rest_Index {
 			DB db = (DB) mongo.getDB("yggboard");
 
 			DBCollection collection = db.getCollection("areaConhecimento");
-			
-			DBCursor cursor = collection.find();
+			BasicDBObject searchQuery = new BasicDBObject();
+			DBCursor cursor = collection.find(searchQuery);
 			while (((Iterator<DBObject>) cursor).hasNext()) {
 				BasicDBObject objAreaConhecimento = (BasicDBObject) ((Iterator<DBObject>) cursor).next();
 				//
@@ -252,8 +252,8 @@ public class Rest_Index {
 			DB db = (DB) mongo.getDB("yggboard");
 
 			DBCollection collection = db.getCollection("areaAtuacao");
-			
-			DBCursor cursor = collection.find();
+			BasicDBObject searchQuery = new BasicDBObject();
+			DBCursor cursor = collection.find(searchQuery);
 			while (((Iterator<DBObject>) cursor).hasNext()) {
 				BasicDBObject objAreaAtuacao = (BasicDBObject) ((Iterator<DBObject>) cursor).next();
 				//
@@ -281,8 +281,8 @@ public class Rest_Index {
 			DB db = (DB) mongo.getDB("yggboard");
 
 			DBCollection collection = db.getCollection("cursos");
-			
-			DBCursor cursor = collection.find();
+			BasicDBObject searchQuery = new BasicDBObject();
+			DBCursor cursor = collection.find(searchQuery);
 			while (((Iterator<DBObject>) cursor).hasNext()) {
 				BasicDBObject objCursos = (BasicDBObject) ((Iterator<DBObject>) cursor).next();
 				//
@@ -309,8 +309,8 @@ public class Rest_Index {
 			DB db = (DB) mongo.getDB("yggboard");
 
 			DBCollection collection = db.getCollection("habilidades");
-			
-			DBCursor cursor = collection.find();
+			BasicDBObject searchQuery = new BasicDBObject();
+			DBCursor cursor = collection.find(searchQuery);
 			while (((Iterator<DBObject>) cursor).hasNext()) {
 				BasicDBObject objHabilidades = (BasicDBObject) ((Iterator<DBObject>) cursor).next();
 				//
@@ -337,8 +337,8 @@ public class Rest_Index {
 			DB db = (DB) mongo.getDB("yggboard");
 
 			DBCollection collection = db.getCollection("objetivos");
-			
-			DBCursor cursor = collection.find();
+			BasicDBObject searchQuery = new BasicDBObject();
+			DBCursor cursor = collection.find(searchQuery);
 			while (((Iterator<DBObject>) cursor).hasNext()) {
 				BasicDBObject objCarreiras = (BasicDBObject) ((Iterator<DBObject>) cursor).next();
 				//
@@ -422,7 +422,7 @@ public class Rest_Index {
 	
 	};
 	
-	@SuppressWarnings({ "unchecked" })
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void processaCursos(String id, JSONArray objetivos, JSONArray habilidades, JSONArray cursos, JSONArray areaAtuacao, JSONArray areaConhecimento, Boolean filtro, JSONArray habilidadesFiltro, JSONArray objetivosFiltro) {
 		Mongo mongo;
 		try {
@@ -437,7 +437,11 @@ public class Rest_Index {
 					ArrayList<?> arrayListHabilidades = new ArrayList<Object>(); 
 					arrayListHabilidades = (ArrayList<?>) curso.get("habilidades");
 			    	Object arrayHabilidades[] = arrayListHabilidades.toArray();
-					cursos.add(cursor.get("documento"));
+					BasicDBObject objCursos = (BasicDBObject) cursor.get("documento");
+					List arrayParent = (List) objCursos.get("parents");
+					if (arrayParent.size() == 0){
+						cursos.add(cursor.get("documento"));
+					};
 					//
 					// ***		carrega habilidades
 					//
@@ -519,8 +523,8 @@ public class Rest_Index {
 			DB db = (DB) mongo.getDB("yggboard");
 
 			DBCollection collection = db.getCollection("areaConhecimento");
-			
-			DBCursor cursor = collection.find();
+			BasicDBObject searchQuery = new BasicDBObject();
+			DBCursor cursor = collection.find(searchQuery);
 			while (((Iterator<DBObject>) cursor).hasNext()) {
 				BasicDBObject objAreaConhecimento = (BasicDBObject) ((Iterator<DBObject>) cursor).next();
 				//
@@ -548,8 +552,8 @@ public class Rest_Index {
 			DB db = (DB) mongo.getDB("yggboard");
 
 			DBCollection collection = db.getCollection("areaAtuacao");
-			
-			DBCursor cursor = collection.find();
+			BasicDBObject searchQuery = new BasicDBObject();
+			DBCursor cursor = collection.find(searchQuery);
 			while (((Iterator<DBObject>) cursor).hasNext()) {
 				BasicDBObject objAreaAtuacao = (BasicDBObject) ((Iterator<DBObject>) cursor).next();
 				//
@@ -568,7 +572,7 @@ public class Rest_Index {
 		
 	};
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void carregaCursos(JSONArray cursos) {
 		Mongo mongo;
 		try {
@@ -576,8 +580,10 @@ public class Rest_Index {
 			DB db = (DB) mongo.getDB("yggboard");
 
 			DBCollection collection = db.getCollection("cursos");
-			
-			DBCursor cursor = collection.find();
+			BasicDBObject searchQuery = new BasicDBObject();
+			BasicDBObject setSort = new BasicDBObject();
+			setSort.put("documento.classificacao", 1);
+			DBCursor cursor = collection.find(searchQuery).sort(setSort);
 			while (((Iterator<DBObject>) cursor).hasNext()) {
 				BasicDBObject objCursos = (BasicDBObject) ((Iterator<DBObject>) cursor).next();
 				//
@@ -585,7 +591,10 @@ public class Rest_Index {
 				//			
 				if (addObjeto(cursos, objCursos)){
 					BasicDBObject curso = (BasicDBObject) objCursos.get("documento");
-					cursos.add(curso);
+					List arrayParent = (List) curso.get("parents");
+					if (arrayParent.size() == 0){
+						cursos.add(curso);
+					};
 				};
 			};
 			mongo.close();
@@ -605,8 +614,8 @@ public class Rest_Index {
 			DB db = (DB) mongo.getDB("yggboard");
 
 			DBCollection collection = db.getCollection("habilidades");
-			
-			DBCursor cursor = collection.find();
+			BasicDBObject searchQuery = new BasicDBObject();
+			DBCursor cursor = collection.find(searchQuery);
 			while (((Iterator<DBObject>) cursor).hasNext()) {
 				BasicDBObject objHabilidades = (BasicDBObject) ((Iterator<DBObject>) cursor).next();
 				//
@@ -634,8 +643,10 @@ public class Rest_Index {
 			DB db = (DB) mongo.getDB("yggboard");
 
 			DBCollection collection = db.getCollection("objetivos");
-			
-			DBCursor cursor = collection.find();
+			BasicDBObject searchQuery = new BasicDBObject();
+			BasicDBObject setSort = new BasicDBObject();
+			setSort.put("documento.classificacao", 1);
+			DBCursor cursor = collection.find(searchQuery).sort(setSort);
 			while (((Iterator<DBObject>) cursor).hasNext()) {
 				BasicDBObject objCarreiras = (BasicDBObject) ((Iterator<DBObject>) cursor).next();
 				//
@@ -819,7 +830,7 @@ public class Rest_Index {
 		};
 	};
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void carregaCurso(JSONArray cursos, String id) {
 		Mongo mongo;
 		try {
@@ -831,7 +842,10 @@ public class Rest_Index {
 			if (cursor != null){
 				BasicDBObject curso = (BasicDBObject) cursor.get("documento");
 				if (addObjeto(cursos, curso)){
-					cursos.add (curso);
+					List arrayParent = (List) curso.get("parents");
+					if (arrayParent.size() == 0){
+						cursos.add (curso);
+					};
 				};
 			};			
 			mongo.close();
