@@ -114,6 +114,7 @@ public class Rest_Index {
 		
 	};
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Path("/obter/filtro")	
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -133,7 +134,6 @@ public class Rest_Index {
 
 		for (int i = 0; i < objFiltros.size(); i++) {
 			JSONParser parser = new JSONParser(); 
-			@SuppressWarnings("rawtypes")
 			String documento = JSONObject.toJSONString((Map) objFiltros.get(i));
 			JSONObject objItemFiltro;
 			try {
@@ -161,6 +161,13 @@ public class Rest_Index {
 				e.printStackTrace();
 			}
 		};
+
+		ArrayList arrayListSelecionados = new ArrayList<String>();
+		arrayListSelecionados = selecionaFiltro(objetivosFiltro);
+		Object arraySelecionados[] = arrayListSelecionados.toArray();		
+		for (int i = 0; i < arraySelecionados.length; i++) {
+			carregaObjetivo(objetivos, arraySelecionados[i].toString());
+		};
 		
 		BasicDBObject listas = new BasicDBObject();
 		
@@ -183,8 +190,38 @@ public class Rest_Index {
 			// qdo escolhida uma area de conhecimento trazer todas habilidades, objetivos das habilidades, cursos das habilidades, area de conhecimento só a selecionada e área de atuação de todos os objetivos
 	};
 
+	@SuppressWarnings("rawtypes")
+	private JSONArray selecionaFiltro(ArrayList<String> matrizFiltro) {
+
+		Object matriz[] = matrizFiltro.toArray();
+		ArrayList arrayElemento_0 = new ArrayList<String>();
+		arrayElemento_0 = (ArrayList) matriz[0];				
+		Object elemento_0[] = arrayElemento_0.toArray();
+		
+		for (int z = 0; z < elemento_0.length; z++) {
+			Boolean coincide = true;
+			for (int i = 1; i < matriz.length && coincide; i++) {		
+				ArrayList arrayElementos = new ArrayList<String>();
+				arrayElementos = (ArrayList) matriz[i];		
+				Object elementos[] = arrayElementos.toArray();
+				Boolean coincideElemento = false;
+				for (int j = 0; j < elementos.length; j++) {
+					if (elementos[j].equals(elemento_0[z]) ){
+						coincideElemento = true;
+					}
+				}
+				if (!coincideElemento){
+					coincide = false;
+				}
+			};
+		}
+		
+		
+		return null;
+	}
+
 	@SuppressWarnings({ "unchecked" })
-	private void processaObjetivos(String id, JSONArray objetivos, JSONArray habilidades, JSONArray cursos, JSONArray areaAtuacao, JSONArray areaConhecimento, Boolean filtro, JSONArray objetivosFiltro, JSONArray habilidadesFiltro, JSONArray cursosFiltro, JSONArray areaAtuacaoFiltro, JSONArray areaConhecimentoFiltro) {
+	private void processaObjetivos(String id, JSONArray objetivos, JSONArray habilidades, JSONArray cursos, JSONArray areasAtuacao, JSONArray areasConhecimento, Boolean filtro, JSONArray objetivosFiltro, JSONArray habilidadesFiltro, JSONArray cursosFiltro, JSONArray areaAtuacaoFiltro, JSONArray areaConhecimentoFiltro) {
 		Mongo mongo;
 		try {
 			mongo = new Mongo();
@@ -206,7 +243,7 @@ public class Rest_Index {
 				int z = 0;
 				while (z < arrayNecessarios.length) {
 					String nomeHabilidade = "";
-					carregaHabilidade(habilidades, cursos, objetivos, areaAtuacao, areaConhecimento, (String) arrayNecessarios[z], true, nomeHabilidade, filtro);
+					carregaHabilidade(habilidades, cursos, objetivos, areasAtuacao, areasConhecimento, (String) arrayNecessarios[z], true, nomeHabilidade, filtro, objetivosFiltro, habilidadesFiltro, cursosFiltro);
 					++z;
 				};
 				//
@@ -215,7 +252,7 @@ public class Rest_Index {
 				ArrayList<?> arrayListAreaAtuazao = new ArrayList<Object>(); 
 				arrayListAreaAtuazao = (ArrayList<?>) objetivo.get("areaAtuacao");
 		    	Object arrayAreAtuacao[] = arrayListAreaAtuazao.toArray();
-				processaAreaAtuacao(id, objetivos, habilidades, cursos, areaAtuacao, areaConhecimento, filtro, null, null, null, null, null);
+				processaAreaAtuacao(id, objetivos, habilidades, cursos, areasAtuacao, areasConhecimento, filtro, null, null, null, null, null);
 				//
 				// ***		carrega objetivo
 				//			
@@ -235,7 +272,7 @@ public class Rest_Index {
 	};
 
 	@SuppressWarnings("unchecked")
-	private void processaHabilidades(String id, JSONArray objetivos, JSONArray habilidades, JSONArray cursos, JSONArray areaAtuacao, JSONArray areaConhecimento, Boolean filtro, JSONArray objetivosFiltro, JSONArray habilidadesFiltro, JSONArray cursosFiltro, JSONArray areaAtuacaoFiltro, JSONArray areaConhecimentoFiltro) {
+	private void processaHabilidades(String id, JSONArray objetivos, JSONArray habilidades, JSONArray cursos, JSONArray areasAtuacao, JSONArray areasConhecimento, Boolean filtro, JSONArray objetivosFiltro, JSONArray habilidadesFiltro, JSONArray cursosFiltro, JSONArray areaAtuacaoFiltro, JSONArray areaConhecimentoFiltro) {
 		Mongo mongo;
 		try {
 			mongo = new Mongo();
@@ -248,7 +285,7 @@ public class Rest_Index {
 				//
 				// ***		carrega habilidade
 				//			
-				carregaHabilidade(habilidades, cursos, objetivos, areaAtuacao, areaConhecimento, habilidade.getString("id"), true, null, filtro);
+				carregaHabilidade(habilidades, cursos, objetivos, areasAtuacao, areasConhecimento, habilidade.getString("id"), true, null, filtro, objetivosFiltro, habilidadesFiltro, cursosFiltro);
 				//
 				// ***		carrega objetivos
 				//			
@@ -275,7 +312,7 @@ public class Rest_Index {
 	};
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private void processaCursos(String id, JSONArray objetivos, JSONArray habilidades, JSONArray cursos, JSONArray areaAtuacao, JSONArray areaConhecimento, Boolean filtro, JSONArray objetivosFiltro, JSONArray habilidadesFiltro, JSONArray cursosFiltro, JSONArray areaAtuacaoFiltro, JSONArray areaConhecimentoFiltro) {
+	private void processaCursos(String id, JSONArray objetivos, JSONArray habilidades, JSONArray cursos, JSONArray areasAtuacao, JSONArray areasConhecimento, Boolean filtro, JSONArray objetivosFiltro, JSONArray habilidadesFiltro, JSONArray cursosFiltro, JSONArray areaAtuacaoFiltro, JSONArray areaConhecimentoFiltro) {
 		Mongo mongo;
 		try {
 			mongo = new Mongo();
@@ -299,7 +336,7 @@ public class Rest_Index {
 					//
 					int z = 0;
 					while (z < arrayHabilidades.length) {
-						carregaHabilidade(habilidades, cursos, objetivos, areaAtuacao, areaConhecimento, arrayHabilidades[z].toString(), true, null, filtro);
+						carregaHabilidade(habilidades, cursos, objetivos, areasAtuacao, areasConhecimento, arrayHabilidades[z].toString(), true, null, filtro, objetivosFiltro, habilidadesFiltro, cursosFiltro);
 						++z;
 					};
 					//
@@ -334,15 +371,15 @@ public class Rest_Index {
 					areasConhecimento.add(areaConhecimento);
 				};
 				//
-				// ***		carrega objetivos
+				// ***		carrega habilidades
 				//			
-				ArrayList<?> arrayListObjetivos = new ArrayList<Object>(); 
-		    	arrayListObjetivos = (ArrayList<?>) areaConhecimento.get("objetivos");
-		    	Object arrayObjetivos[] = arrayListObjetivos.toArray();
+				ArrayList<?> arrayListHabilidades = new ArrayList<Object>(); 
+				arrayListHabilidades = (ArrayList<?>) areaConhecimento.get("habilidades");
+		    	Object arrayHabilidades[] = arrayListHabilidades.toArray();
 				//
 				// ***		carrega filtros
 				//			
-				objetivosFiltro.add(arrayObjetivos);
+				habilidadesFiltro.add(arrayHabilidades);
 			};
 			mongo.close();
 		} catch (UnknownHostException e) {
@@ -352,7 +389,7 @@ public class Rest_Index {
 		};
 	};
 	@SuppressWarnings("unchecked")
-	private void processaAreaAtuacao(String id, JSONArray objetivos, JSONArray habilidades, JSONArray cursos, JSONArray areasAtuacao, JSONArray areaConhecimento, Boolean filtro, JSONArray objetivosFiltro, JSONArray habilidadesFiltro, JSONArray cursosFiltro, JSONArray areaAtuacaoFiltro, JSONArray areaConhecimentoFiltro) {		
+	private void processaAreaAtuacao(String id, JSONArray objetivos, JSONArray habilidades, JSONArray cursos, JSONArray areasAtuacao, JSONArray areasConhecimento, Boolean filtro, JSONArray objetivosFiltro, JSONArray habilidadesFiltro, JSONArray cursosFiltro, JSONArray areaAtuacaoFiltro, JSONArray areaConhecimentoFiltro) {		
 
 		Mongo mongo;
 		try {
@@ -370,6 +407,16 @@ public class Rest_Index {
 				if (addObjeto(areasAtuacao, areaAtuacao)){
 					areasAtuacao.add(areaAtuacao);
 				};
+				//
+				// ***		carrega objetivos
+				//			
+				ArrayList<?> arrayListObjetivos = new ArrayList<Object>(); 
+				arrayListObjetivos = (ArrayList<?>) areaAtuacao.get("objetivos");
+		    	Object arrayObjetivos[] = arrayListObjetivos.toArray();
+				//
+				// ***		carrega filtros
+				//			
+				habilidadesFiltro.add(arrayObjetivos);
 			};
 			mongo.close();
 		} catch (UnknownHostException e) {
@@ -538,7 +585,9 @@ public class Rest_Index {
 	};
 
 	@SuppressWarnings("unchecked")
-	private void carregaHabilidade(JSONArray habilidades, JSONArray cursos,JSONArray objetivos, JSONArray areaAtuacao,JSONArray areaConhecimento, String id, Boolean carregaPreRequisitos, Object nomeHabilidade, Boolean filtro) {
+	private void carregaHabilidade(JSONArray habilidades, JSONArray cursos, JSONArray objetivos, JSONArray areaAtuacao,
+			JSONArray areaConhecimento, String id, Boolean carregaPreRequisitos, Object nomeHabilidade, Boolean filtro,
+			JSONArray objetivosFiltro, JSONArray habilidadesFiltro, JSONArray cursosFiltro) {
 		Mongo mongo;
 		try {
 			mongo = new Mongo();
@@ -551,24 +600,24 @@ public class Rest_Index {
 				nomeHabilidade = habilidade.get("nome").toString();
 				habilidade.put ("nivel", "0");
 				if (addObjeto(habilidades, habilidade)){
-					if (filtro){
-							habilidades.add (habilidade);
-					}else{
-						habilidades.add (habilidade);
-					};
+					habilidades.add (habilidade);
 				};
 				if (carregaPreRequisitos){
 					ArrayList<?> arrayList = new ArrayList<Object>(); 
 			    	arrayList = (ArrayList<?>) habilidade.get("preRequisitos");
-			    	Object array[] = arrayList.toArray();
+			    	Object arrayPreRequisitos[] = arrayList.toArray();
 					int z = 0;
-					while (z < array.length) {
+					while (z < arrayPreRequisitos.length) {
 //						BasicDBObject preRequisito = (BasicDBObject) array[z];
 //						carregaPreRequisitos(habilidades, cursos, objetivos, areaAtuacao, areaConhecimento, (String) preRequisito.get("id"), (String) preRequisito.get("nivel"), filtro );
-						String preRequisito =array[z].toString();
+						String preRequisito =arrayPreRequisitos[z].toString();
 						carregaPreRequisitos(habilidades, cursos, objetivos, areaAtuacao, areaConhecimento, (String) preRequisito, "0", filtro );
 						++z;
 					};
+					//
+					// ***		carrega filtros
+					//			
+					habilidadesFiltro.add(arrayPreRequisitos);
 					//
 					// ***		carrega cursos
 					//
@@ -582,6 +631,10 @@ public class Rest_Index {
 							carregaCurso(cursos, curso);
 							++i;
 						};
+						//
+						// ***		carrega filtros
+						//			
+						cursosFiltro.add(arrayCursos);
 			    	};
 					//
 					// ***		carrega objetivos
@@ -589,13 +642,17 @@ public class Rest_Index {
 					ArrayList<Object> arrayListObjetivo = new ArrayList<Object>(); 
 			    	arrayListObjetivo = (ArrayList<Object>) habilidade.get("objetivos");
 			    	if (arrayListObjetivo != null){
-				    	Object arrayObjetivo[] = arrayListObjetivo.toArray();
+				    	Object arrayObjetivos[] = arrayListObjetivo.toArray();
 						int w = 0;
-						while (w < arrayObjetivo.length) {
-							String objetivo = arrayObjetivo[w].toString();
+						while (w < arrayObjetivos.length) {
+							String objetivo = arrayObjetivos[w].toString();
 							carregaObjetivo(objetivos, objetivo);
 							++w;
 						};
+						//
+						// ***		carrega filtros
+						//			
+						objetivosFiltro.add(arrayObjetivos);
 			    	};
 					//
 					// ***		carrega área do conhecimento
@@ -835,7 +892,7 @@ public class Rest_Index {
 									carregaObjetivo(objetivos, jsonObject.get("id").toString());
 									break;
 								case "Habilidade":
-									carregaHabilidade(habilidades, cursos, objetivos, areaAtuacao, areaConhecimento, jsonObject.get("id").toString(), false, null, filtro);
+									carregaHabilidade(habilidades, cursos, objetivos, areaAtuacao, areaConhecimento, jsonObject.get("id").toString(), false, null, filtro, null, null, null);
 								break;
 								case "Curso":
 									carregaCurso(cursos, jsonObject.get("id").toString());								

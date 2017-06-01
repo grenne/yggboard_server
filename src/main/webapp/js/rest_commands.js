@@ -1,3 +1,21 @@
+function rest_obter(objJson, action_ok, action_not_ok, var1, var2, var3) {
+
+	$.ajax({
+		type : "POST",
+		url : "http://52.67.61.248:8080/yggboard_server/rest/crud/obter",
+		contentType : "application/json; charset=utf-8",
+		dataType : 'json',
+		data : JSON.stringify(objJson),
+		async : true
+
+	}).done(function(data) {
+		action_ok(data, var1, var2, var3);
+	}).fail(function(data) {
+		action_not_ok(data, var1, var2, var3);
+	}).always(function(data) {
+		action_ok(data, var1, var2, var3);
+	});
+};
 
 function rest_incluir (objJson, action_ok, action_not_ok, var1, var2, var3){
 	$.ajax({
@@ -79,22 +97,6 @@ function rest_lista (objJson, action_ok, action_not_ok, var1, var2, var3){
 	.always(function(data) {
 	});
 
-};
-function rest_get (url, objJson, action_ok, action_not_ok, var1, var2, var3){
-	$.ajax({
-        url: "http://" + localStorage.urlServidor + "/" + localStorage.APP + "/rest/" + url,
-        contentType: "application/json; charset=utf-8",
-        dataType: 'json',
-        async:false	
-	})        	
-	.done(function( data ) {
-		action_ok (data, var1, var2, var3);
-	})
-	.fail(function(data) {
-		action_not_ok (data, var1, var2, var3);
-	})
-	.always(function(data) {
-	});
 };
 
 function rest_obterHabilidades(action_ok, action_not_ok, var1, var2) {

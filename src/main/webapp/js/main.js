@@ -88,8 +88,8 @@ $( ".teste" ).click(function() {
 	case "atualizaBadges":
 		atualizaBadges();
 		break;
-	case "atualizaPerfil":
-		atualizaPerfil();
+	case "testaFiltro":
+		testaFiltro();
 		break;
 	case "usuarios":
 		copiaUsuarios();
