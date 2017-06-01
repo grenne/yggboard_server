@@ -95,7 +95,9 @@ function processaCursos (data){
 		}
 	};
 	
-	rest_incluir (objJson, semAcao, semAcao);
+	if (fields[0]){
+		rest_incluir (objJson, semAcao, semAcao);
+	};
 	
 };
 
@@ -154,7 +156,9 @@ function processaHabilidades (data){
 		}
 	};
 	
-	rest_incluir (objJson, semAcao, semAcao);
+	if (fields[0]){
+		rest_incluir (objJson, semAcao, semAcao);
+	};
 	
 };
 
@@ -232,7 +236,9 @@ function processaObjetivos (data){
 		}
 	};
 	
-	rest_incluir (objJson, semAcao, semAcao);
+	if (fields[0]){
+		rest_incluir (objJson, semAcao, semAcao);
+	};
 	
 };
 
@@ -285,8 +291,9 @@ function processaBadges (data){
 		}
 	};
 	
-	rest_incluir (objJson, semAcao, semAcao);
-	
+	if (fields[0]){
+		rest_incluir (objJson, semAcao, semAcao);
+	};
 };
 
 function processaAreaConhecimento (data){
@@ -321,8 +328,9 @@ function processaAreaConhecimento (data){
 		}
 	};
 	
-	rest_incluir (objJson, semAcao, semAcao);
-	
+	if (fields[0]){
+		rest_incluir (objJson, semAcao, semAcao);
+	};
 };
 
 function processaAreaAtuacao (data){
@@ -342,8 +350,9 @@ function processaAreaAtuacao (data){
 				}
 		};
 	
-	rest_incluir (objJson, semAcao, semAcao);
-	
+	if (fields[0]){
+		rest_incluir (objJson, semAcao, semAcao);
+	};
 };
 
 function nomeHabilidade (id){

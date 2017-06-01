@@ -36,13 +36,15 @@ function testaObter (){
 function testaIncluir (){
 		var objJson = 
 	 			{	
-	 				collection : "teste",
+	 				collection : "usuario",
 	 				insert :
 	 					{
 	 						documento:
 	 						{
-	 							id : "1",
-	 							nome : "nome"
+	 							email : "1",
+	 							nome : "nome",
+	 							password : "pw"
+	 							
 	 						}
 	 					}
 	 			};
