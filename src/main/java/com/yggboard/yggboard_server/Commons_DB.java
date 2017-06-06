@@ -1,6 +1,7 @@
 package com.yggboard.yggboard_server;
 
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -42,7 +43,7 @@ public class Commons_DB {
 				return Response.status(200).entity(cursor).build();
 			}else{
 				mongo.close();
-				return Response.status(404).entity(null).build();				
+				return Response.status(200).entity(false).build();
 			}
 		} catch (UnknownHostException | MongoException e) {
 			return Response.status(406).entity(e).build();
@@ -89,15 +90,32 @@ public class Commons_DB {
 				List arrayUpdate = (List) updateInput;
 				for (int i = 0; i < arrayUpdate.size(); i++) {
 					BasicDBObject setUpdate = new BasicDBObject();
-					BasicDBObject docUpdate = new BasicDBObject();
 					setUpdate.putAll((Map) arrayUpdate.get(i));
-					docUpdate.putAll((Map) setUpdate.get("value"));
-					if (setUpdate.get("field").toString().equals("documento")){
-						objDocumento.clear();
-						objDocumento.putAll((Map) docUpdate);
-					}else{
+					Object value = setUpdate.get("value");
+					if (value instanceof String){
+						String docUpdate = setUpdate.get("value").toString();
 						objDocumento.remove(setUpdate.get("field"));
 						objDocumento.put((String) setUpdate.get("field"), docUpdate);
+					}else{
+						if (value instanceof ArrayList){
+							ArrayList docUpdate = (ArrayList) setUpdate.get("value");
+							objDocumento.remove(setUpdate.get("field"));
+							JSONArray arrayField = new JSONArray();
+							for (int j = 0; j < docUpdate.size(); j++) {
+								arrayField.add(docUpdate.get(i));
+							};
+							objDocumento.put((String) setUpdate.get("field"), arrayField);
+						}else{
+							BasicDBObject docUpdate = new BasicDBObject();
+							docUpdate.putAll((Map) setUpdate.get("value"));
+							if (setUpdate.get("field").equals("documento")){
+								objDocumento.clear();
+								objDocumento.putAll((Map) docUpdate);
+							}else{
+								objDocumento.remove(setUpdate.get("field"));
+								objDocumento.put((String) setUpdate.get("field"), docUpdate);
+							};
+						};
 					};
 				};
 				BasicDBObject objDocumentoUpdate = new BasicDBObject();
@@ -111,7 +129,7 @@ public class Commons_DB {
 		                true,
 		                false);
 				mongo.close();
-				return Response.status(200).entity(cursor).build();
+				return Response.status(200).entity(cursor.get("documento")).build();
 			}else{
 				mongo.close();
 				return Response.status(400).entity(keysInput).build();				

@@ -8,50 +8,30 @@ if (localStorage.urlServidor == "localhost"){
 	localStorage.mainHost = localStorage.urlServidor;
 };
 
-	var objJson = 
-		{	
-			collection : "habilidades",
-			keys : 
-				[
-				]
-		};
-	$.ajax({
-        url: "http://" + localStorage.urlServidor + ":8080/yggboard_server/rest/habilidades/lista?diagrama=habilidades&semCursos=true",
-        contentType: "application/json; charset=utf-8",
-        dataType: 'json'
-	})
-	.done(function( data ) {
-		if (data){
-			sessionStorage.setItem("habilidades", JSON.stringify(data));
-		}else{
-			action_not_ok (data, var1, var2);	
-		};
-	})
-	.fail(function(data) {
-		console.log ("erro");
-	})
-	.always(function(data) {
-	});
-	
-	$.ajax({
-        url: "http://" + localStorage.urlServidor + ":8080/yggboard_server/rest/badges/lista",
-        contentType: "application/json; charset=utf-8",
-        dataType: 'json'
-	})
-	.done(function( data ) {
-		if (data){
-			sessionStorage.setItem("badges", JSON.stringify(data));
-		}else{
-			action_not_ok (data, var1, var2);	
-		};
-	})
-	.fail(function(data) {
-		console.log ("erro");
-	})
-	.always(function(data) {
-	});
-
 localStorage.APP = "yggboard_server";
+
+var objJson = 
+	{	
+		asybc : false,
+		collection : "habilidades",
+		keys : 
+			[
+			]
+	};
+
+rest_lista (objJson, salvaSessionStore, semAcao, "habilidades");
+
+var objJson = 
+{	
+	asybc : false,
+	collection : "badges",
+	keys : 
+		[
+		]
+};
+
+rest_lista (objJson, salvaSessionStore, semAcao, "badges");
+
 
 $( ".escolha" ).click(function() {
     $( ".output" ).remove();
@@ -77,7 +57,7 @@ $( ".teste" ).click(function() {
 		testaLista();
 		break;
 	case "testaAtualizaPerfil":
-		testaAtualizaPerfil();
+		
 		break;
 	case "atualizaCursosHabilidade":
 		atualizaCursosHabilidade();
@@ -87,6 +67,9 @@ $( ".teste" ).click(function() {
 		break;
 	case "atualizaBadges":
 		atualizaBadges();
+		break;
+	case "atualizaAreaAtuacaoObjetivos":
+		atualizaAreaAtuacaoObjetivos();
 		break;
 	case "testaFiltro":
 		testaFiltro();
@@ -111,3 +94,4 @@ $( ".teste" ).click(function() {
 		break;
 	}
 });
+

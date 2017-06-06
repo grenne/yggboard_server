@@ -100,7 +100,7 @@ public class Rest_UserPerfil {
 							Mongo mongoCarreiras = new Mongo();
 							DB dbCarreiras = (DB) mongoCarreiras.getDB("yggboard");
 							DBCollection collectionCarreiras = dbCarreiras.getCollection("objetivos");
-							BasicDBObject searchQueryCarreiras = new BasicDBObject("documento.id", array[i]);
+							BasicDBObject searchQueryCarreiras = new BasicDBObject("documento.id", array[i].toString());
 							DBObject cursorCarreiras = collectionCarreiras.findOne(searchQueryCarreiras);
 							BasicDBObject objCarreiras = new BasicDBObject();
 							if (cursorCarreiras != null){
@@ -115,7 +115,7 @@ public class Rest_UserPerfil {
 					Mongo mongoCarreiras = new Mongo();
 					DB dbCarreiras = (DB) mongoCarreiras.getDB("yggboard");
 					DBCollection collectionCarreiras = dbCarreiras.getCollection("objetivos");
-					BasicDBObject searchQueryCarreiras = new BasicDBObject("documento.id", elemento);
+					BasicDBObject searchQueryCarreiras = new BasicDBObject("documento.id", elemento.toString());
 					DBObject cursorCarreiras = collectionCarreiras.findOne(searchQueryCarreiras);
 					BasicDBObject objCarreiras = new BasicDBObject();
 					objCarreiras.put("documento", cursorCarreiras.get("documento"));
@@ -138,7 +138,7 @@ public class Rest_UserPerfil {
 							Mongo mongoBadges = new Mongo();
 							DB dbBadges = (DB) mongoBadges.getDB("yggboard");
 							DBCollection collectionBadges = dbBadges.getCollection("badges");
-							BasicDBObject searchQueryBadges = new BasicDBObject("documento.id", array[w]);
+							BasicDBObject searchQueryBadges = new BasicDBObject("documento.id", array[w].toString());
 							DBObject cursorBadges = collectionBadges.findOne(searchQueryBadges);
 							if (cursorBadges != null){
 								BasicDBObject objBadges = (BasicDBObject) cursorBadges.get("documento");
@@ -318,7 +318,7 @@ public class Rest_UserPerfil {
 							Mongo mongoHabilidades = new Mongo();
 							DB dbHabilidades = (DB) mongoHabilidades.getDB("yggboard");
 							DBCollection collectionHabilidades = dbHabilidades.getCollection("habilidades");
-							BasicDBObject searchQueryHabilidades = new BasicDBObject("documento.id", array[w]);
+							BasicDBObject searchQueryHabilidades = new BasicDBObject("documento.id", array[w].toString());
 							DBObject cursorHabilidades = collectionHabilidades.findOne(searchQueryHabilidades);
 							BasicDBObject objHabilidades = (BasicDBObject) cursorHabilidades.get("documento");
 							JSONObject jsonDocumento = new JSONObject();
@@ -387,7 +387,7 @@ public class Rest_UserPerfil {
 				    	};
 					};
 				};
-				if (item.equals("cursos-interesse") | item.equals("cursos-andamento") | item.equals("cursos-inscrito") | item.equals("cursos")){
+				if (item.equals("cursos-interesse") | item.equals("cursos-andamento") | item.equals("cursos-inscrito") | item.equals("cursos-sugeridos") | item.equals("cursos")){
 					ArrayList arrayList = new ArrayList(); 
 					if (item.equals("cursos-interesse")){
 						arrayList = (ArrayList) jsonPerfil.get("cursosInteresse");
@@ -397,6 +397,9 @@ public class Rest_UserPerfil {
 					};
 					if (item.equals("cursos-andamento")){
 						arrayList = (ArrayList) jsonPerfil.get("cursosAndamento");
+					};
+					if (item.equals("cursos-sugeridos")){
+						arrayList = (ArrayList) jsonPerfil.get("cursosSugeridos");
 					};
 					if (item.equals("cursos")){
 						arrayList = (ArrayList) jsonPerfil.get("cursos");
@@ -418,7 +421,7 @@ public class Rest_UserPerfil {
 								jsonDocumento.put("inscricao", cursoInscrito.get("inscricao").toString());
 								jsonDocumento.put("todaysDate", commons.todaysDate("inv_month_number"));
 							}else{
-								searchQueryCursos = new BasicDBObject("documento.id", array[w]);
+								searchQueryCursos = new BasicDBObject("documento.id", array[w].toString());
 							};
 							DBObject cursorCursos = collectionCursos.findOne(searchQueryCursos);
 							if (cursorCursos != null){
@@ -452,13 +455,14 @@ public class Rest_UserPerfil {
 		jsonDocumento.put("nivel", objCarreiras.get("nivel"));
 		jsonDocumento.put("nivelFiltro", objCarreiras.get("nivelFiltro"));
 		jsonDocumento.put("id", objCarreiras.get("id"));
-		jsonDocumento.put("industria", objCarreiras.get("industria"));
 	    jsonDocumento.put("descricao", objCarreiras.get("descricao"));
-	    jsonDocumento.put("tarefas", objCarreiras.get("tarefas"));
 	    jsonDocumento.put("salarioMinimo", objCarreiras.get("salarioMinimo")); 
 	    jsonDocumento.put("salarioMedio", objCarreiras.get("salarioMedio"));
 	    jsonDocumento.put("salarioMaximo", objCarreiras.get("salarioMaximo"));
-	    jsonDocumento.put("funcao", objCarreiras.get("funcao"));
+	    jsonDocumento.put("segmentoEconomico", objCarreiras.get("segmentoEconomico"));
+	    jsonDocumento.put("responsabilidades", objCarreiras.get("responsabilidades"));
+	    jsonDocumento.put("atividades", objCarreiras.get("atividades"));
+	    jsonDocumento.put("areaAtuacao", objCarreiras.get("areaAtuacao")); 
 	    jsonDocumento.put("necessarios", objCarreiras.get("necessarios")); 
 	    jsonDocumento.put("recomentados", objCarreiras.get("recomentados"));
 	    jsonDocumento.put("necessariosNome", objCarreiras.get("necessariosNome")); 

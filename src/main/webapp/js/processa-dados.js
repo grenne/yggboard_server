@@ -30,6 +30,7 @@ function processaCursos (data){
 	
 	var objJson = 
 		{
+			async : false,
 			collection : "cursos",
 			insert :
 				{
@@ -107,6 +108,7 @@ function processaHabilidades (data){
 	
 	var objJson = 
 		{
+			async: false,
 			collection : "habilidades",
 			insert :
 				{
@@ -168,6 +170,7 @@ function processaObjetivos (data){
 	
 	var objJson = 
 		{
+			async : false,
 			collection : "objetivos",
 			insert :
 				{
@@ -248,6 +251,7 @@ function processaBadges (data){
 	
 	var objJson = 
 		{
+			asybc : false,
 			collection : "badges",
 			insert :
 				{
@@ -302,6 +306,7 @@ function processaAreaConhecimento (data){
 	
 	var objJson = 
 		{
+			async : false,
 			collection : "areaConhecimento",
 			insert :
 				{
@@ -339,6 +344,7 @@ function processaAreaAtuacao (data){
 	
 	var objJson = 
 		{
+			async : false,
 			collection : "areaAtuacao",
 			insert :
 				{

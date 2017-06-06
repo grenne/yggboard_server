@@ -7,7 +7,7 @@ function testaObter() {
 		collection : "usuarios",
 		keys : [ {
 			key : "documento.email",
-			value : "email a ser cadastrado"
+			value : "grenneglr@gmail.com"
 		} ]
 	};
 	$.ajax({
@@ -56,15 +56,44 @@ function testaIncluir() {
 };
 function testaAtualizar() {
 
+	 var doc = {
+	        carreirasInteresse : [],
+	        habilidadesInteresse : [],
+	        cursosInteresse : [],
+	        cursosSugeridos : [
+	            659
+	        ],
+	        tags : [],
+	        elementos : [],
+	        usuario : "grenne@grenne.com",
+	        carreiras : [],
+	        habilidades : [ 
+	 
+	            "10417"
+	        ],
+	        badges : [],
+	        badgesInteresse : [],
+	        showBadges : [],
+	        carreirasSugeridas : [ 
+	            12
+	        ]
+	    };
+	 
+	 var doc1 =
+				 {
+				 teste :"ccc",
+				 teste2 : "ddd"
+				 };
+	 
 	var objJson = {
-		collection : "teste",
+		collection : "userPerfil",
 		keys : [ {
-			key : "documento.id",
-			value : "1"
+			key : "documento.usuario",
+			value : "grenne@grenne.com"
 		} ],
 		update : [ {
-			field : "documento.nome",
-			value : "super novo"
+			field : "grenne",
+			value : doc1
 		} ]
 	};
 	$.ajax({
@@ -159,7 +188,11 @@ function testaFiltro() {
 		async : false
 	}).done(function(data) {
 		if (data) {
-			console.log("ok");
+			console.log("habilidades:" + data.habilidades );
+			console.log("objetivos:" + data.objetivos );
+			console.log("cursos:" + data.cursos );
+			console.log("area atuação:" + data.areaAtuacao );
+			console.log("area conheciento:" + data.areaConhecimento );
 		}
 		;
 	}).fail(function(data) {

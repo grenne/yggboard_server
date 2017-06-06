@@ -1,12 +1,43 @@
+function rest_obter(objJson, action_ok, action_not_ok, var1, var2, var3) {
+	
+	var async = false;
+	
+	if (objJson.async != null){
+		async = objJson.async
+	};
+
+	$.ajax({
+		type : "POST",
+		url : "http://" + localStorage.urlServidor + ":8080/yggboard_server/rest/crud/obter",
+		contentType : "application/json; charset=utf-8",
+		dataType : 'json',
+		data : JSON.stringify(objJson),
+		async : async
+
+	}).done(function(data) {
+		action_ok(data, var1, var2, var3);
+	}).fail(function(data) {
+		action_not_ok(data, var1, var2, var3);
+	}).always(function(data) {
+		action_ok(data, var1, var2, var3);
+	});
+};
 
 function rest_incluir (objJson, action_ok, action_not_ok, var1, var2, var3){
+	
+	var async = false;
+	
+	if (objJson.async != null){
+		async = objJson.async
+	};
+
 	$.ajax({
 		type: "POST",
         url: "http://" + localStorage.urlServidor + ":8080/yggboard_server/rest/crud/incluir",
         contentType: "application/json; charset=utf-8",
         dataType: 'json',
         data : JSON.stringify(objJson),
-        async:false	
+		async : async
 	})        	
 	.done(function( data ) {
 		action_ok (data, var1, var2, var3);
@@ -18,13 +49,20 @@ function rest_incluir (objJson, action_ok, action_not_ok, var1, var2, var3){
 	});
 };
 function rest_remover (objJson, action_ok, action_not_ok, var1, var2, var3){
+
+	var async = false;
+	
+	if (objJson.async != null){
+		async = objJson.async
+	};
+
 	$.ajax({
 		type: "POST",
         url: "http://" + localStorage.urlServidor + ":8080/yggboard_server/rest/crud/remover/all",
         contentType: "application/json; charset=utf-8",
         dataType: 'json',
         data : JSON.stringify(objJson),
-        async:false	
+    	async : async
 	})        	
 	.done(function( data ) {
 		action_ok (data, var1, var2, var3);
@@ -39,13 +77,19 @@ function rest_remover (objJson, action_ok, action_not_ok, var1, var2, var3){
 
 function rest_atualizar (objJson, action_ok, action_not_ok, var1, var2, var3){
 
+	var async = false;
+	
+	if (objJson.async != null){
+		async = objJson.async
+	};
+
 	$.ajax({
 		type: "POST",
         url: "http://" + localStorage.urlServidor + ":8080/yggboard_server/rest/crud/atualizar",
         contentType: "application/json; charset=utf-8",
         dataType: 'json',
         data : JSON.stringify(objJson),
-        async:false
+    	async : async
 	
 	})        	
 	.done(function( data ) {
@@ -61,13 +105,19 @@ function rest_atualizar (objJson, action_ok, action_not_ok, var1, var2, var3){
 
 function rest_lista (objJson, action_ok, action_not_ok, var1, var2, var3){
 
+	var async = false;
+	
+	if (objJson.async != null){
+		async = objJson.async
+	};
+
 	$.ajax({
 		type: "POST",
         url: "http://" + localStorage.urlServidor + ":8080/yggboard_server/rest/crud/lista",
         contentType: "application/json; charset=utf-8",
         dataType: 'json',
         data : JSON.stringify(objJson),
-        async:false
+    	async : async
 	
 	})        	
 	.done(function( data ) {
@@ -79,22 +129,6 @@ function rest_lista (objJson, action_ok, action_not_ok, var1, var2, var3){
 	.always(function(data) {
 	});
 
-};
-function rest_get (url, objJson, action_ok, action_not_ok, var1, var2, var3){
-	$.ajax({
-        url: "http://" + localStorage.urlServidor + "/" + localStorage.APP + "/rest/" + url,
-        contentType: "application/json; charset=utf-8",
-        dataType: 'json',
-        async:false	
-	})        	
-	.done(function( data ) {
-		action_ok (data, var1, var2, var3);
-	})
-	.fail(function(data) {
-		action_not_ok (data, var1, var2, var3);
-	})
-	.always(function(data) {
-	});
 };
 
 function rest_obterHabilidades(action_ok, action_not_ok, var1, var2) {
@@ -312,3 +346,4 @@ function rest_obterBadges(action_ok, action_not_ok, var1, var2, var3) {
 function semAcao(){
 	
 };
+

@@ -5,7 +5,8 @@
 function atualizaCursosHabilidade (){
 	
 		var objJson = 
-			{	
+			{
+				async : false,
 				collection : "cursos",
 				keys : 
 					[
@@ -25,18 +26,18 @@ function atualizaCursoHablidadeProcess (cursos){
 		var habilidadadesCursosNome = [];
 	    $.each(cursos, function (i, curso) {
 		    $.each(curso.habilidades, function (i, cursoIdHabilidade) {
-		    	if (habilidade.documento.id == cursoIdHabilidade){
-		    		var curso = cursos[i]
-		    		habilidadadesCursos = testaDuplicidade(curso.id, habilidadadesCursos);
-		    		habilidadadesCursosNome = testaDuplicidade(curso.nome, habilidadadesCursosNome);
+		    	if (habilidade.id == cursoIdHabilidade){
+		    		var cursoInput = cursos[i]
+		    		habilidadadesCursos = testaDuplicidade(cursoInput.id, habilidadadesCursos);
+		    		habilidadadesCursosNome = testaDuplicidade(cursoInput.nome, habilidadadesCursosNome);
 		    	};
 		    });
 		});
-    	delete habilidade.documento["cursos"];
-    	delete habilidade.documento["cursosNome"];
-    	habilidade.documento.cursos = habilidadadesCursos;
-    	habilidade.documento.cursosNome = habilidadadesCursosNome;
-    	var habililadeUpdate = habilidade.documento;
+    	delete habilidade["cursos"];
+    	delete habilidade["cursosNome"];
+    	habilidade.cursos = habilidadadesCursos;
+    	habilidade.cursosNome = habilidadadesCursosNome;
+    	var habililadeUpdate = habilidade;
 		var objJson = 
 		{	
 			collection : "habilidades",
@@ -44,7 +45,7 @@ function atualizaCursoHablidadeProcess (cursos){
 				[
 					{
 						key : "documento.id",
-						value : habilidade.documento.id
+						value : habilidade.id
 					}
 				],
 			update : 
@@ -65,6 +66,7 @@ function atualizaObjetivosHabilidade (){
 	
 		var objJson = 
 			{	
+				async : false,
 				collection : "objetivos",
 				keys : 
 					[
@@ -84,18 +86,18 @@ function atualizaObjetivosHablidadeProcess (objetivos){
 		var habilidadadesObjetivosNome = [];
 	    $.each(objetivos, function (i, objetivo) {
 		    $.each(objetivo.necessarios, function (i, objetivoIdHabilidade) {
-		    	if (habilidade.documento.id == objetivoIdHabilidade){
+		    	if (habilidade.id == objetivoIdHabilidade){
 		    		var objetivo = objetivos[i]
 		    		habilidadadesObjetivos = testaDuplicidade(objetivo.id, habilidadadesObjetivos);
 		    		habilidadadesObjetivosNome = testaDuplicidade(objetivo.nome, habilidadadesObjetivosNome);
 		    	};
 		    });
 		});
-    	delete habilidade.documento["objetivos"];
-    	delete habilidade.documento["objetivosNome"];
-    	habilidade.documento.objetivos = habilidadadesObjetivos;
-    	habilidade.documento.objetivosNome = habilidadadesObjetivosNome;
-    	var habililadeUpdate = habilidade.documento;
+    	delete habilidade["objetivos"];
+    	delete habilidade["objetivosNome"];
+    	habilidade.objetivos = habilidadadesObjetivos;
+    	habilidade.objetivosNome = habilidadadesObjetivosNome;
+    	var habililadeUpdate = habilidade;
 		var objJson = 
 		{	
 			collection : "habilidades",
@@ -103,7 +105,7 @@ function atualizaObjetivosHablidadeProcess (objetivos){
 				[
 					{
 						key : "documento.id",
-						value : habilidade.documento.id
+						value : habilidade.id
 					}
 				],
 			update : 
@@ -120,7 +122,81 @@ function atualizaObjetivosHablidadeProcess (objetivos){
 	console.log ("terminou objetivos");
 };
 
+function atualizaAreaAtuacaoObjetivos (){
+	
+		var objJson = 
+			{
+				async : false,
+				collection : "objetivos",
+				keys : 
+					[
+					]
+			};
+
+		rest_lista (objJson, salvaSessionStore, semAcao, "objetivos");
+		
+		var objJson = 
+			{
+				async : false,
+				collection : "areaAtuacao",
+				keys : 
+					[
+					]
+			};
+
+		rest_lista (objJson, atualizaAreaAtuacaoObjetivosProcess, semAcao);
+
+};
+
+
+function atualizaAreaAtuacaoObjetivosProcess (areasAtuacao){
+	
+	objetivos = JSON.parse(sessionStorage.getItem("objetivos"));
+	
+	$.each( areasAtuacao, function( i, areaAtuacao) {		
+		var objetivosArray = [];
+		var objetivosArrayNome = [];
+	    $.each(objetivos, function (i, objetivo) {
+		    $.each(objetivo.areaAtuacao, function (i, areasAtuacaoInput) {
+		    	if (areaAtuacao.nome == areasAtuacaoInput){
+		    		objetivosArray = testaDuplicidade(objetivo.id, objetivosArray);
+		    		objetivosArrayNome = testaDuplicidade(objetivo.nome, objetivosArrayNome);
+		    	};
+		    });
+		});
+    	delete areaAtuacao["objetivos"];
+    	delete areaAtuacao["objetivosNome"];
+    	areaAtuacao.objetivos = objetivosArray;
+    	areaAtuacao.objetivosNome = objetivosArrayNome;
+    	var areaAtuacaoUpdate = areaAtuacao;
+		var objJson = 
+		{	
+			collection : "areaAtuacao",
+			keys : 
+				[
+					{
+						key : "documento.id",
+						value : areaAtuacao.id
+					}
+				],
+			update : 
+				[
+					{
+						field : "documento",
+						value : areaAtuacaoUpdate
+						
+					}
+				]
+			};
+		rest_atualizar (objJson, semAcao, semAcao);
+	});
+	
+	console.log ("terminou area atuacao");
+	
+};
+
 function testaDuplicidade (id, array){
+
 	var existe = false;
 	for (var i = 0; i < array.length; i++) {
 		if (array[i] == id){
@@ -140,6 +216,7 @@ function atualizaPerfil (){
 	
 		var objJson = 
 			{	
+				async : false,
 				collection : "userPerfil",
 				keys : 
 					[
@@ -158,8 +235,8 @@ function atualizaPerfilProcess (usersPerfil){
 		var badges = [];
 	    $.each(userPerfil.badges, function (i, userBadge) {
 		    $.each(badgesInput, function (i, badge) {
-		    	if (badge.documento.nome == userBadge){
-		    		badges.push(badge.documento.id);
+		    	if (badge.nome == userBadge){
+		    		badges.push(badge.id);
 		    	};
 		    });
 		});
@@ -168,8 +245,8 @@ function atualizaPerfilProcess (usersPerfil){
 		var badgesInteresse = [];
 	    $.each(userPerfil.badgesInteresse, function (i, userBadge) {
 		    $.each(badgesInput, function (i, badge) {
-		    	if (badge.documento.nome == userBadge){
-		    		badgesInteresse.push(badge.documento.id);
+		    	if (badge.nome == userBadge){
+		    		badgesInteresse.push(badge.id);
 		    	};
 		    });
 		});
@@ -178,6 +255,7 @@ function atualizaPerfilProcess (usersPerfil){
     	userPerfil.showBadges = [];
 		var objJson = 
 			{	
+				async : false,
 				collection : "userPerfil",
 				insert :
 					{
@@ -186,5 +264,12 @@ function atualizaPerfilProcess (usersPerfil){
 			};	    
 		rest_incluir (objJson, semAcao, semAcao);
 	});
-	console.log ("terminou user perfil");
 };
+
+function salvaSessionStore (objJson, entidade){
+
+	sessionStorage.setItem(entidade, JSON.stringify(objJson));
+
+
+}
+
