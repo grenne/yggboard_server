@@ -234,9 +234,7 @@ public class Rest_Index {
 			DB db = (DB) mongo.getDB("yggboard");
 			DBCollection collection = db.getCollection("objetivos");
 			BasicDBObject searchQuery = new BasicDBObject();
-			if (filtro){
-				searchQuery = new BasicDBObject("documento.id", id);
-			};
+			searchQuery = new BasicDBObject("documento.id", id);
 			DBObject cursor = collection.findOne(searchQuery);
 			if (cursor != null){
 				BasicDBObject objetivo = (BasicDBObject) cursor.get("documento");
@@ -255,7 +253,7 @@ public class Rest_Index {
 						//
 						int z = 0;
 						while (z < arrayNecessarios.length) {
-							processaHabilidades(arrayNecessarios[z].toString(), null, habilidades, cursos, areasAtuacao, areasConhecimento, filtro, elementosFiltro);
+							processaHabilidades(arrayNecessarios[z].toString(), objetivos, habilidades, cursos, areasAtuacao, areasConhecimento, filtro, elementosFiltro);
 							++z;
 						};
 					};
@@ -434,7 +432,7 @@ public class Rest_Index {
 						//
 						int z = 0;
 						while (z < arrayHabilidades.length) {
-							processaHabilidades(arrayHabilidades[z].toString(), objetivos, habilidades, null, areasAtuacao, areasConhecimento, filtro, elementosFiltro);
+							processaHabilidades(arrayHabilidades[z].toString(), objetivos, habilidades, cursos, areasAtuacao, areasConhecimento, filtro, elementosFiltro);
 							++z;
 						};
 					};
@@ -544,7 +542,7 @@ public class Rest_Index {
 						//
 						int z = 0;
 						while (z < arrayObjetivos.length) {
-							processaObjetivos(arrayObjetivos[z].toString(), objetivos, habilidades, cursos, null, areasConhecimento, filtro, elementosFiltro);
+							processaObjetivos(arrayObjetivos[z].toString(), objetivos, habilidades, cursos, areasAtuacao, areasConhecimento, filtro, elementosFiltro);
 							++z;
 						};
 					};
