@@ -24,10 +24,10 @@ function atualizaCursoHablidadeProcess (cursos){
 	$.each( habilidades, function( i, habilidade) {		
 		var habilidadadesCursos = [];
 		var habilidadadesCursosNome = [];
-	    $.each(cursos, function (i, curso) {
-		    $.each(curso.habilidades, function (i, cursoIdHabilidade) {
+	    $.each(cursos, function (z, curso) {
+		    $.each(curso.habilidades, function (w, cursoIdHabilidade) {
 		    	if (habilidade.id == cursoIdHabilidade){
-		    		var cursoInput = cursos[i]
+		    		var cursoInput = cursos[z]
 		    		habilidadadesCursos = testaDuplicidade(cursoInput.id, habilidadadesCursos);
 		    		habilidadadesCursosNome = testaDuplicidade(cursoInput.nome, habilidadadesCursosNome);
 		    	};
@@ -84,10 +84,10 @@ function atualizaObjetivosHablidadeProcess (objetivos){
 	$.each( habilidades, function( i, habilidade) {		
 		var habilidadadesObjetivos = [];
 		var habilidadadesObjetivosNome = [];
-	    $.each(objetivos, function (i, objetivo) {
-		    $.each(objetivo.necessarios, function (i, objetivoIdHabilidade) {
+	    $.each(objetivos, function (z, objetivo) {
+		    $.each(objetivo.necessarios, function (w, objetivoIdHabilidade) {
 		    	if (habilidade.id == objetivoIdHabilidade){
-		    		var objetivo = objetivos[i]
+		    		var objetivo = objetivos[z]
 		    		habilidadadesObjetivos = testaDuplicidade(objetivo.id, habilidadadesObjetivos);
 		    		habilidadadesObjetivosNome = testaDuplicidade(objetivo.nome, habilidadadesObjetivosNome);
 		    	};
@@ -156,8 +156,8 @@ function atualizaAreaAtuacaoObjetivosProcess (areasAtuacao){
 	$.each( areasAtuacao, function( i, areaAtuacao) {		
 		var objetivosArray = [];
 		var objetivosArrayNome = [];
-	    $.each(objetivos, function (i, objetivo) {
-		    $.each(objetivo.areaAtuacao, function (i, areasAtuacaoInput) {
+	    $.each(objetivos, function (z, objetivo) {
+		    $.each(objetivo.areaAtuacao, function (w, areasAtuacaoInput) {
 		    	if (areaAtuacao.nome == areasAtuacaoInput){
 		    		objetivosArray = testaDuplicidade(objetivo.id, objetivosArray);
 		    		objetivosArrayNome = testaDuplicidade(objetivo.nome, objetivosArrayNome);
@@ -192,6 +192,79 @@ function atualizaAreaAtuacaoObjetivosProcess (areasAtuacao){
 	});
 	
 	console.log ("terminou area atuacao");
+	
+};
+
+function atualizaAreaConhecimentoHabilidades (){
+	
+		var objJson = 
+			{
+				async : false,
+				collection : "habilidades",
+				keys : 
+					[
+					]
+			};
+
+		rest_lista (objJson, salvaSessionStore, semAcao, "habilidades");
+		
+		var objJson = 
+			{
+				async : false,
+				collection : "areaConhecimento",
+				keys : 
+					[
+					]
+			};
+
+		rest_lista (objJson, atualizaAreaConhecimentoHabilidadesProcess, semAcao);
+
+};
+
+
+function atualizaAreaConhecimentoHabilidadesProcess (areasConhecimento){
+	
+	habilidades = JSON.parse(sessionStorage.getItem("habilidades"));
+	
+	$.each( areasConhecimento, function( i, areaConhecimento) {		
+		var habilidadesArray = [];
+		var habilidadesArrayNome = [];
+	    $.each(habilidades, function (z, habilidade) {
+		    $.each(habilidade.areaConhecimento, function (w, areasConhecimentoInput) {
+		    	if (areaConhecimento.id == areasConhecimentoInput){
+		    		habilidadesArray = testaDuplicidade(habilidade.id, habilidadesArray);
+		    		habilidadesArrayNome = testaDuplicidade(habilidade.nome, habilidadesArrayNome);
+		    	};
+		    });
+		});
+    	delete areaConhecimento["habilidades"];
+    	delete areaConhecimento["habilidadesNome"];
+    	areaConhecimento.habilidades = habilidadesArray;
+    	areaConhecimento.habilidadesNome = habilidadesArrayNome;
+    	var areaConhecimentoUpdate = areaConhecimento;
+		var objJson = 
+		{	
+			collection : "areaConhecimento",
+			keys : 
+				[
+					{
+						key : "documento.id",
+						value : areaConhecimento.id
+					}
+				],
+			update : 
+				[
+					{
+						field : "documento",
+						value : areaConhecimentoUpdate
+						
+					}
+				]
+			};
+		rest_atualizar (objJson, semAcao, semAcao);
+	});
+	
+	console.log ("terminou area conhecimento");
 	
 };
 

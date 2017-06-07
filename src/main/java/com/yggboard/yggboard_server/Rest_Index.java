@@ -248,26 +248,25 @@ public class Rest_Index {
 				arrayListAreaAtuacao = (ArrayList<?>) objetivo.get("areaAtuacao");
 
 		    	if (!filtro){
-					if (arrayListNecessarios != null){
+					if (arrayListNecessarios != null && habilidades != null){
 						Object arrayNecessarios[] = arrayListNecessarios.toArray();
 						//
 						// ***		carrega habilidades
 						//
 						int z = 0;
 						while (z < arrayNecessarios.length) {
-							String nomeHabilidade = "";
-							carregaHabilidade(habilidades, cursos, objetivos, areasAtuacao, areasConhecimento, arrayNecessarios[z].toString(), true, nomeHabilidade, filtro, elementosFiltro);
+							processaHabilidades(arrayNecessarios[z].toString(), null, habilidades, cursos, areasAtuacao, areasConhecimento, filtro, elementosFiltro);
 							++z;
 						};
 					};
-					if (arrayListAreaAtuacao != null){
+					if (arrayListAreaAtuacao != null && areasAtuacao != null){
 						Object arrayAreaAtuacao[] = arrayListAreaAtuacao.toArray();
 						//
 						// ***		carrega área de atuação
 						//			
 						int w = 0;
 						while (w < arrayAreaAtuacao.length) {
-							processaAreaAtuacao(id, objetivos, habilidades, cursos, areasAtuacao, areasConhecimento, filtro, null);
+							carregaAreaAtuacao(areasAtuacao, arrayAreaAtuacao[w].toString());
 							++w;
 						};
 					};
@@ -282,7 +281,7 @@ public class Rest_Index {
 					// ***		carrega filtros
 					//
 					JSONObject elemento = new JSONObject();
-					if (arrayListNecessarios != null){
+					if (arrayListNecessarios != null  && habilidades != null){
 						Object arrayNecessarios[] = arrayListNecessarios.toArray();
 						elemento.put("elemento", "objetivo");
 						elemento.put("value", id);
@@ -290,7 +289,7 @@ public class Rest_Index {
 						elementosFiltro.add(elemento);
 					};
 					elemento.clear();
-					if (arrayListAreaAtuacao != null){
+					if (arrayListAreaAtuacao != null  && areasAtuacao != null){
 						Object arrayAreaAtuacao[] = arrayListAreaAtuacao.toArray();
 						elemento.put("elemento", "objetivo");
 						elemento.put("value", id);
@@ -317,40 +316,88 @@ public class Rest_Index {
 			if (cursor != null){
 				BasicDBObject habilidade = (BasicDBObject) cursor.get("documento");
 				//
-				// ***		carrega objetivos
+				// ***		array objetivos
 				//			
 				ArrayList<?> arrayListObjetivos = new ArrayList<Object>(); 
 		    	arrayListObjetivos = (ArrayList<?>) habilidade.get("objetivos");
 				//
-				// ***		carrega cursos
+				// ***		array cursos
 				//			
 				ArrayList<?> arrayListCursos = new ArrayList<Object>(); 
 		    	arrayListCursos = (ArrayList<?>) habilidade.get("cursos");
-					//
-					// ***		carrega habilidade
-					//			
-				carregaHabilidade(habilidades, cursos, objetivos, areasAtuacao, areasConhecimento, id, true, null, filtro, elementosFiltro);
+				//
+				// ***		array area conhecimento
+				//			
+				ArrayList<?> arrayListAreaConhecimento = new ArrayList<Object>(); 
+				arrayListAreaConhecimento = (ArrayList<?>) habilidade.get("areaConhecimento");
 
-				if (filtro){
+				if (!filtro){
+			    	if (arrayListCursos != null && cursos != null){
+				    	Object[] arrayCursos = arrayListCursos.toArray();
+						//
+						// ***		carrega cursos
+						//
+						int i = 0;
+						while (i < arrayCursos.length) {
+							carregaCurso(cursos, arrayCursos[i].toString());
+							++i;
+						};
+			    	};
+					//
+					// ***		carrega objetivos
+					//
+			    	if (arrayListObjetivos != null  && objetivos != null){
+				    	Object arrayObjetivos[] = arrayListObjetivos.toArray();
+						int w = 0;
+						while (w < arrayObjetivos.length) {
+							processaObjetivos(arrayObjetivos[w].toString(), objetivos, null, cursos, areasAtuacao, areasConhecimento, filtro, elementosFiltro);
+							++w;
+						};
+			    	};
+					//
+					// ***		carrega área de conhecimento
+					//			
+					if (arrayListAreaConhecimento != null && areasConhecimento != null){
+						Object arrayAreaConhecimento[] = arrayListAreaConhecimento.toArray();
+						int w = 0;
+						while (w < arrayAreaConhecimento.length) {
+							carregaAreaConhecimento(areasConhecimento, arrayAreaConhecimento[w].toString());
+							++w;
+						};
+					};
+						//
+						// ***		carrega habilidade
+						//			
+					carregaHabilidade(habilidades, cursos, objetivos, areasAtuacao, areasConhecimento, id, true, null, filtro, elementosFiltro);
+	
+				}else{
+					JSONObject elemento = new JSONObject();
 					//
 					// ***		carrega filtros
 					//			
-					JSONObject elemento = new JSONObject();
-					if (arrayListObjetivos != null){
+			    	if (arrayListCursos != null   && cursos != null){
+				    	Object[] arrayCursos = arrayListCursos.toArray();
+						elemento.put("elemento", "habilidade");
+						elemento.put("value", id);
+						elemento.put("cursos", arrayCursos);
+						elementosFiltro.add(elemento);
+			    	};
+					elemento.clear();
+			    	if (arrayListObjetivos != null && objetivos != null){
 				    	Object arrayObjetivos[] = arrayListObjetivos.toArray();
 						elemento.put("elemento", "habilidade");
 						elemento.put("value", id);
 						elemento.put("objetivos", arrayObjetivos);
 						elementosFiltro.add(elemento);
-					};
+			    	};
 					elemento.clear();
-					if (arrayListCursos != null){
-				    	Object arrayCursos[] = arrayListCursos.toArray();
+			    	if (arrayListAreaConhecimento != null  && areasConhecimento != null){
+				    	Object arrayAreaConhecimento[] = arrayListAreaConhecimento.toArray();
 						elemento.put("elemento", "habilidade");
 						elemento.put("value", id);
-						elemento.put("cursos", arrayCursos);
+						elemento.put("areaConhecimento", arrayAreaConhecimento);
 						elementosFiltro.add(elemento);
-					};
+			    	};
 				};
 			};			
 			mongo.close();
@@ -371,35 +418,37 @@ public class Rest_Index {
 			DBObject cursor = collection.findOne(searchQuery);
 			if (cursor != null){
 				BasicDBObject curso = (BasicDBObject) cursor.get("documento");
-				if (addObjeto(cursos, curso)){
-					ArrayList<?> arrayListHabilidades = new ArrayList<Object>(); 
-					arrayListHabilidades = (ArrayList<?>) curso.get("habilidades");
-					if (arrayListHabilidades != null){
+				ArrayList<?> arrayListHabilidades = new ArrayList<Object>(); 
+				arrayListHabilidades = (ArrayList<?>) curso.get("habilidades");
+		    	if (!filtro){
+					List arrayParent = (List) curso.get("parents");
+					if (arrayParent.size() == 0){
+						if (addObjeto(cursos, curso)){
+							cursos.add(cursor.get("documento"));
+						};
+					};
+					if (arrayListHabilidades != null && habilidades != null){
 				    	Object arrayHabilidades[] = arrayListHabilidades.toArray();
-				    	if (!filtro){
-							BasicDBObject objCursos = (BasicDBObject) cursor.get("documento");
-							List arrayParent = (List) objCursos.get("parents");
-							if (arrayParent.size() == 0){
-								cursos.add(cursor.get("documento"));
-							};
-							//
-							// ***		carrega habilidades
-							//
-							int z = 0;
-							while (z < arrayHabilidades.length) {
-								carregaHabilidade(habilidades, cursos, objetivos, areasAtuacao, areasConhecimento, arrayHabilidades[z].toString(), true, null, filtro, elementosFiltro);
-								++z;
-							};
-				    	}else{
-							//
-							// ***		carrega filtros
-							//			
-							JSONObject elemento = new JSONObject();
-							elemento.put("elemento", "curso");
-							elemento.put("value", id);
-							elemento.put("habilidades", arrayHabilidades);
-							elementosFiltro.add(elemento);
-				    	};
+						//
+						// ***		carrega habilidades
+						//
+						int z = 0;
+						while (z < arrayHabilidades.length) {
+							processaHabilidades(arrayHabilidades[z].toString(), objetivos, habilidades, null, areasAtuacao, areasConhecimento, filtro, elementosFiltro);
+							++z;
+						};
+					};
+		    	}else{
+					if (arrayListHabilidades != null && habilidades != null){
+				    	Object arrayHabilidades[] = arrayListHabilidades.toArray();
+						//
+						// ***		carrega filtros
+						//			
+						JSONObject elemento = new JSONObject();
+						elemento.put("elemento", "curso");
+						elemento.put("value", id);
+						elemento.put("habilidades", arrayHabilidades);
+						elementosFiltro.add(elemento);
 					};
 				};
 			};			
@@ -417,7 +466,7 @@ public class Rest_Index {
 			mongo = new Mongo();
 			DB db = (DB) mongo.getDB("yggboard");
 
-			DBCollection collection = db.getCollection("areaAtuacao");
+			DBCollection collection = db.getCollection("areaConhecimento");
 			BasicDBObject searchQuery = new BasicDBObject("documento.id", id);
 			DBObject cursor = collection.findOne(searchQuery);
 			if (cursor != null){
@@ -431,19 +480,19 @@ public class Rest_Index {
 					if (addObjeto(areasConhecimento, areaConhecimento)){
 						areasConhecimento.add(areaConhecimento);
 					};
-					if (arrayListHabilidades != null){
+					if (arrayListHabilidades != null && habilidades != null){
 						Object arrayHabilidades[] = arrayListHabilidades.toArray();
 						//
 						// ***		carrega habilidades
 						//
 						int z = 0;
 						while (z < arrayHabilidades.length) {
-							carregaHabilidade(habilidades, cursos, objetivos, areasAtuacao, areasConhecimento, arrayHabilidades[z].toString(), true, null, filtro, elementosFiltro);
+							processaHabilidades(arrayHabilidades[z].toString(), objetivos, habilidades, cursos, areasAtuacao, null, filtro, elementosFiltro);							carregaHabilidade(habilidades, cursos, objetivos, areasAtuacao, areasConhecimento, arrayHabilidades[z].toString(), true, null, filtro, elementosFiltro);
 							++z;
 						};
 					};
 				}else{
-					if (arrayListHabilidades != null){
+					if (arrayListHabilidades != null  && habilidades != null){
 						Object arrayHabilidades[] = arrayListHabilidades.toArray();
 						//
 						// ***		carrega filtros
@@ -488,19 +537,19 @@ public class Rest_Index {
 					if (addObjeto(areasAtuacao, areaAtuacao)){
 						areasAtuacao.add(areaAtuacao);
 					};
-					if (arrayListObjetivos != null){
+					if (arrayListObjetivos != null && objetivos != null){
 						Object arrayObjetivos[] = arrayListObjetivos.toArray();
 						//
 						// ***		carrega objetivos
 						//
 						int z = 0;
 						while (z < arrayObjetivos.length) {
-							carregaObjetivo(objetivos, arrayObjetivos[z].toString());
+							processaObjetivos(arrayObjetivos[z].toString(), objetivos, habilidades, cursos, null, areasConhecimento, filtro, elementosFiltro);
 							++z;
 						};
 					};
 				}else{
-					if (arrayListObjetivos != null){
+					if (arrayListObjetivos != null  && objetivos != null){
 						Object arrayObjetivos[] = arrayListObjetivos.toArray();
 						//
 						// ***		carrega filtros
@@ -696,110 +745,29 @@ public class Rest_Index {
 				ArrayList<?> arrayList = new ArrayList<Object>(); 
 		    	arrayList = (ArrayList<?>) habilidade.get("preRequisitos");
 
-		    	ArrayList<Object> arrayListCursos = new ArrayList<Object>(); 
-		    	arrayListCursos = (ArrayList<Object>) habilidade.get("cursos");
-
-		    	ArrayList<Object> arrayListObjetivo = new ArrayList<Object>(); 
-		    	arrayListObjetivo = (ArrayList<Object>) habilidade.get("objetivos");
-
-		    	ArrayList<Object> arrayListAreaConhecimento = new ArrayList<Object>(); 
-		    	arrayListAreaConhecimento = (ArrayList<Object>) habilidade.get("areaConhecimento");
-
-		    	if (!filtro){
-			    	if (arrayList != null){
-			    		Object arrayPreRequisitos[] = arrayList.toArray();
-						nomeHabilidade = habilidade.get("nome").toString();
-						habilidade.put ("nivel", "0");
-						//
-						// ***		carrega habilidade
-						//			
-						if (addObjeto(habilidades, habilidade)){
-							habilidades.add (habilidade);
-						};
-						//
-						// ***		carrega pré requisitos
-						//			
-						if (carregaPreRequisitos){
-							int z = 0;
-							while (z < arrayPreRequisitos.length) {
-	//							BasicDBObject preRequisito = (BasicDBObject) array[z];
-	//							carregaPreRequisitos(habilidades, cursos, objetivos, areaAtuacao, areaConhecimento, (String) preRequisito.get("id"), (String) preRequisito.get("nivel"), filtro );
-								String preRequisito =arrayPreRequisitos[z].toString();
-								carregaPreRequisitos(habilidades, cursos, objetivos, areasAtuacao, areasConhecimento, (String) preRequisito, "0", filtro );
-								++z;
-							};
+		    	if (arrayList != null){
+		    		Object arrayPreRequisitos[] = arrayList.toArray();
+					nomeHabilidade = habilidade.get("nome").toString();
+					habilidade.put ("nivel", "0");
+					//
+					// ***		carrega habilidade
+					//			
+					if (addObjeto(habilidades, habilidade)){
+						habilidades.add (habilidade);
+					};
+					//
+					// ***		carrega pré requisitos
+					//			
+					if (carregaPreRequisitos){
+						int z = 0;
+						while (z < arrayPreRequisitos.length) {
+//							BasicDBObject preRequisito = (BasicDBObject) array[z];
+//							carregaPreRequisitos(habilidades, cursos, objetivos, areaAtuacao, areaConhecimento, (String) preRequisito.get("id"), (String) preRequisito.get("nivel"), filtro );
+							String preRequisito =arrayPreRequisitos[z].toString();
+							carregaPreRequisitos(habilidades, cursos, objetivos, areasAtuacao, areasConhecimento, (String) preRequisito, "0", filtro );
+							++z;
 						};
 					};
-			    	if (arrayListCursos != null){
-				    	Object[] arrayCursos = arrayListCursos.toArray();
-						//
-						// ***		carrega cursos
-						//
-						int i = 0;
-						while (i < arrayCursos.length) {
-							String curso = arrayCursos[i].toString();
-							carregaCurso(cursos, curso);
-							++i;
-						};
-			    	};
-					//
-					// ***		carrega objetivos
-					//
-			    	if (arrayListObjetivo != null){
-				    	Object arrayObjetivos[] = arrayListObjetivo.toArray();
-						int w = 0;
-						while (w < arrayObjetivos.length) {
-							String objetivo = arrayObjetivos[w].toString();
-							carregaObjetivo(objetivos, objetivo);
-							++w;
-						};
-			    	};
-					//
-					// ***		carrega área de conhecimento
-					//			
-					if (arrayListAreaConhecimento != null){
-						Object arrayAreaConhecimento[] = arrayListAreaConhecimento.toArray();
-						int w = 0;
-						while (w < arrayAreaConhecimento.length) {
-							processaAreaConhecimento(id, objetivos, habilidades, cursos, areasAtuacao, areasConhecimento, filtro, elementosFiltro);
-							++w;
-						};
-					};
-	    		}else{
-					JSONObject elemento = new JSONObject();
-					//
-					// ***		carrega filtros
-					//			
-			    	if (arrayList != null){
-			    		Object arrayPreRequisitos[] = arrayList.toArray();
-						elemento.put("elemento", "habilidade");
-						elemento.put("value", id);
-						elemento.put("preRequisitos", arrayPreRequisitos);
-						elementosFiltro.add(elemento);
-			    	};
-			    	if (arrayListCursos != null){
-				    	Object[] arrayCursos = arrayListCursos.toArray();
-						elemento.put("elemento", "habilidade");
-						elemento.put("value", id);
-						elemento.put("cursos", arrayCursos);
-						elementosFiltro.add(elemento);
-			    	};
-					elemento.clear();
-			    	if (arrayListObjetivo != null){
-				    	Object arrayObjetivos[] = arrayListObjetivo.toArray();
-						elemento.put("elemento", "habilidade");
-						elemento.put("value", id);
-						elemento.put("objetivos", arrayObjetivos);
-						elementosFiltro.add(elemento);
-			    	};
-					elemento.clear();
-			    	if (arrayListAreaConhecimento != null){
-				    	Object arrayAreaConhecimento[] = arrayListAreaConhecimento.toArray();
-						elemento.put("elemento", "habilidade");
-						elemento.put("value", id);
-						elemento.put("areaConhecimento", arrayAreaConhecimento);
-						elementosFiltro.add(elemento);
-			    	};
 	    		};
 			};			
 			mongo.close();
@@ -809,7 +777,7 @@ public class Rest_Index {
 	};
 
 	@SuppressWarnings("unchecked")
-	private void carregaPreRequisitos(JSONArray habilidades, JSONArray cursos,JSONArray objetivos, JSONArray areaAtuacao,JSONArray areaConhecimento, String id, String nivel, Boolean filtro) {
+	private void carregaPreRequisitos(JSONArray habilidades, JSONArray cursos,JSONArray objetivos, JSONArray areasAtuacao,JSONArray areasConhecimento, String id, String nivel, Boolean filtro) {
 		Mongo mongo;
 		try {
 			mongo = new Mongo();
@@ -847,14 +815,23 @@ public class Rest_Index {
 					int w = 0;
 					while (w < arrayObjetivo.length) {
 						String objetivo = arrayObjetivo[w].toString();
-						carregaObjetivo(objetivos, objetivo);
+						carregaObjetivo(objetivos, areasAtuacao, objetivo);
 						++w;
 					};
 		    	};
 				//
-				// ***		carrega área do conhecimento
+				// ***		carrega área de conhecimento
 				//			
-				processaAreaAtuacao(id, objetivos, habilidades, cursos, areaAtuacao, areaConhecimento, filtro, null);
+				ArrayList<?> arrayListAreaConhecimento = new ArrayList<Object>(); 
+				arrayListAreaConhecimento = (ArrayList<?>) habilidade.get("areaConhecimento");
+				if (arrayListAreaConhecimento != null){
+					Object arrayAreaConhecimento[] = arrayListAreaConhecimento.toArray();
+					int w = 0;
+					while (w < arrayAreaConhecimento.length) {
+						carregaAreaConhecimento(areasConhecimento, arrayAreaConhecimento[w].toString());
+						++w;
+					};
+				};
 			};			
 			mongo.close();
 		} catch (UnknownHostException | MongoException e) {
@@ -894,7 +871,7 @@ public class Rest_Index {
 			mongo = new Mongo();
 			DB db = (DB) mongo.getDB("yggboard");
 			DBCollection collection = db.getCollection("areaAtuacao");
-			BasicDBObject searchQuery = new BasicDBObject("documento.id", id);
+			BasicDBObject searchQuery = new BasicDBObject("documento.nome", id);
 			DBObject cursor = collection.findOne(searchQuery);
 			if (cursor != null){
 				BasicDBObject areaAtuacao = (BasicDBObject) cursor.get("documento");
@@ -931,7 +908,7 @@ public class Rest_Index {
 	};
 
 	@SuppressWarnings("unchecked")
-	private void carregaObjetivo(JSONArray objetivos, String id) {
+	private void carregaObjetivo(JSONArray objetivos, JSONArray areasAtuacao, String id) {
 		Mongo mongo;
 		try {
 			mongo = new Mongo();
@@ -941,9 +918,6 @@ public class Rest_Index {
 			DBObject cursor = collection.findOne(searchQuery);
 			if (cursor != null){
 				BasicDBObject objetivo = (BasicDBObject) cursor.get("documento");
-				//
-				// ***		pega nome habilidades
-				//
 				//
 				// ***		carrega objetivo
 				//			
@@ -1017,7 +991,7 @@ public class Rest_Index {
 	};
 
 	@SuppressWarnings("unchecked")
-	private void carregaIndex(String assunto, JSONArray documentos, String characters, Boolean lista, JSONArray objetivos, JSONArray habilidades, JSONArray cursos, JSONArray areaAtuacao, JSONArray areaConhecimento, Boolean filtro) {
+	private void carregaIndex(String assunto, JSONArray documentos, String characters, Boolean lista, JSONArray objetivos, JSONArray habilidades, JSONArray cursos, JSONArray areasAtuacao, JSONArray areasConhecimento, Boolean filtro) {
 		Mongo mongo;
 			try {
 				mongo = new Mongo();
@@ -1041,19 +1015,19 @@ public class Rest_Index {
 							if (lista){
 								switch (assunto) {
 								case "Objetivo":
-									carregaObjetivo(objetivos, jsonObject.get("id").toString());
+									processaObjetivos(jsonObject.get("id").toString(), objetivos, habilidades, cursos, areasAtuacao, areasConhecimento, false, null);
 									break;
 								case "Habilidade":
-									carregaHabilidade(habilidades, cursos, objetivos, areaAtuacao, areaConhecimento, jsonObject.get("id").toString(), false, null, filtro, null);
+									processaHabilidades(jsonObject.get("id").toString(), objetivos, habilidades, cursos, areasAtuacao, areasConhecimento, false, null);
 								break;
 								case "Curso":
-									carregaCurso(cursos, jsonObject.get("id").toString());								
+									processaCursos(jsonObject.get("id").toString(), objetivos, habilidades, cursos, areasAtuacao, areasConhecimento, false, null);
 								break;
 								case "Área Atuação":
-									carregaAreaAtuacao(areaAtuacao, jsonObject.get("id").toString());
+									processaAreaAtuacao(jsonObject.get("id").toString(), objetivos, habilidades, cursos, areasAtuacao, areasConhecimento, false, null);
 								break;
 								case "Área Conhecimento":
-									carregaAreaConhecimento(areaConhecimento, jsonObject.get("id").toString());									
+									processaAreaConhecimento(jsonObject.get("id").toString(), objetivos, habilidades, cursos, areasAtuacao, areasConhecimento, false, null);
 								break;
 
 								default:

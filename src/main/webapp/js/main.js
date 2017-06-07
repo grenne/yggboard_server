@@ -71,6 +71,9 @@ $( ".teste" ).click(function() {
 	case "atualizaAreaAtuacaoObjetivos":
 		atualizaAreaAtuacaoObjetivos();
 		break;
+	case "atualizaAreaConhecimentoHabilidades":
+		atualizaAreaConhecimentoHabilidades();
+		break;
 	case "testaFiltro":
 		testaFiltro();
 		break;
