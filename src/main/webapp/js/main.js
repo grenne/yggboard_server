@@ -32,6 +32,17 @@ var objJson =
 
 rest_lista (objJson, salvaSessionStore, semAcao, "badges");
 
+var objJson = 
+{	
+	asybc : false,
+	collection : "areaAtuacao",
+	keys : 
+		[
+		]
+};
+
+rest_lista (objJson, salvaSessionStore, semAcao, "areaAtuacao");
+
 
 $( ".escolha" ).click(function() {
     $( ".output" ).remove();

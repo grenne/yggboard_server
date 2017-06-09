@@ -158,7 +158,7 @@ function atualizaAreaAtuacaoObjetivosProcess (areasAtuacao){
 		var objetivosArrayNome = [];
 	    $.each(objetivos, function (z, objetivo) {
 		    $.each(objetivo.areaAtuacao, function (w, areasAtuacaoInput) {
-		    	if (areaAtuacao.nome == areasAtuacaoInput){
+		    	if (areaAtuacao.id == areasAtuacaoInput){
 		    		objetivosArray = testaDuplicidade(objetivo.id, objetivosArray);
 		    		objetivosArrayNome = testaDuplicidade(objetivo.nome, objetivosArrayNome);
 		    	};
@@ -343,6 +343,5 @@ function salvaSessionStore (objJson, entidade){
 
 	sessionStorage.setItem(entidade, JSON.stringify(objJson));
 
-
-}
+};
 

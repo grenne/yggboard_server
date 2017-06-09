@@ -187,4 +187,17 @@ public class Commons_DB {
 			return Response.status(406).entity(e).build();
 		}
 	};
+
+	@SuppressWarnings("unchecked")
+	public Response getCollection(String value, String collectionName, String keyInput) {
+		
+		ArrayList<JSONObject> keysArray = new ArrayList<>();
+		JSONObject key = new JSONObject();
+		key.put("key", keyInput);
+		key.put("value", value);
+		keysArray.add(key);
+		
+		return obterCrud(collectionName, keysArray);
+	}
+	
 };

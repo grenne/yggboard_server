@@ -182,6 +182,7 @@ function processaObjetivos (data){
 					nivelFiltro:fields[3],
 					segmentoEconomico:fields[4],
 					areaAtuacao:[],
+					areaAtuacaoNome:[],
 					responsabilidades:fields[6],
 					atividades:fields[7],
 					salarioMinimo:fields[8],
@@ -199,7 +200,9 @@ function processaObjetivos (data){
 	if (fields[5]){
 		var array = fields[5].split(",");
 		for (var i = 0; i < array.length; i++) {
+			var nome = nomeAreaAtuacao(array[i]);
 			objJson.insert.documento.areaAtuacao.push(array[i].replace (" ",""));			
+			objJson.insert.documento.areaAtuacaoNome.push(nome);
 		}
 	};
 	if (fields[11]){
@@ -365,8 +368,20 @@ function nomeHabilidade (id){
 	habilidades = JSON.parse(sessionStorage.getItem("habilidades"));
 	var nome = "";
 	$.each(habilidades, function( i, habilidade) {
-		if (id == habilidade.documento.id){
-			nome =habilidade.documento.nome
+		if (id == habilidade.id){
+			nome =habilidade.nome
+		}
+	});
+
+	return nome;
+};
+
+function nomeAreaAtuacao (id){
+	areasAtuacao = JSON.parse(sessionStorage.getItem("areaAtuacao"));
+	var nome = "";
+	$.each(areasAtuacao, function( i, areaAtuacao) {
+		if (id == areaAtuacao.id){
+			nome =areaAtuacao.nome
 		}
 	});
 

@@ -12,7 +12,7 @@ function testaObter() {
 	};
 	$.ajax({
 		type : "POST",
-		url : "http://localhost:8080/yggboard_server/rest/crud/obter",
+		url : "http://" + localStorage.urlServidor + ":8080/yggboard_server/rest/crud/obter",
 		contentType : "application/json; charset=utf-8",
 		dataType : 'json',
 		data : JSON.stringify(objJson),
@@ -28,7 +28,7 @@ function testaObter() {
 };
 function testaIncluir() {
 	var objJson = {
-		collection : "usuario",
+		collection : "usuarios",
 		insert : {
 			documento : {
 				email : "1",
@@ -40,7 +40,7 @@ function testaIncluir() {
 	};
 	$.ajax({
 		type : "POST",
-		url : "http://localhost:8080/yggboard_server/rest/crud/incluir",
+		url : "http://" + localStorage.urlServidor + ":8080/yggboard_server/rest/crud/incluir",
 		contentType : "application/json; charset=utf-8",
 		dataType : 'json',
 		data : JSON.stringify(objJson),
@@ -98,7 +98,7 @@ function testaAtualizar() {
 	};
 	$.ajax({
 		type : "POST",
-		url : "http://localhost:8080/yggboard_server/rest/crud/atualizar",
+		url : "http://" + localStorage.urlServidor + ":8080/yggboard_server/rest/crud/atualizar",
 		contentType : "application/json; charset=utf-8",
 		dataType : 'json',
 		data : JSON.stringify(objJson),
@@ -121,7 +121,7 @@ function testaLista() {
 	};
 	$.ajax({
 		type : "POST",
-		url : "http://localhost:8080/yggboard_server/rest/crud/lista",
+		url : "http://" + localStorage.urlServidor + ":8080/yggboard_server/rest/crud/lista",
 		contentType : "application/json; charset=utf-8",
 		dataType : 'json',
 		data : JSON.stringify(objJson),
@@ -151,7 +151,7 @@ function testaAtualizaPerfil() {
 			.ajax(
 					{
 						type : "POST",
-						url : "http://localhost:8080/yggboard_server/rest/userPerfil/atualizar/perfil",
+						url : "http://" + localStorage.urlServidor + ":8080/yggboard_server/rest/userPerfil/atualizar/perfil",
 						contentType : "application/json; charset=utf-8",
 						dataType : 'json',
 						data : JSON.stringify(objJson),
@@ -172,15 +172,22 @@ function testaAtualizaPerfil() {
 
 function testaFiltro() {
 
-	var assunto = prompt("Assunto");
-	var id = prompt("Id");
-	var objJson = [ {
-		assunto : assunto,
-		id : id
-	} ];
+	var objJson = [];
+	var assunto = "";
+	while (assunto !=  "fim") {
+		assunto = prompt("Assunto");
+		if (assunto != "fim"){
+			var id = prompt("Id");
+			var filtro = {
+					assunto : assunto,
+					id : id
+			};
+			objJson.push(filtro);
+		};
+	};
 	$.ajax({
 		type : "POST",
-		url : "http://localhost:8080/yggboard_server/rest/index/obter/filtro",
+		url : "http://" + localStorage.urlServidor + ":8080/yggboard_server/rest/index/obter/filtro",
 		contentType : "application/json; charset=utf-8",
 		dataType : 'json',
 		data : JSON.stringify(objJson),
@@ -205,20 +212,20 @@ function atualizaPreRequisitosProcess(habilidades) {
 	habilidades = JSON.parse(sessionStorage.getItem("habilidades"));
 
 	$.each(habilidades, function(i, habilidade) {
-		// habilidade = obterDependencias(habilidade, habilidade.documento.id,
+		// habilidade = obterDependencias(habilidade, habilidade.id,
 		// "habilidades", 1);
-		console.log("id - " + habilidade.documento.id);
+		console.log("id - " + habilidade.id);
 		var cursos = [];
-		$.each(habilidade.documento.cursos, function(i, curso) {
+		$.each(habilidade.cursos, function(i, curso) {
 			cursos.push(curso.idCurso);
 		});
-		delete habilidade.documento["cursos"];
-		habilidade.documento.cursos = cursos;
+		delete habilidade["cursos"];
+		habilidade.cursos = cursos;
 		var objJson = {
-			collection : "habilidade",
+			collection : "habilidades",
 			keys : [ {
 				key : "documento.id",
-				value : habilidade.documento.id
+				value : habilidade.id
 			} ],
 			update : [ {
 				field : "documento",
@@ -248,13 +255,13 @@ function atualizaObjetivosProcess(objetivos) {
 	habilidades = JSON.parse(sessionStorage.getItem("habilidades"));
 
 	$.each(habilidades, function(i, habilidade) {
-		habilidade = obterObjetivos(habilidade, habilidade.documento.id);
-		console.log("id - " + habilidade.documento.id);
+		habilidade = obterObjetivos(habilidade, habilidade.id);
+		console.log("id - " + habilidade.id);
 		var objJson = {
-			collection : "habilidade",
+			collection : "habilidades",
 			keys : [ {
 				key : "documento.id",
-				value : habilidade.documento.id
+				value : habilidade.id
 			} ],
 			update : [ {
 				field : "documento",
@@ -270,13 +277,13 @@ function obterObjetivos(objJson, habilidadeTarget) {
 
 	objetivos = JSON.parse(localStorage.getItem("objetivos"));
 
-	objJson.documento.objetivos = [];
+	objJson.objetivos = [];
 
 	$.each(objetivos, function(i, objetivo) {
 		$.each(objetivo.necessarios, function(i, habilidade) {
-			if (habilidade == objJson.documento.id) {
+			if (habilidade == objJson.id) {
 				var existente = false;
-				$.each(objJson.documento.objetivos, function(i,
+				$.each(objJson.objetivos, function(i,
 						objetivoCarregado) {
 					if (objetivoCarregado == objetivo.nome) {
 						existente = true;
@@ -284,7 +291,7 @@ function obterObjetivos(objJson, habilidadeTarget) {
 					;
 				});
 				if (!existente) {
-					objJson.documento.objetivos.push(objetivo.nome);
+					objJson.objetivos.push(objetivo.nome);
 				}
 				;
 			}
@@ -313,13 +320,13 @@ function atualizaBadgesProcess(badges) {
 	habilidades = JSON.parse(sessionStorage.getItem("habilidades"));
 
 	$.each(habilidades, function(i, habilidade) {
-		habilidade = obterBadges(habilidade, habilidade.documento.id);
-		console.log("id - " + habilidade.documento.id);
+		habilidade = obterBadges(habilidade, habilidade.id);
+		console.log("id - " + habilidade.id);
 		var objJson = {
-			collection : "habilidade",
+			collection : "habilidades",
 			keys : [ {
 				key : "documento.id",
-				value : habilidade.documento.id
+				value : habilidade.id
 			} ],
 			update : [ {
 				field : "documento",
@@ -335,13 +342,13 @@ function obterBadges(objJson, habilidadeTarget) {
 
 	badges = JSON.parse(localStorage.getItem("badges"));
 
-	objJson.documento.badges = [];
+	objJson.badges = [];
 
 	$.each(badges, function(i, badge) {
 		$.each(badge.habilidades, function(i, habilidade) {
-			if (habilidade == objJson.documento.id) {
+			if (habilidade == objJson.id) {
 				var existente = false;
-				$.each(objJson.documento.objetivos,
+				$.each(objJson.objetivos,
 						function(i, badgeCarregado) {
 							if (badgeCarregado == badge.id) {
 								existente = true;
@@ -349,7 +356,7 @@ function obterBadges(objJson, habilidadeTarget) {
 							;
 						});
 				if (!existente) {
-					objJson.documento.badges.push(badge.id);
+					objJson.badges.push(badge.id);
 				}
 				;
 			}
@@ -368,23 +375,23 @@ function obterDependencias(objJson, habilidadeTarget, tipo, nivel) {
 			.each(
 					habilidades,
 					function(i, habilidadeSource) {
-						if (habilidadeSource.documento.target == habilidadeTarget) {
+						if (habilidadeSource.target == habilidadeTarget) {
 							if (tipo == "necessarios") {
 								var existente = false;
 								$
 										.each(
-												objJson.documento.necessarios,
+												objJson.necessarios,
 												function(i, habilidade) {
-													if (habilidadeSource.documento.source == habilidade) {
+													if (habilidadeSource.source == habilidade) {
 														existente = true;
 													}
 													;
 												});
 								if (!existente) {
-									objJson.documento.necessarios
-											.push(habilidadeSource.documento.source);
+									objJson.necessarios
+											.push(habilidadeSource.source);
 									objJson = obterDependencias(objJson,
-											habilidadeSource.documento.source,
+											habilidadeSource.source,
 											tipo);
 								}
 								;
@@ -394,18 +401,18 @@ function obterDependencias(objJson, habilidadeTarget, tipo, nivel) {
 								var existente = false;
 								$
 										.each(
-												objJson.documento.recomendadas,
+												objJson.recomendadas,
 												function(i, habilidade) {
-													if (habilidadeSource.documento.source == habilidade) {
+													if (habilidadeSource.source == habilidade) {
 														existente = true;
 													}
 													;
 												});
 								if (!existente) {
-									objJson.documento.recomendados
-											.push(habilidadeSource.documento.source);
+									objJson.recomendados
+											.push(habilidadeSource.source);
 									objJson = obterDependencias(objJson,
-											habilidadeSource.documento.source,
+											habilidadeSource.source,
 											tipo);
 								}
 								;
@@ -415,22 +422,22 @@ function obterDependencias(objJson, habilidadeTarget, tipo, nivel) {
 								var existente = false;
 								$
 										.each(
-												objJson.documento.preRequisitos,
+												objJson.preRequisitos,
 												function(i, habilidade) {
-													if (habilidadeSource.documento.source == habilidade) {
+													if (habilidadeSource.source == habilidade) {
 														existente = true;
 													}
 													;
 												});
 								if (!existente) {
 									var preRequisitos = {
-										id : habilidadeSource.documento.source,
+										id : habilidadeSource.source,
 										nivel : nivel
 									};
-									objJson.documento.preRequisitos
+									objJson.preRequisitos
 											.push(preRequisitos);
 									objJson = obterDependencias(objJson,
-											habilidadeSource.documento.source,
+											habilidadeSource.source,
 											tipo, (parseInt(nivel) + 1));
 								}
 								;
