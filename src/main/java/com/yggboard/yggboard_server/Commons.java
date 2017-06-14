@@ -3,6 +3,7 @@ package com.yggboard.yggboard_server;
 import java.net.UnknownHostException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -91,6 +92,7 @@ public class Commons {
 		return cal;
 	};
 
+	@SuppressWarnings("unused")
 	public String todaysDate(String type) {
 		
 		Calendar calendar = Calendar.getInstance();
@@ -130,7 +132,6 @@ public class Commons {
 	}
 	
 	public Long calcTime (String date){
-		System.out.println("date=" + date);
 		DateFormat df = new SimpleDateFormat ("dd/MM/yyyy");
 		try {
 			Date d1 = df.parse (convertDateMes (date));
@@ -244,6 +245,16 @@ public class Commons {
 			e.printStackTrace();
 		};
 		return null;
+	};
+
+	public Boolean testaElementoArray(String elemento, ArrayList<String> array) {
+
+		for (int w = 0; w < array.size(); w++) {
+			if (array.get(w).toString().equals(elemento)){
+				return true;
+			};
+		};
+		return false;
 	}
 
 }

@@ -9,65 +9,52 @@ function carregaIndex (){
 
 function carregaIndexProcesso (){
 	
-	rest_obterHabilidades (carregaIndexElemento, semAcao, "Habilidade");
-	rest_obterCarreiras (carregaIndexElemento, semAcao,  "Objetivo");
-	rest_obterBadges (carregaIndexElemento,semAcao,   "Badge");
-	rest_obterCursos (carregaIndexElemento, semAcao,  "Curso");	
-	rest_obterAreaAtuacao (carregaIndexElemento, semAcao,  "Área aAtuação");	
-	rest_obterAreaConhecimento (carregaIndexElemento, semAcao,  "Área Conhecimento");	
+	carregaIndexElemento(JSON.parse(sessionStorage.getItem("habilidades")), "Habilidade");
+	carregaIndexElemento(JSON.parse(sessionStorage.getItem("objetivos")),"Objetivo");
+	carregaIndexElemento(JSON.parse(sessionStorage.getItem("badges")),"Badge");
+	carregaIndexElemento(JSON.parse(sessionStorage.getItem("cursos")),"Curso");
+	carregaIndexElemento(JSON.parse(sessionStorage.getItem("areaAtuacao")),"Área Atuação");
+	carregaIndexElemento(JSON.parse(sessionStorage.getItem("areaConhecimento")),"Área Conhecimento");
+	
 }; 
 
 function carregaIndexElemento(data, assunto){
 
+	
 	$.each(data, function (i, index) {
 		var texto = "";
 		if (index){
 			var entidade = "";
 			var id = "";
 			var descricao = "";
-			if (index.documento){
-				if (index.documento.name){
-					texto  = texto + carregaTextoIndex (index.documento.name);
-					entidade = index.documento.name;
-					id = index.documento.idHabilidade;
-					descricao = index.documento.descricao;
+			if (index){
+				if (index.name){
+					texto  = texto + carregaTextoIndex (index.name);
+					entidade = index.name;
+					id = index.idHabilidade;
+					descricao = index.descricao;
 				};
-				if (index.documento.nome){
-					texto  = texto + carregaTextoIndex (index.documento.nome);
-					entidade = index.documento.nome;
-					id = index.documento.idHabilidade;
+				if (index.nome){
+					console.log ("assunto:" + assunto + " reg:" + index.nome);
+					texto  = texto + carregaTextoIndex (index.nome);
+					entidade = index.nome;
+					id = index.idHabilidade;
 				};
-				if (index.documento.idCurso){
-					id = index.documento.idCurso;
+				if (index.idCurso){
+					id = index.idCurso;
 				};
-				if (index.documento.id){
-					id = index.documento.id;
+				if (index.id){
+					id = index.id;
 				};
-				if (index.documento.descricao) {
-					texto  = texto + "," + carregaTextoIndex (index.documento.descricao);
-					descricao = index.documento.descricao;
+				if (index.descricao) {
+					texto  = texto + "," + carregaTextoIndex (index.descricao);
+					descricao = index.descricao;
 				};
-				if (index.documento.tags){
-					$.each(index.documento.tags, function (i, tag) {
+				if (index.tags){
+					$.each(index.tags, function (i, tag) {
 						texto  = texto + "," + carregaTextoIndex (tag);
 					});
 				};
-			};
-			if (index.nome){
-				texto  = texto + carregaTextoIndex (index.nome);
-				entidade = index.nome;
-			};
-			if (index.descricao) {
-				texto  = texto + "," + carregaTextoIndex (index.descricao);
-				descricao = index.descricao;
-			};
-			if (index.tags){
-				$.each(index.tags, function (i, tag) {
-					texto  = texto + "," + carregaTextoIndex (tag);
-				});
-			};
-			if (index.id){
-				id = index.id;
 			};
 		};
 		if (texto != ""){
@@ -89,7 +76,7 @@ function carregaIndexElemento(data, assunto){
 						}
 				};
 			
-			rest_incluir (objJson, semAcao, semAcao);
+			rest_incluir (objJson, restOk, semAcao);
 		};
 	});
 	

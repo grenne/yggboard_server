@@ -15,7 +15,7 @@ public class SendEmailHtml {
 		try {
 			email.setHostName(hostName);
 			email.setSmtpPort(587);
-			email.setAuthenticator(new DefaultAuthenticator(userName, "ygglicius13"));
+			email.setAuthenticator(new DefaultAuthenticator("postmasterygg@yggboard.com", "ygglicious13"));
 			email.setStartTLSEnabled(true);
 			email.setFrom(from);
 			email.setSubject(subject);

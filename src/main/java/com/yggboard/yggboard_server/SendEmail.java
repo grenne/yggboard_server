@@ -20,7 +20,6 @@ public class SendEmail {
 			email.setSubject(subject);
 			email.setMsg(message);
 			email.addTo(to);
-			System.out.println(email);
 			email.send();
 		} catch(EmailException ee) {
 		    ee.printStackTrace();

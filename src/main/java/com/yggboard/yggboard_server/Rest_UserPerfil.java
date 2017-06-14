@@ -500,15 +500,14 @@ public class Rest_UserPerfil {
 					ObterCursosNecessarios (arrayListElementosFaltantes.get(z), cursos);
 					jsonNecessarios.put("cursos", cursos);
 					necessariosArray.add (jsonNecessarios);
-				}
+				};
 				mongoHabilidade.close();
 				++z;
-			jsonDocumento.put("arrayNecessarios", necessariosArray);
-			return jsonDocumento;
 			} catch (UnknownHostException | MongoException e) {
 				e.printStackTrace();
 			}
 		}
+		jsonDocumento.put("arrayNecessarios", necessariosArray);
 		return jsonDocumento;
 	};
 	
@@ -556,6 +555,7 @@ public class Rest_UserPerfil {
 			Boolean existente = false;
 			List<String> array = (List<String>) objUserPerfil.get(tipo);
 			if (array != null){
+				BasicDBObject objUserPerfilUpdate = (BasicDBObject) cursor.get("documento");
 				for (int i = 0; i < array.size(); i++) {
 					if (elemento.equals(array.get(i).toString())){
 						existente = true;
@@ -567,10 +567,17 @@ public class Rest_UserPerfil {
 				if (!existente){
 					if (inout.equals("in")){
 						array.add(elemento);
-						atualizaDependencia(elemento, array);
+						if (tipo.equals("habilidades") || tipo.equals("habilidadesInteresse")){
+							atualizaDependencia(elemento, array);
+						};
+						if (tipo.equals("carreiras")){
+							@SuppressWarnings("rawtypes")
+							ArrayList habilidadesUpdate = atualizaHabilidadesCarreira(elemento, objUserPerfil.get("habilidades"));
+							objUserPerfilUpdate.remove("habilidades");
+							objUserPerfilUpdate.put(tipo, habilidadesUpdate);
+						};
 					};
 				};
-				BasicDBObject objUserPerfilUpdate = (BasicDBObject) cursor.get("documento");
 				objUserPerfilUpdate.remove(tipo);
 				objUserPerfilUpdate.put(tipo, array);
 				BasicDBObject objUserPerfilDocumento = new BasicDBObject();
@@ -594,6 +601,28 @@ public class Rest_UserPerfil {
 		mongo.close();
 		return Response.status(404).build();
 	};
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private ArrayList atualizaHabilidadesCarreira(String elemento, Object objHabilidades) {
+		
+		Commons_DB commons_db = new Commons_DB();
+		Commons commons = new Commons();
+		ArrayList<String> arrayHabilidades = (ArrayList<String>) objHabilidades;
+
+		Response response = commons_db.getCollection(elemento, "objetivos", "documento.id");
+		JSONObject objetivoDoc = new JSONObject();
+		objetivoDoc.putAll((Map) objetivoDoc.get("documento"));
+		ArrayList<String> array = (ArrayList<String>) objetivoDoc.get("habilidades");
+		for (int i = 0; i < array.size(); i++) {
+			if (!commons.testaElementoArray(elemento, array)){
+				array.add(elemento);
+			};
+		};
+		
+			
+		return arrayHabilidades;
+	};
+	
 	private void atualizaDependencia(String elemento, List<String> array) {
 		Mongo mongo;
 		try {
@@ -921,7 +950,12 @@ public class Rest_UserPerfil {
 						++i;
 					};
 					if (!existeCurso){
-						documentos.add(jsonCurso);
+						JSONObject objCursos = (JSONObject) jsonCurso.get("documento");
+						@SuppressWarnings("rawtypes")
+						List arrayParent = (List) objCursos.get("parents");
+						if (arrayParent.size() == 0){
+							documentos.add(jsonCurso);
+						};
 					};
 				} catch (ParseException e) {
 					e.printStackTrace();
@@ -982,13 +1016,6 @@ public class Rest_UserPerfil {
 				e.printStackTrace();
 			};
 			return null;
-	};
-	@Path("/obter1")
-	@POST
-	@Consumes(MediaType.APPLICATION_JSON)
-	public Response Obter(JSONObject jsonQuery)  {
-		System.out.println("crud");
-		return Response.status(200).build();
 	};
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })

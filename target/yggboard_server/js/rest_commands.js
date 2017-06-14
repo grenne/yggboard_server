@@ -344,6 +344,10 @@ function rest_obterBadges(action_ok, action_not_ok, var1, var2, var3) {
 };
 
 function semAcao(){
-	console.log ("erro no rest");
+	console.log ("erro rest");
+};
+
+function restOk(){
+	console.log ("rest ok");
 };
 

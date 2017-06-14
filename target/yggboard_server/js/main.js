@@ -22,6 +22,28 @@ var objJson =
 rest_lista (objJson, salvaSessionStore, semAcao, "habilidades");
 
 var objJson = 
+	{	
+		asybc : false,
+		collection : "objetivos",
+		keys : 
+			[
+			]
+	};
+
+rest_lista (objJson, salvaSessionStore, semAcao, "objetivos");
+
+var objJson = 
+	{	
+		asybc : false,
+		collection : "cursos",
+		keys : 
+			[
+			]
+	};
+
+rest_lista (objJson, salvaSessionStore, semAcao, "cursos");
+
+var objJson = 
 {	
 	asybc : false,
 	collection : "badges",
@@ -43,6 +65,17 @@ var objJson =
 
 rest_lista (objJson, salvaSessionStore, semAcao, "areaAtuacao");
 
+
+var objJson = 
+	{	
+		asybc : false,
+		collection : "areaConhecimento",
+		keys : 
+			[
+			]
+	};
+
+rest_lista (objJson, salvaSessionStore, semAcao, "areaConhecimento");
 
 $( ".escolha" ).click(function() {
     $( ".output" ).remove();
@@ -67,8 +100,11 @@ $( ".teste" ).click(function() {
 	case "testaLista":
 		testaLista();
 		break;
-	case "testaAtualizaPerfil":
-		
+	case "testaLista":
+		testaLista();
+		break;
+	case "testaAtualizaPerfil":	
+		testaAtualizaPerfil();
 		break;
 	case "atualizaCursosHabilidade":
 		atualizaCursosHabilidade();

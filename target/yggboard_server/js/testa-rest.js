@@ -195,11 +195,21 @@ function testaFiltro() {
 		async : false
 	}).done(function(data) {
 		if (data) {
-			console.log("habilidades:" + data.habilidades );
-			console.log("objetivos:" + data.objetivos );
-			console.log("cursos:" + data.cursos );
-			console.log("area atuação:" + data.areaAtuacao );
-			console.log("area conheciento:" + data.areaConhecimento );
+			$.each(data.habilidades, function(i, item) {
+				console.log ("habilidade:"  + item.id + " nome:" + item.nome);
+			});
+			$.each(data.objetivos, function(i, item) {
+				console.log ("objetivo:"  + item.id + " nome:" + item.nome);
+			});
+			$.each(data.cursos, function(i, item) {
+				console.log ("curso:"  + item.id + " nome:" + item.nome);
+			});
+			$.each(data.areaAtuacao, function(i, item) {
+				console.log ("area atuação:" + item.id + " nome:" + item.nome);
+			});
+			$.each(data.areaConhecimento, function(i, item) {
+				console.log ("area conheciento:"  + item.id + " nome:" + item.nome);
+			});
 		}
 		;
 	}).fail(function(data) {
