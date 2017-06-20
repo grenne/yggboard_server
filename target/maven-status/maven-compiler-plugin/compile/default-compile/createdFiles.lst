@@ -9,8 +9,10 @@ com\yggboard\yggboard_server\Commons_DB.class
 com\yggboard\yggboard_server\Rest_Crud.class
 com\yggboard\yggboard_server\Rest_UserPerfil.class
 com\yggboard\yggboard_server\Rest_Usuario.class
+com\yggboard\yggboard_server\Opcoes.class
 com\yggboard\yggboard_server\SendEmailHtml.class
 com\yggboard\yggboard_server\Commons.class
+com\yggboard\yggboard_server\Listas.class
 com\yggboard\yggboard_server\ApplicationConfig.class
 com\yggboard\yggboard_server\Rest_Habilidade.class
 com\yggboard\yggboard_server\Rest_Curso.class

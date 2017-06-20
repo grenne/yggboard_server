@@ -164,60 +164,47 @@ public class Rest_Index {
 			objItemFiltro.putAll((Map) objFiltros.get(i));
 			switch (objItemFiltro.get("assunto").toString()) {
 			case "objetivo":
-				opcoes.setCarregaObjetivosAreasAtuacao(true);
-				opcoes.setCarregaObjetivosHabilidades(true);
-				opcoes.setCarregaHabilidadesAreaConhecimento(true);
-				opcoes.setCarregaHabilidadesCursos(true);
-				opcoes.setCarregaPreRequisitos(true);
-				opcoes.setCarregaCursosPreRequisitos(true);
-				opcoes.setCarregaAreasConhecimentoPreRequisitos(true);
+				opcoes.setAllFalse();
 				processaObjetivos(objItemFiltro.get("id").toString(), listas, opcoes);
 				if (filtro){
+					opcoes.setObjetivo();
+					opcoes.setFiltro(filtro);
 					processaObjetivos(objItemFiltro.get("id").toString(), listas, opcoes);
 				};
 				break;
 			case "habilidade":
-				opcoes.setCarregaHabilidadesAreaConhecimento(true);
-				opcoes.setCarregaHabilidadesCursos(true);
-				opcoes.setCarregaHabilidadesObjetivos(true);
-				opcoes.setCarregaPreRequisitos(true);
-				opcoes.setCarregaObjetivosAreasAtuacao(true);
+				opcoes.setAllFalse();
 				processaHabilidades(objItemFiltro.get("id").toString(), listas, opcoes);
 				if (filtro){
+					opcoes.setHabilidade();
+					opcoes.setFiltro(filtro);
 					processaHabilidades(objItemFiltro.get("id").toString(), listas, opcoes);
 				};
 				break;
 			case "curso":
-				opcoes.setCarregaCursosHabilidades(true);
-				opcoes.setCarregaHabilidadesAreaConhecimento(true);
-				opcoes.setCarregaHabilidadesObjetivos(true);
-				opcoes.setCarregaObjetivosAreasAtuacao(true);
+				opcoes.setAllFalse();
 				processaCursos(objItemFiltro.get("id").toString(), listas, opcoes);
 				if (filtro){
+					opcoes.setCurso();
+					opcoes.setFiltro(filtro);
 					processaCursos(objItemFiltro.get("id").toString(), listas, opcoes);
 				};
 				break;
 			case "areaAtuacao":
-				opcoes.setCarregaAreasAtuacaoObjetivos(true);
-				opcoes.setCarregaObjetivosHabilidades(true);
-				opcoes.setCarregaHabilidadesCursos(true);
-				opcoes.setCarregaHabilidadesAreaConhecimento(true);
-				opcoes.setCarregaPreRequisitos(true);
-				opcoes.setCarregaCursosPreRequisitos(true);
-				opcoes.setCarregaAreasConhecimentoPreRequisitos(true);
+				opcoes.setAllFalse();
 				processaAreaAtuacao(objItemFiltro.get("id").toString(), listas, opcoes);
 				if (filtro){
+					opcoes.setAreaAtuacao();
+					opcoes.setFiltro(filtro);					
 					processaAreaAtuacao(objItemFiltro.get("id").toString(), listas, opcoes);
 				};
 				break;
 			case "areaConhecimento":
-				opcoes.setCarregaAreaConhecimentoHabilidades(true);
-				opcoes.setCarregaHabilidadesCursos(true);
-				opcoes.setCarregaHabilidadesObjetivos(true);
-				opcoes.setCarregaObjetivosAreasAtuacao(true);
-				opcoes.setCarregaHabilidadesAreaConhecimento(true);
+				opcoes.setAllFalse();
 				processaAreaConhecimento(objItemFiltro.get("id").toString(), listas, opcoes);
 				if (filtro){
+					opcoes.setAreaConhecimento();
+					opcoes.setFiltro(filtro);					
 					processaAreaConhecimento(objItemFiltro.get("id").toString(), listas, opcoes);
 				};
 				break;
@@ -257,77 +244,48 @@ public class Rest_Index {
 				};								
 			};
 			Object elementos[] = listas.elementosFiltro().toArray();
+			opcoes.setAllTrue();
 			for (int i = 0; i < elementos.length; i++) {
 				if (selecionaFiltro(elementos[i], objFiltros)){
 					JSONObject selecionado = new JSONObject();
 					selecionado.putAll((Map) elementos[i]);
+					if (filtroHabilidade){
+						opcoes.setCarregaPreRequisitos(false);
+						opcoes.setCarregaCursosPreRequisitos(false);
+						opcoes.setCarregaObjetivosPreRequisitos(false);
+						opcoes.setCarregaAreasConhecimentoPreRequisitos(false);
+						opcoes.setCarregaAreaConhecimentoHabilidades(false);
+						opcoes.setCarregaCursosHabilidades(false);
+						opcoes.setCarregaObjetivosHabilidades(false);
+					};
+					if (filtroObjetivo){
+						opcoes.setCarregaAreasAtuacaoObjetivos(false);
+						opcoes.setCarregaHabilidadesObjetivos(false);
+					};
+					if (filtroCurso){
+						opcoes.setCarregaHabilidadesCursos(false);
+					};
+					if (filtroAreaAtuacao){
+						opcoes.setCarregaObjetivosAreasAtuacao(false);
+					};
+					if (filtroAreaConhecimento){
+						opcoes.setCarregaHabilidadesAreaConhecimento(false);
+					};
 					switch (selecionado.get("assunto").toString()) {
 					case "objetivo":
-						if (filtroHabilidade && filtroAreaAtuacao){
-							processaObjetivos(selecionado.get("value").toString(), listas, opcoes);
-						}else{
-							if (filtroHabilidade){
-								processaObjetivos(selecionado.get("value").toString(), listas, opcoes);
-							}else{
-								if (filtroAreaAtuacao){
-									processaObjetivos(selecionado.get("value").toString(), listas, opcoes);
-								}else{
-									processaObjetivos(selecionado.get("value").toString(), listas, opcoes);
-								};
-							};
-						};
+						processaObjetivos(selecionado.get("value").toString(), listas, opcoes);
 						break;
 					case "habilidade":
-						if (filtroCurso && filtroObjetivo && filtroAreaConhecimento){
-							processaHabilidades(selecionado.get("value").toString(), listas, opcoes);
-						}else{
-							if (filtroCurso && filtroObjetivo){
-								processaHabilidades(selecionado.get("value").toString(), listas, opcoes);
-							}else{
-								if (filtroCurso && filtroAreaConhecimento){
-									processaHabilidades(selecionado.get("value").toString(), listas, opcoes);
-								}else{
-									if (filtroObjetivo && filtroAreaConhecimento){
-										processaHabilidades(selecionado.get("value").toString(), listas, opcoes);
-									}else{
-										if (filtroCurso){
-											processaHabilidades(selecionado.get("value").toString(), listas, opcoes);										
-										}else{
-											if (filtroObjetivo){
-												processaHabilidades(selecionado.get("value").toString(), listas, opcoes);										
-											}else{
-												if (filtroAreaConhecimento){
-													processaHabilidades(selecionado.get("value").toString(), listas, opcoes);										
-												}else{
-													processaHabilidades(selecionado.get("value").toString(), listas, opcoes);																							
-												}												
-											}
-										}
-									};
-								};
-							};
-						};
+						processaHabilidades(selecionado.get("value").toString(), listas, opcoes);
 						break;
 					case "curso":
-						if (filtroHabilidade){
-							processaCursos(selecionado.get("value").toString(), listas, opcoes);
-						}else{
-							processaCursos(selecionado.get("value").toString(), listas, opcoes);							
-						};
+						processaCursos(selecionado.get("value").toString(), listas, opcoes);
 						break;
 					case "areaAtuacao":
-						if (filtroObjetivo){
-							processaAreaAtuacao(selecionado.get("value").toString(), listas, opcoes);
-						}else{
-							processaAreaAtuacao(selecionado.get("value").toString(), listas, opcoes);							
-						};
+						processaAreaAtuacao(selecionado.get("value").toString(), listas, opcoes);
 						break;
 					case "areaConhecimento":
-						if (filtroHabilidade){
-							processaAreaConhecimento(selecionado.get("value").toString(), listas, opcoes);
-						}else{
-							processaAreaConhecimento(selecionado.get("value").toString(), listas, opcoes);							
-						};
+						processaAreaConhecimento(selecionado.get("value").toString(), listas, opcoes);
 						break;
 					default:
 						break;

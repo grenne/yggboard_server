@@ -57,7 +57,7 @@ function atualizaCursoHablidadeProcess (cursos){
 					}
 				]
 			};
-		rest_atualizar (objJson, semAcao, semAcao);
+		rest_atualizar (objJson, restOk, semAcao);
 	});
 	console.log ("terminou cursos");
 };
@@ -117,7 +117,7 @@ function atualizaObjetivosHablidadeProcess (objetivos){
 					}
 				]
 			};
-		rest_atualizar (objJson, semAcao, semAcao);
+		rest_atualizar (objJson, restOk, semAcao);
 	});
 	console.log ("terminou objetivos");
 };
@@ -188,7 +188,7 @@ function atualizaAreaAtuacaoObjetivosProcess (areasAtuacao){
 					}
 				]
 			};
-		rest_atualizar (objJson, semAcao, semAcao);
+		rest_atualizar (objJson, restOk, semAcao);
 	});
 	
 	console.log ("terminou area atuacao");
@@ -261,7 +261,7 @@ function atualizaAreaConhecimentoHabilidadesProcess (areasConhecimento){
 					}
 				]
 			};
-		rest_atualizar (objJson, semAcao, semAcao);
+		rest_atualizar (objJson, restOk, semAcao);
 	});
 	
 	console.log ("terminou area conhecimento");
@@ -335,7 +335,7 @@ function atualizaPerfilProcess (usersPerfil){
 						documento: userPerfil
 					}
 			};	    
-		rest_incluir (objJson, semAcao, semAcao);
+		rest_incluir (objJson, restOk, semAcao);
 	});
 };
 

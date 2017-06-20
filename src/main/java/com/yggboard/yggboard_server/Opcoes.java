@@ -62,7 +62,77 @@ public class Opcoes {
 		this.carregaObjetivosHabilidades = carregaObjetivosHabilidades;		
 		this.carregaObjetivosAreasAtuacao = carregaObjetivosAreasAtuacao;		
 	};
-	
+
+	public void setAllFalse(){
+		carregaPreRequisitos = false;
+		carregaCursosPreRequisitos = false;
+		carregaObjetivosPreRequisitos = false;
+		carregaAreasConhecimentoPreRequisitos = false;
+		carregaAreasAtuacaoObjetivos = false;
+		carregaHabilidadesObjetivos = false;
+		carregaHabilidadesCursos = false;
+		carregaHabilidadesAreaConhecimento = false;
+		carregaAreaConhecimentoHabilidades = false;
+		carregaCursosHabilidades = false;
+		carregaObjetivosHabilidades = false;
+		carregaObjetivosAreasAtuacao = false;		
+	};
+
+	public void setAllTrue(){
+		carregaPreRequisitos = true;
+		carregaCursosPreRequisitos = true;
+		carregaObjetivosPreRequisitos = true;
+		carregaAreasConhecimentoPreRequisitos = true;
+		carregaAreasAtuacaoObjetivos = true;
+		carregaHabilidadesObjetivos = true;
+		carregaHabilidadesCursos = true;
+		carregaHabilidadesAreaConhecimento = true;
+		carregaAreaConhecimentoHabilidades = true;
+		carregaCursosHabilidades = true;
+		carregaObjetivosHabilidades = true;
+		carregaObjetivosAreasAtuacao = true;		
+	};
+
+	public void setObjetivo(){
+		carregaObjetivosAreasAtuacao = true;
+		carregaObjetivosHabilidades = true;
+		carregaHabilidadesAreaConhecimento = true;
+		carregaHabilidadesCursos = true;
+		carregaPreRequisitos = true;
+		carregaCursosPreRequisitos = true;
+		carregaAreasConhecimentoPreRequisitos = true;
+	};
+
+	public void setHabilidade(){
+		carregaHabilidadesAreaConhecimento = true;
+		carregaHabilidadesCursos = true;
+		carregaHabilidadesObjetivos = true;
+		carregaPreRequisitos = true;
+		carregaObjetivosAreasAtuacao = true;	
+	};
+
+	public void setCurso(){
+		carregaCursosHabilidades = true;
+		carregaHabilidadesAreaConhecimento = true;
+		carregaHabilidadesObjetivos = true;
+		carregaObjetivosAreasAtuacao = true;
+	};
+	public void setAreaAtuacao(){
+		carregaAreasAtuacaoObjetivos = true;
+		carregaObjetivosHabilidades = true;
+		carregaHabilidadesCursos = true;
+		carregaHabilidadesAreaConhecimento = true;
+		carregaPreRequisitos = true;
+		carregaCursosPreRequisitos = true;
+		carregaAreasConhecimentoPreRequisitos = true;	
+	};
+	public void setAreaConhecimento(){
+		carregaAreaConhecimentoHabilidades = true;
+		carregaHabilidadesCursos = true;
+		carregaHabilidadesObjetivos = true;
+		carregaObjetivosAreasAtuacao = true;
+		carregaHabilidadesAreaConhecimento = true;	
+	};
 	public void setFiltro(Boolean filtro) {
 		this.filtro = filtro;
 	};

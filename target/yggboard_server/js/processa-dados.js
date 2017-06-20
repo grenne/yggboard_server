@@ -72,6 +72,7 @@ function processaCursos (data){
 					objJson.insert.documento.habilidades.push(array_1[z]);
 					objJson.insert.documento.habilidadesNome.push(nome);
 				}else{
+					objJson.insert.documento.habilidades.push(array_1[z]);
 					console.log ("habilidade curso não encontrado: " + array_1[z]);
 				}				
 			}
@@ -136,6 +137,9 @@ function processaHabilidades (data){
 			objJson.insert.documento.areaConhecimento.push(array[i].replace (" ",""));			
 		}
 	};
+	if (fields[0] == "10091"){
+		console.log ("aqui");
+	};
 	if (fields[7]){
 		var array = fields[7].split(",");
 		for (var i = 0; i < array.length; i++) {
@@ -159,7 +163,7 @@ function processaHabilidades (data){
 	};
 	
 	if (fields[0]){
-		rest_incluir (objJson, semAcao, semAcao);
+		rest_incluir (objJson, restOk, semAcao);
 	};
 	
 };
