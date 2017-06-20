@@ -7,6 +7,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
@@ -255,6 +258,23 @@ public class Commons {
 			};
 		};
 		return false;
-	}
+	};
+
+	@SuppressWarnings("unchecked")
+	public JSONArray addObjeto(JSONArray array, BasicDBObject elemento) {
+
+		if (array != null){
+			for (int i = 0; i < array.size(); i++) {
+				if (array.get(i).equals(elemento)){
+					return array;
+				};
+			};
+		}else{
+			return array;
+		};
+		array.add(elemento);
+		return array;
+	};
+	
 
 }

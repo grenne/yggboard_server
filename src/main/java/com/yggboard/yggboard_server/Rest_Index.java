@@ -45,48 +45,71 @@ public class Rest_Index {
 	public BasicDBObject ObterItens(@QueryParam("assunto") String assunto, @QueryParam("id") String id ) throws UnknownHostException, MongoException {
 		
 		Commons commons = new Commons();
-
-		JSONArray objetivos = new JSONArray();
-		JSONArray habilidades = new JSONArray();
-		JSONArray cursos = new JSONArray();
-		JSONArray areaAtuacao = new JSONArray();
-		JSONArray areaConhecimento = new JSONArray();
-		JSONArray preRequisitosCarregados = new JSONArray();
+		Listas listas = new Listas();
+		Opcoes opcoes = new Opcoes();
 
 		if (!assunto.equals("todos")){
 			switch (assunto) {
 			case "objetivo":
-				processaObjetivos(id, objetivos, habilidades, cursos, areaAtuacao, areaConhecimento, false, null, preRequisitosCarregados);
+				opcoes.setCarregaObjetivosAreasAtuacao(true);
+				opcoes.setCarregaObjetivosHabilidades(true);
+				opcoes.setCarregaHabilidadesAreaConhecimento(true);
+				opcoes.setCarregaHabilidadesCursos(true);
+				opcoes.setCarregaPreRequisitos(true);
+				opcoes.setCarregaCursosPreRequisitos(true);
+				opcoes.setCarregaAreasConhecimentoPreRequisitos(true);
+				processaObjetivos(id, listas, opcoes);
 				break;
 			case "habilidade":
-				processaHabilidades(id, objetivos, habilidades, cursos, areaAtuacao, areaConhecimento, false, null, true, preRequisitosCarregados);
+				opcoes.setCarregaHabilidadesAreaConhecimento(true);
+				opcoes.setCarregaHabilidadesCursos(true);
+				opcoes.setCarregaHabilidadesObjetivos(true);
+				opcoes.setCarregaPreRequisitos(true);
+				opcoes.setCarregaObjetivosAreasAtuacao(true);
+				processaHabilidades(id, listas, opcoes);
 				break;
 			case "curso":
-				processaCursos(id, objetivos, habilidades, cursos, areaAtuacao, areaConhecimento, false, null, preRequisitosCarregados);
+				opcoes.setCarregaCursosHabilidades(true);
+				opcoes.setCarregaHabilidadesAreaConhecimento(true);
+				opcoes.setCarregaHabilidadesObjetivos(true);
+				opcoes.setCarregaObjetivosAreasAtuacao(true);
+				processaCursos(id, listas, opcoes);
 				break;
 			case "areaAtuacao":
-				processaAreaAtuacao(id, objetivos, habilidades, cursos, areaAtuacao, areaConhecimento, false, null, preRequisitosCarregados);
+				opcoes.setCarregaAreasAtuacaoObjetivos(true);
+				opcoes.setCarregaObjetivosHabilidades(true);
+				opcoes.setCarregaHabilidadesCursos(true);
+				opcoes.setCarregaHabilidadesAreaConhecimento(true);
+				opcoes.setCarregaPreRequisitos(true);
+				opcoes.setCarregaCursosPreRequisitos(true);
+				opcoes.setCarregaAreasConhecimentoPreRequisitos(true);
+				processaAreaAtuacao(id, listas, opcoes);
 				break;
 			case "areaConhecimento":
-				processaAreaConhecimento(id, objetivos, habilidades, cursos, areaAtuacao, areaConhecimento, false, null, preRequisitosCarregados);
+				opcoes.setCarregaAreaConhecimentoHabilidades(true);
+				opcoes.setCarregaHabilidadesCursos(true);
+				opcoes.setCarregaHabilidadesObjetivos(true);
+				opcoes.setCarregaObjetivosAreasAtuacao(true);
+				opcoes.setCarregaHabilidadesAreaConhecimento(true);
+				processaAreaConhecimento(id, listas, opcoes);
 				break;
 			default:
 				break;
 			};
 		}else{
-			carregaTudo(objetivos, habilidades, cursos, areaAtuacao, areaConhecimento);
+			carregaTudo(listas);
 		};
 		
-		BasicDBObject listas = new BasicDBObject();
+		BasicDBObject results = new BasicDBObject();
 		
-		listas.put("objetivos", objetivos);
-		listas.put("habilidades", habilidades);
-		listas.put("cursos", cursos);
-		listas.put("areaAtuacao", areaAtuacao);
-		listas.put("areaConhecimento", areaConhecimento);
-		listas.put("todaysDate", commons.todaysDate("inv_month_number"));
+		results.put("objetivos", listas.objetivos());
+		results.put("habilidades", listas.habilidades());
+		results.put("cursos", listas.cursos());
+		results.put("areaAtuacao", listas.areasAtuacao());
+		results.put("areaConhecimento", listas.areasConhecimento());
+		results.put("todaysDate", commons.todaysDate("inv_month_number"));
 		
-		return listas;
+		return results;
 			
 			// qdo escolhida uma habilidade trazer todos os pré-requisitos, objetivos, cursos, area de atuação da habiidade e área e conhecimento dos objetivos
 			//
@@ -99,23 +122,23 @@ public class Rest_Index {
 			// qdo escolhida uma area de conhecimento trazer todas habilidades, objetivos das habilidades, cursos das habilidades, area de conhecimento só a selecionada e área de atuação de todos os objetivos
 	};
 	
-	private BasicDBObject carregaTudo(JSONArray objetivos, JSONArray habilidades, JSONArray cursos, JSONArray areaAtuacao, JSONArray areaConhecimento) {
+	private BasicDBObject carregaTudo(Listas listas) {
 		
-		carregaObjetivos(objetivos);
-		carregaHabilidades(habilidades);
-		carregaCursos(cursos);
-		carregaAreasAtuacao(areaAtuacao);
-		carregaAreasConhecimento(areaConhecimento);
+		carregaObjetivos(listas.objetivos());
+		carregaHabilidades(listas.habilidades());
+		carregaCursos(listas.cursos());
+		carregaAreasAtuacao(listas.areasAtuacao());
+		carregaAreasConhecimento(listas.areasConhecimento());
 		
-		BasicDBObject listas = new BasicDBObject();
+		BasicDBObject results = new BasicDBObject();
 		
-		listas.put("objetivos", objetivos);
-		listas.put("habilidades", habilidades);
-		listas.put("cursos", cursos);
-		listas.put("areaAtuacao", areaAtuacao);
-		listas.put("areaConhecimento", areaConhecimento);
+		results.put("objetivos", listas.objetivos());
+		results.put("habilidades", listas.habilidades());
+		results.put("cursos", listas.cursos());
+		results.put("areaAtuacao", listas.areasAtuacao());
+		results.put("areaConhecimento", listas.areasConhecimento());
 		
-		return listas;
+		return results;
 		
 	};
 
@@ -125,20 +148,15 @@ public class Rest_Index {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public BasicDBObject ObterItensFiltro(JSONArray objFiltros) throws MongoException, JsonParseException, JsonMappingException, IOException {
 		
-		JSONArray objetivos = new JSONArray();
-		JSONArray habilidades = new JSONArray();
-		JSONArray cursos = new JSONArray();
-		JSONArray areasAtuacao = new JSONArray();
-		JSONArray areasConhecimento = new JSONArray();
-		JSONArray preRequisitosCarregados = new JSONArray(); 
-
-		JSONArray elementosFiltro = new JSONArray();
+		Listas listas = new Listas();
+		Opcoes opcoes = new Opcoes();
 
 		Boolean filtro = true;
-		
+		opcoes.setFiltro(true);
 		int sizeFiltros = objFiltros.size();
 		if (sizeFiltros < 2 ){
 			filtro = false;
+			opcoes.setFiltro(false);
 		};
 			
 		for (int i = 0; i < objFiltros.size(); i++) {
@@ -146,33 +164,61 @@ public class Rest_Index {
 			objItemFiltro.putAll((Map) objFiltros.get(i));
 			switch (objItemFiltro.get("assunto").toString()) {
 			case "objetivo":
-				processaObjetivos(objItemFiltro.get("id").toString(), objetivos, habilidades, cursos, areasAtuacao, areasConhecimento, filtro, elementosFiltro, preRequisitosCarregados);
+				opcoes.setCarregaObjetivosAreasAtuacao(true);
+				opcoes.setCarregaObjetivosHabilidades(true);
+				opcoes.setCarregaHabilidadesAreaConhecimento(true);
+				opcoes.setCarregaHabilidadesCursos(true);
+				opcoes.setCarregaPreRequisitos(true);
+				opcoes.setCarregaCursosPreRequisitos(true);
+				opcoes.setCarregaAreasConhecimentoPreRequisitos(true);
+				processaObjetivos(objItemFiltro.get("id").toString(), listas, opcoes);
 				if (filtro){
-					processaObjetivos(objItemFiltro.get("id").toString(), objetivos, null, null, areasAtuacao, areasConhecimento, false, null, null);
+					processaObjetivos(objItemFiltro.get("id").toString(), listas, opcoes);
 				};
 				break;
 			case "habilidade":
-				processaHabilidades(objItemFiltro.get("id").toString(), objetivos, habilidades, cursos, areasAtuacao, areasConhecimento, filtro, elementosFiltro, true, preRequisitosCarregados);
+				opcoes.setCarregaHabilidadesAreaConhecimento(true);
+				opcoes.setCarregaHabilidadesCursos(true);
+				opcoes.setCarregaHabilidadesObjetivos(true);
+				opcoes.setCarregaPreRequisitos(true);
+				opcoes.setCarregaObjetivosAreasAtuacao(true);
+				processaHabilidades(objItemFiltro.get("id").toString(), listas, opcoes);
 				if (filtro){
-					processaHabilidades(objItemFiltro.get("id").toString(), null, habilidades, null, null, areasConhecimento, false, null, false, null);
+					processaHabilidades(objItemFiltro.get("id").toString(), listas, opcoes);
 				};
 				break;
 			case "curso":
-				processaCursos(objItemFiltro.get("id").toString(), objetivos, habilidades, cursos, areasAtuacao, areasConhecimento, filtro, elementosFiltro, preRequisitosCarregados);
+				opcoes.setCarregaCursosHabilidades(true);
+				opcoes.setCarregaHabilidadesAreaConhecimento(true);
+				opcoes.setCarregaHabilidadesObjetivos(true);
+				opcoes.setCarregaObjetivosAreasAtuacao(true);
+				processaCursos(objItemFiltro.get("id").toString(), listas, opcoes);
 				if (filtro){
-					processaCursos(objItemFiltro.get("id").toString(), objetivos, null, cursos, areasAtuacao, areasConhecimento, false, null, null);
+					processaCursos(objItemFiltro.get("id").toString(), listas, opcoes);
 				};
 				break;
 			case "areaAtuacao":
-				processaAreaAtuacao(objItemFiltro.get("id").toString(), objetivos, habilidades, cursos, areasAtuacao, areasConhecimento, filtro, elementosFiltro, preRequisitosCarregados);
+				opcoes.setCarregaAreasAtuacaoObjetivos(true);
+				opcoes.setCarregaObjetivosHabilidades(true);
+				opcoes.setCarregaHabilidadesCursos(true);
+				opcoes.setCarregaHabilidadesAreaConhecimento(true);
+				opcoes.setCarregaPreRequisitos(true);
+				opcoes.setCarregaCursosPreRequisitos(true);
+				opcoes.setCarregaAreasConhecimentoPreRequisitos(true);
+				processaAreaAtuacao(objItemFiltro.get("id").toString(), listas, opcoes);
 				if (filtro){
-					processaAreaAtuacao(objItemFiltro.get("id").toString(), objetivos, null, cursos, areasAtuacao, areasConhecimento, false, null, null);
+					processaAreaAtuacao(objItemFiltro.get("id").toString(), listas, opcoes);
 				};
 				break;
 			case "areaConhecimento":
-				processaAreaConhecimento(objItemFiltro.get("id").toString(), objetivos, habilidades, cursos, areasAtuacao, areasConhecimento, filtro, elementosFiltro, preRequisitosCarregados);
+				opcoes.setCarregaAreaConhecimentoHabilidades(true);
+				opcoes.setCarregaHabilidadesCursos(true);
+				opcoes.setCarregaHabilidadesObjetivos(true);
+				opcoes.setCarregaObjetivosAreasAtuacao(true);
+				opcoes.setCarregaHabilidadesAreaConhecimento(true);
+				processaAreaConhecimento(objItemFiltro.get("id").toString(), listas, opcoes);
 				if (filtro){
-					processaAreaConhecimento(objItemFiltro.get("id").toString(), objetivos, null, cursos, areasAtuacao, areasConhecimento, false, null, null);
+					processaAreaConhecimento(objItemFiltro.get("id").toString(), listas, opcoes);
 				};
 				break;
 			default:
@@ -210,7 +256,7 @@ public class Rest_Index {
 					break;
 				};								
 			};
-			Object elementos[] = elementosFiltro.toArray();
+			Object elementos[] = listas.elementosFiltro().toArray();
 			for (int i = 0; i < elementos.length; i++) {
 				if (selecionaFiltro(elementos[i], objFiltros)){
 					JSONObject selecionado = new JSONObject();
@@ -218,42 +264,42 @@ public class Rest_Index {
 					switch (selecionado.get("assunto").toString()) {
 					case "objetivo":
 						if (filtroHabilidade && filtroAreaAtuacao){
-							processaObjetivos(selecionado.get("value").toString(), objetivos, null, cursos, null, areasConhecimento, false, null, null);
+							processaObjetivos(selecionado.get("value").toString(), listas, opcoes);
 						}else{
 							if (filtroHabilidade){
-								processaObjetivos(selecionado.get("value").toString(), objetivos, null, cursos, areasAtuacao, areasConhecimento, false, null, null);
+								processaObjetivos(selecionado.get("value").toString(), listas, opcoes);
 							}else{
 								if (filtroAreaAtuacao){
-									processaObjetivos(selecionado.get("value").toString(), objetivos, habilidades, cursos, null, areasConhecimento, false, null, preRequisitosCarregados);
+									processaObjetivos(selecionado.get("value").toString(), listas, opcoes);
 								}else{
-									processaObjetivos(selecionado.get("value").toString(), objetivos, habilidades, cursos, areasAtuacao, areasConhecimento, false, null, preRequisitosCarregados);
+									processaObjetivos(selecionado.get("value").toString(), listas, opcoes);
 								};
 							};
 						};
 						break;
 					case "habilidade":
 						if (filtroCurso && filtroObjetivo && filtroAreaConhecimento){
-							processaHabilidades(selecionado.get("value").toString(), null, habilidades, null, areasAtuacao, null, false, null, false, null);
+							processaHabilidades(selecionado.get("value").toString(), listas, opcoes);
 						}else{
 							if (filtroCurso && filtroObjetivo){
-								processaHabilidades(selecionado.get("value").toString(), null, habilidades, null, areasAtuacao, areasConhecimento, false, null, false, null);
+								processaHabilidades(selecionado.get("value").toString(), listas, opcoes);
 							}else{
 								if (filtroCurso && filtroAreaConhecimento){
-									processaHabilidades(selecionado.get("value").toString(), objetivos, habilidades, null, areasAtuacao, null, false, null, false, null);
+									processaHabilidades(selecionado.get("value").toString(), listas, opcoes);
 								}else{
 									if (filtroObjetivo && filtroAreaConhecimento){
-										processaHabilidades(selecionado.get("value").toString(), null, habilidades, cursos, areasAtuacao, null, false, null, false, null);
+										processaHabilidades(selecionado.get("value").toString(), listas, opcoes);
 									}else{
 										if (filtroCurso){
-											processaHabilidades(selecionado.get("value").toString(), objetivos, habilidades, null, areasAtuacao, areasConhecimento, false, null, false, null);										
+											processaHabilidades(selecionado.get("value").toString(), listas, opcoes);										
 										}else{
 											if (filtroObjetivo){
-												processaHabilidades(selecionado.get("value").toString(), null, habilidades, cursos, areasAtuacao, areasConhecimento, false, null, false, null);										
+												processaHabilidades(selecionado.get("value").toString(), listas, opcoes);										
 											}else{
 												if (filtroAreaConhecimento){
-													processaHabilidades(selecionado.get("value").toString(), objetivos, habilidades, cursos, areasAtuacao, null, false, null, false, null);										
+													processaHabilidades(selecionado.get("value").toString(), listas, opcoes);										
 												}else{
-													processaHabilidades(selecionado.get("value").toString(), objetivos, habilidades, cursos, areasAtuacao, areasConhecimento, false, null, false, null);																							
+													processaHabilidades(selecionado.get("value").toString(), listas, opcoes);																							
 												}												
 											}
 										}
@@ -264,23 +310,23 @@ public class Rest_Index {
 						break;
 					case "curso":
 						if (filtroHabilidade){
-							processaCursos(selecionado.get("value").toString(), objetivos, null, cursos, areasAtuacao, areasConhecimento, false, null, null);
+							processaCursos(selecionado.get("value").toString(), listas, opcoes);
 						}else{
-							processaCursos(selecionado.get("value").toString(), objetivos, habilidades, cursos, areasAtuacao, areasConhecimento, false, null, preRequisitosCarregados);							
+							processaCursos(selecionado.get("value").toString(), listas, opcoes);							
 						};
 						break;
 					case "areaAtuacao":
 						if (filtroObjetivo){
-							processaAreaAtuacao(selecionado.get("value").toString(), null, habilidades, cursos, areasAtuacao, areasConhecimento, false, null, preRequisitosCarregados);
+							processaAreaAtuacao(selecionado.get("value").toString(), listas, opcoes);
 						}else{
-							processaAreaAtuacao(selecionado.get("value").toString(), objetivos, habilidades, cursos, areasAtuacao, areasConhecimento, false, null, preRequisitosCarregados);							
+							processaAreaAtuacao(selecionado.get("value").toString(), listas, opcoes);							
 						};
 						break;
 					case "areaConhecimento":
 						if (filtroHabilidade){
-							processaAreaConhecimento(selecionado.get("value").toString(), objetivos, null, cursos, areasAtuacao, areasConhecimento, filtro, elementosFiltro, null);
+							processaAreaConhecimento(selecionado.get("value").toString(), listas, opcoes);
 						}else{
-							processaAreaConhecimento(selecionado.get("value").toString(), objetivos, habilidades, cursos, areasAtuacao, areasConhecimento, filtro, elementosFiltro, preRequisitosCarregados);							
+							processaAreaConhecimento(selecionado.get("value").toString(), listas, opcoes);							
 						};
 						break;
 					default:
@@ -296,15 +342,15 @@ public class Rest_Index {
 //			return filtros;
 //		}
 
-		BasicDBObject listas = new BasicDBObject();
+		BasicDBObject results = new BasicDBObject();
 		
-		listas.put("objetivos", objetivos);
-		listas.put("habilidades", habilidades);
-		listas.put("cursos", cursos);
-		listas.put("areaAtuacao", areasAtuacao);
-		listas.put("areaConhecimento", areasConhecimento);
+		results.put("objetivos", listas.objetivos());
+		results.put("habilidades", listas.habilidades());
+		results.put("cursos", listas.cursos());
+		results.put("areaAtuacao", listas.areasAtuacao());
+		results.put("areaConhecimento", listas.areasConhecimento());
 		
-		return listas;
+		return results;
 			
 			// qdo escolhida uma habilidade trazer todos os pré-requisitos, objetivos, cursos, area de atuação da habiidade e área e conhecimento dos objetivos
 			//
@@ -350,9 +396,10 @@ public class Rest_Index {
 	}
 
 	@SuppressWarnings({ "unchecked" })
-	private void processaObjetivos(String id, JSONArray objetivos, JSONArray habilidades, JSONArray cursos, JSONArray areasAtuacao, JSONArray areasConhecimento, Boolean filtro, JSONArray elementosFiltro, JSONArray preRequisitosCarregados) {
+	private void processaObjetivos(String id, Listas listas, Opcoes opcoes) {
 		Mongo mongo;
 		try {
+			
 			mongo = new Mongo();
 			DB db = (DB) mongo.getDB("yggboard");
 			DBCollection collection = db.getCollection("objetivos");
@@ -367,44 +414,42 @@ public class Rest_Index {
 				ArrayList<?> arrayListAreaAtuacao = new ArrayList<Object>(); 
 				arrayListAreaAtuacao = (ArrayList<?>) objetivo.get("areaAtuacao");
 
-				if (arrayListNecessarios != null && habilidades != null){
+				if (arrayListNecessarios != null && opcoes.carregaObjetivosHabilidades()){
 					Object arrayNecessarios[] = arrayListNecessarios.toArray();
 					//
 					// ***		carrega habilidades
 					//
 					int z = 0;
 					while (z < arrayNecessarios.length) {
-						processaHabilidades(arrayNecessarios[z].toString(), null, habilidades, cursos, areasAtuacao, areasConhecimento, filtro, elementosFiltro, true, preRequisitosCarregados);
+						processaHabilidades(arrayNecessarios[z].toString(), listas, opcoes);
 						++z;
 					};
 				};
 
-				if (!filtro){
+				if (!opcoes.filtro()){
 					if (id.equals("4")){
 						System.out.println("parou");
 					}
-					if (arrayListAreaAtuacao != null && areasAtuacao != null){
+					if (arrayListAreaAtuacao != null && opcoes.carregaObjetivosAreasAtuacao()){
 						Object arrayAreaAtuacao[] = arrayListAreaAtuacao.toArray();
 						//
 						// ***		carrega área de atuação
 						//			
 						int w = 0;
 						while (w < arrayAreaAtuacao.length) {
-							carregaAreaAtuacao(areasAtuacao, arrayAreaAtuacao[w].toString());
+							carregaAreaAtuacao(arrayAreaAtuacao[w].toString(), listas, opcoes);
 							++w;
 						};
 					};
 					//
 					// ***		carrega objetivo
-					//			
-					if (addObjeto(objetivos, objetivo)){
-						objetivos.add(objetivo);
-					};
+					//
+					listas.addObjetivos(objetivo);
 				}else{
 					//
 					// ***		carrega filtros
 					//
-					if (arrayListNecessarios != null){
+					if (arrayListNecessarios != null && opcoes.carregaObjetivosHabilidades()){
 						BasicDBObject elemento = new BasicDBObject();
 						Object arrayNecessarios[] = arrayListNecessarios.toArray();
 						JSONArray arrayJson = new JSONArray();
@@ -415,25 +460,21 @@ public class Rest_Index {
 						elemento.put("assunto", "objetivo");
 						elemento.put("value", id);
 						elemento.put("elementos", arrayJson);
-						if (addObjeto(elementosFiltro, elemento)){
-							elementosFiltro.add(elemento);
-						};
+						listas.addElementosFiltro(elemento);
 					};
-					if (arrayListAreaAtuacao != null){
+					if (arrayListAreaAtuacao != null && opcoes.carregaObjetivosAreasAtuacao()){
 						BasicDBObject elemento = new BasicDBObject();
 						Object arrayAreaAtuacao[] = arrayListAreaAtuacao.toArray();
 						JSONArray arrayJson = new JSONArray();
 						for (int i = 0; i < arrayAreaAtuacao.length; i++) {
-							processaAreaAtuacao(arrayAreaAtuacao[i].toString(), null, habilidades, cursos, areasAtuacao, areasConhecimento, true, elementosFiltro, preRequisitosCarregados);
+							processaAreaAtuacao(arrayAreaAtuacao[i].toString(), listas, opcoes);
 							arrayJson.add(arrayAreaAtuacao[i].toString());
 						};
 						elemento.put("elemento", "areaAtuacao");
 						elemento.put("assunto", "objetivo");
 						elemento.put("value", id);
 						elemento.put("elementos", arrayJson);
-						if (addObjeto(elementosFiltro, elemento)){
-							elementosFiltro.add(elemento);
-						};
+						listas.addElementosFiltro(elemento);
 					};
 				};
 			};			
@@ -444,7 +485,7 @@ public class Rest_Index {
 	};
 
 	@SuppressWarnings("unchecked")
-	private void processaHabilidades(String id, JSONArray objetivos, JSONArray habilidades, JSONArray cursos, JSONArray areasAtuacao, JSONArray areasConhecimento, Boolean filtro, JSONArray elementosFiltro, Boolean carregaPreRequisitos, JSONArray preRequisitosCarregados) {
+	private void processaHabilidades(String id, Listas listas, Opcoes opcoes) {
 		Mongo mongo;
 		try {
 			mongo = new Mongo();
@@ -472,64 +513,62 @@ public class Rest_Index {
 				//
 				// ***		carrega objetivos
 				//
-		    	if (arrayListObjetivos != null  && objetivos != null){
+		    	if (arrayListObjetivos != null  && opcoes.carregaHabilidadesObjetivos()){
 			    	Object arrayObjetivos[] = arrayListObjetivos.toArray();
 					int w = 0;
 					while (w < arrayObjetivos.length) {
-						processaObjetivos(arrayObjetivos[w].toString(), objetivos, null, cursos, areasAtuacao, areasConhecimento, filtro, elementosFiltro, null);
+						processaObjetivos(arrayObjetivos[w].toString(), listas, opcoes);
 						++w;
 					};
 		    	};
 
-				if (!filtro){
-					if (arrayListCursos != null && cursos != null){
+				if (!opcoes.filtro()){
+					if (arrayListCursos != null && opcoes.carregaHabilidadesCursos()){
 				    	Object[] arrayCursos = arrayListCursos.toArray();
 						//
 						// ***		carrega cursos
 						//
 						int i = 0;
 						while (i < arrayCursos.length) {
-							carregaCurso(cursos, arrayCursos[i].toString());
+							carregaCurso(arrayCursos[i].toString(), listas, opcoes);
 							++i;
 						};
 			    	};
 					//
 					// ***		carrega área de conhecimento
 					//			
-					if (arrayListAreaConhecimento != null && areasConhecimento != null){
+					if (arrayListAreaConhecimento != null && opcoes.carregaHabilidadesAreaConhecimento()){
 						Object arrayAreaConhecimento[] = arrayListAreaConhecimento.toArray();
 						int w = 0;
 						while (w < arrayAreaConhecimento.length) {
-							carregaAreaConhecimento(areasConhecimento, arrayAreaConhecimento[w].toString());
+							carregaAreaConhecimento(arrayAreaConhecimento[w].toString(), listas, opcoes);
 							++w;
 						};
 					};
 						//
 						// ***		carrega habilidade
 						//			
-					carregaHabilidade(habilidades, cursos, objetivos, areasAtuacao, areasConhecimento, id, carregaPreRequisitos, null, filtro, elementosFiltro, preRequisitosCarregados);
+					carregaHabilidade(id, listas, opcoes);
 	
 				}else{
 					//
 					// ***		carrega filtros
 					//			
-			    	if (arrayListCursos != null){
+			    	if (arrayListCursos != null && opcoes.carregaHabilidadesCursos()){
 						BasicDBObject elemento = new BasicDBObject();
 				    	Object[] arrayCursos = arrayListCursos.toArray();
 						JSONArray arrayJson = new JSONArray();
 						for (int i = 0; i < arrayCursos.length; i++) {
-							processaCursos(arrayCursos[i].toString(), objetivos, null, cursos, areasAtuacao, areasConhecimento, true, elementosFiltro, null);
+							processaCursos(arrayCursos[i].toString(), listas, opcoes);
 							arrayJson.add(arrayCursos[i].toString());
 						};
 						elemento.put("elemento", "curso");
 						elemento.put("assunto", "habilidade");
 						elemento.put("value", id);
 						elemento.put("elementos", arrayJson);
-						if (addObjeto(elementosFiltro, elemento)){
-							elementosFiltro.add(elemento);
-						};
+						listas.addElementosFiltro(elemento);
 			    	};
-			    	if (arrayListObjetivos != null){
+			    	if (arrayListObjetivos != null && opcoes.carregaHabilidadesObjetivos()){
 						BasicDBObject elemento = new BasicDBObject();
 				    	Object arrayObjetivos[] = arrayListObjetivos.toArray();
 						JSONArray arrayJson = new JSONArray();
@@ -540,25 +579,21 @@ public class Rest_Index {
 						elemento.put("assunto", "habilidade");
 						elemento.put("value", id);
 						elemento.put("elementos", arrayJson);
-						if (addObjeto(elementosFiltro, elemento)){
-							elementosFiltro.add(elemento);
-						};
+						listas.addElementosFiltro(elemento);
 			    	};
-			    	if (arrayListAreaConhecimento != null){
+			    	if (arrayListAreaConhecimento != null && opcoes.carregaHabilidadesAreaConhecimento()){
 						BasicDBObject elemento = new BasicDBObject();
 				    	Object arrayAreaConhecimento[] = arrayListAreaConhecimento.toArray();
 						JSONArray arrayJson = new JSONArray();
 						for (int i = 0; i < arrayAreaConhecimento.length; i++) {
-							processaAreaConhecimento(arrayAreaConhecimento[i].toString(), objetivos, null, cursos, areasAtuacao, areasConhecimento, true, elementosFiltro, null);
+							processaAreaConhecimento(arrayAreaConhecimento[i].toString(), listas, opcoes);
 							arrayJson.add(arrayAreaConhecimento[i].toString());
 						};
 						elemento.put("elemento", "areaConhecimento");
 						elemento.put("assunto", "habilidade");
 						elemento.put("value", id);
 						elemento.put("elementos", arrayJson);
-						if (addObjeto(elementosFiltro, elemento)){
-							elementosFiltro.add(elemento);
-						};
+						listas.addElementosFiltro(elemento);
 			    	};
 					//
 					// ***		carrega pré requisitos
@@ -570,7 +605,7 @@ public class Rest_Index {
 			    		Object arrayPreRequisitos[] = arrayList.toArray();
 						int z = 0;
 						while (z < arrayPreRequisitos.length) {
-							carregaPreRequisitosFiltro(arrayPreRequisitos[z].toString(), elementosFiltro, filtro );
+							carregaPreRequisitosFiltro(arrayPreRequisitos[z].toString(), listas, opcoes);
 							++z;
 						};
 			    	};
@@ -584,7 +619,7 @@ public class Rest_Index {
 	};
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private void processaCursos(String id, JSONArray objetivos, JSONArray habilidades, JSONArray cursos, JSONArray areasAtuacao, JSONArray areasConhecimento, Boolean filtro, JSONArray elementosFiltro, JSONArray preRequisitosCarregados) {
+	private void processaCursos(String id, Listas listas, Opcoes opcoes) {
 		Mongo mongo;
 		try {
 			mongo = new Mongo();
@@ -596,26 +631,24 @@ public class Rest_Index {
 				BasicDBObject curso = (BasicDBObject) cursor.get("documento");
 				ArrayList<?> arrayListHabilidades = new ArrayList<Object>(); 
 				arrayListHabilidades = (ArrayList<?>) curso.get("habilidades");
-				if (arrayListHabilidades != null && habilidades != null){
+				if (arrayListHabilidades != null && opcoes.carregaCursosHabilidades()){
 			    	Object arrayHabilidades[] = arrayListHabilidades.toArray();
 					//
 					// ***		carrega habilidades
 					//
 					int z = 0;
 					while (z < arrayHabilidades.length) {
-						processaHabilidades(arrayHabilidades[z].toString(), objetivos, habilidades, cursos, areasAtuacao, areasConhecimento, filtro, elementosFiltro, true, preRequisitosCarregados);
+						processaHabilidades(arrayHabilidades[z].toString(), listas, opcoes);
 						++z;
 					};
 				};
-		    	if (!filtro){
+		    	if (!opcoes.filtro()){
 					List arrayParent = (List) curso.get("parents");
 					if (arrayParent.size() == 0){
-						if (addObjeto(cursos, curso)){
-							cursos.add(cursor.get("documento"));
-						};
+						listas.addCursos(curso);
 					};
 		    	}else{
-					if (arrayListHabilidades != null){
+					if (arrayListHabilidades != null && opcoes.carregaCursosHabilidades()){
 				    	Object arrayHabilidades[] = arrayListHabilidades.toArray();
 						JSONArray arrayJson = new JSONArray();
 						for (int i = 0; i < arrayHabilidades.length; i++) {
@@ -629,9 +662,7 @@ public class Rest_Index {
 						elemento.put("assunto", "curso");
 						elemento.put("value", id);
 						elemento.put("elementos", arrayJson);
-						if (addObjeto(elementosFiltro, elemento)){
-							elementosFiltro.add(elemento);
-						};
+						listas.addElementosFiltro(elemento);
 					};
 				};
 			};			
@@ -642,7 +673,7 @@ public class Rest_Index {
 	};
 
 	@SuppressWarnings("unchecked")
-	private void processaAreaConhecimento(String id, JSONArray objetivos, JSONArray habilidades, JSONArray cursos, JSONArray areasAtuacao, JSONArray areasConhecimento, Boolean filtro, JSONArray elementosFiltro, JSONArray preRequisitosCarregados) {
+	private void processaAreaConhecimento(String id, Listas listas, Opcoes opcoes) {
 
 		Mongo mongo;
 		try {
@@ -656,26 +687,24 @@ public class Rest_Index {
 				BasicDBObject areaConhecimento = (BasicDBObject) cursor.get("documento");
 				ArrayList<?> arrayListHabilidades = new ArrayList<Object>(); 
 				arrayListHabilidades = (ArrayList<?>) areaConhecimento.get("habilidades");
-				if (arrayListHabilidades != null && habilidades != null){
+				if (arrayListHabilidades != null && opcoes.carregaAreaConhecimentoHabilidades()){
 					Object arrayHabilidades[] = arrayListHabilidades.toArray();
 					//
 					// ***		carrega habilidades
 					//
 					int z = 0;
 					while (z < arrayHabilidades.length) {
-						processaHabilidades(arrayHabilidades[z].toString(), objetivos, habilidades, cursos, areasAtuacao, null, filtro, elementosFiltro, true, preRequisitosCarregados);							
+						processaHabilidades(arrayHabilidades[z].toString(), listas, opcoes);							
 						++z;
 					};
 				};
-				if (!filtro){
+				if (!opcoes.filtro()){
 					//
 					// ***		carrega areas conhecimento
-					//			
-					if (addObjeto(areasConhecimento, areaConhecimento)){
-						areasConhecimento.add(areaConhecimento);
-					};
+					//
+					listas.addAreasConhecimento(areaConhecimento);
 				}else{
-					if (arrayListHabilidades != null){
+					if (arrayListHabilidades != null && opcoes.carregaAreaConhecimentoHabilidades()){
 						Object arrayHabilidades[] = arrayListHabilidades.toArray();
 						JSONArray arrayJson = new JSONArray();
 						for (int i = 0; i < arrayHabilidades.length; i++) {
@@ -689,9 +718,7 @@ public class Rest_Index {
 						elemento.put("assunto", "areaConhecimento");
 						elemento.put("value", id);
 						elemento.put("elementos", arrayJson);
-						if (addObjeto(elementosFiltro, elemento)){
-							elementosFiltro.add(elemento);
-						};
+						listas.addElementosFiltro(elemento);
 					};
 				};
 			};
@@ -703,7 +730,7 @@ public class Rest_Index {
 		};
 	};
 	@SuppressWarnings("unchecked")
-	private void processaAreaAtuacao(String id, JSONArray objetivos, JSONArray habilidades, JSONArray cursos, JSONArray areasAtuacao, JSONArray areasConhecimento, Boolean filtro, JSONArray elementosFiltro, JSONArray preRequisitosCarregados) {		
+	private void processaAreaAtuacao(String id, Listas listas, Opcoes opcoes) {		
 
 		Mongo mongo;
 		try {
@@ -720,30 +747,28 @@ public class Rest_Index {
 				//			
 				ArrayList<?> arrayListObjetivos = new ArrayList<Object>(); 
 				arrayListObjetivos = (ArrayList<?>) areaAtuacao.get("objetivos");
-				if (arrayListObjetivos != null && objetivos != null){
+				if (arrayListObjetivos != null && opcoes.carregaAreasAtuacaoObjetivos()){
 					Object arrayObjetivos[] = arrayListObjetivos.toArray();
 					//
 					// ***		carrega objetivos
 					//
 					int z = 0;
 					while (z < arrayObjetivos.length) {
-						processaObjetivos(arrayObjetivos[z].toString(), objetivos, habilidades, cursos, null, areasConhecimento, filtro, elementosFiltro, preRequisitosCarregados);
+						processaObjetivos(arrayObjetivos[z].toString(), listas, opcoes);
 						++z;
 					};
 				};
-				if (!filtro){
+				if (!opcoes.filtro()){
 					//
 					// ***		carrega areas atuacao
-					//			
-					if (addObjeto(areasAtuacao, areaAtuacao)){
-						areasAtuacao.add(areaAtuacao);
-					};
+					//
+					listas.addAreasAtuacao(areaAtuacao);
 				}else{
-					if (arrayListObjetivos != null  && objetivos != null){
+					if (arrayListObjetivos != null  && opcoes.carregaAreasAtuacaoObjetivos()){
 						Object arrayObjetivos[] = arrayListObjetivos.toArray();
 						JSONArray arrayJson = new JSONArray();
 						for (int i = 0; i < arrayObjetivos.length; i++) {
-							processaObjetivos(arrayObjetivos[i].toString(), objetivos, null, cursos, null, areasConhecimento, true, elementosFiltro, null);
+							processaObjetivos(arrayObjetivos[i].toString(), listas, opcoes);
 							arrayJson.add(arrayObjetivos[i].toString());
 						};
 						//
@@ -754,9 +779,7 @@ public class Rest_Index {
 						elemento.put("assunto", "areaAtuacao");
 						elemento.put("value", id);
 						elemento.put("elementos", arrayJson);
-						if (addObjeto(elementosFiltro, elemento)){
-							elementosFiltro.add(elemento);
-						};
+						listas.addElementosFiltro(elemento);
 					};
 				};
 			};
@@ -768,10 +791,7 @@ public class Rest_Index {
 		};
 	};
 
-	@SuppressWarnings("unchecked")
-	private void carregaHabilidade(JSONArray habilidades, JSONArray cursos, JSONArray objetivos, JSONArray areasAtuacao,
-			JSONArray areasConhecimento, String id, Boolean carregaPreRequisitos, Object nomeHabilidade, Boolean filtro,
-			JSONArray elementosFiltro, JSONArray preRequisitosCarregados) {
+	private void carregaHabilidade(String id, Listas listas, Opcoes opcoes) {
 		Mongo mongo;
 		try {
 			mongo = new Mongo();
@@ -786,27 +806,28 @@ public class Rest_Index {
 				//			
 				BasicDBObject idObj = new BasicDBObject();
 				idObj.put("id", id);
-				if (addObjeto(preRequisitosCarregados, idObj)){
-					habilidade.put ("nivel", "0");
-					habilidades.add (habilidade);
-					preRequisitosCarregados.add(idObj);
+				habilidade.put ("nivel", "0");
+				Boolean carregouHabilidade = false;
+				if (addObjeto(listas.habilidadesCarregadas(), idObj)){
+					listas.addHabilidades(habilidade);					
+					carregouHabilidade = true;
 				};
+				listas.addHabilidadesCarregadas(idObj);
 				ArrayList<?> arrayList = new ArrayList<Object>(); 
 		    	arrayList = (ArrayList<?>) habilidade.get("preRequisitos");
-		    	if (arrayList != null){
+		    	if (arrayList != null && carregouHabilidade){
 		    		Object arrayPreRequisitos[] = arrayList.toArray();
-					nomeHabilidade = habilidade.get("nome").toString();
 					//
 					// ***		carrega pré requisitos
 					//			
-					if (carregaPreRequisitos){
+					if (opcoes.carregaPreRequisitos()){
 						int z = 0;
 						while (z < arrayPreRequisitos.length) {
 							String preRequisito =arrayPreRequisitos[z].toString();
 							BasicDBObject idObjPreReq = new BasicDBObject();
 							idObjPreReq.put("id", preRequisito);
-							if (addObjeto(preRequisitosCarregados, idObjPreReq)){
-								carregaPreRequisitos(habilidades, cursos, objetivos, areasAtuacao, areasConhecimento, (String) preRequisito, "1", filtro, preRequisitosCarregados);
+							if (addObjeto(listas.habilidadesCarregadas(), idObjPreReq)){
+								carregaPreRequisitos((String) preRequisito, "1", listas, opcoes);
 							};
 							++z;
 						};
@@ -819,8 +840,7 @@ public class Rest_Index {
 		};
 	};
 
-	@SuppressWarnings("unchecked")
-	private void carregaPreRequisitos(JSONArray habilidades, JSONArray cursos,JSONArray objetivos, JSONArray areasAtuacao,JSONArray areasConhecimento, String id, String nivel, Boolean filtro, JSONArray preRequisitosCarregados) {
+	private void carregaPreRequisitos(String id, String nivel, Listas listas, Opcoes opcoes) {
 		Mongo mongo;
 		try {
 			mongo = new Mongo();
@@ -830,26 +850,25 @@ public class Rest_Index {
 			DBObject cursor = collection.findOne(searchQuery);
 			if (cursor != null){
 				BasicDBObject habilidade = (BasicDBObject) cursor.get("documento");
-				habilidade.put ("nivel", nivel);
 				Boolean carregouHabilidade = false;
 				BasicDBObject idObj = new BasicDBObject();
 				idObj.put("id", id);
-				if (addObjeto(preRequisitosCarregados, idObj)){
+				habilidade.put ("nivel", nivel);
+				if (addObjeto(listas.habilidadesCarregadas(), idObj)){
+					listas.addHabilidades(habilidade);
 					carregouHabilidade = true;
-					habilidades.add (habilidade);
-					preRequisitosCarregados.add(idObj);
 				};
+				listas.addHabilidadesCarregadas(idObj);
 				//
 				// ***		carrega cursos
 				//
-/*				ArrayList<?> arrayListCursos = new ArrayList<Object>(); 
+				ArrayList<?> arrayListCursos = new ArrayList<Object>(); 
 		    	arrayListCursos = (ArrayList<?>) habilidade.get("cursos");
-		    	if (arrayListCursos != null){
+		    	if (arrayListCursos != null && opcoes.carregaCursosPreRequisitos()){
 			    	Object arrayCursos[] = arrayListCursos.toArray();
 					int z = 0;
 					while (z < arrayCursos.length) {
-						String curso = arrayCursos[z].toString();
-						carregaCurso(cursos, curso);
+						carregaCurso(arrayCursos[z].toString(), listas, opcoes);
 						++z;
 					};
 		    	};
@@ -858,12 +877,11 @@ public class Rest_Index {
 				//
 				ArrayList<?> arrayListObjetivo = new ArrayList<Object>(); 
 		    	arrayListObjetivo = (ArrayList<?>) habilidade.get("objetivos");
-		    	if (arrayListObjetivo != null){
+		    	if (arrayListObjetivo != null && opcoes.carregaObjetivosPreRequisitos()){
 			    	Object arrayObjetivo[] = arrayListObjetivo.toArray();
 					int w = 0;
 					while (w < arrayObjetivo.length) {
-						String objetivo = arrayObjetivo[w].toString();
-						carregaObjetivo(objetivos, areasAtuacao, objetivo);
+						carregaObjetivo(arrayObjetivo[w].toString(), listas, opcoes);
 						++w;
 					};
 		    	};
@@ -872,15 +890,15 @@ public class Rest_Index {
 				//			
 				ArrayList<?> arrayListAreaConhecimento = new ArrayList<Object>(); 
 				arrayListAreaConhecimento = (ArrayList<?>) habilidade.get("areaConhecimento");
-				if (arrayListAreaConhecimento != null){
+				if (arrayListAreaConhecimento != null && opcoes.carregaAreasConhecimentoPreRequisitos()){
 					Object arrayAreaConhecimento[] = arrayListAreaConhecimento.toArray();
 					int w = 0;
 					while (w < arrayAreaConhecimento.length) {
-						carregaAreaConhecimento(areasConhecimento, arrayAreaConhecimento[w].toString());
+						carregaAreaConhecimento(arrayAreaConhecimento[w].toString(), listas, opcoes);
 						++w;
 					};
 				};
-*/
+
 				mongo.close();
 
 				if (carregouHabilidade){
@@ -896,11 +914,11 @@ public class Rest_Index {
 							String preRequisito =arrayPreRequisitos[z].toString();
 							BasicDBObject idObjPreReq = new BasicDBObject();
 							idObjPreReq.put("id", preRequisito);
-							if (addObjeto(preRequisitosCarregados, idObjPreReq)){
+							if (addObjeto(listas.habilidadesCarregadas(), idObjPreReq)){
 								int nivelInt = Integer.valueOf(nivel);
 								nivelInt++;
 								String nivelString = String.valueOf(nivelInt);
-								carregaPreRequisitos(habilidades, cursos, objetivos, areasAtuacao, areasConhecimento, (String) preRequisito, nivelString, filtro, preRequisitosCarregados );
+								carregaPreRequisitos(preRequisito.toString(), nivelString, listas, opcoes);
 							};
 							++z;
 				    	};
@@ -915,7 +933,7 @@ public class Rest_Index {
 	};
 	
 	@SuppressWarnings("unchecked")
-	private void carregaPreRequisitosFiltro(String id, JSONArray elementosFiltro, Boolean filtro) {
+	private void carregaPreRequisitosFiltro(String id, Listas listas, Opcoes opcoes) {
 		Mongo mongo;
 		try {
 			mongo = new Mongo();
@@ -941,11 +959,11 @@ public class Rest_Index {
 				ArrayList<?> arrayListAreaConhecimento = new ArrayList<Object>(); 
 				arrayListAreaConhecimento = (ArrayList<?>) habilidade.get("areaConhecimento");
 
-				if (filtro){
+				if (opcoes.filtro()){
 					//
 					// ***		carrega filtros
 					//			
-			    	if (arrayListCursos != null){
+			    	if (arrayListCursos != null && opcoes.carregaCursosPreRequisitos()){
 						BasicDBObject elemento = new BasicDBObject();
 				    	Object[] arrayCursos = arrayListCursos.toArray();
 						JSONArray arrayJson = new JSONArray();
@@ -956,11 +974,9 @@ public class Rest_Index {
 						elemento.put("assunto", "habilidade");
 						elemento.put("value", id);
 						elemento.put("elementos", arrayJson);
-						if (addObjeto(elementosFiltro, elemento)){
-							elementosFiltro.add(elemento);
-						};
+						listas.addElementosFiltro(elemento);
 			    	};
-			    	if (arrayListObjetivos != null){
+			    	if (arrayListObjetivos != null && opcoes.carregaObjetivosPreRequisitos()){
 						BasicDBObject elemento = new BasicDBObject();
 				    	Object arrayObjetivos[] = arrayListObjetivos.toArray();
 						JSONArray arrayJson = new JSONArray();
@@ -971,11 +987,9 @@ public class Rest_Index {
 						elemento.put("assunto", "habilidade");
 						elemento.put("value", id);
 						elemento.put("elementos", arrayJson);
-						if (addObjeto(elementosFiltro, elemento)){
-							elementosFiltro.add(elemento);
-						};
+						listas.addElementosFiltro(elemento);
 			    	};
-			    	if (arrayListAreaConhecimento != null){
+			    	if (arrayListAreaConhecimento != null && opcoes.carregaAreasConhecimentoPreRequisitos()){
 						BasicDBObject elemento = new BasicDBObject();
 				    	Object arrayAreaConhecimento[] = arrayListAreaConhecimento.toArray();
 						JSONArray arrayJson = new JSONArray();
@@ -986,9 +1000,7 @@ public class Rest_Index {
 						elemento.put("assunto", "habilidade");
 						elemento.put("value", id);
 						elemento.put("elementos", arrayJson);
-						if (addObjeto(elementosFiltro, elemento)){
-							elementosFiltro.add(elemento);
-						};
+						listas.addElementosFiltro(elemento);
 			    	};
 				};
 			};			
@@ -998,8 +1010,8 @@ public class Rest_Index {
 		};
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private void carregaCurso(JSONArray cursos, String id) {
+	@SuppressWarnings({ "rawtypes" })
+	private void carregaCurso(String id, Listas listas, Opcoes opcoes) {
 		Mongo mongo;
 		try {
 			mongo = new Mongo();
@@ -1009,10 +1021,10 @@ public class Rest_Index {
 			DBObject cursor = collection.findOne(searchQuery);
 			if (cursor != null){
 				BasicDBObject curso = (BasicDBObject) cursor.get("documento");
-				if (addObjeto(cursos, curso)){
+				if (addObjeto(listas.cursos(), curso)){
 					List arrayParent = (List) curso.get("parents");
 					if (arrayParent.size() == 0){
-						cursos.add (curso);
+						listas.addCursos(curso);
 					};
 				};
 			};			
@@ -1023,8 +1035,7 @@ public class Rest_Index {
 		
 	};
 	
-	@SuppressWarnings("unchecked")
-	private void carregaAreaAtuacao(JSONArray areasAtuacao, String id) {
+	private void carregaAreaAtuacao(String id, Listas listas, Opcoes opcoes) {
 		Mongo mongo;
 		try {
 			mongo = new Mongo();
@@ -1034,9 +1045,7 @@ public class Rest_Index {
 			DBObject cursor = collection.findOne(searchQuery);
 			if (cursor != null){
 				BasicDBObject areaAtuacao = (BasicDBObject) cursor.get("documento");
-				if (addObjeto(areasAtuacao, areaAtuacao)){
-					areasAtuacao.add (areaAtuacao);
-				};
+				listas.addAreasAtuacao(areaAtuacao);
 			};			
 			mongo.close();
 		} catch (UnknownHostException | MongoException e) {
@@ -1044,8 +1053,7 @@ public class Rest_Index {
 		};
 		
 	};
-	@SuppressWarnings("unchecked")
-	private void carregaAreaConhecimento(JSONArray areasConhecimento, String id) {
+	private void carregaAreaConhecimento(String id, Listas listas, Opcoes opcoes) {
 		Mongo mongo;
 		try {
 			mongo = new Mongo();
@@ -1055,9 +1063,10 @@ public class Rest_Index {
 			DBObject cursor = collection.findOne(searchQuery);
 			if (cursor != null){
 				BasicDBObject areaConhecimento = (BasicDBObject) cursor.get("documento");
-				if (addObjeto(areasConhecimento, areaConhecimento)){
-					areasConhecimento.add (areaConhecimento);
+				if (addObjeto(listas.areasConhecimento(), areaConhecimento)){
+					System.out.println("area: " + id + " - " + areaConhecimento.get("nome"));
 				};
+				listas.addAreasConhecimento(areaConhecimento);
 			};			
 			mongo.close();
 		} catch (UnknownHostException | MongoException e) {
@@ -1066,8 +1075,7 @@ public class Rest_Index {
 		
 	};
 
-	@SuppressWarnings("unchecked")
-	private void carregaObjetivo(JSONArray objetivos, JSONArray areasAtuacao, String id) {
+	private void carregaObjetivo(String id, Listas listas, Opcoes opcoes) {
 		Mongo mongo;
 		try {
 			mongo = new Mongo();
@@ -1079,10 +1087,8 @@ public class Rest_Index {
 				BasicDBObject objetivo = (BasicDBObject) cursor.get("documento");
 				//
 				// ***		carrega objetivo
-				//			
-				if (addObjeto(objetivos, objetivo)){
-					objetivos.add(objetivo);
-				};
+				//
+				listas.addObjetivos(objetivo);
 			};			
 			mongo.close();
 		} catch (UnknownHostException | MongoException e) {
@@ -1265,47 +1271,44 @@ public class Rest_Index {
 	@Path("/lista")	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public BasicDBObject ObterCursos(@QueryParam("characters") String characters, @QueryParam("planejamentoLista") String planejamentoLista) {
+	public BasicDBObject ObterLista(@QueryParam("characters") String characters, @QueryParam("planejamentoLista") String planejamentoLista) {
 		
-		BasicDBObject listas = new BasicDBObject();
+		BasicDBObject results = new BasicDBObject();
+		Listas listas = new Listas();
+		Opcoes opcoes = new Opcoes(); 
+		
 		if (planejamentoLista.equals("true")){			
-			JSONArray objetivos = new JSONArray();
-			JSONArray habilidades = new JSONArray();
-			JSONArray cursos = new JSONArray();
-			JSONArray areaAtuacao = new JSONArray();
-			JSONArray areaConhecimento = new JSONArray();
-			JSONArray preRequisitosCarregados = new JSONArray();
 
-			carregaIndex("Objetivo", objetivos, characters, true, objetivos, null, null, null, null, false, preRequisitosCarregados);
-			carregaIndex("Habilidade", habilidades, characters, true, null, habilidades, null, null, null, false, preRequisitosCarregados);
-			carregaIndex("Curso", cursos, characters, true, null, null, cursos, null, null, false, preRequisitosCarregados);
-			carregaIndex("Área Atuação", areaAtuacao, characters, true, null, null, null, areaAtuacao, null, false, preRequisitosCarregados);
-			carregaIndex("Área Conhecimento", areaConhecimento, characters, true, null, null, null, null, areaConhecimento, false, preRequisitosCarregados);
-			listas.put("objetivos", objetivos);
-			listas.put("habilidades", habilidades);
-			listas.put("cursos", cursos);
-			listas.put("areaAtuacao", areaAtuacao);
-			listas.put("areaConhecimento", areaConhecimento);
+			carregaIndex("Objetivo", listas.objetivos(), characters, true, listas, opcoes);
+			carregaIndex("Habilidade", listas.habilidades(), characters, true, listas, opcoes);
+			carregaIndex("Curso", listas.cursos(), characters, true, listas, opcoes);
+			carregaIndex("Área Atuação", listas.areasAtuacao(), characters, true, listas, opcoes);
+			carregaIndex("Área Conhecimento", listas.areasConhecimento(), characters, true, listas, opcoes);
+			results.put("objetivos", listas.objetivos());
+			results.put("habilidades", listas.habilidades());
+			results.put("cursos", listas.cursos());
+			results.put("areaAtuacao", listas.areasAtuacao());
+			results.put("areaConhecimento", listas.areasConhecimento());
 		}else{
 			if (planejamentoLista.equals("objetivos")){			
 				JSONArray documentos = new JSONArray();
-				carregaIndex("Objetivo", documentos, characters, false, null, null, null, null, null, false, null);
-				listas.put("pesquisa", documentos);
+				carregaIndex("Objetivo", documentos, characters, false, listas, opcoes);
+				results.put("pesquisa", documentos);
 			}else{
 				JSONArray documentos = new JSONArray();
-				carregaIndex("Objetivo", documentos, characters, false, null, null, null, null, null, false, null);
-				carregaIndex("Habilidade", documentos, characters, false, null, null, null, null, null, false, null);
-				carregaIndex("Curso", documentos, characters, false, null, null, null, null, null, false, null);
-				carregaIndex("Área Atuação", documentos, characters, false, null, null, null, null, null, false, null);
-				carregaIndex("Área Conhecimento", documentos, characters, false, null, null, null, null, null,false, null);
-				listas.put("pesquisa", documentos);
+				carregaIndex("Objetivo", documentos, characters, false, listas, opcoes);
+				carregaIndex("Habilidade", documentos, characters, false, listas, opcoes);
+				carregaIndex("Curso", documentos, characters, false, listas, opcoes);
+				carregaIndex("Área Atuação", documentos, characters, false, listas, opcoes);
+				carregaIndex("Área Conhecimento", documentos, characters, false, listas, opcoes);
+				results.put("pesquisa", documentos);
 			};
 		};
-		return listas;			
+		return results;			
 	};
 
 	@SuppressWarnings("unchecked")
-	private void carregaIndex(String assunto, JSONArray documentos, String characters, Boolean lista, JSONArray objetivos, JSONArray habilidades, JSONArray cursos, JSONArray areasAtuacao, JSONArray areasConhecimento, Boolean filtro, JSONArray preRequisitosCarregados) {
+	private void carregaIndex(String assunto, JSONArray documentos, String characters, Boolean lista, Listas listas, Opcoes opcoes) {
 		Mongo mongo;
 			try {
 				mongo = new Mongo();
@@ -1329,22 +1332,22 @@ public class Rest_Index {
 							if (lista){
 								switch (assunto) {
 								case "Objetivos":
-									processaObjetivos(jsonObject.get("id").toString(), objetivos, null, null, null, null, false, null, preRequisitosCarregados);
+									processaObjetivos(jsonObject.get("id").toString(), listas, opcoes);
 									break;
 								case "Objetivo":
-									processaObjetivos(jsonObject.get("id").toString(), objetivos, habilidades, cursos, areasAtuacao, areasConhecimento, false, null, preRequisitosCarregados);
+									processaObjetivos(jsonObject.get("id").toString(), listas, opcoes);
 									break;
 								case "Habilidade":
-									processaHabilidades(jsonObject.get("id").toString(), objetivos, habilidades, cursos, areasAtuacao, areasConhecimento, false, null, true, preRequisitosCarregados);
+									processaHabilidades(jsonObject.get("id").toString(), listas, opcoes);
 								break;
 								case "Curso":
-									processaCursos(jsonObject.get("id").toString(), objetivos, habilidades, cursos, areasAtuacao, areasConhecimento, false, null, preRequisitosCarregados);
+									processaCursos(jsonObject.get("id").toString(), listas, opcoes);
 								break;
 								case "Área Atuação":
-									processaAreaAtuacao(jsonObject.get("id").toString(), objetivos, habilidades, cursos, areasAtuacao, areasConhecimento, false, null, preRequisitosCarregados);
+									processaAreaAtuacao(jsonObject.get("id").toString(), listas, opcoes);
 								break;
 								case "Área Conhecimento":
-									processaAreaConhecimento(jsonObject.get("id").toString(), objetivos, habilidades, cursos, areasAtuacao, areasConhecimento, false, null, preRequisitosCarregados);
+									processaAreaConhecimento(jsonObject.get("id").toString(), listas, opcoes);
 								break;
 
 								default:

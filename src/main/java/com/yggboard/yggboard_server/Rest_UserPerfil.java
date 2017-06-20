@@ -473,7 +473,7 @@ public class Rest_UserPerfil {
     	Object arrayElementos[] = arrayListElementos.toArray(); 
 		ArrayList <String> arrayListElementosFaltantes = new ArrayList(); 
 	    JSONObject jsonQtdeHabilidades = ObterTotalHabilidades(objCarreiras.get("nome"), arrayElementos, arrayListElementosFaltantes);
-	    jsonDocumento.put("totalHabilidades", jsonQtdeHabilidades.get("totalHabilidades"));
+	    jsonDocumento.put("totalHabilidades", arrayElementos.length);
 	    jsonDocumento.put("totalPossuiHabilidades", jsonQtdeHabilidades.get("totalPossuiHabilidades"));
     	ArrayList arrayListNecessarios = new ArrayList(); 
     	arrayListNecessarios = (ArrayList) objCarreiras.get("necessarios");
