@@ -4,10 +4,10 @@
 
 function testaObter() {
 	var objJson = {
-		collection : "usuarios",
+		collection : "badges",
 		keys : [ {
-			key : "documento.email",
-			value : "grenneglr@gmail.com"
+			key : "documento.id",
+			value : variavel
 		} ]
 	};
 	$.ajax({
@@ -88,20 +88,57 @@ function testaAtualizar() {
 	var objJson = {
 		collection : "userPerfil",
 		keys : [ {
-			key : "documento.usuario",
+			key : "documento.email",
 			value : "grenne@grenne.com"
 		} ],
-		update : [ {
-			field : "grenne",
-			value : doc1
-		} ]
+		update : 
+			[ 
+				{
+					field : "city",
+					value : ""
+				}, 
+				{
+					field : "phone",
+					value : ""
+				}, 
+				{
+					field : "escolaridade",
+					value : ["","","",""]
+				}				
+			]
 	};
+	var a = {"collection":"usuarios","keys":[{"key":"documento.usuario","value":"testeCerto@teste.com"}],"update":[{"field":"city","value":""},{"field":"birthDate","value":""},{"field":"celPhone","value":""},{"field":"escolaridade","value":[]},{"field":"cursos","value":["mais teste","teste","1900","1"]},{"field":"empresas","value":["teste","teste","Comercial","Infraestrutura","teste2","teste2","Tecnologia da Informação","Varejo"]},{"field":"email","value":"testeCerto@teste.com"}]}
+	var teste = 
+				{
+					"collection":"usuarios",
+					"keys":
+						[
+							{
+								"key":"documento.email",
+								"value":"testeCerto@teste.com"
+							}
+						],
+					"update":
+						[
+							{"field":"city","value":""},
+							{"field":"birthDate","value":""},
+							{"field":"celPhone","value":""},
+							{"field":"escolaridade","value":[]},
+							{"field":"cursos","value":["mais teste","teste","1900","1"]},
+							{"field":"empresas","value":
+								[{"teste":"teste","Comercial":"Infraestrutura","teste2":"teste2","Tecnologia da Informação":"Varejo"},
+									{"teste":"teste","Comercial":"Infraestrutura","teste2":"teste2","Tecnologia da Informação":"Varejo"},
+									{"teste":"teste","Comercial":"Infraestrutura","teste2":"teste2","Tecnologia da Informação":"Varejo"}]
+							},
+							{"field":"email","value":"testeCerto@teste.com"}
+							]
+				};
 	$.ajax({
 		type : "POST",
 		url : "http://" + localStorage.urlServidor + ":8080/yggboard_server/rest/crud/atualizar",
 		contentType : "application/json; charset=utf-8",
 		dataType : 'json',
-		data : JSON.stringify(objJson),
+		data : JSON.stringify(teste),
 		async : false
 
 	}).done(function(data) {

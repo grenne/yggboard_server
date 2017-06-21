@@ -106,7 +106,13 @@ public class Commons_DB {
 							objDocumento.remove(setUpdate.get("field"));
 							JSONArray arrayField = new JSONArray();
 							for (int j = 0; j < docUpdate.size(); j++) {
-								arrayField.add(docUpdate.get(i));
+								if (docUpdate.get(j) instanceof String){
+									arrayField.add(docUpdate.get(j));									
+								}else{
+									BasicDBObject docUpdateItem = new BasicDBObject();
+									docUpdateItem.putAll((Map) docUpdate.get(j));
+									arrayField.add(docUpdateItem);
+								};
 							};
 							objDocumento.put((String) setUpdate.get("field"), arrayField);
 						}else{

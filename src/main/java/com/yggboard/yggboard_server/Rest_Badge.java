@@ -35,11 +35,11 @@ public class Rest_Badge {
 	@Path("/obter")	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public JSONObject ObterBadge(@QueryParam("badge") String badge) throws UnknownHostException, MongoException {
+	public JSONObject ObterBadge(@QueryParam("id") String id) throws UnknownHostException, MongoException {
 		Mongo mongo = new Mongo();
 		DB db = (DB) mongo.getDB("yggboard");
 		DBCollection collection = db.getCollection("badges");
-		BasicDBObject searchQuery = new BasicDBObject("documento.mail", badge);
+		BasicDBObject searchQuery = new BasicDBObject("documento.id", id);
 		DBObject cursor = collection.findOne(searchQuery);
 		JSONObject documento = new JSONObject();
 		BasicDBObject obj = (BasicDBObject) cursor.get("documento");

@@ -119,6 +119,7 @@ function processaHabilidades (data){
 					nome:fields[4],
 					descricao:fields[5],
 					areaConhecimento:[],
+					areaConhecimentoNome:[],
 					preRequisitos:[],
 					preRequisitosNome:[],
 					tags:[],
@@ -131,23 +132,25 @@ function processaHabilidades (data){
 	if (fields[6]){
 		var array = fields[6].split(",");
 		for (var i = 0; i < array.length; i++) {
-			objJson.insert.documento.areaConhecimento.push(array[i].replace (" ",""));			
+			var nome = nomeAreaConhecimento(array[i].replace (" ",""));
+			objJson.insert.documento.areaConhecimento.push(array[i].replace (" ",""));
+			if (nome != ""){
+				objJson.insert.documento.areaConhecimentoNome.push(nome);
+			};
 		}
-	};
-	if (fields[0] == "10091"){
-		console.log ("aqui");
 	};
 	if (fields[7]){
 		var array = fields[7].split(",");
 		for (var i = 0; i < array.length; i++) {
 			var arrayPipe = array[i].split("|");
-			var nome = nomeHabilidade(arrayPipe[0]);
-			if (nome != ""){
-				objJson.insert.documento.preRequisitos.push(array[i]);
-				objJson.insert.documento.preRequisitosNome.push(nome);
-			}else{
-				console.log ("pré requisitos não encontrado: " + array[i]);
-			}				
+			objJson.insert.documento.preRequisitos.push(array[i]);
+			var nomes = "";
+			var pipe = "";
+			for (var z = 0; z < arrayPipe.length; z++) {
+				nomes = nomes + pipe + nomeHabilidade(arrayPipe[z]);
+				pipe = "|";
+			};
+			objJson.insert.documento.preRequisitosNome.push(nomes);
 		}
 	};
 	if (fields[8]){
@@ -356,15 +359,12 @@ function processaAreaAtuacao (data){
 
 function nomeHabilidade (id){
 	habilidades = JSON.parse(sessionStorage.getItem("habilidades"));
-	var nome = "";
+	var nome = " ";
 	$.each(habilidades, function( i, habilidade) {
 		if (id.trim() == habilidade.id){
 			nome =habilidade.nome
 		};
 	});
-	if (nome == ""){
-		console.log("id não encontrado");
-	};
 
 	return nome;
 };
@@ -373,8 +373,20 @@ function nomeAreaAtuacao (id){
 	areasAtuacao = JSON.parse(sessionStorage.getItem("areaAtuacao"));
 	var nome = "";
 	$.each(areasAtuacao, function( i, areaAtuacao) {
-		if (id == areaAtuacao.id){
+		if (id.trim() == areaAtuacao.id){
 			nome =areaAtuacao.nome
+		}
+	});
+
+	return nome;
+};
+
+function nomeAreaConhecimento (id){
+	areasConhecimento = JSON.parse(sessionStorage.getItem("areaConhecimento"));
+	var nome = "";
+	$.each(areasConhecimento, function( i, areaConhecimento) {
+		if (id.trim() == areaConhecimento.id){
+			nome = areaConhecimento.nome
 		}
 	});
 
