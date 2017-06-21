@@ -131,7 +131,7 @@ public class Opcoes {
 		carregaHabilidadesCursos = true;
 		carregaHabilidadesObjetivos = true;
 		carregaObjetivosAreasAtuacao = true;
-		carregaHabilidadesAreaConhecimento = true;	
+		carregaHabilidadesAreaConhecimento = true;
 	};
 	public void setFiltro(Boolean filtro) {
 		this.filtro = filtro;

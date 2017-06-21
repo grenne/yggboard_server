@@ -37,7 +37,7 @@ public class Rest_Usuario {
 		keysArray.add(key);
 		ArrayList<JSONObject> fieldsArray = new ArrayList<>();
 		JSONObject field = new JSONObject();
-		field.put("field", "documento.status");
+		field.put("field", "status");
 		field.put("value", "confirmado");
 		fieldsArray.add(field);
 		

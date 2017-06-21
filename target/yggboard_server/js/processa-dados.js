@@ -65,17 +65,14 @@ function processaCursos (data){
 	if (fields[6]){
 		var array = fields[6].split(",");
 		for (var i = 0; i < array.length; i++) {
-			var array_1 = array[i].split("|");
-			for (var z = 0; z < array_1.length; z++) {
-				var nome = nomeHabilidade(array_1[z]);
-				if (nome != ""){
-					objJson.insert.documento.habilidades.push(array_1[z]);
-					objJson.insert.documento.habilidadesNome.push(nome);
-				}else{
-					objJson.insert.documento.habilidades.push(array_1[z]);
-					console.log ("habilidade curso não encontrado: " + array_1[z]);
-				}				
-			}
+			var nome = nomeHabilidade(array[i]);
+			if (nome != ""){
+				objJson.insert.documento.habilidades.push(array[i]);
+				objJson.insert.documento.habilidadesNome.push(nome);
+			}else{
+				objJson.insert.documento.habilidades.push(array[i]);
+				console.log ("habilidade curso não encontrado: " + array[i]);
+			}				
 		}
 	};
 	if (fields[17]){
@@ -98,7 +95,7 @@ function processaCursos (data){
 	};
 	
 	if (fields[0]){
-		rest_incluir (objJson, semAcao, semAcao);
+		rest_incluir (objJson, restOk, semAcao);
 	};
 	
 };
@@ -143,16 +140,14 @@ function processaHabilidades (data){
 	if (fields[7]){
 		var array = fields[7].split(",");
 		for (var i = 0; i < array.length; i++) {
-			var array_1 = array[i].split("|");
-			for (var z = 0; z < array_1.length; z++) {
-				var nome = nomeHabilidade(array_1[z]);
-				if (nome != ""){
-					objJson.insert.documento.preRequisitos.push(array_1[z]);
-					objJson.insert.documento.preRequisitosNome.push(nome);
-				}else{
-					console.log ("pré requisitos não encontrado: " + array_1[z]);
-				}				
-			}
+			var arrayPipe = array[i].split("|");
+			var nome = nomeHabilidade(arrayPipe[0]);
+			if (nome != ""){
+				objJson.insert.documento.preRequisitos.push(array[i]);
+				objJson.insert.documento.preRequisitosNome.push(nome);
+			}else{
+				console.log ("pré requisitos não encontrado: " + array[i]);
+			}				
 		}
 	};
 	if (fields[8]){
@@ -218,31 +213,25 @@ function processaObjetivos (data){
 	if (fields[13]){
 		var array = fields[13].split(",");
 		for (var i = 0; i < array.length; i++) {
-			var array_1 = array[i].split("|");
-			for (var z = 0; z < array_1.length; z++) {
-				var nome = nomeHabilidade(array_1[z]);
-				if (nome != ""){
-					objJson.insert.documento.necessarios.push(array_1[z]);
-					objJson.insert.documento.necessariosNome.push(nome);
-				}else{
-					console.log ("necessarios objetivo não encontrado: " + array_1[z]);
-				}				
-			}
+			var nome = nomeHabilidade(array[i]);
+			if (nome != ""){
+				objJson.insert.documento.necessarios.push(array[i]);
+				objJson.insert.documento.necessariosNome.push(nome);
+			}else{
+				console.log ("necessarios objetivo não encontrado: " + array[i]);
+			}				
 		}
 	};
 	if (fields[15]){
 		var array = fields[15].split(",");
 		for (var i = 0; i < array.length; i++) {
-			var array_1 = array[i].split("|");
-			for (var z = 0; z < array_1.length; z++) {
-				var nome = nomeHabilidade(array_1[z]);
-				if (nome != ""){
-					objJson.insert.documento.recomendados.push(array_1[z]);
-					objJson.insert.documento.recomendadosNome.push(nome);
-				}else{
-					console.log ("recomendado objetivo não encontrado: " + array_1[z]);
-				}				
-			}
+			var nome = nomeHabilidade(array[i]);
+			if (nome != ""){
+				objJson.insert.documento.recomendados.push(array[i]);
+				objJson.insert.documento.recomendadosNome.push(nome);
+			}else{
+				console.log ("recomendado objetivo não encontrado: " + array[i]);
+			}				
 		}
 	};
 	
@@ -283,16 +272,13 @@ function processaBadges (data){
 	if (fields[4]){
 		var array = fields[4].split(",");
 		for (var i = 0; i < array.length; i++) {
-			var array_1 = array[i].split("|");
-			for (var z = 0; z < array_1.length; z++) {
-				var nome = nomeHabilidade(array_1[z]);
-				if (nome != ""){
-					objJson.insert.documento.habilidades.push(array_1[z]);
-					objJson.insert.documento.habilidadesNome.push(nome);
-				}else{
-					console.log ("habilidade curso não encontrado: " + array_1[z]);
-				}				
-			}
+			var nome = nomeHabilidade(array[i]);
+			if (nome != ""){
+				objJson.insert.documento.habilidades.push(array[i]);
+				objJson.insert.documento.habilidadesNome.push(nome);
+			}else{
+				console.log ("habilidade curso não encontrado: " + array[i]);
+			}				
 		}
 	};
 	if (fields[5]){
@@ -372,10 +358,13 @@ function nomeHabilidade (id){
 	habilidades = JSON.parse(sessionStorage.getItem("habilidades"));
 	var nome = "";
 	$.each(habilidades, function( i, habilidade) {
-		if (id == habilidade.id){
+		if (id.trim() == habilidade.id){
 			nome =habilidade.nome
-		}
+		};
 	});
+	if (nome == ""){
+		console.log("id não encontrado");
+	};
 
 	return nome;
 };

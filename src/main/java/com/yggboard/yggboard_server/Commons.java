@@ -275,6 +275,15 @@ public class Commons {
 		array.add(elemento);
 		return array;
 	};
+
+	public String preRequisito(String arrayPreRequisito) {
+		if (arrayPreRequisito != null){
+			String[] array = arrayPreRequisito.split("|");
+			return array[0].toString();
+		}else{
+			return "";
+		}
+	}
 	
 
 }

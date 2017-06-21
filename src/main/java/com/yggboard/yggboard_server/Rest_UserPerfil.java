@@ -624,6 +624,7 @@ public class Rest_UserPerfil {
 	};
 	
 	private void atualizaDependencia(String elemento, List<String> array) {
+		Commons commons = new Commons();
 		Mongo mongo;
 		try {
 			mongo = new Mongo();
@@ -638,12 +639,12 @@ public class Rest_UserPerfil {
 				for (int i = 0; i < arrayPreRequisitos.size(); i++) {
 					Boolean existente = false;
 					for (int w = 0; w < array.size(); w++) {
-						if (arrayPreRequisitos.get(i).toString() == array.get(i).toString()){
+						if (commons.preRequisito(arrayPreRequisitos.get(i).toString()) == array.get(i).toString()){
 							existente = true;
 						};
 					};
 					if (!existente){
-						array.add(arrayPreRequisitos.get(i).toString());
+						array.add(commons.preRequisito(arrayPreRequisitos.get(i).toString()));
 					};					
 				};
 			};
@@ -652,7 +653,6 @@ public class Rest_UserPerfil {
 			e.printStackTrace();
 		};
 	};
-
 	@SuppressWarnings({ "unchecked", "unused" })
 	@Path("/lista")	
 	@GET

@@ -80,7 +80,11 @@ public class Commons_DB {
 			for (int i = 0; i < arraySetQuery.size(); i++) {
 				JSONObject setQuery = new JSONObject();
 				setQuery.putAll((Map) arraySetQuery.get(i));
-				searchQuery.put((String) setQuery.get("key"), (String) setQuery.get("value"));
+				if (setQuery.get("value") instanceof Object){
+					searchQuery.put((String) setQuery.get("key"), setQuery.get("value"));
+				}else{
+					searchQuery.put((String) setQuery.get("key"), (String) setQuery.get("value"));
+				};
 			};
 			DBObject cursor = collection.findOne(searchQuery);
 			if (cursor != null){
