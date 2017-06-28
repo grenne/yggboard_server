@@ -470,6 +470,18 @@ public class Rest_UserPerfil {
 						};
 					};
 				};
+				if (item.equals("seguindo")){
+					ArrayList arrayList = new ArrayList(); 
+					arrayList = (ArrayList) jsonPerfil.get("seguindo");
+					if (arrayList != null){
+				    	Object array[] = arrayList.toArray(); 
+						int w = 0;
+						while (w < array.length) {
+							documentos.add(getUserPerfil(array[w].toString()));
+							++w;
+						};
+					};
+				};
 				if (item.equals("sugestao-relacionamentos")){
 					ArrayList arrayList = new ArrayList(); 
 					arrayList = (ArrayList) jsonPerfil.get("seguindo");
