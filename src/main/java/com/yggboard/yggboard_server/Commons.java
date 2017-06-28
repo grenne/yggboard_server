@@ -6,6 +6,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Map;
+
+import javax.ws.rs.core.Response;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -16,6 +19,7 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.Mongo;
 import com.mongodb.MongoException;
+import com.sun.xml.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
 
 
 public class Commons {
@@ -230,24 +234,21 @@ public class Commons {
 		return strDate.substring(0, 2) + mesAlpha + strDate.substring(4, 8);
 	};
 
+	@SuppressWarnings("rawtypes")
 	public Object nomeHabilidade(String id) {
-		Mongo mongo;
-		try {
-			mongo = new Mongo();
-			DB db = (DB) mongo.getDB("yggboard");
-			DBCollection collection = db.getCollection("habilidades");
-			BasicDBObject searchQuery = new BasicDBObject("documento.id", id);
-			DBObject cursor = collection.findOne(searchQuery);
-			if (cursor != null){
-				BasicDBObject habilidade = (BasicDBObject) cursor.get("documento");
-				mongo.close();
-				return habilidade.get("nome").toString();
-			};			
-			mongo.close();
-		} catch (UnknownHostException | MongoException e) {
-			e.printStackTrace();
+		Commons_DB commons_db = new Commons_DB();
+		Response response = commons_db.getCollection(id, "habilidades", "documento.id");
+		String nome = "";
+		if (!(response.getEntity() instanceof Boolean)){
+			BasicDBObject doc = new BasicDBObject();
+			doc.putAll((Map) response.getEntity());
+			if (doc != null){
+				BasicDBObject objDoc = (BasicDBObject) doc.get("documento");
+				nome = objDoc.get("nome").toString();
+			};
+		}else{
 		};
-		return null;
+		return nome;
 	};
 
 	public Boolean testaElementoArray(String elemento, ArrayList<String> array) {
@@ -283,7 +284,6 @@ public class Commons {
 		}else{
 			return "";
 		}
-	}
-	
+	};
 
-}
+};

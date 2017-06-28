@@ -513,7 +513,7 @@ public class Rest_UserPerfil {
 		};
 		return null;
 	};
-	@SuppressWarnings({ "unused", "rawtypes", "unchecked" })
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private BasicDBObject montaCarreira(BasicDBObject objCarreirasSource, JSONObject jsonPerfil) {
 
 		BasicDBObject objCarreiras = (BasicDBObject) objCarreirasSource.get("documento");
@@ -531,21 +531,30 @@ public class Rest_UserPerfil {
 	    jsonDocumento.put("responsabilidades", objCarreiras.get("responsabilidades"));
 	    jsonDocumento.put("atividades", objCarreiras.get("atividades"));
 	    jsonDocumento.put("areaAtuacao", objCarreiras.get("areaAtuacao")); 
-	    jsonDocumento.put("necessarios", objCarreiras.get("necessarios")); 
 	    jsonDocumento.put("recomentados", objCarreiras.get("recomentados"));
-	    jsonDocumento.put("necessariosNome", objCarreiras.get("necessariosNome")); 
 	    jsonDocumento.put("recomentadosNome", objCarreiras.get("recomentadosNome"));
 	    jsonDocumento.put("tags", objCarreiras.get("tags"));
+     	ArrayList arrayListNecessarios = new ArrayList();
+    	arrayListNecessarios = (ArrayList) objCarreiras.get("necessarios");
+     	ArrayList arrayListNecessariosNome = new ArrayList();
+    	arrayListNecessariosNome = (ArrayList) objCarreiras.get("necessariosNome");
+     	ArrayList arrayPreRequisitosGeral = new ArrayList();
+     	arrayPreRequisitosGeral = (ArrayList) objCarreiras.get("preRequisitosGeral");
+		int totalHabilidades = arrayListNecessarios.size();
+		if (arrayPreRequisitosGeral != null){
+	    	Object objPreRequisitosGeral[] = arrayPreRequisitosGeral.toArray();
+	    	totalHabilidades = totalHabilidades + carregaPreRequisistosNecessarios(arrayListNecessarios, arrayListNecessariosNome, objPreRequisitosGeral);
+		};
+	    jsonDocumento.put("necessarios", arrayListNecessarios); 
+	    jsonDocumento.put("necessariosNome", arrayListNecessariosNome); 
 		ArrayList arrayListElementos = new ArrayList(); 
 		arrayListElementos = (ArrayList) jsonPerfil.get("habilidades");
 		if (arrayListElementos != null){
 	    	Object arrayElementos[] = arrayListElementos.toArray(); 
 			ArrayList <String> arrayListElementosFaltantes = new ArrayList(); 
-		    JSONObject jsonQtdeHabilidades = ObterTotalHabilidades(objCarreiras.get("nome"), arrayElementos, arrayListElementosFaltantes);
-		    jsonDocumento.put("totalHabilidades", arrayElementos.length);
+		    JSONObject jsonQtdeHabilidades = ObterTotalHabilidades(objCarreiras.get("id"), arrayElementos, arrayListElementosFaltantes);
+		    jsonDocumento.put("totalHabilidades", Integer.toString(totalHabilidades));
 		    jsonDocumento.put("totalPossuiHabilidades", jsonQtdeHabilidades.get("totalPossuiHabilidades"));
-	     	ArrayList arrayListNecessarios = new ArrayList(); 
-	    	arrayListNecessarios = (ArrayList) objCarreiras.get("necessarios");
 			int z = 0;
 			JSONArray necessariosArray = new JSONArray();
 			while (z < arrayListElementosFaltantes.size()) {
@@ -580,6 +589,33 @@ public class Rest_UserPerfil {
 			jsonDocumento.put("arrayNecessarios", necessariosArray);
 		};
 		return jsonDocumento;
+	};
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private int carregaPreRequisistosNecessarios(ArrayList arrayListNecessarios, ArrayList arrayListNecessariosNome, Object[] objPreRequisitosGeral) {
+		Commons commons = new Commons();
+		int totalPreRequisitos = 0;
+		int z = 0;
+		while (z < objPreRequisitosGeral.length) {
+			String preRequisitos = objPreRequisitosGeral[z].toString().split(":")[0].toString().replace("|", "&");
+			String [] array = preRequisitos.split("&");
+			int i = 0;
+			Boolean preRequisitoValido = false;
+			while (i < array.length) {
+				if (!commons.testaElementoArray(array[i], arrayListNecessarios)){
+					arrayListNecessarios.add(array[i]);
+					arrayListNecessariosNome.add(commons.nomeHabilidade(array[i]));
+					preRequisitoValido = true;
+				};
+				++i;
+			};
+			if (preRequisitoValido){
+				++totalPreRequisitos;				
+			};
+			++z;
+		};
+		return totalPreRequisitos;
+
 	};
 	
 	@SuppressWarnings("unchecked")
@@ -894,7 +930,7 @@ public class Rest_UserPerfil {
 			mongo = new Mongo();
 			DB db = (DB) mongo.getDB("yggboard");
 			DBCollection collection = db.getCollection("objetivos");
-			BasicDBObject searchQuery = new BasicDBObject("documento.nome", carreira);
+			BasicDBObject searchQuery = new BasicDBObject("documento.id", carreira);
 			DBObject cursor = collection.findOne(searchQuery);
 			if (cursor != null){
 				BasicDBObject objCarreira = (BasicDBObject) cursor.get("documento");
