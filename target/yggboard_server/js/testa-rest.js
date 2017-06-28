@@ -38,21 +38,30 @@ function testaIncluir() {
 			}
 		}
 	};
-	$.ajax({
-		type : "POST",
-		url : "http://" + localStorage.urlServidor + ":8080/yggboard_server/rest/crud/incluir",
-		contentType : "application/json; charset=utf-8",
-		dataType : 'json',
-		data : JSON.stringify(objJson),
-		async : false
-
-	}).done(function(data) {
-		console.log("done: " + data);
-	}).fail(function(data) {
-		console.log("fail: " + data);
-	}).always(function(data) {
-		console.log("always: " + data);
-	});
+	var objUserPerfil =
+		{
+			collection : "userPerfil",
+			insert : {
+				documento : {
+			        carreirasInteresse : [],
+			        habilidadesInteresse : [],
+			        cursosInteresse : [],
+			        cursosSugeridos : [],
+			        tags : [],
+			        elementos : [],
+			        usuario : "email_usuario II",
+			        carreiras : [],
+			        habilidades : [],
+			        badges : [],
+			        badgesInteresse : [],
+			        badgesConquistados : [],
+			        showBadges : [],
+			        carreirasSugeridas : [],
+			        relacionamentos : []
+				}
+			}
+		};
+	rest_incluir (objUserPerfil, restOk, semAcao);
 };
 function testaAtualizar() {
 
@@ -259,8 +268,7 @@ function atualizaPreRequisitosProcess(habilidades) {
 	habilidades = JSON.parse(sessionStorage.getItem("habilidades"));
 
 	$.each(habilidades, function(i, habilidade) {
-		// habilidade = obterDependencias(habilidade, habilidade.id,
-		// "habilidades", 1);
+		habilidade = obterDependencias(habilidade, habilidade.id,"habilidades", 1);
 		console.log("id - " + habilidade.id);
 		var cursos = [];
 		$.each(habilidade.cursos, function(i, curso) {
@@ -279,9 +287,21 @@ function atualizaPreRequisitosProcess(habilidades) {
 				value : habilidade
 			} ]
 		};
-		rest_atualizar(objJson, semAcao, semAcao);
+//		rest_atualizar(objJson, semAcao, semAcao);
 	});
 	console.log("terminou pre reuisitos");
+};
+
+function mostraPrerequisitos(habilidades) {
+
+	habilidades = JSON.parse(sessionStorage.getItem("habilidades"));
+
+	$.each(habilidades, function(i, habilidade) {
+		$.each(habilidade.preRequisitos, function(i, preRequisito) {
+			habilidade = obterDependencias(habilidade, preRequisito,"habilidades", 1);
+		});
+		console.log("habilidade:" + habilidade.id + " preRequisitos:", habilidade.preRequisitos);
+	});
 };
 
 function atualizaObjetivos() {
@@ -290,7 +310,7 @@ function atualizaObjetivos() {
 
 };
 
-function lerObjetivos() {
+function lerObjetivos(f) {
 
 	rest_obterCarreiras(atualizaObjetivosProcess, semAcao);
 };
@@ -418,82 +438,51 @@ function obterDependencias(objJson, habilidadeTarget, tipo, nivel) {
 
 	habilidades = JSON.parse(sessionStorage.getItem("habilidades"));
 
-	$
-			.each(
-					habilidades,
-					function(i, habilidadeSource) {
-						if (habilidadeSource.target == habilidadeTarget) {
-							if (tipo == "necessarios") {
-								var existente = false;
-								$
-										.each(
-												objJson.necessarios,
-												function(i, habilidade) {
-													if (habilidadeSource.source == habilidade) {
-														existente = true;
-													}
-													;
-												});
-								if (!existente) {
-									objJson.necessarios
-											.push(habilidadeSource.source);
-									objJson = obterDependencias(objJson,
-											habilidadeSource.source,
-											tipo);
-								}
-								;
-							}
-							;
-							if (tipo == "recomendados") {
-								var existente = false;
-								$
-										.each(
-												objJson.recomendadas,
-												function(i, habilidade) {
-													if (habilidadeSource.source == habilidade) {
-														existente = true;
-													}
-													;
-												});
-								if (!existente) {
-									objJson.recomendados
-											.push(habilidadeSource.source);
-									objJson = obterDependencias(objJson,
-											habilidadeSource.source,
-											tipo);
-								}
-								;
-							}
-							;
-							if (tipo == "habilidades") {
-								var existente = false;
-								$
-										.each(
-												objJson.preRequisitos,
-												function(i, habilidade) {
-													if (habilidadeSource.source == habilidade) {
-														existente = true;
-													}
-													;
-												});
-								if (!existente) {
-									var preRequisitos = {
-										id : habilidadeSource.source,
-										nivel : nivel
-									};
-									objJson.preRequisitos
-											.push(preRequisitos);
-									objJson = obterDependencias(objJson,
-											habilidadeSource.source,
-											tipo, (parseInt(nivel) + 1));
-								}
-								;
-							}
-							;
-						}
-						;
+	$.each(habilidades,function(i, habilidadeSource) {
+		if (habilidadeTarget == habilidadeSource.id){
+			if (tipo == "necessarios") {
+				var existente = false;
+				$.each(objJson.necessarios,function(i, habilidade) {
+					if (habilidadeSource.source == habilidade) {
+						existente = true;
+					}
+					;
+				});
+				if (!existente) {
+					objJson.necessarios.push(habilidadeSource.source);
+					objJson = obterDependencias(objJson,habilidadeSource.source,tipo);
+				};
+			};
+			if (tipo == "recomendados") {
+				var existente = false;
+				$.each(objJson.recomendadas,function(i, habilidade) {
+					if (habilidadeSource.source == habilidade) {
+						existente = true;
+					};
+				});
+				if (!existente) {
+					objJson.recomendados.push(habilidadeSource.source);
+					objJson = obterDependencias(objJson,habilidadeSource.source,tipo);
+				}
+				;
+			}
+			;
+			if (tipo == "habilidades") {
+				$.each(habilidadeSource.preRequisitos,function(i, preRequisito) {
+					var existente = false;
+					$.each(objJson.preRequisitos,function(i, habilidade) {
+						if (preRequisito == habilidade) {
+							existente = true;
+						};
 					});
+					if (!existente) {
+						objJson.preRequisitos.push(preRequisito + ":" + nivel);
+						objJson = obterDependencias(objJson,preRequisito,tipo, (parseInt(nivel) + 1));
+					};
+				});
+			};
+		};
+	});
 
 	return objJson;
 };
-

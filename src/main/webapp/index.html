@@ -137,6 +137,13 @@
             Cria index
           </label>
         </div>
+        <div class="radio">
+          <label>
+            <input class="teste" data-teste="mostraPrerequisitos" type="radio" name="o1" value="" >
+            <span class="cr"><i class="cr-icon glyphicon glyphicon-ok-sign"></i></span>
+            Mostra pre-requisitos
+          </label>
+        </div>
     </div>            
     <div class="col-sm-6">
     <div class="[ row ]">
@@ -185,12 +192,18 @@
           </label>
         </div>
 		<div class="[ form-group ]" id="filesInput">
-			<input class="reader" type="file" id="files" name="file" accept=".csv"/>
-			<button class="hide" onclick="abortRead();">Cancel read</button>
- 			<div class="hide" id="progress_bar"><div class="percent">0%</div></div>
+			<button class="hide reader" onclick="abortRead();">Cancela</button>
+ 			<div class="hide reader" id="progress_bar"><div class="percent">0%</div></div>
 		</div>
-		<div class="[ form-group ]" id="filesOutput">
-			<output id="records"></output>
+		<div class="registros">
+			<label class="label" id="labelRegistros"></label>
+			<small class="field final" id="totalRegistros"></small>
+			<ul id="registros">
+	
+			</ul>
+		</div>
+		<div class="[ form-group ]" id="filesInput">
+			<input class="reader" type="file" id="files" name="file" accept=".csv"/>
 		</div>
     </div>
 </div>
@@ -229,6 +242,9 @@
 
     <!--grava na base -->
     <script src="js/copias.js"></script>
+
+    <!--grava na base -->
+    <script src="js/index.js"></script>
 
 </body>
 </html>

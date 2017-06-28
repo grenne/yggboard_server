@@ -670,7 +670,11 @@ public class Rest_Index {
 					//
 					int z = 0;
 					while (z < arrayHabilidades.length) {
-						carregaHabilidade(arrayHabilidades[z].toString(), listas, opcoes);
+						if (opcoes.filtro()){
+							carregaHabilidade(arrayHabilidades[z].toString(), listas, opcoes);
+						}else{
+							processaHabilidades(arrayHabilidades[z].toString(), listas, opcoes);
+						};
 						++z;
 					};
 				};
@@ -1253,37 +1257,36 @@ public class Rest_Index {
 		Opcoes opcoes = new Opcoes(); 
 		
 		if (planejamentoLista.equals("true")){			
-
-			carregaIndex("Objetivo", listas.objetivos(), characters, true, listas, opcoes);
-			carregaIndex("Habilidade", listas.habilidades(), characters, true, listas, opcoes);
-			carregaIndex("Curso", listas.cursos(), characters, true, listas, opcoes);
-			carregaIndex("Área Atuação", listas.areasAtuacao(), characters, true, listas, opcoes);
-			carregaIndex("Área Conhecimento", listas.areasConhecimento(), characters, true, listas, opcoes);
+			carregaIndex("objetivos", listas.objetivos(), characters, true, listas, opcoes, 0);
+			carregaIndex("habilidades", listas.habilidades(), characters, true, listas, opcoes, 0);
+			carregaIndex("cursos", listas.cursos(), characters, true, listas, opcoes, 0);
+			carregaIndex("areaAtuacao", listas.areasAtuacao(), characters, true, listas, opcoes, 0);
+			carregaIndex("areaConhecimento", listas.areasConhecimento(), characters, true, listas, opcoes, 0);
 			results.put("objetivos", listas.objetivos());
 			results.put("habilidades", listas.habilidades());
 			results.put("cursos", listas.cursos());
 			results.put("areaAtuacao", listas.areasAtuacao());
 			results.put("areaConhecimento", listas.areasConhecimento());
 		}else{
-			if (planejamentoLista.equals("objetivos")){			
+			if (planejamentoLista.equals("false")){			
 				JSONArray documentos = new JSONArray();
-				carregaIndex("Objetivo", documentos, characters, false, listas, opcoes);
-				results.put("pesquisa", documentos);
+				carregaIndex("objetivos", documentos, characters, false, listas, opcoes, 4);
+				carregaIndex("habilidades", documentos, characters, false, listas, opcoes, 4);
+				carregaIndex("cursos", documentos, characters, false, listas, opcoes, 4);
+				carregaIndex("areaAtuacao", documentos, characters, false, listas, opcoes, 4);
+				carregaIndex("areaConhecimento", documentos, characters, false, listas, opcoes, 4);
+				results.put("pesquisa", documentos);				
 			}else{
 				JSONArray documentos = new JSONArray();
-				carregaIndex("Objetivo", documentos, characters, false, listas, opcoes);
-				carregaIndex("Habilidade", documentos, characters, false, listas, opcoes);
-				carregaIndex("Curso", documentos, characters, false, listas, opcoes);
-				carregaIndex("Área Atuação", documentos, characters, false, listas, opcoes);
-				carregaIndex("Área Conhecimento", documentos, characters, false, listas, opcoes);
-				results.put("pesquisa", documentos);
+				carregaIndex(planejamentoLista, documentos, characters, false, listas, opcoes, 10);
+				results.put("pesquisa", documentos);				
 			};
 		};
 		return results;			
 	};
 
 	@SuppressWarnings("unchecked")
-	private void carregaIndex(String assunto, JSONArray documentos, String characters, Boolean lista, Listas listas, Opcoes opcoes) {
+	private void carregaIndex(String assunto, JSONArray documentos, String characters, Boolean lista, Listas listas, Opcoes opcoes, int qtdeItens) {
 		Mongo mongo;
 			try {
 				mongo = new Mongo();
@@ -1306,22 +1309,22 @@ public class Rest_Index {
 						if (wordsoK (wordsSource, wordsCompare)){
 							if (lista){
 								switch (assunto) {
-								case "Objetivos":
+								case "objetivos":
 									processaObjetivos(jsonObject.get("id").toString(), listas, opcoes);
 									break;
-								case "Objetivo":
+								case "objetivo":
 									processaObjetivos(jsonObject.get("id").toString(), listas, opcoes);
 									break;
-								case "Habilidade":
+								case "habilidades":
 									processaHabilidades(jsonObject.get("id").toString(), listas, opcoes);
 								break;
-								case "Curso":
+								case "cursos":
 									processaCursos(jsonObject.get("id").toString(), listas, opcoes);
 								break;
-								case "Área Atuação":
+								case "areaAtuacao":
 									processaAreaAtuacao(jsonObject.get("id").toString(), listas, opcoes);
 								break;
-								case "Área Conhecimento":
+								case "areaConhecimento":
 									processaAreaConhecimento(jsonObject.get("id").toString(), listas, opcoes);
 								break;
 
@@ -1334,7 +1337,7 @@ public class Rest_Index {
 								jsonDocumento.put("id", jsonObject.get("id"));
 								jsonDocumento.put("descricao", jsonObject.get("descricao"));
 								documentos.add(jsonDocumento);
-								if (i > 3){
+								if (i > qtdeItens){
 									mongo.close();
 									return;
 								};

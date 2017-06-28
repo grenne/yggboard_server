@@ -1,6 +1,7 @@
 com\yggboard\yggboard_server\Rest_Badge.class
 com\yggboard\yggboard_server\Rest_Index.class
 com\yggboard\yggboard_server\App.class
+com\yggboard\yggboard_server\Rest_UploadFiles.class
 com\yggboard\yggboard_server\SendEmail.class
 com\yggboard\yggboard_server\TemplateEmail.class
 com\yggboard\yggboard_server\Rest_Carreira.class

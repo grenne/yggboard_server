@@ -8,6 +8,7 @@ import java.util.Map;
 
 import javax.ws.rs.core.Response;
 
+import org.bson.types.ObjectId;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -35,7 +36,12 @@ public class Commons_DB {
 			for (int i = 0; i < arraySetQuery.size(); i++) {
 				JSONObject setQuery = new JSONObject();
 				setQuery.putAll((Map) arraySetQuery.get(i));
-				searchQuery.put((String) setQuery.get("key"), (String) setQuery.get("value"));
+				if (setQuery.get("key").equals("_id")){
+					ObjectId id = new ObjectId(setQuery.get("value").toString());
+					searchQuery.put((String) setQuery.get("key"), id);
+				}else{
+					searchQuery.put((String) setQuery.get("key"), (String) setQuery.get("value"));
+				};
 			};
 			DBObject cursor = collection.findOne(searchQuery);
 			if (cursor != null) {
@@ -150,7 +156,6 @@ public class Commons_DB {
 	}
 
 	public Response removerAllCrud(String collectionName) {
-
 		Mongo mongo;
 		try {
 			mongo = new Mongo();
@@ -162,7 +167,33 @@ public class Commons_DB {
 		} catch (UnknownHostException | MongoException e) {
 			return Response.status(406).entity(e).build();
 		}
-	}
+	};
+
+	@SuppressWarnings("unchecked")
+	public Response removerCrud(String collectionName, Object keysInput) {
+		Mongo mongo;
+		try {
+			mongo = new Mongo();
+			DB db = (DB) mongo.getDB("yggboard");
+			DBCollection collection = db.getCollection(collectionName);
+			BasicDBObject searchQuery = new BasicDBObject();
+			List arraySetQuery = (List) keysInput;
+			for (int i = 0; i < arraySetQuery.size(); i++) {
+				JSONObject setQuery = new JSONObject();
+				setQuery.putAll((Map) arraySetQuery.get(i));
+				if (setQuery.get("value") instanceof Object){
+					searchQuery.put((String) setQuery.get("key"), setQuery.get("value"));
+				}else{
+					searchQuery.put((String) setQuery.get("key"), (String) setQuery.get("value"));
+				};
+			};
+			collection.remove(new BasicDBObject(searchQuery));
+			mongo.close();
+			return Response.status(200).build();
+		} catch (UnknownHostException | MongoException e) {
+			return Response.status(406).entity(e).build();
+		}
+	};
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Response listaCrud(String collectionName, Object arrayQueryInput) {
@@ -186,8 +217,10 @@ public class Commons_DB {
 					BasicDBObject objDocumento = (BasicDBObject) ((Iterator<DBObject>) cursor).next();
 					JSONObject jsonDocumento = new JSONObject();
 					jsonDocumento.putAll((Map) objDocumento.get("documento"));
+					jsonDocumento.put("_id", objDocumento.getString("_id"));
 					documentos.add(jsonDocumento);
 				};
+				mongo.close();
 				return Response.status(200).entity(documentos).build();
 			}else{
 				mongo.close();
@@ -208,6 +241,18 @@ public class Commons_DB {
 		keysArray.add(key);
 		
 		return obterCrud(collectionName, keysArray);
+	};
+
+	@SuppressWarnings("unchecked")
+	public Response getCollectionLista(String value, String collectionName, String keyInput) {
+		
+		ArrayList<JSONObject> keysArray = new ArrayList<>();
+		JSONObject key = new JSONObject();
+		key.put("key", keyInput);
+		key.put("value", value);
+		keysArray.add(key);
+		
+		return listaCrud(collectionName, keysArray);
 	}
 	
 };

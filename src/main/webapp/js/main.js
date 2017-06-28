@@ -3,79 +3,22 @@
 //
 localStorage.urlServidor = window.location.hostname;
 if (localStorage.urlServidor == "localhost"){
-	localStorage.mainHost = "52.67.61.142";
+	localStorage.mainHost = "www.yggboard.com";
+	localStorage.mainUrl = "http://localhost:8080/";
 }else{
 	localStorage.mainHost = localStorage.urlServidor;
+	localStorage.mainUrl = "https://www.yggboard.com:8443/";
 };
 
 localStorage.APP = "yggboard_server";
 
-var objJson = 
-	{	
-		asybc : false,
-		collection : "habilidades",
-		keys : 
-			[
-			]
-	};
-
-rest_lista (objJson, salvaSessionStore, semAcao, "habilidades");
-
-var objJson = 
-	{	
-		asybc : false,
-		collection : "objetivos",
-		keys : 
-			[
-			]
-	};
-
-rest_lista (objJson, salvaSessionStore, semAcao, "objetivos");
-
-var objJson = 
-	{	
-		asybc : false,
-		collection : "cursos",
-		keys : 
-			[
-			]
-	};
-
-rest_lista (objJson, salvaSessionStore, semAcao, "cursos");
-
-var objJson = 
-{	
-	asybc : false,
-	collection : "badges",
-	keys : 
-		[
-		]
-};
-
-rest_lista (objJson, salvaSessionStore, semAcao, "badges");
-
-var objJson = 
-{	
-	asybc : false,
-	collection : "areaAtuacao",
-	keys : 
-		[
-		]
-};
-
-rest_lista (objJson, salvaSessionStore, semAcao, "areaAtuacao");
-
-
-var objJson = 
-	{	
-		asybc : false,
-		collection : "areaConhecimento",
-		keys : 
-			[
-			]
-	};
-
-rest_lista (objJson, salvaSessionStore, semAcao, "areaConhecimento");
+sessionStorage.setItem("habilidades", JSON.stringify(rest_listaReturn ("habilidades")));
+sessionStorage.setItem("objetivos", JSON.stringify(rest_listaReturn ("objetivos")));
+sessionStorage.setItem("cursos", JSON.stringify(rest_listaReturn ("cursos")));
+sessionStorage.setItem("badges", JSON.stringify(rest_listaReturn ("badges")));
+sessionStorage.setItem("areaAtuacao", JSON.stringify(rest_listaReturn ("areaAtuacao")));
+sessionStorage.setItem("areaConhecimento", JSON.stringify(rest_listaReturn ("areaConhecimento")));
+sessionStorage.setItem("usuarios", JSON.stringify(rest_listaReturn ("usuarios")));
 
 $( ".escolha" ).click(function() {
     $( ".output" ).remove();
@@ -138,6 +81,9 @@ $( ".teste" ).click(function() {
 		break;
 	case "index-cria":
 		carregaIndex();
+		break;
+	case "mostraPrerequisitos":
+		mostraPrerequisitos();
 		break;
 		
 	default:

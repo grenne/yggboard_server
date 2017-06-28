@@ -96,11 +96,14 @@ function processaCursos (data){
 	
 	if (fields[0]){
 		rest_incluir (objJson, restOk, semAcao);
+		$("#registros").append('<li class="output"><strong class="label">Id:</strong><small class="field">' + fields[0] + '</small><strong class="label"> Nome:</strong><small class="field">' + fields[3] + '</small></li>');
 	};
 	
 };
 
 function processaHabilidades (data){
+	
+	sessionStorage.setItem("habilidades", JSON.stringify(rest_listaReturn ("habilidades")));
 	
 	var fields = data.split(";");
 	
@@ -122,6 +125,7 @@ function processaHabilidades (data){
 					areaConhecimentoNome:[],
 					preRequisitos:[],
 					preRequisitosNome:[],
+					preRequisitosGeral:[],
 					tags:[],
 					wiki:fields[9],
 					amazon:fields[10],
@@ -144,6 +148,7 @@ function processaHabilidades (data){
 		for (var i = 0; i < array.length; i++) {
 			var arrayPipe = array[i].split("|");
 			objJson.insert.documento.preRequisitos.push(array[i]);
+			objJson.insert.documento.preRequisitosGeral.push(array[i] + ":" + "0");
 			var nomes = "";
 			var pipe = "";
 			for (var z = 0; z < arrayPipe.length; z++) {
@@ -152,6 +157,9 @@ function processaHabilidades (data){
 			};
 			objJson.insert.documento.preRequisitosNome.push(nomes);
 		}
+		$.each(objJson.insert.documento.preRequisitos, function(i, preRequisito) {
+			objJson.insert.documento = obterDependenciasPreReq(objJson.insert.documento, preRequisito, 1);
+		});
 	};
 	if (fields[8]){
 		var array = fields[8].split(",");
@@ -161,7 +169,8 @@ function processaHabilidades (data){
 	};
 	
 	if (fields[0]){
-		rest_incluir (objJson, restOk, semAcao);
+		rest_incluir (objJson, restOk, semAcao, fields[0], fields[4]);
+		$("#registros").append('<li class="output"><strong class="label">Id:</strong><small class="field">' + fields[0] + '</small><strong class="label"> Nome:</strong><small class="field">' + fields[4] + '</small></li>');
 	};
 	
 };
@@ -193,6 +202,7 @@ function processaObjetivos (data){
 					tags:[],
 					necessarios:[],
 					necessariosNome:[],
+					preRequisitosGeral:[],
 					recomendados:[],
 					recomendadosNome:[],
 					classificacao:fields[16]
@@ -220,10 +230,14 @@ function processaObjetivos (data){
 			if (nome != ""){
 				objJson.insert.documento.necessarios.push(array[i]);
 				objJson.insert.documento.necessariosNome.push(nome);
+				objJson.insert.documento.preRequisitosGeral.push(array[i] + ":" + "0");
 			}else{
 				console.log ("necessarios objetivo não encontrado: " + array[i]);
 			}				
-		}
+		};
+		$.each(objJson.insert.documento.necessarios, function(i, habilidade) {
+			objJson.insert.documento = obterDependenciasPreReq(objJson.insert.documento, habilidade, 1);
+		});
 	};
 	if (fields[15]){
 		var array = fields[15].split(",");
@@ -239,7 +253,8 @@ function processaObjetivos (data){
 	};
 	
 	if (fields[0]){
-		rest_incluir (objJson, semAcao, semAcao);
+		rest_incluir (objJson, restOk, semAcao);
+		$("#registros").append('<li class="output"><strong class="label">Id:</strong><small class="field">' + fields[0] + '</small><strong class="label"> Nome:</strong><small class="field">' + fields[1] + '</small></li>');
 	};
 	
 };
@@ -262,13 +277,17 @@ function processaBadges (data){
 					entidadeCertificadora:fields[3],
 					habilidades:[],
 					habilidadesNome:[],
+					preRequisitosGeral:[],
 					tags:[],
 					tipo:fields[6],
 					parametro:fields[7],
 					quantidade:fields[8],
 					badge:fields[9],
 					titulo:fields[10],
-					popup:fields[11],
+					textoPost:fields[11],
+					popup:fields[12],
+					habilidadesNecessarias:[]
+
 					}
 				}
 		};
@@ -279,10 +298,14 @@ function processaBadges (data){
 			if (nome != ""){
 				objJson.insert.documento.habilidades.push(array[i]);
 				objJson.insert.documento.habilidadesNome.push(nome);
+				objJson.insert.documento.preRequisitosGeral.push(array[i] + ":" + "0");
 			}else{
 				console.log ("habilidade curso não encontrado: " + array[i]);
 			}				
-		}
+		};
+		$.each(objJson.insert.documento.habilidades, function(i, habilidade) {
+			objJson.insert.documento = obterDependenciasPreReq(objJson.insert.documento, habilidade, 1);
+		});
 	};
 	if (fields[5]){
 		var array = fields[5].split(",");
@@ -290,9 +313,16 @@ function processaBadges (data){
 			objJson.insert.documento.tags.push(array[i].replace (" ",""));			
 		}
 	};
+	if (fields[13]){
+		var array = fields[13].split(",");
+		for (var i = 0; i < array.length; i++) {
+			objJson.insert.documento.habilidadesNecessarias.push(array[i].replace (" ",""));			
+		}
+	};
 	
 	if (fields[0]){
-		rest_incluir (objJson, semAcao, semAcao);
+		rest_incluir (objJson, restOk, semAcao);
+		$("#registros").append('<li class="output"><strong class="label">Id:</strong><small class="field">' + fields[0] + '</small><strong class="label"> Nome:</strong><small class="field">' + fields[1] + '</small></li>');
 	};
 };
 
@@ -331,6 +361,7 @@ function processaAreaConhecimento (data){
 	
 	if (fields[0]){
 		rest_incluir (objJson, semAcao, semAcao);
+		$("#registros").append('<li class="output"><strong class="label">Id:</strong><small class="field">' + fields[0] + '</small><strong class="label"> Nome:</strong><small class="field">' + fields[4] + '</small></li>');
 	};
 };
 
@@ -353,7 +384,8 @@ function processaAreaAtuacao (data){
 		};
 	
 	if (fields[0]){
-		rest_incluir (objJson, semAcao, semAcao);
+		rest_incluir (objJson, restOk, semAcao);
+		$("#registros").append('<li class="output"><strong class="label">Id:</strong><small class="field">' + fields[0] + '</small><strong class="label"> Nome:</strong><small class="field">' + fields[1] + '</small></li>');
 	};
 };
 
@@ -391,4 +423,31 @@ function nomeAreaConhecimento (id){
 	});
 
 	return nome;
+};
+function obterDependenciasPreReq(objJson, habilidadeTarget,nivel) {
+
+	habilidades = JSON.parse(sessionStorage.getItem("habilidades"));
+
+	$.each(habilidades,function(i, habilidadeSource) {
+		if (habilidadeTarget == habilidadeSource.id){
+			$.each(habilidadeSource.preRequisitos,function(i, preRequisito) {
+				var existente = false;
+				$.each(objJson.preRequisitos,function(i, habilidade) {
+					if (preRequisito == habilidade) {
+						existente = true;
+					};
+				});
+				if (!existente) {
+					objJson.preRequisitosGeral = testaDuplicidade (preRequisito + ":" + nivel, objJson.preRequisitosGeral);
+					console.log ("prereq:" + preRequisito + " nivel:" + nivel);
+					if (nivel > 20){
+						console.log("parar");
+					}
+					objJson = obterDependenciasPreReq(objJson,preRequisito, (parseInt(nivel) + 1));
+				};
+			});
+		};
+	});
+
+	return objJson;
 };

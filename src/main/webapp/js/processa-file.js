@@ -2,7 +2,65 @@
   var progress = document.querySelector('.percent');
 
   document.getElementById('files').addEventListener('change', handleFileSelect, false);
-    
+
+  var myVar = setInterval(function(){ setIntervalObject() }, 30);	  
+  function start(d){
+	    if (d.interval){
+	        clearInterval(d.interval);
+	        d.innerHTML='Start';
+	    } else {
+	        d.interval=setInterval(function(){
+	          	lines = JSON.parse(sessionStorage.getItem("lines"));
+	          	i = sessionStorage.getItem("index");
+	          	totalRecords = sessionStorage.getItem("totalRecords");
+	          	if (lines[i]){
+	          		carregaDados(lines[i]);
+	          	};
+	        	var percentLoaded = Math.round((i / totalRecords) * 100);
+	        	if (percentLoaded < 100) {
+	        	     progress.style.width = percentLoaded + '%';
+	        	     progress.textContent = percentLoaded + '%';
+	        	};
+	          	i++;
+	          	if (i > totalRecords){
+	          		$(".final").show();
+	          		$("#labelRegistros").text("Registros processados:");
+	          		$("#totalRegistros").text(totalRecords);
+	          		stopIntervalObject();
+	          	};
+	            sessionStorage.setItem("index", i);
+	        },30);
+	        d.innerHTML='Stop';
+	    };
+  };
+  function setIntervalObject() {
+  	lines = JSON.parse(sessionStorage.getItem("lines"));
+  	i = sessionStorage.getItem("index");
+  	totalRecords = sessionStorage.getItem("totalRecords");
+  	if (lines[i]){
+  		carregaDados(lines[i]);
+  	};
+	var percentLoaded = Math.round((i / totalRecords) * 100);
+	if (percentLoaded < 100) {
+	     progress.style.width = percentLoaded + '%';
+	     progress.textContent = percentLoaded + '%';
+	};
+  	i++;
+  	if (i > totalRecords){
+  		$(".final").show();
+  		$("#labelRegistros").text("Registros processados:");
+  		$("#totalRegistros").text(totalRecords);
+  		stopIntervalObject();
+  	};
+    sessionStorage.setItem("index", i);
+  };
+   
+  function stopIntervalObject() {
+    clearInterval(myVar);
+  };    
+
+  stopIntervalObject();
+  
   function abortRead() {
     reader.abort();
   }
@@ -65,14 +123,12 @@
   }
   
   function processaRegistros (data, lines){
-     var output = [];
-     for(var i = 0; i < lines.length; i++) {
-    	 	if (i > 0){
-              output.push('<li class="output">' + lines[i] + '<br>');
-              carregaDados(lines[i]);
-    	 	};
-     };
-     document.getElementById('records').innerHTML = "Registros processados : " + lines.length + "<br><ul class='output'>" + output.join("") + "</ul";
+     sessionStorage.setItem("lines", JSON.stringify(lines));
+     sessionStorage.setItem("index", 1);
+     sessionStorage.setItem("totalRecords", lines.length);
+     $(".registros" ).show();
+     $("#labelRegistros").text("Registros carregando...");
+     var myVar = setInterval(function(){ setIntervalObject() }, 30);
      progress.style.width = '100%';
      progress.textContent = '100%';
      setTimeout("document.getElementById('progress_bar').className='';", 2000);

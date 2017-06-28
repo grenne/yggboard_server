@@ -9,12 +9,13 @@ function carregaIndex (){
 
 function carregaIndexProcesso (){
 	
-	carregaIndexElemento(JSON.parse(sessionStorage.getItem("habilidades")), "Habilidade");
-	carregaIndexElemento(JSON.parse(sessionStorage.getItem("objetivos")),"Objetivo");
-	carregaIndexElemento(JSON.parse(sessionStorage.getItem("badges")),"Badge");
-	carregaIndexElemento(JSON.parse(sessionStorage.getItem("cursos")),"Curso");
-	carregaIndexElemento(JSON.parse(sessionStorage.getItem("areaAtuacao")),"Área Atuação");
-	carregaIndexElemento(JSON.parse(sessionStorage.getItem("areaConhecimento")),"Área Conhecimento");
+	carregaIndexElemento(JSON.parse(sessionStorage.getItem("habilidades")), "habilidades");
+	carregaIndexElemento(JSON.parse(sessionStorage.getItem("objetivos")),"objetivos");
+	carregaIndexElemento(JSON.parse(sessionStorage.getItem("badges")),"badges");
+	carregaIndexElemento(JSON.parse(sessionStorage.getItem("cursos")),"cursos");
+	carregaIndexElemento(JSON.parse(sessionStorage.getItem("areaAtuacao")),"areaAtuacao");
+	carregaIndexElemento(JSON.parse(sessionStorage.getItem("areaConhecimento")),"areaConhecimento");
+	carregaIndexElemento(JSON.parse(sessionStorage.getItem("usuarios")),"usuarios");
 	
 }; 
 
@@ -34,8 +35,19 @@ function carregaIndexElemento(data, assunto){
 					id = index.idHabilidade;
 					descricao = index.descricao;
 				};
+				if (index.firstName){
+					texto  = texto + carregaTextoIndex (index.firstName);
+					entidade = index.firstName;
+					id = index._id;
+					descricao = index.firstName + " " + index.lastName
+				};
+				if (index.lastName){
+					texto  = texto + "," + carregaTextoIndex (index.lastName);
+					entidade = index.lastName;
+					id = index._id;
+					descricao = index.firstName + " " + index.lastName
+				};
 				if (index.nome){
-					console.log ("assunto:" + assunto + " reg:" + index.nome);
 					texto  = texto + carregaTextoIndex (index.nome);
 					entidade = index.nome;
 					id = index.idHabilidade;

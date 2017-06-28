@@ -146,6 +146,10 @@ public class Rest_UserPerfil {
 								jsonDocumento.put("_id", objBadges.getString("_id"));
 								jsonDocumento.put("id", objBadges.get("id"));
 								jsonDocumento.put("nome", objBadges.get("nome"));
+								jsonDocumento.put("comoGanhar", objBadges.get("comoGanhar"));
+								jsonDocumento.put("titulo", objBadges.get("titulo"));
+								jsonDocumento.put("textoPost", objBadges.get("textoPost"));
+								jsonDocumento.put("popup", objBadges.get("popup"));
 								jsonDocumento.put("badge", objBadges.get("badge"));
 								jsonDocumento.put("entidadeCertificadora", objBadges.get("entidadeCertificadora"));
 							    jsonDocumento.put("descricao", objBadges.get("descricao"));
@@ -155,7 +159,7 @@ public class Rest_UserPerfil {
 								arrayListElementos = (ArrayList) jsonPerfil.get("habilidades");
 						    	Object arrayElementos[] = arrayListElementos.toArray(); 
 								ArrayList <String> arrayListElementosFaltantes = new ArrayList();
-							    JSONObject jsonQtdeHabilidades = ObterTotalHabilidadesBadges(objBadges.get("nome"), arrayElementos, arrayListElementosFaltantes);
+							    JSONObject jsonQtdeHabilidades = ObterTotalHabilidadesBadges(objBadges.get("id"), arrayElementos, arrayListElementosFaltantes);
 							    jsonDocumento.put("totalHabilidades", jsonQtdeHabilidades.get("totalHabilidades"));
 							    jsonDocumento.put("totalPossuiHabilidades", jsonQtdeHabilidades.get("totalPossuiHabilidades"));
 						    	ArrayList arrayListHabilidades = new ArrayList(); 
@@ -212,7 +216,7 @@ public class Rest_UserPerfil {
 									jsonBadge = (JSONObject) parser.parse(documento);
 									JSONObject jsonDocumento = new JSONObject();
 									if (jsonBadge.get("tipo") !=null){
-										if (jsonBadge.get("tipo").equals("data")){
+										if (jsonBadge.get("tipo").equals("inicial")){
 											jsonDocumento.put("_id", objBadges.getString("_id"));
 											jsonDocumento.put("nome", jsonBadge.get("nome"));
 											jsonDocumento.put("badge", jsonBadge.get("badge"));
@@ -228,7 +232,7 @@ public class Rest_UserPerfil {
 										if (jsonBadge.get("tipo").equals("numero")){
 											ArrayList arrayListElementos = new ArrayList(); 
 											arrayListElementos = (ArrayList) jsonPerfil.get("habilidades");
-											if (Integer.valueOf((String) jsonBadge.get("parametro")) < arrayListElementos.size() ){
+											if (Integer.valueOf((String) jsonBadge.get("quantidade")) < arrayListElementos.size() ){
 												jsonDocumento.put("_id", objBadges.getString("_id"));
 												jsonDocumento.put("nome", jsonBadge.get("nome"));
 												jsonDocumento.put("badge", jsonBadge.get("badge"));
@@ -245,7 +249,24 @@ public class Rest_UserPerfil {
 										if (jsonBadge.get("tipo").equals("numero interesse")){
 											ArrayList arrayListElementos = new ArrayList(); 
 											arrayListElementos = (ArrayList) jsonPerfil.get("habilidadesInteresse");
-											if (Integer.valueOf((String) jsonBadge.get("parametro")) < arrayListElementos.size() ){
+											if (Integer.valueOf((String) jsonBadge.get("quantidade")) < arrayListElementos.size() ){
+												jsonDocumento.put("_id", objBadges.getString("_id"));
+												jsonDocumento.put("nome", jsonBadge.get("nome"));
+												jsonDocumento.put("badge", jsonBadge.get("badge"));
+												jsonDocumento.put("entidadeCertificadora", jsonBadge.get("entidadeCertificadora"));
+											    jsonDocumento.put("descricao", jsonBadge.get("descricao"));
+											    jsonDocumento.put("habilidades", jsonBadge.get("habilidades")); 
+											    jsonDocumento.put("tags", jsonBadge.get("tags"));
+											    jsonDocumento.put("totalHabilidades", "");
+											    jsonDocumento.put("totalPossuiHabilidades", "");
+												jsonDocumento.put("arrayHabilidades", "");
+												documentos.add(jsonDocumento);									
+											};
+										};
+										if (jsonBadge.get("tipo").equals("numero objetivo")){
+											ArrayList arrayListElementos = new ArrayList(); 
+											arrayListElementos = (ArrayList) jsonPerfil.get("carreirasInteresse");
+											if (Integer.valueOf((String) jsonBadge.get("quantidade")) < arrayListElementos.size() ){
 												jsonDocumento.put("_id", objBadges.getString("_id"));
 												jsonDocumento.put("nome", jsonBadge.get("nome"));
 												jsonDocumento.put("badge", jsonBadge.get("badge"));
@@ -437,6 +458,41 @@ public class Rest_UserPerfil {
 						};
 					};
 				};
+				if (item.equals("relacionamentos")){
+					ArrayList arrayList = new ArrayList(); 
+					arrayList = (ArrayList) jsonPerfil.get("relacionamentos");
+					if (arrayList != null){
+				    	Object array[] = arrayList.toArray(); 
+						int w = 0;
+						while (w < array.length) {
+							documentos.add(getUserPerfil(array[w].toString()));
+							++w;
+						};
+					};
+				};
+				if (item.equals("sugestao-relacionamentos")){
+					ArrayList arrayList = new ArrayList(); 
+					arrayList = (ArrayList) jsonPerfil.get("seguindo");
+					if (arrayList != null){
+				    	Object array[] = arrayList.toArray(); 
+						int w = 0;
+						while (w < array.length) {
+							BasicDBObject doc = getUserPerfil(array[w].toString());
+							BasicDBObject objDoc = (BasicDBObject) doc.get("documento");
+							ArrayList arrayListSeguindo = new ArrayList(); 
+							arrayListSeguindo = (ArrayList) objDoc.get("seguindo");
+							if (arrayListSeguindo != null){
+						    	Object arraySeguindo[] = arrayListSeguindo.toArray(); 
+								int z = 0;
+								while (z < arraySeguindo.length) {
+									documentos.add(getUserPerfil(array[z].toString()));									
+									++z;
+								};
+							};
+							++w;
+						};
+					};
+				};
 				mongo.close();
 			} catch (ParseException e) {
 				e.printStackTrace();
@@ -470,44 +526,47 @@ public class Rest_UserPerfil {
 	    jsonDocumento.put("tags", objCarreiras.get("tags"));
 		ArrayList arrayListElementos = new ArrayList(); 
 		arrayListElementos = (ArrayList) jsonPerfil.get("habilidades");
-    	Object arrayElementos[] = arrayListElementos.toArray(); 
-		ArrayList <String> arrayListElementosFaltantes = new ArrayList(); 
-	    JSONObject jsonQtdeHabilidades = ObterTotalHabilidades(objCarreiras.get("nome"), arrayElementos, arrayListElementosFaltantes);
-	    jsonDocumento.put("totalHabilidades", arrayElementos.length);
-	    jsonDocumento.put("totalPossuiHabilidades", jsonQtdeHabilidades.get("totalPossuiHabilidades"));
-    	ArrayList arrayListNecessarios = new ArrayList(); 
-    	arrayListNecessarios = (ArrayList) objCarreiras.get("necessarios");
-		int z = 0;
-		JSONArray necessariosArray = new JSONArray();
-		while (z < arrayListElementosFaltantes.size()) {
-			Mongo mongoHabilidade;
-			try {
-				mongoHabilidade = new Mongo();
-				DB dbHabilidade = (DB) mongoHabilidade.getDB("yggboard");
-				DBCollection collectionHabilidade = dbHabilidade.getCollection("habilidades");
-				BasicDBObject searchQueryHabilidade = new BasicDBObject("documento.id", arrayListElementosFaltantes.get(z));
-				DBObject cursorHabilidade = collectionHabilidade.findOne(searchQueryHabilidade);
-				if (cursorHabilidade != null){
-					BasicDBObject objCarreira = (BasicDBObject) cursorHabilidade.get("documento");
-					JSONObject jsonNecessarios = new JSONObject();
-					jsonNecessarios.put("id", arrayListElementosFaltantes.get(z));
-					jsonNecessarios.put("nome", objCarreira.get("nome"));
-					jsonNecessarios.put("descricao", objCarreira.get("descricao"));
-					jsonNecessarios.put("wiki", objCarreira.get("wiki"));
-					jsonNecessarios.put("amazon", objCarreira.get("amazon"));
-					jsonNecessarios.put("preRequisitosNome", objCarreira.get("preRequisitosNome"));
-					JSONArray cursos = new JSONArray();
-					ObterCursosNecessarios (arrayListElementosFaltantes.get(z), cursos);
-					jsonNecessarios.put("cursos", cursos);
-					necessariosArray.add (jsonNecessarios);
-				};
-				mongoHabilidade.close();
-				++z;
-			} catch (UnknownHostException | MongoException e) {
-				e.printStackTrace();
+		if (arrayListElementos != null){
+	    	Object arrayElementos[] = arrayListElementos.toArray(); 
+			ArrayList <String> arrayListElementosFaltantes = new ArrayList(); 
+		    JSONObject jsonQtdeHabilidades = ObterTotalHabilidades(objCarreiras.get("nome"), arrayElementos, arrayListElementosFaltantes);
+		    jsonDocumento.put("totalHabilidades", arrayElementos.length);
+		    jsonDocumento.put("totalPossuiHabilidades", jsonQtdeHabilidades.get("totalPossuiHabilidades"));
+	     	ArrayList arrayListNecessarios = new ArrayList(); 
+	    	arrayListNecessarios = (ArrayList) objCarreiras.get("necessarios");
+			int z = 0;
+			JSONArray necessariosArray = new JSONArray();
+			while (z < arrayListElementosFaltantes.size()) {
+				Mongo mongoHabilidade;
+				try {
+					mongoHabilidade = new Mongo();
+					DB dbHabilidade = (DB) mongoHabilidade.getDB("yggboard");
+					DBCollection collectionHabilidade = dbHabilidade.getCollection("habilidades");
+					BasicDBObject searchQueryHabilidade = new BasicDBObject("documento.id", arrayListElementosFaltantes.get(z));
+					DBObject cursorHabilidade = collectionHabilidade.findOne(searchQueryHabilidade);
+					if (cursorHabilidade != null){
+						BasicDBObject objCarreira = (BasicDBObject) cursorHabilidade.get("documento");
+						JSONObject jsonNecessarios = new JSONObject();
+						jsonNecessarios.put("id", arrayListElementosFaltantes.get(z));
+						jsonNecessarios.put("nome", objCarreira.get("nome"));
+						jsonNecessarios.put("descricao", objCarreira.get("descricao"));
+						jsonNecessarios.put("wiki", objCarreira.get("wiki"));
+						jsonNecessarios.put("amazon", objCarreira.get("amazon"));
+						jsonNecessarios.put("preRequisitos", objCarreira.get("preRequisitos"));
+						jsonNecessarios.put("preRequisitosNome", objCarreira.get("preRequisitosNome"));
+						JSONArray cursos = new JSONArray();
+						ObterCursosNecessarios (arrayListElementosFaltantes.get(z), cursos);
+						jsonNecessarios.put("cursos", cursos);
+						necessariosArray.add (jsonNecessarios);
+					};
+					mongoHabilidade.close();
+					++z;
+				} catch (UnknownHostException | MongoException e) {
+					e.printStackTrace();
+				}
 			}
-		}
-		jsonDocumento.put("arrayNecessarios", necessariosArray);
+			jsonDocumento.put("arrayNecessarios", necessariosArray);
+		};
 		return jsonDocumento;
 	};
 	
@@ -610,16 +669,20 @@ public class Rest_UserPerfil {
 		ArrayList<String> arrayHabilidades = (ArrayList<String>) objHabilidades;
 
 		Response response = commons_db.getCollection(elemento, "objetivos", "documento.id");
-		JSONObject objetivoDoc = new JSONObject();
-		objetivoDoc.putAll((Map) objetivoDoc.get("documento"));
-		ArrayList<String> array = (ArrayList<String>) objetivoDoc.get("habilidades");
-		for (int i = 0; i < array.size(); i++) {
-			if (!commons.testaElementoArray(elemento, array)){
-				array.add(elemento);
+		if (!(response.getEntity() instanceof Boolean)){
+			BasicDBObject doc = new BasicDBObject();
+			doc.putAll((Map) response.getEntity());
+			if (doc != null){
+				BasicDBObject objDoc = (BasicDBObject) doc.get("documento");
+				ArrayList<String> array = (ArrayList<String>) objDoc.get("habilidades");
+				for (int i = 0; i < array.size(); i++) {
+					if (!commons.testaElementoArray(elemento, array)){
+						array.add(elemento);
+					};
+				};
 			};
 		};
-		
-			
+				
 		return arrayHabilidades;
 	};
 	
@@ -824,24 +887,25 @@ public class Rest_UserPerfil {
 			if (cursor != null){
 				BasicDBObject objCarreira = (BasicDBObject) cursor.get("documento");
 				ArrayList<String> arrayListHabilidades = new ArrayList<String>(); 
-				arrayListHabilidades = (ArrayList<String>) objCarreira.get("necessarios");
+				arrayListHabilidades = (ArrayList<String>) objCarreira.get("preRequisitosGeral");
 		    	Object arrayHabilidades[] = arrayListHabilidades.toArray();
 		    	int totalHabilidades = 0;
 		    	int totalPossuiHabilidades = 0;
 				int w = 0;
 				while (w < arrayHabilidades.length) {
+					String idHabilidade = arrayHabilidades[w].toString().split(":")[0];
 					Boolean temHabilidade = false;
 					int z = 0;
 					while (z < arrayElementos.length) {
-						if (arrayHabilidades[w].equals(arrayElementos[z])){
+						if (idHabilidade.equals(arrayElementos[z])){
 							++totalPossuiHabilidades;
 							temHabilidade = true;
 						}
 						++z;
 					};
-					if (!temHabilidade){
-						arrayListElementosFaltantes.add((String) arrayHabilidades[w]); 
-					}
+					if (!temHabilidade){						
+						arrayListElementosFaltantes.add(idHabilidade); 
+					};
 					++w;
 					++totalHabilidades;
 				};
@@ -866,13 +930,13 @@ public class Rest_UserPerfil {
 	};
 	
 	@SuppressWarnings("unchecked")
-	private JSONObject ObterTotalHabilidadesBadges (Object badge, Object[] arrayElementos, ArrayList<String> arrayListElementosFaltantes) {
+	private JSONObject ObterTotalHabilidadesBadges (Object id, Object[] arrayElementos, ArrayList<String> arrayListElementosFaltantes) {
 		Mongo mongo;
 		try {
 			mongo = new Mongo();
 			DB db = (DB) mongo.getDB("yggboard");
 			DBCollection collection = db.getCollection("badges");
-			BasicDBObject searchQuery = new BasicDBObject("documento.nome", badge);
+			BasicDBObject searchQuery = new BasicDBObject("documento.id", id);
 			DBObject cursor = collection.findOne(searchQuery);
 			if (cursor != null){
 				BasicDBObject objBadge = (BasicDBObject) cursor.get("documento");
@@ -1063,6 +1127,33 @@ public class Rest_UserPerfil {
 				e.printStackTrace();
 			};
 			return null;
+	};
+	@SuppressWarnings({ "rawtypes" })
+	private BasicDBObject getUserPerfil(String id){
+		Commons_DB commons_db = new Commons_DB();
+		Response response = commons_db.getCollection(id, "usuarios", "_id");
+		BasicDBObject doc = new BasicDBObject();
+		BasicDBObject jsonDocumento = new BasicDBObject();
+		if (!(response.getEntity() instanceof Boolean)){
+			doc.putAll((Map) response.getEntity());
+			if (doc != null){
+				BasicDBObject objDoc = (BasicDBObject) doc.get("documento");
+				jsonDocumento.put("usuario", objDoc);
+				String email = objDoc.get("email").toString();
+				Response responsePerfil = commons_db.getCollection(email, "userPerfil", "documento.usuario");
+				BasicDBObject docPerfil = new BasicDBObject();
+				BasicDBObject objDocPerfil = new BasicDBObject();
+				if (!(responsePerfil.getEntity() instanceof Boolean)){
+					docPerfil.putAll((Map) responsePerfil.getEntity());
+					if (docPerfil != null){
+						objDocPerfil = (BasicDBObject) docPerfil.get("documento");
+					};
+				};
+				jsonDocumento.put("userPerfil", objDocPerfil);
+			};
+		};
+		return jsonDocumento;
+		
 	};
 	
 };

@@ -278,7 +278,7 @@ public class Commons {
 
 	public String preRequisito(String arrayPreRequisito) {
 		if (arrayPreRequisito != null){
-			String[] array = arrayPreRequisito.split("|");
+			String[] array = arrayPreRequisito.replace("|", "&").split("&");
 			return array[0].toString();
 		}else{
 			return "";

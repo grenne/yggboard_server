@@ -60,3 +60,15 @@
 #filesInput {
    display: inline-block;  
 }
+.registros{
+   display: inline-block;  	
+};
+.field {
+    margin-bottom: 1em;
+    color: #000000;
+}
+ 
+.label {
+    margin-bottom: 0.2em;
+    color: #0080ff;
+}

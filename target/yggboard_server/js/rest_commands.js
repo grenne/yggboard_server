@@ -8,7 +8,7 @@ function rest_obter(objJson, action_ok, action_not_ok, var1, var2, var3) {
 
 	$.ajax({
 		type : "POST",
-		url : "http://" + localStorage.urlServidor + ":8080/yggboard_server/rest/crud/obter",
+		url : localStorage.mainUrl + "yggboard_server/rest/crud/obter",
 		contentType : "application/json; charset=utf-8",
 		dataType : 'json',
 		data : JSON.stringify(objJson),
@@ -33,7 +33,7 @@ function rest_incluir (objJson, action_ok, action_not_ok, var1, var2, var3){
 
 	$.ajax({
 		type: "POST",
-        url: "http://" + localStorage.urlServidor + ":8080/yggboard_server/rest/crud/incluir",
+        url: localStorage.mainUrl + "yggboard_server/rest/crud/incluir",
         contentType: "application/json; charset=utf-8",
         dataType: 'json',
         data : JSON.stringify(objJson),
@@ -58,7 +58,7 @@ function rest_remover (objJson, action_ok, action_not_ok, var1, var2, var3){
 
 	$.ajax({
 		type: "POST",
-        url: "http://" + localStorage.urlServidor + ":8080/yggboard_server/rest/crud/remover/all",
+        url: localStorage.mainUrl + "yggboard_server/rest/crud/remover/all",
         contentType: "application/json; charset=utf-8",
         dataType: 'json',
         data : JSON.stringify(objJson),
@@ -85,7 +85,7 @@ function rest_atualizar (objJson, action_ok, action_not_ok, var1, var2, var3){
 
 	$.ajax({
 		type: "POST",
-        url: "http://" + localStorage.urlServidor + ":8080/yggboard_server/rest/crud/atualizar",
+        url: localStorage.mainUrl + "yggboard_server/rest/crud/atualizar",
         contentType: "application/json; charset=utf-8",
         dataType: 'json',
         data : JSON.stringify(objJson),
@@ -113,7 +113,7 @@ function rest_lista (objJson, action_ok, action_not_ok, var1, var2, var3){
 
 	$.ajax({
 		type: "POST",
-        url: "http://" + localStorage.urlServidor + ":8080/yggboard_server/rest/crud/lista",
+        url: localStorage.mainUrl + "yggboard_server/rest/crud/lista",
         contentType: "application/json; charset=utf-8",
         dataType: 'json',
         data : JSON.stringify(objJson),
@@ -131,9 +131,40 @@ function rest_lista (objJson, action_ok, action_not_ok, var1, var2, var3){
 
 };
 
+function rest_listaReturn (collection, action_ok, action_not_ok, var1, var2, var3){
+
+	var listas = null;
+	var objJson = 
+	{	
+		asybc : false,
+		collection : collection,
+		keys : []
+	};
+
+	$.ajax({
+		type: "POST",
+        url: localStorage.mainUrl + "yggboard_server/rest/crud/lista",
+        contentType: "application/json; charset=utf-8",
+        dataType: 'json',
+        data : JSON.stringify(objJson),
+    	async : false
+	
+	})        	
+	.done(function( data ) {
+		listas = data;
+	})
+	.fail(function(data) {
+		listas = null;
+	})
+	.always(function(data) {
+	});
+
+	return listas;
+};
+
 function rest_obterHabilidades(action_ok, action_not_ok, var1, var2) {
 	$.ajax({
-        url: "http://" + localStorage.urlServidor + ":8080/yggboard_server/rest/habilidades/lista?diagrama=habilidades&semCursos=" + var1,
+        url: localStorage.mainUrl + "yggboard_server/rest/habilidades/lista?diagrama=habilidades&semCursos=" + var1,
         contentType: "application/json; charset=utf-8",
         dataType: 'json'
 	})
@@ -153,7 +184,7 @@ function rest_obterHabilidades(action_ok, action_not_ok, var1, var2) {
 
 function rest_obterHabilidadesName(name, action_ok, action_not_ok, var1, var2) {
 	$.ajax({
-        url: "http://" + localStorage.urlServidor + ":8080/yggboard_server/rest/habilidades/obter?name=" + name,
+        url: localStorage.mainUrl + "yggboard_server/rest/habilidades/obter?name=" + name,
         contentType: "application/json; charset=utf-8",
         dataType: 'json'
 	})
@@ -173,7 +204,7 @@ function rest_obterHabilidadesName(name, action_ok, action_not_ok, var1, var2) {
 
 function rest_obterHabilidadesIdHabilidade(name, action_ok, action_not_ok, var1, var2) {
 	$.ajax({
-        url: "http://" + localStorage.urlServidor + ":8080/yggboard_server/rest/habilidades/obter?idHabilidade=" + idHabilidade,
+        url: localStorage.mainUrl + "yggboard_server/rest/habilidades/obter?idHabilidade=" + idHabilidade,
         contentType: "application/json; charset=utf-8",
         dataType: 'json'
 	})
@@ -193,7 +224,7 @@ function rest_obterHabilidadesIdHabilidade(name, action_ok, action_not_ok, var1,
 
 function rest_obterCarreiras(action_ok, action_not_ok, var1, var2) {
 	$.ajax({
-        url: "http://" + localStorage.urlServidor + ":8080/yggboard_server/rest/carreiras/lista",
+        url: localStorage.mainUrl + "yggboard_server/rest/carreiras/lista",
         contentType: "application/json; charset=utf-8",
         dataType: 'json'
 	})
@@ -213,7 +244,7 @@ function rest_obterCarreiras(action_ok, action_not_ok, var1, var2) {
 
 function rest_obterCarreira(idCarreira, action_ok, action_not_ok, var1, var2) {
 	$.ajax({
-        url: "http://" + localStorage.urlServidor + ":8080/yggboard_server/rest/carreiras/obter?idCarreira=" + idCarreira,
+        url: localStorage.mainUrl + "yggboard_server/rest/carreiras/obter?idCarreira=" + idCarreira,
         contentType: "application/json; charset=utf-8",
         dataType: 'json'
 	})
@@ -229,7 +260,7 @@ function rest_obterCarreira(idCarreira, action_ok, action_not_ok, var1, var2) {
 
 function rest_obterBadges(action_ok, action_not_ok, var1, var2) {
 	$.ajax({
-        url: "http://" + localStorage.urlServidor + ":8080/yggboard_server/rest/badges/lista",
+        url: localStorage.mainUrl + "yggboard_server/rest/badges/lista",
         contentType: "application/json; charset=utf-8",
         dataType: 'json'
 	})
@@ -249,7 +280,7 @@ function rest_obterBadges(action_ok, action_not_ok, var1, var2) {
 
 function rest_obterBadge(idBadge, action_ok, action_not_ok, var1, var2) {
 	$.ajax({
-        url: "http://" + localStorage.urlServidor + ":8080/yggboard_server/rest/carreiras/obter?idBadge=" + idBadge,
+        url: localStorage.mainUrl + "yggboard_server/rest/carreiras/obter?idBadge=" + idBadge,
         contentType: "application/json; charset=utf-8",
         dataType: 'json'
 	})
@@ -265,7 +296,7 @@ function rest_obterBadge(idBadge, action_ok, action_not_ok, var1, var2) {
 
 function rest_obterCursos(action_ok, action_not_ok, var1, var2) {
 	$.ajax({
-        url: "http://" + localStorage.urlServidor + ":8080/yggboard_server/rest/cursos/lista",
+        url: localStorage.mainUrl + "yggboard_server/rest/cursos/lista",
         contentType: "application/json; charset=utf-8",
         dataType: 'json'
 	})
@@ -285,7 +316,7 @@ function rest_obterCursos(action_ok, action_not_ok, var1, var2) {
 
 function rest_obterAreaAtuacao(action_ok, action_not_ok, var1, var2) {
 	$.ajax({
-        url: "http://" + localStorage.urlServidor + ":8080/yggboard_server/rest/areaatuacao/lista",
+        url: localStorage.mainUrl + "yggboard_server/rest/areaatuacao/lista",
         contentType: "application/json; charset=utf-8",
         dataType: 'json'
 	})
@@ -305,7 +336,7 @@ function rest_obterAreaAtuacao(action_ok, action_not_ok, var1, var2) {
 
 function rest_obterAreaConhecimento(action_ok, action_not_ok, var1, var2) {
 	$.ajax({
-        url: "http://" + localStorage.urlServidor + ":8080/yggboard_server/rest/areaconhecimento/lista",
+        url: localStorage.mainUrl + "yggboard_server/rest/areaconhecimento/lista",
         contentType: "application/json; charset=utf-8",
         dataType: 'json'
 	})
@@ -325,7 +356,7 @@ function rest_obterAreaConhecimento(action_ok, action_not_ok, var1, var2) {
 
 function rest_obterBadges(action_ok, action_not_ok, var1, var2, var3) {
 	$.ajax({
-        url: "http://" + localStorage.urlServidor + ":8080/yggboard_server/rest/badges/lista",
+        url: localStorage.mainUrl + "yggboard_server/rest/badges/lista",
         contentType: "application/json; charset=utf-8",
         dataType: 'json'
 	})
@@ -341,6 +372,25 @@ function rest_obterBadges(action_ok, action_not_ok, var1, var2, var3) {
 	})
 	.always(function(data) {
 	});
+};
+
+function rest_urlReturn(url, action_not_ok, var1, var2, var3) {
+	var dataOutput = null;
+	$.ajax({
+        url: localStorage.mainUrl + "yggboard_server/rest/" + url,
+        contentType: "application/json; charset=utf-8",
+        dataType: 'json',
+        async : false
+	})
+	.done(function( data ) {
+		dataOutput = data;
+	})
+	.fail(function(data) {
+	})
+	.always(function(data) {
+	});
+	
+	return dataOutput;
 };
 
 function semAcao(){

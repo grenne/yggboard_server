@@ -20,7 +20,8 @@ public class ApplicationConfig extends Application {
            		Rest_Badge.class,
            		Rest_Carreira.class,
            		Rest_Email.class,
-           		Rest_Usuario.class
+           		Rest_Usuario.class,
+           		Rest_UploadFiles.class
            	        		));
     }
 
