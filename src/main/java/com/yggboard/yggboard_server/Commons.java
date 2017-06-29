@@ -277,6 +277,22 @@ public class Commons {
 		return array;
 	};
 
+	@SuppressWarnings("unchecked")
+	public JSONArray addString(JSONArray array, String elemento) {
+
+		if (array != null){
+			for (int i = 0; i < array.size(); i++) {
+				if (array.get(i).equals(elemento)){
+					return array;
+				};
+			};
+		}else{
+			return array;
+		};
+		array.add(elemento);
+		return array;
+	};
+
 	public String preRequisito(String arrayPreRequisito) {
 		if (arrayPreRequisito != null){
 			String[] array = arrayPreRequisito.replace("|", "&").split("&");

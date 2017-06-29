@@ -105,6 +105,7 @@ public class Rest_UserPerfil {
 							BasicDBObject objCarreiras = new BasicDBObject();
 							if (cursorCarreiras != null){
 								objCarreiras.put("documento", cursorCarreiras.get("documento"));
+								objCarreiras.put("_id", cursorCarreiras.get("_id").toString());
 								documentos.add(montaCarreira(objCarreiras, jsonPerfil));
 							};
 							mongoCarreiras.close();
@@ -118,8 +119,9 @@ public class Rest_UserPerfil {
 					BasicDBObject searchQueryCarreiras = new BasicDBObject("documento.id", elemento.toString());
 					DBObject cursorCarreiras = collectionCarreiras.findOne(searchQueryCarreiras);
 					BasicDBObject objCarreiras = new BasicDBObject();
-					objCarreiras.put("documento", cursorCarreiras.get("documento"));
 					if (cursorCarreiras != null){
+						objCarreiras.put("documento", cursorCarreiras.get("documento"));
+						objCarreiras.put("_id", cursorCarreiras.get("_id").toString());
 						documentos.add(montaCarreira(objCarreiras, jsonPerfil));
 					};
 					mongoCarreiras.close();				
@@ -518,7 +520,7 @@ public class Rest_UserPerfil {
 
 		BasicDBObject objCarreiras = (BasicDBObject) objCarreirasSource.get("documento");
 		BasicDBObject jsonDocumento = new BasicDBObject();
-		jsonDocumento.put("_id", objCarreiras.getString("_id"));
+		jsonDocumento.put("_id", objCarreirasSource.get("_id"));
 		jsonDocumento.put("nome", objCarreiras.get("nome"));
 		jsonDocumento.put("nivel", objCarreiras.get("nivel"));
 		jsonDocumento.put("nivelFiltro", objCarreiras.get("nivelFiltro"));
@@ -551,8 +553,8 @@ public class Rest_UserPerfil {
 		arrayListElementos = (ArrayList) jsonPerfil.get("habilidades");
 		if (arrayListElementos != null){
 	    	Object arrayElementos[] = arrayListElementos.toArray(); 
-			ArrayList <String> arrayListElementosFaltantes = new ArrayList(); 
-		    JSONObject jsonQtdeHabilidades = ObterTotalHabilidades(objCarreiras.get("id"), arrayElementos, arrayListElementosFaltantes);
+			JSONArray arrayListElementosFaltantes = new JSONArray(); 
+		    JSONObject jsonQtdeHabilidades = ObterHabilidadesFaltantes(objCarreirasSource, arrayElementos, arrayListElementosFaltantes);
 		    jsonDocumento.put("totalHabilidades", Integer.toString(totalHabilidades));
 		    jsonDocumento.put("totalPossuiHabilidades", jsonQtdeHabilidades.get("totalPossuiHabilidades"));
 			int z = 0;
@@ -810,7 +812,7 @@ public class Rest_UserPerfil {
 			mongo = new Mongo();
 			DB db = (DB) mongo.getDB("yggboard");
 			DBCollection collection = db.getCollection("objetivos");
-			BasicDBObject searchQuery = new BasicDBObject("documento.nome", carreira);
+			BasicDBObject searchQuery = new BasicDBObject("documento.id", carreira);
 			DBObject cursor = collection.findOne(searchQuery);
 			BasicDBObject objCarreira = (BasicDBObject) cursor.get("documento");
 			ArrayList<String> arrayListHabilidades = new ArrayList<String>(); 
@@ -870,7 +872,7 @@ public class Rest_UserPerfil {
 			mongo = new Mongo();
 			DB db = (DB) mongo.getDB("yggboard");
 			DBCollection collection = db.getCollection("badges");
-			BasicDBObject searchQuery = new BasicDBObject("documento.nome", badge);
+			BasicDBObject searchQuery = new BasicDBObject("documento.id", badge);
 			DBObject cursor = collection.findOne(searchQuery);
 			BasicDBObject objBadge = (BasicDBObject) cursor.get("documento");
 			ArrayList<String> arrayListHabilidades = new ArrayList<String>(); 
@@ -924,57 +926,50 @@ public class Rest_UserPerfil {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private JSONObject ObterTotalHabilidades (Object carreira, Object[] arrayElementos, ArrayList<String> arrayListElementosFaltantes) {
-		Mongo mongo;
-		try {
-			mongo = new Mongo();
-			DB db = (DB) mongo.getDB("yggboard");
-			DBCollection collection = db.getCollection("objetivos");
-			BasicDBObject searchQuery = new BasicDBObject("documento.id", carreira);
-			DBObject cursor = collection.findOne(searchQuery);
-			if (cursor != null){
-				BasicDBObject objCarreira = (BasicDBObject) cursor.get("documento");
-				ArrayList<String> arrayListHabilidades = new ArrayList<String>(); 
-				arrayListHabilidades = (ArrayList<String>) objCarreira.get("preRequisitosGeral");
-		    	Object arrayHabilidades[] = arrayListHabilidades.toArray();
-		    	int totalHabilidades = 0;
-		    	int totalPossuiHabilidades = 0;
-				int w = 0;
-				while (w < arrayHabilidades.length) {
-					String idHabilidade = arrayHabilidades[w].toString().split(":")[0];
-					Boolean temHabilidade = false;
-					int z = 0;
-					while (z < arrayElementos.length) {
-						if (idHabilidade.equals(arrayElementos[z])){
-							++totalPossuiHabilidades;
-							temHabilidade = true;
-						}
-						++z;
+	private JSONObject ObterHabilidadesFaltantes (BasicDBObject carreira, Object[] arrayElementos, JSONArray arrayListElementosFaltantes) {
+		Commons commons = new Commons();
+		BasicDBObject objCarreira = (BasicDBObject) carreira.get("documento");
+		ArrayList<String> arrayListHabilidadesPossui = new ArrayList<String>(); 
+		ArrayList<String> arrayListHabilidades = new ArrayList<String>(); 
+		arrayListHabilidades = (ArrayList<String>) objCarreira.get("preRequisitosGeral");
+    	Object arrayHabilidades[] = arrayListHabilidades.toArray();
+    	int totalPossuiHabilidades = 0;
+		int w = 0;
+		while (w < arrayHabilidades.length) {
+			String preRequisitos = arrayHabilidades[w].toString().split(":")[0].toString().replace("|", "&");
+			String [] array = preRequisitos.split("&");
+			int i = 0;
+			Boolean temHabilidade = false;
+			Boolean somarPossui = false;
+			while (i < array.length) {
+				int z = 0;
+				while (z < arrayElementos.length) {
+					if (array[i].equals(arrayElementos[z])){
+						if (!(commons.testaElementoArray(array[i], arrayListHabilidadesPossui))){
+							arrayListHabilidadesPossui.add(array[i]);
+							somarPossui = true;
+						};
+						temHabilidade = true;
 					};
-					if (!temHabilidade){						
-						arrayListElementosFaltantes.add(idHabilidade); 
-					};
-					++w;
-					++totalHabilidades;
+					++z;
 				};
-				JSONObject jsonQtdeHabilidades = new JSONObject();
-				jsonQtdeHabilidades.put("totalHabilidades", totalHabilidades);
-				jsonQtdeHabilidades.put("totalPossuiHabilidades", totalPossuiHabilidades);
-				mongo.close();
-				return jsonQtdeHabilidades;
-			}else{
-				JSONObject jsonQtdeHabilidades = new JSONObject();
-				jsonQtdeHabilidades.put("totalHabilidades", 0);
-				jsonQtdeHabilidades.put("totalPossuiHabilidades", 0);
-				mongo.close();
-				return jsonQtdeHabilidades;
-			}
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		} catch (MongoException e) {
-			e.printStackTrace();
-		}
-		return null;
+				++i;
+			};
+			if (somarPossui){	
+				++totalPossuiHabilidades;				
+			};
+			if (!temHabilidade){	
+				int j = 0;
+				while (j < array.length) {
+					commons.addString(arrayListElementosFaltantes, array[j]);
+					++j;
+				};
+			};
+			++w;
+		};
+		JSONObject jsonQtdeHabilidades = new JSONObject();
+		jsonQtdeHabilidades.put("totalPossuiHabilidades", totalPossuiHabilidades);
+		return jsonQtdeHabilidades;
 	};
 	
 	@SuppressWarnings("unchecked")
