@@ -15,6 +15,7 @@ public class Listas {
 	private JSONArray areasConhecimento;
 	private JSONArray elementosFiltro;
 	private JSONArray habilidadesCarregadas;
+	private BasicDBObject userPerfil;
 
 	public Listas() {
 		objetivos = new JSONArray();
@@ -24,6 +25,7 @@ public class Listas {
 		areasConhecimento =  new JSONArray();
 		elementosFiltro =  new JSONArray();
 		habilidadesCarregadas =  new JSONArray();
+		userPerfil =  new BasicDBObject();
 	};
 
 	public Listas(
@@ -33,7 +35,8 @@ public class Listas {
 			JSONArray areasAtuacao,
 			JSONArray areasConhecimento,
 			JSONArray elementosFiltro,
-			JSONArray habilidadesCarregadas
+			JSONArray habilidadesCarregadas,
+			BasicDBObject userPerfil
 			) {
 		this.objetivos = objetivos;
 		this.habilidades = habilidades;
@@ -42,6 +45,7 @@ public class Listas {
 		this.areasConhecimento = areasConhecimento;
 		this.elementosFiltro = elementosFiltro;
 		this.habilidadesCarregadas = habilidadesCarregadas;
+		this.userPerfil = userPerfil;
 	};
 	
 	public void setObjetivos(JSONArray objetivos) {
@@ -112,6 +116,12 @@ public class Listas {
 	};
 	public JSONArray habilidadesCarregadas() {
 		return this.habilidadesCarregadas;
+	};	
+	public void setUserPerfil(BasicDBObject userPerfil) {
+		this.userPerfil = userPerfil;
 	};
+	public BasicDBObject userPerfil() {
+		return this.userPerfil;
+	};	
 
 };

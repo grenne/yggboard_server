@@ -1,6 +1,5 @@
 package com.yggboard.yggboard_server;
 
-import java.net.UnknownHostException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -11,15 +10,8 @@ import java.util.Map;
 import javax.ws.rs.core.Response;
 
 import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 
 import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
-import com.mongodb.Mongo;
-import com.mongodb.MongoException;
-import com.sun.xml.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
 
 
 public class Commons {
@@ -64,6 +56,7 @@ public class Commons {
 		return null;
 	};
 	
+	@SuppressWarnings("null")
 	public int difDate (String start, String end){
 		
 		DateFormat df = new SimpleDateFormat ("dd/MM/yyyy");
@@ -261,6 +254,23 @@ public class Commons {
 		return false;
 	};
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public JSONArray montaArrayPerfil(Object perfil, Object elementos) {
+		JSONArray array = new JSONArray();
+		if (perfil != null && elementos != null){
+			for (int i = 0; i < ((ArrayList) elementos).size(); i++) {
+				Boolean existe = false;
+				for (int z = 0; z < ((ArrayList) perfil).size(); z++) {
+					if (((ArrayList) perfil).get(z).toString().equals(((ArrayList) elementos).get(i).toString())){
+						existe = true;
+					};
+				};
+				array.add(existe);
+			};
+		};
+		return array;
+	};
+
 	@SuppressWarnings("unchecked")
 	public JSONArray addObjeto(JSONArray array, BasicDBObject elemento) {
 
@@ -301,5 +311,28 @@ public class Commons {
 			return "";
 		}
 	};
+
+	public Response insereEvento(BasicDBObject evento) {
+	
+		Commons_DB commons_db = new Commons_DB();
+
+		BasicDBObject insertDoc = new BasicDBObject();
+		
+		insertDoc.put("idUsuario", evento.get("idUsuario"));
+		insertDoc.put("evento", evento.get("evento"));
+		insertDoc.put("idEvento", evento.get("idEvento"));
+		insertDoc.put("motivo", evento.get("motivo"));
+		insertDoc.put("elemento", evento.get("elemento"));
+		insertDoc.put("idElemento", evento.get("idElemento"));
+		insertDoc.put("data", todaysDate("inv_month_number"));
+		insertDoc.put("status", "nao lido");
+
+		BasicDBObject doc = new BasicDBObject();
+		
+		doc.put("documento", insertDoc);
+		
+		return commons_db.incluirCrud("eventos", doc);
+	};
+	
 
 };
