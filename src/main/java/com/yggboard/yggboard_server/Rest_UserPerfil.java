@@ -130,10 +130,10 @@ public class Rest_UserPerfil {
 				};
 				if (item.equals("badges") | item.equals("show-badges")){
 					if (item.equals("badges")){
-						carregaBadges((ArrayList) jsonPerfil.get("badges"), usuario, jsonPerfil, documentos, true);
-						carregaBadges((ArrayList) jsonPerfil.get("badgesConquista"), usuario, jsonPerfil, documentos, true);
+						carregaBadges((ArrayList) jsonPerfil.get("badges"), usuario, jsonPerfil, documentos, false);
+						carregaBadges((ArrayList) jsonPerfil.get("badgesConquista"), usuario, jsonPerfil, documentos, false);
 					}else{
-						carregaBadges((ArrayList) jsonPerfil.get("showBadges"), usuario, jsonPerfil, documentos, true);
+						carregaBadges((ArrayList) jsonPerfil.get("showBadges"), usuario, jsonPerfil, documentos, false);
 					};
 					Mongo mongoBadge;
 					try {
@@ -410,7 +410,7 @@ public class Rest_UserPerfil {
 		return null;
 	};
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private void carregaBadges(ArrayList arrayList, String usuario, JSONObject jsonPerfil, JSONArray documentos, boolean b) {
+	private void carregaBadges(ArrayList arrayList, String usuario, JSONObject jsonPerfil, JSONArray documentos, boolean atualizaPerfil) {
 		Commons_DB commons_db = new Commons_DB();
 		if (arrayList != null){
 	    	Object array[] = arrayList.toArray(); 
@@ -423,7 +423,7 @@ public class Rest_UserPerfil {
 					if (doc != null){
 						JSONObject objBadges = new JSONObject();
 						objBadges.putAll((Map) doc.get("documento"));
-						incluirBadge(objBadges, usuario, jsonPerfil, documentos, true);
+						incluirBadge(objBadges, usuario, jsonPerfil, documentos, atualizaPerfil);
 					};
 				};
 				++w;
@@ -621,7 +621,7 @@ public class Rest_UserPerfil {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response AtualizarPerfil(JSONObject newPerfil) throws MongoException, JsonParseException, JsonMappingException, IOException {
-		
+		System.out.println("atualiza perfil:" + newPerfil.get("tipo") + "- inout:"  + newPerfil.get("inout") + " - id:"  + newPerfil.get("id"));
 		Commons_DB commons_db = new Commons_DB();
 		Commons commons = new Commons();
 		Response response = commons_db.getCollection(newPerfil.get("usuario").toString(), "userPerfil", "documento.usuario");
@@ -1093,6 +1093,7 @@ public class Rest_UserPerfil {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response CursosSugeridos(JSONObject inputCursosSugeridos)  {
 		
+		Commons commons = new Commons();
 		Mongo mongo;
 			try {
 				mongo = new Mongo();
@@ -1123,6 +1124,15 @@ public class Rest_UserPerfil {
 			                update,
 			                true,
 			                false);
+					// incluir evento
+					BasicDBObject evento = new BasicDBObject();
+					evento.put("idUsuario", usuario);
+					evento.put("evento", "userPerfil");
+					evento.put("idEvento", "cursosSugeridos");
+					evento.put("motivo", "inclusao");
+					evento.put("elemento", "cursosSugeridos");
+					evento.put("idElemento", cursosSugeridos.get("cursos"));
+					commons.insereEvento(evento);
 				};
 				mongo.close();
 				return Response.status(200).build();
@@ -1140,6 +1150,7 @@ public class Rest_UserPerfil {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response CarreirasSugeridos(JSONObject inputCarreirasSugeridas)  {
 		
+		Commons commons = new Commons();
 		Mongo mongo;
 			try {
 				mongo = new Mongo();
@@ -1170,6 +1181,15 @@ public class Rest_UserPerfil {
 			                update,
 			                true,
 			                false);
+					// incluir evento
+					BasicDBObject evento = new BasicDBObject();
+					evento.put("idUsuario", usuario);
+					evento.put("evento", "userPerfil");
+					evento.put("idEvento", "carreirasSugeridas");
+					evento.put("motivo", "inclusao");
+					evento.put("elemento", "carreirasSugeridas");
+					evento.put("idElemento", carreirasSugeridos.get("carreiras"));
+					commons.insereEvento(evento);
 				};
 				mongo.close();
 				return Response.status(200).build();

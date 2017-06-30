@@ -40,7 +40,7 @@ function testaIncluir() {
 	};
 	var objUserPerfil =
 		{
-			collection : "userPerfil",
+			collection : "~userPerfil",
 			insert : {
 				documento : {
 			        carreirasInteresse : [],
@@ -49,7 +49,7 @@ function testaIncluir() {
 			        cursosSugeridos : [],
 			        tags : [],
 			        elementos : [],
-			        usuario : "email_usuario II",
+			        usuario : "grenne",
 			        carreiras : [],
 			        habilidades : [],
 			        badges : [],
@@ -61,7 +61,7 @@ function testaIncluir() {
 				}
 			}
 		};
-	rest_incluir (objUserPerfil, restOk, semAcao);
+	rest_incluir (objJson, restOk, semAcao);
 };
 function testaAtualizar() {
 

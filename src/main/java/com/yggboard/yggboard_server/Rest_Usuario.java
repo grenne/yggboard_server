@@ -1,6 +1,8 @@
 package com.yggboard.yggboard_server;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import javax.inject.Singleton;
 import javax.ws.rs.GET;
@@ -12,6 +14,8 @@ import javax.ws.rs.core.Response;
 
 import org.bson.types.ObjectId;
 import org.json.simple.JSONObject;
+
+import com.mongodb.BasicDBObject;
 
 	
 @Singleton
@@ -69,6 +73,60 @@ public class Rest_Usuario {
 		fieldsArray.add(field);
 		
 		return commons_db.atualizarCrud("usuarios", fieldsArray, keysArray);
+
+	};
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Path("/login")	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response Login(@QueryParam("email") String email, @QueryParam("password") String password, @QueryParam("macadress") String macadress) {
+	
+		Commons_DB commons_db = new Commons_DB();
+		Commons commons = new Commons();
+		ArrayList<JSONObject> keysArray = new ArrayList<>();
+		JSONObject key = new JSONObject();
+		key.put("key", "documento.email");
+		key.put("value", email);
+		keysArray.add(key);
+		
+		Response response = commons_db.obterCrud("usuarios", keysArray);
+		
+		BasicDBObject objUser = new BasicDBObject();
+		if (!(response.getEntity() instanceof Boolean)){
+			BasicDBObject doc = new BasicDBObject();
+			doc.putAll((Map) response.getEntity());
+			if (doc != null){
+				objUser = (BasicDBObject) doc.get("documento");
+				if (objUser.get("password").toString().equals(password)){
+					key.put("key", "documento.email");
+					key.put("value", email);
+					keysArray.add(key);
+					List<String> arrayToken = new ArrayList<String>();
+					if (objUser.get("token") != null){
+						arrayToken = (List<String>) objUser.get("token");
+					};
+					String token = "";
+					if (macadress != null){
+						byte[] tokenByte = commons.gerarHash(macadress);
+						token = commons.stringHexa(tokenByte);
+					};
+					arrayToken.add(token);
+					ArrayList<JSONObject> fieldsArray = new ArrayList<>();
+					JSONObject field = new JSONObject();
+					field.put("field", "token");
+					field.put("value", arrayToken);
+					fieldsArray.add(field);				
+					commons_db.atualizarCrud("usuarios", fieldsArray, keysArray);
+					objUser.remove("password");
+					objUser.remove("token");
+					objUser.put("token", token);
+					return Response.status(200).entity(objUser).build();
+				};
+			};
+		};
+		return Response.status(200).entity(false).build();
+		
 
 	};
 };
