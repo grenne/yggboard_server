@@ -46,7 +46,12 @@ public class Commons_DB {
 			DBObject cursor = collection.findOne(searchQuery);
 			if (cursor != null) {
 				mongo.close();
-				return Response.status(200).entity(cursor).build();
+				BasicDBObject doc = new BasicDBObject();
+				doc = (BasicDBObject) cursor.get("documento");
+				doc.remove("password");
+				BasicDBObject docReturn = new BasicDBObject();
+				docReturn.put("documento", doc);
+				return Response.status(200).entity(docReturn).build();
 			}else{
 				mongo.close();
 				return Response.status(200).entity(false).build();

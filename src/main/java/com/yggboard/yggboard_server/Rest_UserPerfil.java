@@ -211,6 +211,8 @@ public class Rest_UserPerfil {
 									ObterCursosNecessarios (objHabilidades.get("id"), documentos);
 								}else{
 									JSONObject jsonDocumento = new JSONObject();
+									objHabilidades.put("interesse", commons.testaElementoArray(objHabilidades.get("id").toString(), (ArrayList<String>) jsonPerfil.get("carreirasInteresse")));
+									objHabilidades.put("possui", commons.testaElementoArray(objHabilidades.get("id").toString(), (ArrayList<String>) jsonPerfil.get("carreiras")));
 								    jsonDocumento.put("documento", objHabilidades);
 									JSONArray cursos = new JSONArray();
 									ObterCursosNecessarios (objHabilidades.get("id"), cursos);
@@ -343,6 +345,8 @@ public class Rest_UserPerfil {
 								BasicDBObject objCursos = (BasicDBObject) cursorCursos.get("documento");
 								List arrayParent = (List) objCursos.get("parents");
 								if (arrayParent.size() == 0){
+									objCursos.put("interesse", commons.testaElementoArray(objCursos.get("id").toString(), (ArrayList<String>) jsonPerfil.get("carreirasInteresse")));
+									objCursos.put("possui", commons.testaElementoArray(objCursos.get("id").toString(), (ArrayList<String>) jsonPerfil.get("carreiras")));
 									objCursos.put("habilidadesPerfil", commons.montaArrayPerfil(jsonPerfil.get("habilidades"), objCursos.get("habilidades")));
 									jsonDocumento.put("documento", objCursos);
 									documentos.add(jsonDocumento);
