@@ -220,11 +220,14 @@ function testaFiltro() {
 
 	var objJson = [];
 	var assunto = "";
+	var usuario = "";
 	while (assunto !=  "fim") {
+		usuario = prompt("Usuario");
 		assunto = prompt("Assunto");
 		if (assunto != "fim"){
 			var id = prompt("Id");
 			var filtro = {
+					usuario : usuario,
 					assunto : assunto,
 					id : id
 			};

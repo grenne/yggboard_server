@@ -343,6 +343,7 @@ public class Rest_UserPerfil {
 								BasicDBObject objCursos = (BasicDBObject) cursorCursos.get("documento");
 								List arrayParent = (List) objCursos.get("parents");
 								if (arrayParent.size() == 0){
+									objCursos.put("habilidadesPerfil", commons.montaArrayPerfil(jsonPerfil.get("habilidades"), objCursos.get("habilidades")));
 									jsonDocumento.put("documento", objCursos);
 									documentos.add(jsonDocumento);
 								};
@@ -415,7 +416,7 @@ public class Rest_UserPerfil {
 				    		arrayListObjetivos.add(carregaObjetivos(array[i].toString(), jsonDocumento, usuario, totais, jsonPerfil));
 						};
 					};
-					arrayList = (ArrayList) jsonPerfil.get("carreiras-interesse");
+					arrayList = (ArrayList) jsonPerfil.get("carreirasInteresse");
 					if (arrayList != null){
 				    	Object array[] = arrayList.toArray(); 
 				    	for (int i = 0; i < array.length; i++) {
@@ -469,6 +470,7 @@ public class Rest_UserPerfil {
 			    	JSONObject jsonQtdeHabilidades = ObterHabilidadesFaltantes(doc, arrayElementos, arrayListElementosFaltantes);
 			    	objObjetivo.put("interesse", commons.testaElementoArray(objObjetivo.get("id").toString(), (ArrayList<String>) jsonPerfil.get("carreirasInteresse")));
 			    	objObjetivo.put("possui", commons.testaElementoArray(objObjetivo.get("id").toString(), (ArrayList<String>) jsonPerfil.get("carreiras")));
+			    	objObjetivo.put("necessariosPerfil", commons.montaArrayPerfil(jsonPerfil.get("habilidades"), objObjetivo.get("necessarios")));
 			    	objObjetivo.put("totalHabilidades", Integer.toString(totalHabilidades));
 			    	objObjetivo.put("totalPossuiHabilidades", jsonQtdeHabilidades.get("totalPossuiHabilidades"));
 			    	int habilidadesGeralPossui = (int) totais.get("possui");

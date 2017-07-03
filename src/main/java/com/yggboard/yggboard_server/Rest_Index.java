@@ -171,6 +171,23 @@ public class Rest_Index {
 		
 		Listas listas = new Listas();
 		Opcoes opcoes = new Opcoes();
+		Commons_DB commons_db = new Commons_DB();
+	
+		JSONObject objItemFiltro_0 = new JSONObject();
+		objItemFiltro_0.putAll((Map) objFiltros.get(0));
+
+		Response response = commons_db.getCollection(objItemFiltro_0.get("usuario").toString(), "userPerfil", "documento.usuario");
+	
+		BasicDBObject objUserPerfil = new BasicDBObject();
+		if (!(response.getEntity() instanceof Boolean)){
+			BasicDBObject doc = new BasicDBObject();
+			doc.putAll((Map) response.getEntity());
+			if (doc != null){
+				objUserPerfil.putAll((Map) doc.get("documento"));
+			};
+		};
+
+		listas.setUserPerfil(objUserPerfil);
 
 		Boolean filtro = true;
 		opcoes.setFiltro(true);
@@ -810,8 +827,12 @@ public class Rest_Index {
 				BasicDBObject idObj = new BasicDBObject();
 				idObj.put("id", id);
 				habilidade.put ("nivel", "0");
-				habilidade.put("interesse", commons.testaElementoArray(id, (ArrayList<String>) listas.userPerfil().get("hablidadesInteresse")));
-				habilidade.put("possui", commons.testaElementoArray(id, (ArrayList<String>) listas.userPerfil().get("hablidades")));
+				if (listas.userPerfil().get("hablidadesInteresse") != null){
+					habilidade.put("interesse", commons.testaElementoArray(id, (ArrayList<String>) listas.userPerfil().get("hablidadesInteresse")));
+				};
+				if (listas.userPerfil().get("hablidades") != null){
+					habilidade.put("possui", commons.testaElementoArray(id, (ArrayList<String>) listas.userPerfil().get("hablidades")));
+				};
 				Boolean carregouHabilidade = false;
 				if (addObjeto(listas.habilidadesCarregadas(), idObj)){
 					listas.addHabilidades(habilidade);					
@@ -861,8 +882,12 @@ public class Rest_Index {
 				BasicDBObject idObj = new BasicDBObject();
 				idObj.put("id", id);
 				habilidade.put ("nivel", nivel);
-				habilidade.put("interesse", commons.testaElementoArray(id, (ArrayList<String>) listas.userPerfil().get("hablidadesInteresse")));
-				habilidade.put("possui", commons.testaElementoArray(id, (ArrayList<String>) listas.userPerfil().get("hablidades")));
+				if (listas.userPerfil().get("hablidadesInteresse") != null){
+					habilidade.put("interesse", commons.testaElementoArray(id, (ArrayList<String>) listas.userPerfil().get("hablidadesInteresse")));
+				};
+				if (listas.userPerfil().get("hablidades") != null){
+					habilidade.put("possui", commons.testaElementoArray(id, (ArrayList<String>) listas.userPerfil().get("hablidades")));
+				};
 				if (addObjeto(listas.habilidadesCarregadas(), idObj)){
 					listas.addHabilidades(habilidade);
 					carregouHabilidade = true;
@@ -1033,9 +1058,15 @@ public class Rest_Index {
 				BasicDBObject curso = (BasicDBObject) cursor.get("documento");
 				if (addObjeto(listas.cursos(), curso)){
 					List arrayParent = (List) curso.get("parents");
-					curso.put("interesse", commons.testaElementoArray(id, (ArrayList<String>) listas.userPerfil().get("cursosInteresse")));
-					curso.put("possui", commons.testaElementoArray(id, (ArrayList<String>) listas.userPerfil().get("cursos")));
-					curso.put("habilidadesPerfil", commons.montaArrayPerfil(listas.userPerfil().get("habilidades"), curso.get("habilidades")));
+					if (listas.userPerfil().get("cursosInteresse") != null){
+						curso.put("interesse", commons.testaElementoArray(id, (ArrayList<String>) listas.userPerfil().get("cursosInteresse")));
+					};
+					if (listas.userPerfil().get("cursos") != null){
+						curso.put("possui", commons.testaElementoArray(id, (ArrayList<String>) listas.userPerfil().get("cursos")));
+					};
+					if (curso.get("habilidades") != null){
+						curso.put("habilidadesPerfil", commons.montaArrayPerfil(listas.userPerfil().get("habilidades"), curso.get("habilidades")));
+					};
 					if (arrayParent.size() == 0){
 						listas.addCursos(curso);
 					};
@@ -1100,9 +1131,15 @@ public class Rest_Index {
 				//
 				// ***		carrega objetivo
 				//
-				objetivo.put("interesse", commons.testaElementoArray(id, (ArrayList<String>) listas.userPerfil().get("carreirasInteresse")));
-				objetivo.put("possui", commons.testaElementoArray(id, (ArrayList<String>) listas.userPerfil().get("carreiras")));
-				objetivo.put("necessariosPerfil", commons.montaArrayPerfil(listas.userPerfil().get("habilidades"), objetivo.get("necessarios")));
+				if (listas.userPerfil().get("carreirasInteresse") != null){
+					objetivo.put("interesse", commons.testaElementoArray(id, (ArrayList<String>) listas.userPerfil().get("carreirasInteresse")));
+				};
+				if (listas.userPerfil().get("carreiras") != null){
+					objetivo.put("possui", commons.testaElementoArray(id, (ArrayList<String>) listas.userPerfil().get("carreiras")));
+				};
+				if (objetivo.get("necessarios") != null){
+					objetivo.put("necessariosPerfil", commons.montaArrayPerfil(listas.userPerfil().get("habilidades"), objetivo.get("necessarios")));
+				};
 				listas.addObjetivos(objetivo);
 			};			
 			mongo.close();
@@ -1198,7 +1235,7 @@ public class Rest_Index {
 						if (listas.userPerfil().get("cursos") != null){
 							curso.put("possui", commons.testaElementoArray(curso.get("id").toString(), (ArrayList<String>) listas.userPerfil().get("cursos")));
 						};
-						if (listas.userPerfil().get("habilidades") != null){
+						if (curso.get("habilidades") != null){
 							curso.put("habilidadesPerfil", commons.montaArrayPerfil(listas.userPerfil().get("habilidades"), curso.get("habilidades")));
 						};
 						cursos.add(curso);
