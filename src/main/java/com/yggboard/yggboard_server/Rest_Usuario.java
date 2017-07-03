@@ -125,8 +125,8 @@ public class Rest_Usuario {
 					BasicDBObject evento = new BasicDBObject();
 					evento.put("idUsuario", email);
 					evento.put("evento", "usuarios");
-					evento.put("idEvento", "carreirasSugeridas");
-					evento.put("motivo", "lo");
+					evento.put("idEvento", email);
+					evento.put("motivo", "login");
 					evento.put("elemento", "usuarios");
 					evento.put("idElemento", email);
 					commons.insereEvento(evento);
