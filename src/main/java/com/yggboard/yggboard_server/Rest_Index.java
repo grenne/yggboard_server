@@ -1192,9 +1192,15 @@ public class Rest_Index {
 					BasicDBObject curso = (BasicDBObject) objCursos.get("documento");
 					List arrayParent = (List) curso.get("parents");
 					if (arrayParent.size() == 0){
-						curso.put("interesse", commons.testaElementoArray(curso.get("id").toString(), (ArrayList<String>) listas.userPerfil().get("cursosInteresse")));
-						curso.put("possui", commons.testaElementoArray(curso.get("id").toString(), (ArrayList<String>) listas.userPerfil().get("cursos")));
-						curso.put("habilidadesPerfil", commons.montaArrayPerfil(listas.userPerfil().get("habilidades"), curso.get("habilidades")));
+						if (listas.userPerfil().get("cursosInteresse") != null){
+							curso.put("interesse", commons.testaElementoArray(curso.get("id").toString(), (ArrayList<String>) listas.userPerfil().get("cursosInteresse")));
+						};
+						if (listas.userPerfil().get("cursos") != null){
+							curso.put("possui", commons.testaElementoArray(curso.get("id").toString(), (ArrayList<String>) listas.userPerfil().get("cursos")));
+						};
+						if (listas.userPerfil().get("habilidades") != null){
+							curso.put("habilidadesPerfil", commons.montaArrayPerfil(listas.userPerfil().get("habilidades"), curso.get("habilidades")));
+						};
 						cursos.add(curso);
 					};
 				};
@@ -1226,8 +1232,12 @@ public class Rest_Index {
 				//			
 				if (addObjeto(habilidades, objHabilidades)){
 					BasicDBObject habilidade = (BasicDBObject) objHabilidades.get("documento");
-					habilidade.put("interesse", commons.testaElementoArray(habilidade.get("id").toString(), (ArrayList<String>) listas.userPerfil().get("habilidadesInteresse")));
-					habilidade.put("possui", commons.testaElementoArray(habilidade.get("id").toString(), (ArrayList<String>) listas.userPerfil().get("habilidades")));
+					if (listas.userPerfil().get("habilidadesInteresse") != null){
+						habilidade.put("interesse", commons.testaElementoArray(habilidade.get("id").toString(), (ArrayList<String>) listas.userPerfil().get("habilidadesInteresse")));
+					};
+					if (listas.userPerfil().get("habilidades") != null){
+						habilidade.put("possui", commons.testaElementoArray(habilidade.get("id").toString(), (ArrayList<String>) listas.userPerfil().get("habilidades")));
+					};
 					habilidades.add(habilidade);
 				};
 			};
@@ -1264,9 +1274,15 @@ public class Rest_Index {
 					// ***		carrega objetivo
 					//			
 					if (addObjeto(objetivos, objetivo)){
-						objetivo.put("interesse", commons.testaElementoArray(objetivo.get("id").toString(), (ArrayList<String>) listas.userPerfil().get("carreirasInteresse")));
-						objetivo.put("possui", commons.testaElementoArray(objetivo.get("id").toString(), (ArrayList<String>) listas.userPerfil().get("carreiras")));
-						objetivo.put("necessariosPerfil", commons.montaArrayPerfil(listas.userPerfil().get("habilidades"), objetivo.get("necessarios")));
+						if (listas.userPerfil().get("carreirasInteresse") != null){
+							objetivo.put("interesse", commons.testaElementoArray(objetivo.get("id").toString(), (ArrayList<String>) listas.userPerfil().get("carreirasInteresse")));
+						};
+						if (listas.userPerfil().get("carreiras") != null){
+							objetivo.put("possui", commons.testaElementoArray(objetivo.get("id").toString(), (ArrayList<String>) listas.userPerfil().get("carreiras")));
+						};
+						if (objetivo.get("necessarios") != null){
+							objetivo.put("necessariosPerfil", commons.montaArrayPerfil(listas.userPerfil().get("habilidades"), objetivo.get("necessarios")));
+						};
 						objetivos.add(objetivo);
 					};
 				};

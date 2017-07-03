@@ -399,6 +399,36 @@ public class Rest_UserPerfil {
 						};
 					};
 				};
+				if (item.equals("objetivos")){
+					ArrayList arrayList = new ArrayList(); 
+					arrayList = (ArrayList) jsonPerfil.get("carreiras");
+					JSONObject totais = new JSONObject();
+					int habilidadesGeralFaltantes = 0;
+					int habilidadesGeralPossui = 0;
+					totais.put("faltantes", habilidadesGeralFaltantes);
+					totais.put("possui", habilidadesGeralPossui);
+					JSONObject jsonDocumento = new JSONObject();
+					ArrayList arrayListObjetivos = new ArrayList(); 
+					if (arrayList != null){
+				    	Object array[] = arrayList.toArray(); 
+				    	for (int i = 0; i < array.length; i++) {
+				    		arrayListObjetivos.add(carregaObjetivos(array[i].toString(), jsonDocumento, usuario, totais, jsonPerfil));
+						};
+					};
+					arrayList = (ArrayList) jsonPerfil.get("carreiras-interesse");
+					if (arrayList != null){
+				    	Object array[] = arrayList.toArray(); 
+				    	for (int i = 0; i < array.length; i++) {
+				    		arrayListObjetivos.add(carregaObjetivos(array[i].toString(), jsonDocumento, usuario, totais, jsonPerfil));
+						};
+					};
+					jsonDocumento.put("objetivos", arrayListObjetivos);
+					habilidadesGeralFaltantes = (int) totais.get("faltantes");
+					habilidadesGeralPossui = (int) totais.get("possui");
+					jsonDocumento.put("habilidadesGeralPossui", Integer.toString(habilidadesGeralPossui));
+					jsonDocumento.put("habilidadesGeralFaltantes", Integer.toString(habilidadesGeralFaltantes));
+					documentos.add(jsonDocumento);
+				};
 				System.out.println("chamada userperfil saida:" + item);
 
 				mongo.close();
@@ -409,6 +439,49 @@ public class Rest_UserPerfil {
 		};
 		return null;
 	};
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private BasicDBObject carregaObjetivos(String id, JSONObject jsonDocumento, String usuario, JSONObject totais, JSONObject jsonPerfil) {
+		Commons_DB commons_db = new Commons_DB();
+		Commons commons = new Commons();
+		Response response = commons_db.getCollection(id, "objetivos", "documento.id");
+		BasicDBObject objObjetivo = new BasicDBObject();
+		if (!(response.getEntity() instanceof Boolean)){
+			BasicDBObject doc = new BasicDBObject();
+			doc.putAll((Map) response.getEntity());
+			if (doc != null){
+				objObjetivo.putAll((Map) doc.get("documento"));
+		     	ArrayList arrayListNecessarios = new ArrayList();
+		    	arrayListNecessarios = (ArrayList) objObjetivo.get("necessarios");
+		     	ArrayList arrayListNecessariosNome = new ArrayList();
+		    	arrayListNecessariosNome = (ArrayList) objObjetivo.get("necessariosNome");
+		     	ArrayList arrayPreRequisitosGeral = new ArrayList();
+		     	arrayPreRequisitosGeral = (ArrayList) objObjetivo.get("preRequisitosGeral");
+				int totalHabilidades = arrayListNecessarios.size();
+				if (arrayPreRequisitosGeral != null){
+			    	Object objPreRequisitosGeral[] = arrayPreRequisitosGeral.toArray();
+			    	totalHabilidades = totalHabilidades + carregaPreRequisistosNecessarios(arrayListNecessarios, arrayListNecessariosNome, objPreRequisitosGeral);
+				};
+				ArrayList arrayListElementos = new ArrayList(); 
+				arrayListElementos = (ArrayList) jsonPerfil.get("habilidades");
+				if (arrayListElementos != null){
+			    	Object[] arrayElementos = arrayListElementos.toArray(); 
+			    	JSONArray arrayListElementosFaltantes = new JSONArray(); 
+			    	JSONObject jsonQtdeHabilidades = ObterHabilidadesFaltantes(doc, arrayElementos, arrayListElementosFaltantes);
+			    	objObjetivo.put("interesse", commons.testaElementoArray(objObjetivo.get("id").toString(), (ArrayList<String>) jsonPerfil.get("carreirasInteresse")));
+			    	objObjetivo.put("possui", commons.testaElementoArray(objObjetivo.get("id").toString(), (ArrayList<String>) jsonPerfil.get("carreiras")));
+			    	objObjetivo.put("totalHabilidades", Integer.toString(totalHabilidades));
+			    	objObjetivo.put("totalPossuiHabilidades", jsonQtdeHabilidades.get("totalPossuiHabilidades"));
+			    	int habilidadesGeralPossui = (int) totais.get("possui");
+			    	int habilidadesGeralFaltantes = (int) totais.get("faltantes");
+			    	habilidadesGeralPossui = habilidadesGeralPossui + Integer.valueOf(jsonQtdeHabilidades.get("totalPossuiHabilidades").toString());
+			    	habilidadesGeralFaltantes = habilidadesGeralFaltantes + (totalHabilidades - Integer.valueOf(jsonQtdeHabilidades.get("totalPossuiHabilidades").toString()));
+					totais.put("faltantes", habilidadesGeralFaltantes);
+					totais.put("possui", habilidadesGeralPossui);			    	
+				};
+			};
+		};
+		return objObjetivo;
+	}
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void carregaBadges(ArrayList arrayList, String usuario, JSONObject jsonPerfil, JSONArray documentos, boolean atualizaPerfil) {
 		Commons_DB commons_db = new Commons_DB();
@@ -548,7 +621,7 @@ public class Rest_UserPerfil {
 		ArrayList arrayListElementos = new ArrayList(); 
 		arrayListElementos = (ArrayList) jsonPerfil.get("habilidades");
 		if (arrayListElementos != null){
-	    	Object arrayElementos[] = arrayListElementos.toArray(); 
+	    	Object[] arrayElementos = arrayListElementos.toArray(); 
 			JSONArray arrayListElementosFaltantes = new JSONArray(); 
 		    JSONObject jsonQtdeHabilidades = ObterHabilidadesFaltantes(objCarreirasSource, arrayElementos, arrayListElementosFaltantes);
 		    jsonDocumento.put("totalHabilidades", Integer.toString(totalHabilidades));
@@ -1203,7 +1276,7 @@ public class Rest_UserPerfil {
 	@SuppressWarnings({ "rawtypes" })
 	private BasicDBObject getUserPerfil(String id){
 		Commons_DB commons_db = new Commons_DB();
-		Response response = commons_db.getCollection(id, "usuarios", "_id");
+		Response response = commons_db.getCollection(id, "usuarios", "usuarios");
 		BasicDBObject doc = new BasicDBObject();
 		BasicDBObject jsonDocumento = new BasicDBObject();
 		if (!(response.getEntity() instanceof Boolean)){

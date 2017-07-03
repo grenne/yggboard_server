@@ -169,7 +169,7 @@ public class Commons_DB {
 		}
 	};
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Response removerCrud(String collectionName, Object keysInput) {
 		Mongo mongo;
 		try {
