@@ -121,10 +121,20 @@ public class Rest_Usuario {
 					objUser.remove("password");
 					objUser.remove("token");
 					objUser.put("token", token);
+					// incluir evento
+					BasicDBObject evento = new BasicDBObject();
+					evento.put("idUsuario", email);
+					evento.put("evento", "usuarios");
+					evento.put("idEvento", "carreirasSugeridas");
+					evento.put("motivo", "lo");
+					evento.put("elemento", "usuarios");
+					evento.put("idElemento", email);
+					commons.insereEvento(evento);
 					return Response.status(200).entity(objUser).build();
 				};
 			};
 		};
+
 		return Response.status(200).entity(false).build();
 		
 
