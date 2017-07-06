@@ -33,6 +33,7 @@ public class Commons_DB {
 			DBCollection collection = db.getCollection(collectionName);
 			BasicDBObject searchQuery = new BasicDBObject();
 			List arraySetQuery = (List) arrayQueryInput;
+			Boolean login = false;
 			for (int i = 0; i < arraySetQuery.size(); i++) {
 				JSONObject setQuery = new JSONObject();
 				setQuery.putAll((Map) arraySetQuery.get(i));
@@ -42,16 +43,25 @@ public class Commons_DB {
 				}else{
 					searchQuery.put((String) setQuery.get("key"), (String) setQuery.get("value"));
 				};
+				if (setQuery.get("tipo") != null){
+					if (setQuery.get("tipo").equals("login")){
+						login = true; 
+					};
+				};
 			};
 			DBObject cursor = collection.findOne(searchQuery);
 			if (cursor != null) {
 				mongo.close();
-				BasicDBObject doc = new BasicDBObject();
-				doc = (BasicDBObject) cursor.get("documento");
-				doc.remove("password");
-				BasicDBObject docReturn = new BasicDBObject();
-				docReturn.put("documento", doc);
-				return Response.status(200).entity(docReturn).build();
+				if (login){
+					return Response.status(200).entity(cursor).build();
+				}else{
+					BasicDBObject doc = new BasicDBObject();
+					doc = (BasicDBObject) cursor.get("documento");
+					doc.remove("password");
+					BasicDBObject docReturn = new BasicDBObject();
+					docReturn.put("documento", docReturn);
+					return Response.status(200).entity(cursor).build();
+				}
 			}else{
 				mongo.close();
 				return Response.status(200).entity(false).build();

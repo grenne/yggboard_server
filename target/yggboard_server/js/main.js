@@ -85,6 +85,9 @@ $( ".teste" ).click(function() {
 	case "mostraPrerequisitos":
 		mostraPrerequisitos();
 		break;
+	case "atualizaHabilidadesDuplicadas":
+		atualizaHabilidadesDuplicadas();
+		break;
 		
 	default:
 		break;

@@ -12,7 +12,7 @@ function testaObter() {
 	};
 	$.ajax({
 		type : "POST",
-		url : "http://" + localStorage.urlServidor + ":8080/yggboard_server/rest/crud/obter",
+		url : localStorage.mainUrl + "yggboard_server/rest/crud/obter",
 		contentType : "application/json; charset=utf-8",
 		dataType : 'json',
 		data : JSON.stringify(objJson),
@@ -144,7 +144,7 @@ function testaAtualizar() {
 				};
 	$.ajax({
 		type : "POST",
-		url : "http://" + localStorage.urlServidor + ":8080/yggboard_server/rest/crud/atualizar",
+		url : localStorage.mainUrl + "yggboard_server/rest/crud/atualizar",
 		contentType : "application/json; charset=utf-8",
 		dataType : 'json',
 		data : JSON.stringify(teste),
@@ -167,7 +167,7 @@ function testaLista() {
 	};
 	$.ajax({
 		type : "POST",
-		url : "http://" + localStorage.urlServidor + ":8080/yggboard_server/rest/crud/lista",
+		url : localStorage.mainUrl + "yggboard_server/rest/crud/lista",
 		contentType : "application/json; charset=utf-8",
 		dataType : 'json',
 		data : JSON.stringify(objJson),
@@ -197,7 +197,7 @@ function testaAtualizaPerfil() {
 			.ajax(
 					{
 						type : "POST",
-						url : "http://" + localStorage.urlServidor + ":8080/yggboard_server/rest/userPerfil/atualizar/perfil",
+						url : localStorage.mainUrl + "yggboard_server/rest/userPerfil/atualizar/perfil",
 						contentType : "application/json; charset=utf-8",
 						dataType : 'json',
 						data : JSON.stringify(objJson),
@@ -236,7 +236,7 @@ function testaFiltro() {
 	};
 	$.ajax({
 		type : "POST",
-		url : "http://" + localStorage.urlServidor + ":8080/yggboard_server/rest/index/obter/filtro",
+		url : localStorage.mainUrl + "yggboard_server/rest/index/obter/filtro",
 		contentType : "application/json; charset=utf-8",
 		dataType : 'json',
 		data : JSON.stringify(objJson),
@@ -343,6 +343,43 @@ function atualizaObjetivosProcess(objetivos) {
 	console.log("terminou objetivos");
 };
 
+function atualizaHabilidadesDuplicadas() {
+
+	userPerfis = rest_listaReturn ("userPerfil");
+	habilidadesBase = rest_listaReturn ("habilidades");
+
+	$.each(userPerfis, function(i, userPerfil) {
+		var habilidades = userPerfil.habilidades;
+		var newHabilidades = [];		
+		$.each(habilidades, function(i, habilidade) {
+			var existe = false;
+			$.each(habilidadesBase, function(i, habilidadeBase) {
+				if (habilidadeBase.id == habilidade){
+					existe = true;
+				};
+			});
+			if (existe){
+				testaDuplicidade (habilidade, newHabilidades)
+			};
+		});
+		userPerfil.habilidades = newHabilidades;
+		var objJson = {
+			collection : "userPerfil",
+			keys : [ {
+				key : "documento.usuario",
+				value : userPerfil.usuario
+			} ],
+			update : [ {
+				field : "documento",
+				value : userPerfil
+			} ]
+		};
+		rest_atualizar(objJson, semAcao, semAcao);
+	});
+	
+	console.log("terminou duplicidade perfil");
+};
+
 function obterObjetivos(objJson, habilidadeTarget) {
 
 	objetivos = JSON.parse(localStorage.getItem("objetivos"));
@@ -403,7 +440,7 @@ function atualizaBadgesProcess(badges) {
 				value : habilidade
 			} ]
 		};
-		rest_atualizar(objJson, semAcao, semAcao);
+		rest_atualizar(objJson, restOk, semAcao);
 	});
 	console.log("terminou badges");
 };

@@ -208,14 +208,14 @@ public class Rest_UserPerfil {
 							if (cursorHabilidades != null){
 								BasicDBObject objHabilidades = (BasicDBObject) cursorHabilidades.get("documento");
 								if (item.equals("cursos-necessarias-habilidades") | item.equals("cursos-interesse-habilidades")){
-									ObterCursosNecessarios (objHabilidades.get("id"), documentos);
+									ObterCursosNecessarios (objHabilidades.get("id"), documentos, jsonPerfil);
 								}else{
 									JSONObject jsonDocumento = new JSONObject();
-									objHabilidades.put("interesse", commons.testaElementoArray(objHabilidades.get("id").toString(), (ArrayList<String>) jsonPerfil.get("carreirasInteresse")));
-									objHabilidades.put("possui", commons.testaElementoArray(objHabilidades.get("id").toString(), (ArrayList<String>) jsonPerfil.get("carreiras")));
+									objHabilidades.put("interesse", commons.testaElementoArray(objHabilidades.get("id").toString(), (ArrayList<String>) jsonPerfil.get("habilidadesInteresse")));
+									objHabilidades.put("possui", commons.testaElementoArray(objHabilidades.get("id").toString(), (ArrayList<String>) jsonPerfil.get("habilidades")));
 								    jsonDocumento.put("documento", objHabilidades);
 									JSONArray cursos = new JSONArray();
-									ObterCursosNecessarios (objHabilidades.get("id"), cursos);
+									ObterCursosNecessarios (objHabilidades.get("id"), cursos, jsonPerfil);
 									jsonDocumento.put("cursos", cursos);
 									documentos.add(jsonDocumento);
 								};
@@ -290,14 +290,14 @@ public class Rest_UserPerfil {
 						arrayListElementos = (ArrayList) jsonPerfil.get("habilidades");
 				    	Object arrayElementos[] = arrayListElementos.toArray(); 
 				    	if (!elemento.equals("undefined")){
-				    		ObterHabilidadesCursosNecessariasBadge(elemento, arrayElementos, documentos, false);
+				    		ObterHabilidadesCursosNecessariasBadge(elemento, arrayElementos, documentos, false, jsonPerfil);
 				    	}else{
 							int w = 0;
 							while (w < array.length) {
 								if (item.equals("habilidades-necessarias-badges") | item.equals("habilidades-interesse-badges")){
-									ObterHabilidadesCursosNecessariasBadge(array[w], arrayElementos, documentos, false);
+									ObterHabilidadesCursosNecessariasBadge(array[w], arrayElementos, documentos, false, jsonPerfil);
 								}else{
-									ObterHabilidadesCursosNecessariasBadge(array[w], arrayElementos, documentos, true);
+									ObterHabilidadesCursosNecessariasBadge(array[w], arrayElementos, documentos, true, jsonPerfil);
 								};
 								++w;
 							};
@@ -345,9 +345,15 @@ public class Rest_UserPerfil {
 								BasicDBObject objCursos = (BasicDBObject) cursorCursos.get("documento");
 								List arrayParent = (List) objCursos.get("parents");
 								if (arrayParent.size() == 0){
-									objCursos.put("interesse", commons.testaElementoArray(objCursos.get("id").toString(), (ArrayList<String>) jsonPerfil.get("carreirasInteresse")));
-									objCursos.put("possui", commons.testaElementoArray(objCursos.get("id").toString(), (ArrayList<String>) jsonPerfil.get("carreiras")));
-									objCursos.put("habilidadesPerfil", commons.montaArrayPerfil(jsonPerfil.get("habilidades"), objCursos.get("habilidades")));
+									if (jsonPerfil.get("cursosInteresse") != null){
+										objCursos.put("interesse", commons.testaElementoArray(objCursos.get("id").toString(), (ArrayList<String>) jsonPerfil.get("cursosInteresse")));
+									};
+									if (jsonPerfil.get("cursos") != null){
+										objCursos.put("possui", commons.testaElementoArray(objCursos.get("id").toString(), (ArrayList<String>) jsonPerfil.get("cursos")));
+									};
+									if (objCursos.get("habilidades") != null){
+										objCursos.put("habilidadesPerfil", commons.montaArrayPerfil(jsonPerfil.get("habilidades"), objCursos.get("habilidades")));
+									};
 									jsonDocumento.put("documento", objCursos);
 									documentos.add(jsonDocumento);
 								};
@@ -364,7 +370,7 @@ public class Rest_UserPerfil {
 				    	Object array[] = arrayList.toArray(); 
 						int w = 0;
 						while (w < array.length) {
-							documentos.add(getUserPerfil(array[w].toString()));
+							documentos.add(getUserPerfil(array[w].toString()).get("usuario"));
 							++w;
 						};
 					};
@@ -376,7 +382,7 @@ public class Rest_UserPerfil {
 				    	Object array[] = arrayList.toArray(); 
 						int w = 0;
 						while (w < array.length) {
-							documentos.add(getUserPerfil(array[w].toString()));
+							documentos.add(getUserPerfil(array[w].toString()).get("usuario"));
 							++w;
 						};
 					};
@@ -388,15 +394,16 @@ public class Rest_UserPerfil {
 				    	Object array[] = arrayList.toArray(); 
 						int w = 0;
 						while (w < array.length) {
-							BasicDBObject doc = getUserPerfil(array[w].toString());
-							BasicDBObject objDoc = (BasicDBObject) doc.get("documento");
-							ArrayList arrayListSeguindo = new ArrayList(); 
-							arrayListSeguindo = (ArrayList) objDoc.get("seguindo");
+							BasicDBObject objDoc = (BasicDBObject) getUserPerfil(array[w].toString()).get("userPerfil");
+							ArrayList arrayListSeguindo = new ArrayList();
+							if (objDoc != null){
+								arrayListSeguindo = (ArrayList) objDoc.get("seguindo");
+							};
 							if (arrayListSeguindo != null){
 						    	Object arraySeguindo[] = arrayListSeguindo.toArray(); 
 								int z = 0;
 								while (z < arraySeguindo.length) {
-									documentos.add(getUserPerfil(array[z].toString()));									
+									documentos.add(getUserPerfil(arraySeguindo[z].toString()).get("usuario"));									
 									++z;
 								};
 							};
@@ -430,8 +437,17 @@ public class Rest_UserPerfil {
 					jsonDocumento.put("objetivos", arrayListObjetivos);
 					habilidadesGeralFaltantes = (int) totais.get("faltantes");
 					habilidadesGeralPossui = (int) totais.get("possui");
+					jsonDocumento.put("habilidadesGeral", commons.totalArray(jsonPerfil.get("habilidades")));
+					jsonDocumento.put("habilidadesInteresseGeral", commons.totalArray(jsonPerfil.get("habilidadesInteresse")));
 					jsonDocumento.put("habilidadesGeralPossui", Integer.toString(habilidadesGeralPossui));
 					jsonDocumento.put("habilidadesGeralFaltantes", Integer.toString(habilidadesGeralFaltantes));
+					jsonDocumento.put("badgesGeral", commons.totalArray(jsonPerfil.get("badges")));
+					jsonDocumento.put("badgesConquistaGeral", commons.totalArray(jsonPerfil.get("badgesConquista")));
+					jsonDocumento.put("cursosAndamentoGeral", commons.totalArray(jsonPerfil.get("cursosAndamento")));
+					jsonDocumento.put("cursosGeral", commons.totalArray(jsonPerfil.get("cursos")));
+					jsonDocumento.put("cursosInteresseGeral", commons.totalArray(jsonPerfil.get("cursosInteresse")));
+					jsonDocumento.put("cursosInscritoGeral", commons.totalArray(jsonPerfil.get("cursosInscrito")));
+					jsonDocumento.put("cursosAndamentoGeral", commons.totalArray(jsonPerfil.get("cursosAndamento")));
 					documentos.add(jsonDocumento);
 				};
 				System.out.println("chamada userperfil saida:" + item);
@@ -564,7 +580,7 @@ public class Rest_UserPerfil {
 						jsonHabilidades.put("id", arrayListElementosFaltantes.get(z));
 						jsonHabilidades.put("nome", objCarreira.get("nome"));
 						JSONArray cursos = new JSONArray();
-						ObterCursosNecessarios (arrayListElementosFaltantes.get(z), cursos);
+						ObterCursosNecessarios (arrayListElementosFaltantes.get(z), cursos, jsonPerfil);
 						jsonHabilidades.put("cursos", cursos);
 						habilidadesArray.add (jsonHabilidades);
 					};
@@ -600,7 +616,7 @@ public class Rest_UserPerfil {
 		jsonDocumento.put("nivel", objCarreiras.get("nivel"));
 		jsonDocumento.put("nivelFiltro", objCarreiras.get("nivelFiltro"));
 		jsonDocumento.put("id", objCarreiras.get("id"));
-	    jsonDocumento.put("descricao", objCarreiras.get("descricao"));
+	    jsonDocumento.put("descricao", objCarreiras.get("nome"));
 	    jsonDocumento.put("salarioMinimo", objCarreiras.get("salarioMinimo")); 
 	    jsonDocumento.put("salarioMedio", objCarreiras.get("salarioMedio"));
 	    jsonDocumento.put("salarioMaximo", objCarreiras.get("salarioMaximo"));
@@ -608,8 +624,8 @@ public class Rest_UserPerfil {
 	    jsonDocumento.put("responsabilidades", objCarreiras.get("responsabilidades"));
 	    jsonDocumento.put("atividades", objCarreiras.get("atividades"));
 	    jsonDocumento.put("areaAtuacao", objCarreiras.get("areaAtuacao")); 
-	    jsonDocumento.put("recomentados", objCarreiras.get("recomentados"));
-	    jsonDocumento.put("recomentadosNome", objCarreiras.get("recomentadosNome"));
+	    jsonDocumento.put("recomendados", objCarreiras.get("recomendados"));
+	    jsonDocumento.put("recomendadosNome", objCarreiras.get("recomendadosNome"));
 	    jsonDocumento.put("tags", objCarreiras.get("tags"));
      	ArrayList arrayListNecessarios = new ArrayList();
     	arrayListNecessarios = (ArrayList) objCarreiras.get("necessarios");
@@ -653,7 +669,7 @@ public class Rest_UserPerfil {
 						jsonNecessarios.put("preRequisitos", objCarreira.get("preRequisitos"));
 						jsonNecessarios.put("preRequisitosNome", objCarreira.get("preRequisitosNome"));
 						JSONArray cursos = new JSONArray();
-						ObterCursosNecessarios (arrayListElementosFaltantes.get(z), cursos);
+						ObterCursosNecessarios (arrayListElementosFaltantes.get(z), cursos, jsonPerfil);
 						jsonNecessarios.put("cursos", cursos);
 						necessariosArray.add (jsonNecessarios);
 					};
@@ -717,6 +733,10 @@ public class Rest_UserPerfil {
 				}else{
 					origemErro = true;
 				};
+				String assunto = "";
+				if (newPerfil.get("assunto").toString() != null){
+					assunto = newPerfil.get("assunto").toString();
+				};
 				String elemento = "";
 				if (newPerfil.get("id").toString() != null){
 					elemento = newPerfil.get("id").toString();
@@ -751,6 +771,7 @@ public class Rest_UserPerfil {
 						};
 					};
 				};
+				ArrayList<JSONObject> fieldsArray = new ArrayList<>();
 				if (!existente){
 					if (inout.equals("in")){
 						array.add(elemento);
@@ -758,10 +779,30 @@ public class Rest_UserPerfil {
 							atualizaDependencia(elemento, array);
 						};
 						if (tipo.equals("carreiras")){
-							ArrayList habilidadesUpdate = atualizaHabilidadesCarreira(elemento, objUserPerfil.get("habilidades"));
-							objUserPerfilUpdate.remove("habilidades");
-							objUserPerfilUpdate.put(tipo, habilidadesUpdate);
+							if (assunto.equals("cadastro")){
+								ArrayList habilidadesUpdate = AtualizaUserPerfilArray(elemento, objUserPerfil.get("habilidadesInteresse"), "objetivos", "necessarios");
+								JSONObject field = new JSONObject();
+								field.put("field", "habilidadesInteresse");
+								field.put("value", habilidadesUpdate);
+								fieldsArray.add(field);
+							}else{
+								ArrayList habilidadesUpdate = AtualizaUserPerfilArray(elemento, objUserPerfil.get("habilidades"), "objetivos", "habilidades");
+								JSONObject field = new JSONObject();
+								field.put("field", "habilidades");
+								field.put("value", habilidadesUpdate);
+								fieldsArray.add(field);
+							};
 						};
+						if (tipo.equals("cursos")){
+							if (assunto.equals("cadastro")){
+								ArrayList habilidadesUpdate = AtualizaUserPerfilArray(elemento, objUserPerfil.get("habilidadesInteresse"), "objetivos", "habilidades");
+								JSONObject field = new JSONObject();
+								field.put("field", "habilidadesInteresse");
+								field.put("value", habilidadesUpdate);
+								fieldsArray.add(field);
+							};
+						};
+		
 					};
 				};
 	
@@ -770,12 +811,12 @@ public class Rest_UserPerfil {
 				key.put("key", "documento.usuario");
 				key.put("value", newPerfil.get("usuario").toString());
 				keysArray.add(key);
-				ArrayList<JSONObject> fieldsArray = new ArrayList<>();
+
 				JSONObject field = new JSONObject();
 				field.put("field", tipo);
 				field.put("value", array);
 				fieldsArray.add(field);
-				
+								
 				Response atualizacao = commons_db.atualizarCrud("userPerfil", fieldsArray, keysArray);
 				
 				if (!(response.getEntity() instanceof Boolean)){
@@ -798,30 +839,30 @@ public class Rest_UserPerfil {
 	};
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private ArrayList atualizaHabilidadesCarreira(String elemento, Object objHabilidades) {
+	private ArrayList AtualizaUserPerfilArray(String elemento, Object objHabilidades, String collection, String arrayCollection) {
 		
 		Commons_DB commons_db = new Commons_DB();
 		Commons commons = new Commons();
-		ArrayList<String> arrayHabilidades = (ArrayList<String>) objHabilidades;
+		ArrayList<String> arrayUpdate = (ArrayList<String>) objHabilidades;
 
-		Response response = commons_db.getCollection(elemento, "objetivos", "documento.id");
+		Response response = commons_db.getCollection(elemento, collection, "documento.id");
 		if (!(response.getEntity() instanceof Boolean)){
 			BasicDBObject doc = new BasicDBObject();
 			doc.putAll((Map) response.getEntity());
 			if (doc != null){
 				BasicDBObject objDoc = (BasicDBObject) doc.get("documento");
-				ArrayList<String> array = (ArrayList<String>) objDoc.get("habilidades");
+				ArrayList<String> array = (ArrayList<String>) objDoc.get(arrayCollection);
 				if (array != null){
 					for (int i = 0; i < array.size(); i++) {
-						if (!commons.testaElementoArray(elemento, array)){
-							array.add(elemento);
+						if (!commons.testaElementoArray(elemento, arrayUpdate)){
+							arrayUpdate.add(elemento);
 						};
 					};
 				};
 			};
 		};
 				
-		return arrayHabilidades;
+		return arrayUpdate;
 	};
 	
 	private void atualizaDependencia(String elemento, List<String> array) {
@@ -935,7 +976,7 @@ public class Rest_UserPerfil {
 					DBObject cursorHabilidades = collectionHabilidades.findOne(searchQueryHabilidades);
 					BasicDBObject objHabilidades = (BasicDBObject) cursorHabilidades.get("documento");
 					if (obterCursos){
-						ObterCursosNecessarios (arrayHabilidades[w], documentos);
+						ObterCursosNecessarios (arrayHabilidades[w], documentos, null);
 					}else{
 						JSONObject jsonDocumento = new JSONObject();
 					    jsonDocumento.put("documento", objHabilidades);
@@ -954,7 +995,7 @@ public class Rest_UserPerfil {
 	}
 
 	@SuppressWarnings("unchecked")
-	private ArrayList<String> ObterHabilidadesCursosNecessariasBadge(Object badge, Object[] arrayElementos, JSONArray documentos, Boolean obterCursos) {
+	private ArrayList<String> ObterHabilidadesCursosNecessariasBadge(Object badge, Object[] arrayElementos, JSONArray documentos, Boolean obterCursos, JSONObject jsonPerfil) {
 		Mongo mongo;
 		try {
 			mongo = new Mongo();
@@ -995,7 +1036,7 @@ public class Rest_UserPerfil {
 					DBObject cursorHabilidades = collectionHabilidades.findOne(searchQueryHabilidades);
 					BasicDBObject objHabilidades = (BasicDBObject) cursorHabilidades.get("documento");
 					if (obterCursos){
-						ObterCursosNecessarios (arrayHabilidades[w], documentos);
+						ObterCursosNecessarios (arrayHabilidades[w], documentos, jsonPerfil);
 					}else{
 						JSONObject jsonDocumento = new JSONObject();
 					    jsonDocumento.put("documento", objHabilidades);
@@ -1114,8 +1155,8 @@ public class Rest_UserPerfil {
 	};
 
 	@SuppressWarnings("unchecked")
-	private ArrayList<String> ObterCursosNecessarios (Object habilidade, JSONArray documentos) {
-
+	private ArrayList<String> ObterCursosNecessarios (Object habilidade, JSONArray documentos, JSONObject jsonPerfil) {
+		Commons commons = new Commons();
 		Mongo mongo;
 		try {
 			mongo = new Mongo();
@@ -1149,6 +1190,15 @@ public class Rest_UserPerfil {
 						@SuppressWarnings("rawtypes")
 						List arrayParent = (List) objCursos.get("parents");
 						if (arrayParent.size() == 0){
+							if (jsonPerfil.get("cursosInteresse") != null){
+								objCursos.put("interesse", commons.testaElementoArray(objCursos.get("id").toString(), (ArrayList<String>) jsonPerfil.get("cursosInteresse")));
+							};
+							if (jsonPerfil.get("cursos") != null){
+								objCursos.put("possui", commons.testaElementoArray(objCursos.get("id").toString(), (ArrayList<String>) jsonPerfil.get("cursos")));
+							};
+							if (objCursos.get("habilidades") != null){
+								objCursos.put("habilidadesPerfil", commons.montaArrayPerfil(jsonPerfil.get("habilidades"), objCursos.get("habilidades")));
+							};
 							documentos.add(jsonCurso);
 						};
 					};
@@ -1282,7 +1332,7 @@ public class Rest_UserPerfil {
 	@SuppressWarnings({ "rawtypes" })
 	private BasicDBObject getUserPerfil(String id){
 		Commons_DB commons_db = new Commons_DB();
-		Response response = commons_db.getCollection(id, "usuarios", "usuarios");
+		Response response = commons_db.getCollection(id, "usuarios", "_id");
 		BasicDBObject doc = new BasicDBObject();
 		BasicDBObject jsonDocumento = new BasicDBObject();
 		if (!(response.getEntity() instanceof Boolean)){

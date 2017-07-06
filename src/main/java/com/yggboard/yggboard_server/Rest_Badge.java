@@ -60,8 +60,8 @@ public class Rest_Badge {
 			DB db = (DB) mongo.getDB("yggboard");
 
 			DBCollection collection = db.getCollection("badges");
-			
-			DBCursor cursor = collection.find();
+			BasicDBObject searchQuery = new BasicDBObject();
+			DBCursor cursor = collection.find(searchQuery);
 			JSONArray documentos = new JSONArray();
 			while (((Iterator<DBObject>) cursor).hasNext()) {
 				JSONParser parser = new JSONParser(); 

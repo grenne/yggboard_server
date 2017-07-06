@@ -88,6 +88,7 @@ public class Rest_Usuario {
 		JSONObject key = new JSONObject();
 		key.put("key", "documento.email");
 		key.put("value", email);
+		key.put("tipo", "login");
 		keysArray.add(key);
 		
 		Response response = commons_db.obterCrud("usuarios", keysArray);

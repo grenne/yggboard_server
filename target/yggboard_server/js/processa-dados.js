@@ -103,8 +103,6 @@ function processaCursos (data){
 
 function processaHabilidades (data){
 	
-	sessionStorage.setItem("habilidades", JSON.stringify(rest_listaReturn ("habilidades")));
-	
 	var fields = data.split(";");
 	
 	var objJson = 
@@ -394,7 +392,7 @@ function nomeHabilidade (id){
 	var nome = " ";
 	$.each(habilidades, function( i, habilidade) {
 		if (id.trim() == habilidade.id){
-			nome =habilidade.nome
+			nome = habilidade.nome;
 		};
 	});
 
@@ -409,8 +407,14 @@ function nomeAreaAtuacao (id){
 			nome =areaAtuacao.nome
 		}
 	});
-
+	
+	if (nome == ""){
+		console.log ("nome habilidade não econtrado:" + id);
+	};
+	
 	return nome;
+	
+	
 };
 
 function nomeAreaConhecimento (id){

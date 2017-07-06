@@ -27,6 +27,7 @@
 	          		$("#labelRegistros").text("Registros processados:");
 	          		$("#totalRegistros").text(totalRecords);
 	          		stopIntervalObject();
+	          		carregaIndex();
 	          	};
 	            sessionStorage.setItem("index", i);
 	        },30);

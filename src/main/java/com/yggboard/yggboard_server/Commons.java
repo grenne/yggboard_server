@@ -356,4 +356,14 @@ public class Commons {
 		   return s.toString();
 	};
 
+	public String totalArray (Object objectArray){
+		ArrayList<?> arrayList = new ArrayList<Object>(); 
+		arrayList = (ArrayList<?>) objectArray;
+
+		if (arrayList != null ){
+			Object array[] = arrayList.toArray();
+			return Integer.toString(array.length);
+		};
+		return "0";
+	};
 };

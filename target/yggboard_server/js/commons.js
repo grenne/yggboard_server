@@ -19,7 +19,7 @@ function atualizaCursosHabilidade (){
 
 function atualizaCursoHablidadeProcess (cursos){
 	
-	habilidades = JSON.parse(sessionStorage.getItem("habilidades"));
+	habilidades = rest_listaReturn ("habilidades");
 	
 	$.each( habilidades, function( i, habilidade) {		
 		var habilidadadesCursos = [];
@@ -79,7 +79,7 @@ function atualizaObjetivosHabilidade (){
 
 function atualizaObjetivosHablidadeProcess (objetivos){
 	
-	habilidades = JSON.parse(sessionStorage.getItem("habilidades"));
+	habilidades = rest_listaReturn ("habilidades");
 	
 	$.each( habilidades, function( i, habilidade) {		
 		var habilidadadesObjetivos = [];
@@ -151,7 +151,7 @@ function atualizaAreaAtuacaoObjetivos (){
 
 function atualizaAreaAtuacaoObjetivosProcess (areasAtuacao){
 	
-	objetivos = JSON.parse(sessionStorage.getItem("objetivos"));
+	objetivos = rest_listaReturn ("objetivos");
 	
 	$.each( areasAtuacao, function( i, areaAtuacao) {		
 		var objetivosArray = [];
@@ -224,7 +224,7 @@ function atualizaAreaConhecimentoHabilidades (){
 
 function atualizaAreaConhecimentoHabilidadesProcess (areasConhecimento){
 	
-	habilidades = JSON.parse(sessionStorage.getItem("habilidades"));
+	habilidades = rest_listaReturn ("habilidades");
 	
 	$.each( areasConhecimento, function( i, areaConhecimento) {		
 		var habilidadesArray = [];
@@ -302,7 +302,7 @@ function atualizaPerfil (){
 
 function atualizaPerfilProcess (usersPerfil){
 	
-	var badgesInput = JSON.parse(sessionStorage.getItem("badges"));
+	var badgesInput = rest_listaReturn ("badges");
 	
 	$.each( usersPerfil, function( i, userPerfil) {		
 		var badges = [];

@@ -9,13 +9,13 @@ function carregaIndex (){
 
 function carregaIndexProcesso (){
 	
-	carregaIndexElemento(JSON.parse(sessionStorage.getItem("habilidades")), "habilidades");
-	carregaIndexElemento(JSON.parse(sessionStorage.getItem("objetivos")),"objetivos");
-	carregaIndexElemento(JSON.parse(sessionStorage.getItem("badges")),"badges");
-	carregaIndexElemento(JSON.parse(sessionStorage.getItem("cursos")),"cursos");
-	carregaIndexElemento(JSON.parse(sessionStorage.getItem("areaAtuacao")),"areaAtuacao");
-	carregaIndexElemento(JSON.parse(sessionStorage.getItem("areaConhecimento")),"areaConhecimento");
-	carregaIndexElemento(JSON.parse(sessionStorage.getItem("usuarios")),"usuarios");
+	carregaIndexElemento(JSON.parse(rest_listaReturn ("habilidades")));
+	carregaIndexElemento(JSON.parse(rest_listaReturn ("objetivos")));
+	carregaIndexElemento(JSON.parse(rest_listaReturn ("badges")));
+	carregaIndexElemento(JSON.parse(rest_listaReturn ("cursos")));
+	carregaIndexElemento(JSON.parse(rest_listaReturn ("areaAtuacao")));
+	carregaIndexElemento(JSON.parse(rest_listaReturn ("areaConhecimento")));
+	carregaIndexElemento(JSON.parse(rest_listaReturn ("usuarios")));
 	
 }; 
 
