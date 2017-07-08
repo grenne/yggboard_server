@@ -96,7 +96,7 @@ function processaCursos (data){
 	
 	if (fields[0]){
 		rest_incluir (objJson, restOk, semAcao);
-		$("#registros").append('<li class="output"><strong class="label">Id:</strong><small class="field">' + fields[0] + '</small><strong class="label"> Nome:</strong><small class="field">' + fields[3] + '</small></li>');
+		$("#registros").prepend('<li class="output"><strong class="label">Id:</strong><small class="field">' + fields[0] + '</small><strong class="label"> Nome:</strong><small class="field">' + fields[3] + '</small></li>');
 	};
 	
 };
@@ -168,7 +168,7 @@ function processaHabilidades (data){
 	
 	if (fields[0]){
 		rest_incluir (objJson, restOk, semAcao, fields[0], fields[4]);
-		$("#registros").append('<li class="output"><strong class="label">Id:</strong><small class="field">' + fields[0] + '</small><strong class="label"> Nome:</strong><small class="field">' + fields[4] + '</small></li>');
+		$("#registros").prepend('<li class="output"><strong class="label">Id:</strong><small class="field">' + fields[0] + '</small><strong class="label"> Nome:</strong><small class="field">' + fields[4] + '</small></li>');
 	};
 	
 };
@@ -252,7 +252,7 @@ function processaObjetivos (data){
 	
 	if (fields[0]){
 		rest_incluir (objJson, restOk, semAcao);
-		$("#registros").append('<li class="output"><strong class="label">Id:</strong><small class="field">' + fields[0] + '</small><strong class="label"> Nome:</strong><small class="field">' + fields[1] + '</small></li>');
+		$("#registros").prepend('<li class="output"><strong class="label">Id:</strong><small class="field">' + fields[0] + '</small><strong class="label"> Nome:</strong><small class="field">' + fields[1] + '</small></li>');
 	};
 	
 };
@@ -320,7 +320,7 @@ function processaBadges (data){
 	
 	if (fields[0]){
 		rest_incluir (objJson, restOk, semAcao);
-		$("#registros").append('<li class="output"><strong class="label">Id:</strong><small class="field">' + fields[0] + '</small><strong class="label"> Nome:</strong><small class="field">' + fields[1] + '</small></li>');
+		$("#registros").prepend('<li class="output"><strong class="label">Id:</strong><small class="field">' + fields[0] + '</small><strong class="label"> Nome:</strong><small class="field">' + fields[1] + '</small></li>');
 	};
 };
 
@@ -359,7 +359,7 @@ function processaAreaConhecimento (data){
 	
 	if (fields[0]){
 		rest_incluir (objJson, semAcao, semAcao);
-		$("#registros").append('<li class="output"><strong class="label">Id:</strong><small class="field">' + fields[0] + '</small><strong class="label"> Nome:</strong><small class="field">' + fields[4] + '</small></li>');
+		$("#registros").prepend('<li class="output"><strong class="label">Id:</strong><small class="field">' + fields[0] + '</small><strong class="label"> Nome:</strong><small class="field">' + fields[4] + '</small></li>');
 	};
 };
 
@@ -383,7 +383,7 @@ function processaAreaAtuacao (data){
 	
 	if (fields[0]){
 		rest_incluir (objJson, restOk, semAcao);
-		$("#registros").append('<li class="output"><strong class="label">Id:</strong><small class="field">' + fields[0] + '</small><strong class="label"> Nome:</strong><small class="field">' + fields[1] + '</small></li>');
+		$("#registros").prepend('<li class="output"><strong class="label">Id:</strong><small class="field">' + fields[0] + '</small><strong class="label"> Nome:</strong><small class="field">' + fields[1] + '</small></li>');
 	};
 };
 
@@ -442,8 +442,7 @@ function obterDependenciasPreReq(objJson, habilidadeTarget,nivel) {
 					};
 				});
 				if (!existente) {
-					objJson.preRequisitosGeral = testaDuplicidade (preRequisito + ":" + nivel, objJson.preRequisitosGeral);
-					console.log ("prereq:" + preRequisito + " nivel:" + nivel);
+					objJson.preRequisitosGeral = addArray (preRequisito + ":" + nivel, objJson.preRequisitosGeral);
 					if (nivel > 20){
 						console.log("parar");
 					}

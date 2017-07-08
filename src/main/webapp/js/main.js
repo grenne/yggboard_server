@@ -23,6 +23,7 @@ sessionStorage.setItem("usuarios", JSON.stringify(rest_listaReturn ("usuarios"))
 $( ".escolha" ).click(function() {
     $( ".output" ).remove();
     $( ".reader" ).show();
+    $( ".registros" ).hide();
 	sessionStorage.escolha = $(this).attr("data-escolha");
 });
 

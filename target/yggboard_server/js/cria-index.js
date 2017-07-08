@@ -9,14 +9,15 @@ function carregaIndex (){
 
 function carregaIndexProcesso (){
 	
-	carregaIndexElemento(JSON.parse(rest_listaReturn ("habilidades")));
-	carregaIndexElemento(JSON.parse(rest_listaReturn ("objetivos")));
-	carregaIndexElemento(JSON.parse(rest_listaReturn ("badges")));
-	carregaIndexElemento(JSON.parse(rest_listaReturn ("cursos")));
-	carregaIndexElemento(JSON.parse(rest_listaReturn ("areaAtuacao")));
-	carregaIndexElemento(JSON.parse(rest_listaReturn ("areaConhecimento")));
-	carregaIndexElemento(JSON.parse(rest_listaReturn ("usuarios")));
+	carregaIndexElemento(rest_listaReturn ("habilidades"));
+	carregaIndexElemento(rest_listaReturn ("objetivos"));
+	carregaIndexElemento(rest_listaReturn ("badges"));
+	carregaIndexElemento(rest_listaReturn ("cursos"));
+	carregaIndexElemento(rest_listaReturn ("areaAtuacao"));
+	carregaIndexElemento(rest_listaReturn ("areaConhecimento"));
+	carregaIndexElemento(rest_listaReturn ("usuarios"));
 	
+	console.log ("terminou cria index");
 }; 
 
 function carregaIndexElemento(data, assunto){

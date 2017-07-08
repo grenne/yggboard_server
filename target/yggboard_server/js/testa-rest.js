@@ -191,6 +191,7 @@ function testaAtualizaPerfil() {
 		usuario : "grenneglr@gmail.com",
 		tipo : tipo,
 		id : id,
+		assunto : "cadastro",
 		inout : inout
 	};
 	$
@@ -359,7 +360,7 @@ function atualizaHabilidadesDuplicadas() {
 				};
 			});
 			if (existe){
-				testaDuplicidade (habilidade, newHabilidades)
+				addArray (habilidade, newHabilidades)
 			};
 		});
 		userPerfil.habilidades = newHabilidades;

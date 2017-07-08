@@ -394,10 +394,8 @@ function rest_urlReturn(url, action_not_ok, var1, var2, var3) {
 };
 
 function semAcao(){
-	console.log ("erro rest");
 };
 
 function restOk(){
-	console.log ("rest ok");
 };
 
