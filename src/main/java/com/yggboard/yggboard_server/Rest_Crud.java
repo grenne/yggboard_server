@@ -25,6 +25,7 @@ public class Rest_Crud {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response Obter(JSONObject queryParam)  {
+		System.out.println("obter:" + queryParam.get ("collection").toString());
 		Commons_DB commons_db = new Commons_DB();
 		if (queryParam.get("keys") != null && queryParam.get ("collection").toString() != null){
 			return commons_db.obterCrud(queryParam.get ("collection").toString(), queryParam.get("keys"));
@@ -38,6 +39,7 @@ public class Rest_Crud {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response Incluir(JSONObject queryParam)  {
+		System.out.println("incluir:" + queryParam.get ("collection").toString());
 		Commons_DB commons_db = new Commons_DB();
 		Commons commons = new Commons();
 		if (queryParam.get ("insert") != null && queryParam.get ("collection").toString() != null){
@@ -67,6 +69,7 @@ public class Rest_Crud {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response Atualizar(JSONObject queryParam)  {
+		System.out.println("atualizar:" + queryParam.get ("collection").toString());
 		Commons_DB commons_db = new Commons_DB();
 		if (queryParam.get("update") != null && queryParam.get ("collection").toString() != null && queryParam.get("keys") != null){
 			return commons_db.atualizarCrud(queryParam.get ("collection").toString(), queryParam.get("update"), queryParam.get("keys"));
@@ -80,6 +83,7 @@ public class Rest_Crud {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response Lista(JSONObject queryParam)  {
+		System.out.println("lista:" + queryParam.get ("collection").toString());
 		Commons_DB commons_db = new Commons_DB();
 		if (queryParam.get("keys") != null && queryParam.get ("collection").toString() != null){
 			return commons_db.listaCrud(queryParam.get ("collection").toString(), queryParam.get("keys"));

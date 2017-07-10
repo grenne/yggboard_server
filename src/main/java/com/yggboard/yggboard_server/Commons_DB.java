@@ -111,7 +111,6 @@ public class Commons_DB {
 			if (cursor != null){
 				BasicDBObject objDocumento = new BasicDBObject();
 				objDocumento = (BasicDBObject) cursor.get("documento");
-				mongo = new Mongo();
 				List arrayUpdate = (List) updateInput;
 				for (int i = 0; i < arrayUpdate.size(); i++) {
 					BasicDBObject setUpdate = new BasicDBObject();

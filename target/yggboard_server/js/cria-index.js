@@ -9,13 +9,16 @@ function carregaIndex (){
 
 function carregaIndexProcesso (){
 	
-	carregaIndexElemento(rest_listaReturn ("habilidades"));
-	carregaIndexElemento(rest_listaReturn ("objetivos"));
-	carregaIndexElemento(rest_listaReturn ("badges"));
-	carregaIndexElemento(rest_listaReturn ("cursos"));
-	carregaIndexElemento(rest_listaReturn ("areaAtuacao"));
-	carregaIndexElemento(rest_listaReturn ("areaConhecimento"));
-	carregaIndexElemento(rest_listaReturn ("usuarios"));
+	
+	console.log ("iniciou cria index");
+
+	carregaIndexElemento(rest_listaReturn ("habilidades"),"habilidades" );
+	carregaIndexElemento(rest_listaReturn ("objetivos"), "objetivos");
+	carregaIndexElemento(rest_listaReturn ("badges"), "badges");
+	carregaIndexElemento(rest_listaReturn ("cursos"), "cursos");
+	carregaIndexElemento(rest_listaReturn ("areaAtuacao"), "areaAtuacao");
+	carregaIndexElemento(rest_listaReturn ("areaConhecimento"), "areaConhecimento");
+	carregaIndexElemento(rest_listaReturn ("usuarios"), "usuarios");
 	
 	console.log ("terminou cria index");
 }; 

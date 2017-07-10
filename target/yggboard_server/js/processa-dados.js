@@ -444,7 +444,7 @@ function obterDependenciasPreReq(objJson, habilidadeTarget,nivel) {
 				if (!existente) {
 					objJson.preRequisitosGeral = addArray (preRequisito + ":" + nivel, objJson.preRequisitosGeral);
 					if (nivel > 20){
-						console.log("parar");
+						alert("estourou o nivel de pré requisito: " + nivel  + " - existe algum erro na sua composição da habilidade:" + habilidadeTarget );
 					}
 					objJson = obterDependenciasPreReq(objJson,preRequisito, (parseInt(nivel) + 1));
 				};

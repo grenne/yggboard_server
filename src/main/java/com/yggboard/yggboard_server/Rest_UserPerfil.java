@@ -510,6 +510,16 @@ public class Rest_UserPerfil {
 			doc.putAll((Map) response.getEntity());
 			if (doc != null){
 				objObjetivo.putAll((Map) doc.get("documento"));
+		    	JSONArray arrayListHabilidadesFaltantesObjetivo = new JSONArray();
+		    	JSONArray arrayListHabilidadesPossuiObjetivo = new JSONArray();
+		    	JSONArray arrayListHabilidadesObjetivosObjetivo = new JSONArray();
+		    	JSONArray arrayListHabilidadesObjetivosRealObjetivo = new JSONArray();
+				BasicDBObject objetivo = montaCarreira(doc, objDocPerfil, arrayListHabilidadesFaltantesObjetivo, arrayListHabilidadesPossuiObjetivo, arrayListHabilidadesObjetivosObjetivo, arrayListHabilidadesObjetivosRealObjetivo);
+				objObjetivo.put("totalHabilidades", objetivo.get("totalHabilidades"));
+				objObjetivo.put("totalPossuiHabilidades", objetivo.get("totalPossuiHabilidades"));
+				objObjetivo.put("totalHabilidadesFaltantes", objetivo.get("totalHabilidadesFaltantes"));
+				objObjetivo.put("totalHabilidadesObjetivos", objetivo.get("totalHabilidadesObjetivos"));
+				objObjetivo.put("totalHabilidadesObjetivosReal", objetivo.get("totalHabilidadesObjetivosReal"));
 		     	ArrayList arrayListElementos = new ArrayList(); 
 				arrayListElementos = (ArrayList) objDocPerfil.get("habilidades");
 				if (arrayListElementos != null){
@@ -1009,6 +1019,7 @@ public class Rest_UserPerfil {
 				};
 				++w;
 			};
+			mongo.close();					
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		} catch (MongoException e) {
@@ -1069,6 +1080,7 @@ public class Rest_UserPerfil {
 				};
 				++w;
 			};
+			mongo.close();					
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		} catch (MongoException e) {
@@ -1102,8 +1114,10 @@ public class Rest_UserPerfil {
 				int z = 0;
 				while (z < arrayElementos.length) {
 					if (array[i].equals(arrayElementos[z])){
-						if (!(commons.testaElementoArray(array[i], arrayListHabilidadesPossui))){
-							arrayListHabilidadesPossui.add(array[i]);
+						if (!temHabilidade){
+							if (!(commons.testaElementoArray(array[i], arrayListHabilidadesPossui ))){
+								arrayListHabilidadesPossui.add(array[i]);
+							};
 						};
 						temHabilidade = true;
 					};

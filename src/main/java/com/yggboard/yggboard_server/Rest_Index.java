@@ -128,7 +128,7 @@ public class Rest_Index {
 		results.put("areaConhecimento", listas.areasConhecimento());
 		results.put("todaysDate", commons.todaysDate("inv_month_number"));
 
-		System.out.println("chamada index:" + assunto );
+		System.out.println("saida chamada index:" + assunto );
 
 		return results;
 			
