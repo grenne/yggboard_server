@@ -34,6 +34,7 @@ public class Rest_Habilidade {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public JSONObject ObterEmail(@QueryParam("idHabilidade") String idHabilidade, @QueryParam("name") String name)  {
+		Commons commons = new Commons();
 		BasicDBObject setQuery = new BasicDBObject();
 	    if (name != null){
 	    	setQuery.put("documento.name", name);
@@ -44,7 +45,7 @@ public class Rest_Habilidade {
 		Mongo mongo;
 		try {
 			mongo = new Mongo();
-			DB db = (DB) mongo.getDB("yggboard");
+			DB db = (DB) mongo.getDB(commons.getProperties().get("database").toString());
 			DBCollection collection = db.getCollection("habilidades");
 			BasicDBObject searchQuery = new BasicDBObject("documento.idHabilidade", idHabilidade);
 			DBObject cursor = collection.findOne(searchQuery);
@@ -69,12 +70,11 @@ public class Rest_Habilidade {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public JSONArray ObterHabilidadess(@QueryParam("diagrama") String diagrama, @QueryParam("type") String type, @QueryParam("classes") String classes, @QueryParam("semCursos") String semCursos) {
-
+		Commons commons = new Commons();
 		Mongo mongo;
 		try {
 			mongo = new Mongo();
-			DB db = (DB) mongo.getDB("yggboard");
-
+			DB db = (DB) mongo.getDB(commons.getProperties().get("database").toString());
 			BasicDBObject setQuery = new BasicDBObject();
 			DBCollection collection = db.getCollection("habilidades");
 			
