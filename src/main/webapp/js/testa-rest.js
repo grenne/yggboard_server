@@ -7,7 +7,7 @@ function testaObter() {
 		collection : "badges",
 		keys : [ {
 			key : "documento.id",
-			value : "1"
+			value : "99999999"
 		} ]
 	};
 	$.ajax({

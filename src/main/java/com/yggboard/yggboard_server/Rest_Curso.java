@@ -34,8 +34,9 @@ public class Rest_Curso {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public JSONObject ObterCurso(@QueryParam("mail") String habilidade) throws UnknownHostException, MongoException {
+		Commons commons = new Commons();
 		Mongo mongo = new Mongo();
-		DB db = (DB) mongo.getDB("yggboard");
+		DB db = (DB) mongo.getDB(commons.getProperties().get("database").toString());
 		DBCollection collection = db.getCollection("cursos");
 		BasicDBObject searchQuery = new BasicDBObject("documento.habilidade", habilidade);
 		DBObject cursor = collection.findOne(searchQuery);
@@ -50,12 +51,11 @@ public class Rest_Curso {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public JSONArray ObterCursos(@QueryParam("habilidade") String habilidade) {
-
+		Commons commons = new Commons();
 		Mongo mongo;
 		try {
 			mongo = new Mongo();
-			DB db = (DB) mongo.getDB("yggboard");
-
+			DB db = (DB) mongo.getDB(commons.getProperties().get("database").toString());
 			BasicDBObject setQuery = new BasicDBObject();
 		    if (habilidade != null){
 		    	setQuery.put("documento.habilidades.habilidade", habilidade);

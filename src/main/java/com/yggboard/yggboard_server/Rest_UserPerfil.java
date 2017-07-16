@@ -45,7 +45,8 @@ public class Rest_UserPerfil {
 	@Produces(MediaType.APPLICATION_JSON)
 	public JSONObject ObterUsuario(@QueryParam("usuario") String usuario) throws UnknownHostException, MongoException {
 		Mongo mongo = new Mongo();
-		DB db = (DB) mongo.getDB("yggboard");
+		Commons commons = new Commons();
+		DB db = (DB) mongo.getDB(commons.getProperties().get("database").toString());
 		DBCollection collection = db.getCollection("userPerfil");
 		BasicDBObject searchQuery = new BasicDBObject("documento.usuario", usuario);
 		DBObject cursor = collection.findOne(searchQuery);
@@ -72,7 +73,7 @@ public class Rest_UserPerfil {
 		};
 		Commons commons = new Commons();
 		Mongo mongo = new Mongo();
-		DB db = (DB) mongo.getDB("yggboard");
+		DB db = (DB) mongo.getDB(commons.getProperties().get("database").toString());
 		DBCollection collection = db.getCollection("userPerfil");
 		BasicDBObject searchQuery = new BasicDBObject("documento.usuario", usuario);
 		DBObject cursor = collection.findOne(searchQuery);
@@ -102,7 +103,7 @@ public class Rest_UserPerfil {
 			    	JSONArray arrayListHabilidadesObjetivosReal = new JSONArray();
 					for (int i = 0; i < array.length; i++) {
 						Mongo mongoCarreiras = new Mongo();
-						DB dbCarreiras = (DB) mongoCarreiras.getDB("yggboard");
+						DB dbCarreiras = (DB) mongoCarreiras.getDB(commons.getProperties().get("database").toString());
 						DBCollection collectionCarreiras = dbCarreiras.getCollection("objetivos");
 						BasicDBObject searchQueryCarreiras = new BasicDBObject("documento.id", array[i].toString());
 						DBObject cursorCarreiras = collectionCarreiras.findOne(searchQueryCarreiras);
@@ -118,7 +119,7 @@ public class Rest_UserPerfil {
 			};
 			if (item.equals("carreiras-elemento")){
 				Mongo mongoCarreiras = new Mongo();
-				DB dbCarreiras = (DB) mongoCarreiras.getDB("yggboard");
+				DB dbCarreiras = (DB) mongoCarreiras.getDB(commons.getProperties().get("database").toString());
 				DBCollection collectionCarreiras = dbCarreiras.getCollection("objetivos");
 				BasicDBObject searchQueryCarreiras = new BasicDBObject("documento.id", elemento.toString());
 				DBObject cursorCarreiras = collectionCarreiras.findOne(searchQueryCarreiras);
@@ -144,7 +145,7 @@ public class Rest_UserPerfil {
 				Mongo mongoBadge;
 				try {
 					mongoBadge = new Mongo();
-					DB dbBadge = (DB) mongoBadge.getDB("yggboard");		
+					DB dbBadge = (DB) mongoBadge.getDB(commons.getProperties().get("database").toString());
 					DBCollection collectionBadge = dbBadge.getCollection("badges");
 					BasicDBObject searchQueryBadge = new BasicDBObject();
 					DBCursor cursorBadge = collectionBadge.find(searchQueryBadge);
@@ -230,7 +231,7 @@ public class Rest_UserPerfil {
 					int w = 0;
 					while (w < array.length) {
 						Mongo mongoHabilidades = new Mongo();
-						DB dbHabilidades = (DB) mongoHabilidades.getDB("yggboard");
+						DB dbHabilidades = (DB) mongoHabilidades.getDB(commons.getProperties().get("database").toString());
 						DBCollection collectionHabilidades = dbHabilidades.getCollection("habilidades");
 						BasicDBObject searchQueryHabilidades = new BasicDBObject("documento.id", array[w]);
 						DBObject cursorHabilidades = collectionHabilidades.findOne(searchQueryHabilidades);
@@ -268,7 +269,7 @@ public class Rest_UserPerfil {
 					int w = 0;
 					while (w < array.length) {
 						Mongo mongoHabilidades = new Mongo();
-						DB dbHabilidades = (DB) mongoHabilidades.getDB("yggboard");
+						DB dbHabilidades = (DB) mongoHabilidades.getDB(commons.getProperties().get("database").toString());
 						DBCollection collectionHabilidades = dbHabilidades.getCollection("habilidades");
 						BasicDBObject searchQueryHabilidades = new BasicDBObject("documento.id", array[w].toString());
 						DBObject cursorHabilidades = collectionHabilidades.findOne(searchQueryHabilidades);
@@ -361,7 +362,7 @@ public class Rest_UserPerfil {
 					int w = 0;
 					while (w < array.length) {
 						Mongo mongoCursos = new Mongo();
-						DB dbCursos = (DB) mongoCursos.getDB("yggboard");
+						DB dbCursos = (DB) mongoCursos.getDB(commons.getProperties().get("database").toString());
 						DBCollection collectionCursos = dbCursos.getCollection("cursos");
 						BasicDBObject searchQueryCursos = new BasicDBObject();
 						JSONObject jsonDocumento = new JSONObject();
@@ -688,7 +689,7 @@ public class Rest_UserPerfil {
 				Mongo mongoHabilidade;
 				try {
 					mongoHabilidade = new Mongo();
-					DB dbHabilidade = (DB) mongoHabilidade.getDB("yggboard");
+					DB dbHabilidade = (DB) mongoHabilidade.getDB(commons.getProperties().get("database").toString());
 					DBCollection collectionHabilidade = dbHabilidade.getCollection("habilidades");
 					BasicDBObject searchQueryHabilidade = new BasicDBObject("documento.id", arrayListElementosFaltantes.get(z));
 					DBObject cursorHabilidade = collectionHabilidade.findOne(searchQueryHabilidade);
@@ -904,7 +905,7 @@ public class Rest_UserPerfil {
 		Mongo mongo;
 		try {
 			mongo = new Mongo();
-			DB db = (DB) mongo.getDB("yggboard");
+			DB db = (DB) mongo.getDB(commons.getProperties().get("database").toString());
 			DBCollection collection = db.getCollection("habilidades");
 			BasicDBObject searchQuery = new BasicDBObject("documento.id", elemento);
 			DBObject cursor = collection.findOne(searchQuery);
@@ -934,12 +935,11 @@ public class Rest_UserPerfil {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public JSONArray ObterUsersPerfil() {
-
+		Commons commons = new Commons();
 		Mongo mongo;
 		try {
 			mongo = new Mongo();
-			DB db = (DB) mongo.getDB("yggboard");
-
+			DB db = (DB) mongo.getDB(commons.getProperties().get("database").toString());
 			BasicDBObject setQuery = new BasicDBObject();
 			DBCollection collection = db.getCollection("userPerfil");			
 			DBCursor cursor = collection.find(setQuery);
@@ -970,10 +970,11 @@ public class Rest_UserPerfil {
 
 	@SuppressWarnings("unchecked")
 	private ArrayList<String> ObterHabilidadesCursosNecessarias(Object carreira, Object[] arrayElementos, JSONArray documentos, Boolean obterCursos) {
+		Commons commons = new Commons();
 		Mongo mongo;
 		try {
 			mongo = new Mongo();
-			DB db = (DB) mongo.getDB("yggboard");
+			DB db = (DB) mongo.getDB(commons.getProperties().get("database").toString());
 			DBCollection collection = db.getCollection("objetivos");
 			BasicDBObject searchQuery = new BasicDBObject("documento.id", carreira);
 			DBObject cursor = collection.findOne(searchQuery);
@@ -1004,7 +1005,7 @@ public class Rest_UserPerfil {
 				};
 				if (!existeHabilidade){
 					Mongo mongoHabilidades = new Mongo();
-					DB dbHabilidade = (DB) mongoHabilidades.getDB("yggboard");
+					DB dbHabilidade = (DB) mongoHabilidades.getDB(commons.getProperties().get("database").toString());
 					DBCollection collectionHabilidades = dbHabilidade.getCollection("habilidades");
 					BasicDBObject searchQueryHabilidades = new BasicDBObject("documento.id", arrayHabilidades[w]);
 					DBObject cursorHabilidades = collectionHabilidades.findOne(searchQueryHabilidades);
@@ -1031,10 +1032,11 @@ public class Rest_UserPerfil {
 
 	@SuppressWarnings("unchecked")
 	private ArrayList<String> ObterHabilidadesCursosNecessariasBadge(Object badge, Object[] arrayElementos, JSONArray documentos, Boolean obterCursos, BasicDBObject jsonPerfil) {
+		Commons commons = new Commons();
 		Mongo mongo;
 		try {
 			mongo = new Mongo();
-			DB db = (DB) mongo.getDB("yggboard");
+			DB db = (DB) mongo.getDB(commons.getProperties().get("database").toString());
 			DBCollection collection = db.getCollection("badges");
 			BasicDBObject searchQuery = new BasicDBObject("documento.id", badge);
 			DBObject cursor = collection.findOne(searchQuery);
@@ -1065,7 +1067,7 @@ public class Rest_UserPerfil {
 				};
 				if (!existeHabilidade){
 					Mongo mongoHabilidades = new Mongo();
-					DB dbHabilidade = (DB) mongoHabilidades.getDB("yggboard");
+					DB dbHabilidade = (DB) mongoHabilidades.getDB(commons.getProperties().get("database").toString());
 					DBCollection collectionHabilidades = dbHabilidade.getCollection("habilidades");
 					BasicDBObject searchQueryHabilidades = new BasicDBObject("documento.id", arrayHabilidades[w]);
 					DBObject cursorHabilidades = collectionHabilidades.findOne(searchQueryHabilidades);
@@ -1141,10 +1143,11 @@ public class Rest_UserPerfil {
 	
 	@SuppressWarnings("unchecked")
 	private JSONObject ObterTotalHabilidadesBadges (Object id, Object[] arrayElementos, ArrayList<String> arrayListElementosFaltantes) {
+		Commons commons = new Commons();
 		Mongo mongo;
 		try {
 			mongo = new Mongo();
-			DB db = (DB) mongo.getDB("yggboard");
+			DB db = (DB) mongo.getDB(commons.getProperties().get("database").toString());
 			DBCollection collection = db.getCollection("badges");
 			BasicDBObject searchQuery = new BasicDBObject("documento.id", id);
 			DBObject cursor = collection.findOne(searchQuery);
@@ -1198,8 +1201,7 @@ public class Rest_UserPerfil {
 		Mongo mongo;
 		try {
 			mongo = new Mongo();
-			DB db = (DB) mongo.getDB("yggboard");
-
+			DB db = (DB) mongo.getDB(commons.getProperties().get("database").toString());
 			BasicDBObject setQuery = new BasicDBObject();
 		    if (habilidade != null){
 		    	setQuery.put("documento.habilidades", habilidade);
@@ -1264,7 +1266,7 @@ public class Rest_UserPerfil {
 		Mongo mongo;
 			try {
 				mongo = new Mongo();
-				DB db = (DB) mongo.getDB("yggboard");
+				DB db = (DB) mongo.getDB(commons.getProperties().get("database").toString());
 				DBCollection collection = db.getCollection("userPerfil");
 				List arrayCursosSugeridos = (List) inputCursosSugeridos.get("cursosSugeridos");
 				for (int i = 0; i < arrayCursosSugeridos.size(); i++) {
@@ -1321,7 +1323,7 @@ public class Rest_UserPerfil {
 		Mongo mongo;
 			try {
 				mongo = new Mongo();
-				DB db = (DB) mongo.getDB("yggboard");
+				DB db = (DB) mongo.getDB(commons.getProperties().get("database").toString());
 				DBCollection collection = db.getCollection("userPerfil");
 				List arrayCarreirasSugeridos = (List) inputCarreirasSugeridas.get("carreirasSugeridas");
 				for (int i = 0; i < arrayCarreirasSugeridos.size(); i++) {

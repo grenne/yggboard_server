@@ -81,7 +81,7 @@ public class Rest_Badge {
 					JSONArray habilidadesArray = new JSONArray();
 					while (w < arrayHabilidades.length) {
 						Mongo mongoHabilidade = new Mongo();
-						DB dbHabilidade = (DB) mongoHabilidade.getDB("yggboard");
+						DB dbHabilidade = (DB) mongo.getDB(commons.getProperties().get("database").toString());
 						DBCollection collectionHabilidade = dbHabilidade.getCollection("habilidades");
 						BasicDBObject searchQueryHabilidade = new BasicDBObject("documento.idHabilidade", arrayHabilidades[w]);
 						DBObject cursorHabilidade = collectionHabilidade.findOne(searchQueryHabilidade);

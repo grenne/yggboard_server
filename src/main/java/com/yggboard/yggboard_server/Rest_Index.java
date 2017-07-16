@@ -471,7 +471,7 @@ public class Rest_Index {
 		try {
 			
 			mongo = new Mongo();
-			DB db = (DB) mongo.getDB("yggboard");
+			DB db = (DB) mongo.getDB(commons.getProperties().get("database").toString());
 			DBCollection collection = db.getCollection("objetivos");
 			BasicDBObject searchQuery = new BasicDBObject();
 			searchQuery = new BasicDBObject("documento.id", id);
@@ -578,7 +578,7 @@ public class Rest_Index {
 		Commons commons = new Commons();
 		try {
 			mongo = new Mongo();
-			DB db = (DB) mongo.getDB("yggboard");
+			DB db = (DB) mongo.getDB(commons.getProperties().get("database").toString());
 			DBCollection collection = db.getCollection("habilidades");
 			BasicDBObject searchQuery = new BasicDBObject("documento.id", id);
 			DBObject cursor = collection.findOne(searchQuery);
@@ -730,7 +730,7 @@ public class Rest_Index {
 		Mongo mongo;
 		try {
 			mongo = new Mongo();
-			DB db = (DB) mongo.getDB("yggboard");
+			DB db = (DB) mongo.getDB(commons.getProperties().get("database").toString());
 			DBCollection collection = db.getCollection("cursos");
 			BasicDBObject searchQuery = new BasicDBObject("documento.id", id);
 			DBObject cursor = collection.findOne(searchQuery);
@@ -799,12 +799,11 @@ public class Rest_Index {
 
 	@SuppressWarnings("unchecked")
 	private void processaAreaConhecimento(String id, Listas listas, Opcoes opcoes) {
-
+		Commons commons = new Commons();
 		Mongo mongo;
 		try {
 			mongo = new Mongo();
-			DB db = (DB) mongo.getDB("yggboard");
-
+			DB db = (DB) mongo.getDB(commons.getProperties().get("database").toString());
 			DBCollection collection = db.getCollection("areaConhecimento");
 			BasicDBObject searchQuery = new BasicDBObject("documento.id", id);
 			DBObject cursor = collection.findOne(searchQuery);
@@ -865,12 +864,11 @@ public class Rest_Index {
 	};
 	@SuppressWarnings("unchecked")
 	private void processaAreaAtuacao(String id, Listas listas, Opcoes opcoes) {		
-
+		Commons commons = new Commons();
 		Mongo mongo;
 		try {
 			mongo = new Mongo();
-			DB db = (DB) mongo.getDB("yggboard");
-
+			DB db = (DB) mongo.getDB(commons.getProperties().get("database").toString());
 			DBCollection collection = db.getCollection("areaAtuacao");
 			BasicDBObject searchQuery = new BasicDBObject("documento.id", id);
 			DBObject cursor = collection.findOne(searchQuery);
@@ -939,7 +937,7 @@ public class Rest_Index {
 		Commons commons = new Commons();
 		try {
 			mongo = new Mongo();
-			DB db = (DB) mongo.getDB("yggboard");
+			DB db = (DB) mongo.getDB(commons.getProperties().get("database").toString());
 			DBCollection collection = db.getCollection("habilidades");
 			BasicDBObject searchQuery = new BasicDBObject("documento.id", id);
 			DBObject cursor = collection.findOne(searchQuery);
@@ -996,7 +994,7 @@ public class Rest_Index {
 		Commons commons = new Commons();
 		try {
 			mongo = new Mongo();
-			DB db = (DB) mongo.getDB("yggboard");
+			DB db = (DB) mongo.getDB(commons.getProperties().get("database").toString());
 			DBCollection collection = db.getCollection("habilidades");
 			BasicDBObject searchQuery = new BasicDBObject("documento.id", id);
 			DBObject cursor = collection.findOne(searchQuery);
@@ -1092,10 +1090,11 @@ public class Rest_Index {
 	
 	@SuppressWarnings("unchecked")
 	private void carregaPreRequisitosFiltro(String id, Listas listas, Opcoes opcoes) {
+		Commons commons = new Commons();
 		Mongo mongo;
 		try {
 			mongo = new Mongo();
-			DB db = (DB) mongo.getDB("yggboard");
+			DB db = (DB) mongo.getDB(commons.getProperties().get("database").toString());
 			DBCollection collection = db.getCollection("habilidades");
 			BasicDBObject searchQuery = new BasicDBObject("documento.id", id);
 			DBObject cursor = collection.findOne(searchQuery);
@@ -1174,7 +1173,7 @@ public class Rest_Index {
 		Mongo mongo;
 		try {
 			mongo = new Mongo();
-			DB db = (DB) mongo.getDB("yggboard");
+			DB db = (DB) mongo.getDB(commons.getProperties().get("database").toString());
 			DBCollection collection = db.getCollection("cursos");
 			BasicDBObject searchQuery = new BasicDBObject("documento.id", id);
 			DBObject cursor = collection.findOne(searchQuery);
@@ -1204,10 +1203,11 @@ public class Rest_Index {
 	};
 	
 	private void carregaAreaAtuacao(String id, Listas listas, Opcoes opcoes) {
+		Commons commons = new Commons();
 		Mongo mongo;
 		try {
 			mongo = new Mongo();
-			DB db = (DB) mongo.getDB("yggboard");
+			DB db = (DB) mongo.getDB(commons.getProperties().get("database").toString());
 			DBCollection collection = db.getCollection("areaAtuacao");
 			BasicDBObject searchQuery = new BasicDBObject("documento.id", id);
 			DBObject cursor = collection.findOne(searchQuery);
@@ -1222,10 +1222,11 @@ public class Rest_Index {
 		
 	};
 	private void carregaAreaConhecimento(String id, Listas listas, Opcoes opcoes) {
+		Commons commons = new Commons();
 		Mongo mongo;
 		try {
 			mongo = new Mongo();
-			DB db = (DB) mongo.getDB("yggboard");
+			DB db = (DB) mongo.getDB(commons.getProperties().get("database").toString());
 			DBCollection collection = db.getCollection("areaConhecimento");
 			BasicDBObject searchQuery = new BasicDBObject("documento.id", id);
 			DBObject cursor = collection.findOne(searchQuery);
@@ -1246,7 +1247,7 @@ public class Rest_Index {
 		Commons commons = new Commons();
 		try {
 			mongo = new Mongo();
-			DB db = (DB) mongo.getDB("yggboard");
+			DB db = (DB) mongo.getDB(commons.getProperties().get("database").toString());
 			DBCollection collection = db.getCollection("objetivos");
 			BasicDBObject searchQuery = new BasicDBObject("documento.id", id);
 			DBObject cursor = collection.findOne(searchQuery);
@@ -1275,12 +1276,11 @@ public class Rest_Index {
 
 	@SuppressWarnings("unchecked")
 	private void carregaAreasConhecimento(JSONArray areasConhecimento, Listas listas) {
-
+		Commons commons = new Commons();
 		Mongo mongo;
 		try {
 			mongo = new Mongo();
-			DB db = (DB) mongo.getDB("yggboard");
-
+			DB db = (DB) mongo.getDB(commons.getProperties().get("database").toString());
 			DBCollection collection = db.getCollection("areaConhecimento");
 			BasicDBObject searchQuery = new BasicDBObject();
 			DBCursor cursor = collection.find(searchQuery);
@@ -1304,12 +1304,11 @@ public class Rest_Index {
 
 	@SuppressWarnings("unchecked")
 	private void carregaAreasAtuacao(JSONArray areasAtuacao, Listas listas) {
-
+		Commons commons = new Commons();
 		Mongo mongo;
 		try {
 			mongo = new Mongo();
-			DB db = (DB) mongo.getDB("yggboard");
-
+			DB db = (DB) mongo.getDB(commons.getProperties().get("database").toString());
 			DBCollection collection = db.getCollection("areaAtuacao");
 			BasicDBObject searchQuery = new BasicDBObject();
 			DBCursor cursor = collection.find(searchQuery);
@@ -1337,8 +1336,7 @@ public class Rest_Index {
 		Commons commons = new Commons();
 		try {
 			mongo = new Mongo();
-			DB db = (DB) mongo.getDB("yggboard");
-
+			DB db = (DB) mongo.getDB(commons.getProperties().get("database").toString());
 			DBCollection collection = db.getCollection("cursos");
 			BasicDBObject searchQuery = new BasicDBObject();
 			BasicDBObject setSort = new BasicDBObject();
@@ -1381,8 +1379,7 @@ public class Rest_Index {
 		Commons commons = new Commons();
 		try {
 			mongo = new Mongo();
-			DB db = (DB) mongo.getDB("yggboard");
-
+			DB db = (DB) mongo.getDB(commons.getProperties().get("database").toString());
 			DBCollection collection = db.getCollection("habilidades");
 			BasicDBObject searchQuery = new BasicDBObject();
 			DBCursor cursor = collection.find(searchQuery);
@@ -1417,8 +1414,7 @@ public class Rest_Index {
 		Commons commons = new Commons();
 		try {
 			mongo = new Mongo();
-			DB db = (DB) mongo.getDB("yggboard");
-
+			DB db = (DB) mongo.getDB(commons.getProperties().get("database").toString());
 			DBCollection collection = db.getCollection("objetivos");
 			BasicDBObject searchQuery = new BasicDBObject();
 			BasicDBObject setSort = new BasicDBObject();
@@ -1526,10 +1522,11 @@ public class Rest_Index {
 
 	@SuppressWarnings("unchecked")
 	private void carregaIndex(String assunto, JSONArray documentos, String characters, Boolean lista, Listas listas, Opcoes opcoes, int qtdeItens) {
+		Commons commons = new Commons();
 		Mongo mongo;
 			try {
 				mongo = new Mongo();
-				DB db = (DB) mongo.getDB("yggboard");
+				DB db = (DB) mongo.getDB(commons.getProperties().get("database").toString());
 				BasicDBObject setQuery = new BasicDBObject();
 				DBCollection collection = db.getCollection("index");
 				setQuery.put("documento.assunto", assunto);			
