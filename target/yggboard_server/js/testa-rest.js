@@ -220,8 +220,26 @@ function testaAtualizaPerfil() {
 function testaFiltro() {
 
 	var objJson = [];
-	var assunto = "";
-	var usuario = "";
+	var assunto = "objetivos";
+	var usuario = "grenneglr@gmail.com";
+	var id = "1";
+	var filtro = {
+			usuario : usuario,
+			assunto : assunto,
+			id : id
+	};
+	objJson.push(filtro);
+	assunto = "areaAtuacao";
+	usuario = "grenneglr@gmail.com";
+	id = "1";
+	filtro = {
+			usuario : usuario,
+			assunto : assunto,
+			id : id
+	};
+	objJson.push(filtro);
+
+/*
 	while (assunto !=  "fim") {
 		usuario = prompt("Usuario");
 		assunto = prompt("Assunto");
@@ -235,6 +253,7 @@ function testaFiltro() {
 			objJson.push(filtro);
 		};
 	};
+*/
 	$.ajax({
 		type : "POST",
 		url : localStorage.mainUrl + "yggboard_server/rest/index/obter/filtro",

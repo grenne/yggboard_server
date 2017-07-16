@@ -367,7 +367,8 @@ public class Rest_UserPerfil {
 						JSONObject jsonDocumento = new JSONObject();
 						if (item.equals("cursos-inscrito")){
 							List arrayInscritos = (List) jsonPerfil.get("cursosInscrito");
-							JSONObject  cursoInscrito = (JSONObject) arrayInscritos.get(w);
+							BasicDBObject cursoInscrito = new BasicDBObject();
+							cursoInscrito.putAll((Map) arrayInscritos.get(w));
 							String id = cursoInscrito.get("id").toString();
 							searchQueryCursos.put("documento.id", id);
 							jsonDocumento.put("inscricao", cursoInscrito.get("inscricao").toString());

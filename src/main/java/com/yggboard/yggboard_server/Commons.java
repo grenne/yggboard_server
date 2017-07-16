@@ -1,5 +1,8 @@
 package com.yggboard.yggboard_server;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.DateFormat;
@@ -8,10 +11,12 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.ws.rs.core.Response;
 
 import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import com.mongodb.BasicDBObject;
 
@@ -365,5 +370,36 @@ public class Commons {
 			return Integer.toString(array.length);
 		};
 		return "0";
+	};
+	@SuppressWarnings("unchecked")
+	public JSONObject getProperties(){
+		String jbossPath = System.getProperty("$JBOSS_HOME");
+		Properties prop = new Properties();
+		InputStream input = null;
+
+		try {
+
+		      input = getClass().getClassLoader().getResourceAsStream("config.properties");
+
+
+		    // load a properties file
+		    prop.load(input);
+		    JSONObject properties = new JSONObject();
+		    properties.put("database", prop.getProperty("database"));
+		    properties.put("dbuser", prop.getProperty("dbuser"));
+		    properties.put("dbpassword", prop.getProperty("dbpassword"));
+		    return properties;
+		} catch (IOException ex) {
+		    ex.printStackTrace();
+		} finally {
+		    if (input != null) {
+		        try {
+		            input.close();
+		        } catch (IOException e) {
+		            e.printStackTrace();
+		        }
+		    }
+		}
+		return null;
 	};
 };

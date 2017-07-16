@@ -26,10 +26,11 @@ public class Commons_DB {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Response obterCrud(String collectionName, Object arrayQueryInput) {
 
+		Commons commons = new Commons();
 		Mongo mongo;
 		try {
 			mongo = new Mongo();
-			DB db = (DB) mongo.getDB("yggboard");
+			DB db = (DB) mongo.getDB(commons.getProperties().get("database").toString());
 			DBCollection collection = db.getCollection(collectionName);
 			BasicDBObject searchQuery = new BasicDBObject();
 			List arraySetQuery = (List) arrayQueryInput;
@@ -73,10 +74,11 @@ public class Commons_DB {
 
 	@SuppressWarnings("rawtypes")
 	public Response incluirCrud(String collectionName, Object insertInput) {
+		Commons commons = new Commons();
 		Mongo mongo;
 		try {
 			mongo = new Mongo();
-			DB db = (DB) mongo.getDB("yggboard");
+			DB db = (DB) mongo.getDB(commons.getProperties().get("database").toString());
 			DBCollection collection = db.getCollection(collectionName);
 			BasicDBObject insert = new BasicDBObject();
 			insert.putAll((Map) insertInput);
@@ -91,10 +93,11 @@ public class Commons_DB {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public Response atualizarCrud(String collectionName, Object updateInput, Object keysInput) {
+		Commons commons = new Commons();
 		Mongo mongo;
 		try {
 			mongo = new Mongo();
-			DB db = (DB) mongo.getDB("yggboard");
+			DB db = (DB) mongo.getDB(commons.getProperties().get("database").toString());
 			DBCollection collection = db.getCollection(collectionName);
 			BasicDBObject searchQuery = new BasicDBObject();
 			List arraySetQuery = (List) keysInput;
@@ -170,10 +173,11 @@ public class Commons_DB {
 	}
 
 	public Response removerAllCrud(String collectionName) {
+		Commons commons = new Commons();
 		Mongo mongo;
 		try {
 			mongo = new Mongo();
-			DB db = (DB) mongo.getDB("yggboard");
+			DB db = (DB) mongo.getDB(commons.getProperties().get("database").toString());
 			DBCollection collection = db.getCollection(collectionName);
 			collection.remove(new BasicDBObject());
 			mongo.close();
@@ -185,10 +189,11 @@ public class Commons_DB {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Response removerCrud(String collectionName, Object keysInput) {
+		Commons commons = new Commons();
 		Mongo mongo;
 		try {
 			mongo = new Mongo();
-			DB db = (DB) mongo.getDB("yggboard");
+			DB db = (DB) mongo.getDB(commons.getProperties().get("database").toString());
 			DBCollection collection = db.getCollection(collectionName);
 			BasicDBObject searchQuery = new BasicDBObject();
 			List arraySetQuery = (List) keysInput;
@@ -211,11 +216,11 @@ public class Commons_DB {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Response listaCrud(String collectionName, Object arrayQueryInput) {
-
+		Commons commons = new Commons();
 		Mongo mongo;
 		try {
 			mongo = new Mongo();
-			DB db = (DB) mongo.getDB("yggboard");
+			DB db = (DB) mongo.getDB(commons.getProperties().get("database").toString());
 			DBCollection collection = db.getCollection(collectionName);
 			BasicDBObject searchQuery = new BasicDBObject();
 			List arraySetQuery = (List) arrayQueryInput;

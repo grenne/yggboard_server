@@ -15,6 +15,11 @@ public class Opcoes {
 	private Boolean carregaCursosHabilidades;
 	private Boolean carregaObjetivosHabilidades;
 	private Boolean carregaObjetivosAreasAtuacao;
+	private Boolean veioObjetivos;
+	private Boolean veioHabilidades;
+	private Boolean veioCursos;
+	private Boolean veioAreaAtuacao;
+	private Boolean veioAreaConhecimento;
 
 	public Opcoes() {
 		filtro = false;
@@ -30,6 +35,11 @@ public class Opcoes {
 		carregaCursosHabilidades = false;
 		carregaObjetivosHabilidades = false;
 		carregaObjetivosAreasAtuacao = false;
+		veioObjetivos = false;
+		veioHabilidades = false;
+		veioCursos = false;
+		veioAreaAtuacao = false;
+		veioAreaConhecimento = false;
 	};
 
 	public Opcoes(
@@ -223,5 +233,54 @@ public class Opcoes {
 	public Boolean carregaObjetivosAreasAtuacao() {
 		return this.carregaObjetivosAreasAtuacao;
 	};
-
+	public void setVeioObjetivos(){
+		veioObjetivos = true;
+		veioHabilidades = false;
+		veioCursos = false;
+		veioAreaAtuacao = false;
+		veioAreaConhecimento = false;
+	};
+	public Boolean veioObjetivos() {
+		return this.veioObjetivos;
+	};
+	public void setVeioHabilidades(){
+		veioObjetivos = false;
+		veioHabilidades = true;
+		veioCursos = false;
+		veioAreaAtuacao = false;
+		veioAreaConhecimento = false;
+	};
+	public Boolean veioHabilidades() {
+		return this.veioHabilidades;
+	};
+	public void setVeioCursos(){
+		veioObjetivos = false;
+		veioHabilidades = false;
+		veioCursos = true;
+		veioAreaAtuacao = false;
+		veioAreaConhecimento = false;
+	};
+	public Boolean veioCursos() {
+		return this.veioCursos;
+	};
+	public void setVeioAreaAtuacao(){
+		veioObjetivos = false;
+		veioHabilidades = false;
+		veioCursos = false;
+		veioAreaAtuacao = true;
+		veioAreaConhecimento = false;
+	};
+	public Boolean veioAreaAtuacao() {
+		return this.veioAreaAtuacao;
+	};
+	public void setVeioAreaConhecimento(){
+		veioObjetivos = false;
+		veioHabilidades = false;
+		veioCursos = false;
+		veioAreaAtuacao = false;
+		veioAreaConhecimento = true;
+	};
+	public Boolean veioAreaConhecimento() {
+		return this.veioAreaConhecimento;
+	};
 };

@@ -172,13 +172,17 @@ public class Rest_Index {
 		Listas listas = new Listas();
 		Opcoes opcoes = new Opcoes();
 		Commons_DB commons_db = new Commons_DB();
+		BasicDBObject objUserPerfil = new BasicDBObject();
 	
 		JSONObject objItemFiltro_0 = new JSONObject();
+		if (objFiltros == null){
+			return objUserPerfil;
+		};
+
 		objItemFiltro_0.putAll((Map) objFiltros.get(0));
 
 		Response response = commons_db.getCollection(objItemFiltro_0.get("usuario").toString(), "userPerfil", "documento.usuario");
 	
-		BasicDBObject objUserPerfil = new BasicDBObject();
 		if (!(response.getEntity() instanceof Boolean)){
 			BasicDBObject doc = new BasicDBObject();
 			doc.putAll((Map) response.getEntity());
@@ -206,7 +210,7 @@ public class Rest_Index {
 					opcoes.setAllFalse();
 					opcoes.setFiltro(false);
 					processaObjetivos(objItemFiltro.get("id").toString(), listas, opcoes);
-					opcoes.setObjetivo();
+					opcoes.setAllTrue();
 					opcoes.setFiltro(true);
 					processaObjetivos(objItemFiltro.get("id").toString(), listas, opcoes);
 				}else{
@@ -219,7 +223,7 @@ public class Rest_Index {
 					opcoes.setAllFalse();
 					opcoes.setFiltro(false);
 					processaObjetivos(objItemFiltro.get("id").toString(), listas, opcoes);
-					opcoes.setObjetivo();
+					opcoes.setAllTrue();
 					opcoes.setFiltro(true);
 					processaObjetivos(objItemFiltro.get("id").toString(), listas, opcoes);
 				}else{
@@ -232,7 +236,7 @@ public class Rest_Index {
 					opcoes.setAllFalse();
 					opcoes.setFiltro(false);
 					processaHabilidades(objItemFiltro.get("id").toString(), listas, opcoes);
-					opcoes.setHabilidade();
+					opcoes.setAllTrue();
 					opcoes.setFiltro(true);
 					processaHabilidades(objItemFiltro.get("id").toString(), listas, opcoes);
 				}else{
@@ -240,12 +244,12 @@ public class Rest_Index {
 					processaHabilidades(objItemFiltro.get("id").toString(), listas, opcoes);					
 				}
 				break;
-			case "curso":
+			case "cursos":
 				if (filtro){
 					opcoes.setAllFalse();
 					opcoes.setFiltro(false);
 					processaCursos(objItemFiltro.get("id").toString(), listas, opcoes);
-					opcoes.setCurso();
+					opcoes.setAllTrue();
 					opcoes.setFiltro(true);
 					processaCursos(objItemFiltro.get("id").toString(), listas, opcoes);
 				}else{
@@ -258,7 +262,7 @@ public class Rest_Index {
 					opcoes.setAllFalse();
 					opcoes.setFiltro(false);
 					processaAreaAtuacao(objItemFiltro.get("id").toString(), listas, opcoes);
-					opcoes.setAreaAtuacao();
+					opcoes.setAllTrue();
 					opcoes.setFiltro(true);					
 					processaAreaAtuacao(objItemFiltro.get("id").toString(), listas, opcoes);
 				}else{
@@ -271,7 +275,7 @@ public class Rest_Index {
 					opcoes.setAllFalse();
 					opcoes.setFiltro(false);
 					processaAreaConhecimento(objItemFiltro.get("id").toString(), listas, opcoes);
-					opcoes.setAreaConhecimento();
+					opcoes.setAllTrue();
 					opcoes.setFiltro(true);					
 					processaAreaConhecimento(objItemFiltro.get("id").toString(), listas, opcoes);
 				}else{
@@ -304,7 +308,7 @@ public class Rest_Index {
 				case "habilidades":
 					filtroHabilidade = true;
 					break;
-				case "curso":
+				case "cursos":
 					filtroCurso = true;
 					break;
 				case "areaAtuacao":
@@ -331,20 +335,31 @@ public class Rest_Index {
 						opcoes.setCarregaAreaConhecimentoHabilidades(false);
 						opcoes.setCarregaCursosHabilidades(false);
 						opcoes.setCarregaObjetivosHabilidades(false);
+						opcoes.setCarregaHabilidadesObjetivos(false);
+						opcoes.setCarregaCursosHabilidades(false);
+						opcoes.setCarregaCursosPreRequisitos(false);
+						opcoes.setCarregaAreaConhecimentoHabilidades(false);
 					};
 					if (filtroObjetivo){
+						opcoes.setCarregaAreasAtuacaoObjetivos(false);
+						opcoes.setCarregaObjetivosPreRequisitos(false);
 						opcoes.setCarregaAreasAtuacaoObjetivos(false);
 						opcoes.setCarregaHabilidadesObjetivos(false);
 					};
 					if (filtroCurso){
 						opcoes.setCarregaHabilidadesCursos(false);
+						opcoes.setCarregaHabilidadesCursos(false);
 					};
 					if (filtroAreaAtuacao){
 						opcoes.setCarregaObjetivosAreasAtuacao(false);
+						opcoes.setCarregaObjetivosAreasAtuacao(false);
 					};
 					if (filtroAreaConhecimento){
+						opcoes.setCarregaHabilidadesAreaConhecimento(false);
 						opcoes.setCarregaAreaConhecimentoHabilidades(false);
+						opcoes.setCarregaAreasConhecimentoPreRequisitos(false);
 					};
+					opcoes.setFiltro(false);
 					switch (selecionado.get("assunto").toString()) {
 					case "objetivos":
 						processaObjetivos(selecionado.get("value").toString(), listas, opcoes);
@@ -355,7 +370,7 @@ public class Rest_Index {
 					case "habilidades":
 						processaHabilidades(selecionado.get("value").toString(), listas, opcoes);
 						break;
-					case "curso":
+					case "cursos":
 						processaCursos(selecionado.get("value").toString(), listas, opcoes);
 						break;
 					case "areaAtuacao":
@@ -401,34 +416,53 @@ public class Rest_Index {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private Boolean selecionaFiltro(Object elemento, JSONArray objFiltros) {
 		
-		Object filtros[] = objFiltros.toArray();
+		Boolean filtroSelecionado = false;
 		Boolean selecionado = true;
 		Boolean testouElemento = false;
+		Boolean testouAssunto = false;
+		Object filtros[] = objFiltros.toArray();
+		/*
+		 * 				se assunto do elemento igual a algum assunto do filtro carregar somente elementos do filtro 
+		 */
 		for (int i = 0; i < filtros.length; i++) {
 			JSONObject filtro = new JSONObject();
 			filtro.putAll((Map) filtros[i]);
 			JSONObject elementoJson = new JSONObject();
 			elementoJson.putAll((Map) elemento);
-			if (elementoJson.get("elemento").toString().equals(filtro.get("assunto"))){
+			if (elementoJson.get("assunto").toString().equals(filtro.get("assunto"))){
 				testouElemento = true;
-				JSONArray elementos = new JSONArray();
-				elementos.addAll((Collection) elementoJson.get("elementos"));
-				Boolean filtroSelecionado = false;
-				for (int j = 0; j < elementos.size(); j++) {
-					if (filtro.get("id").equals(elementos.get(j).toString())){
-						filtroSelecionado = true;
+				testouAssunto = true;
+				if (elementoJson.get("value").toString().equals(filtro.get("id"))){
+					filtroSelecionado = true;					
+				};
+			};			
+		};		
+		if (!testouAssunto){
+			for (int i = 0; i < filtros.length; i++) {
+				JSONObject filtro = new JSONObject();
+				filtro.putAll((Map) filtros[i]);
+				JSONObject elementoJson = new JSONObject();
+				elementoJson.putAll((Map) elemento);
+				if (elementoJson.get("elemento").toString().equals(filtro.get("assunto"))){
+					testouElemento = true;
+					JSONArray elementos = new JSONArray();
+					elementos.addAll((Collection) elementoJson.get("elementos"));
+					for (int j = 0; j < elementos.size(); j++) {
+						if (filtro.get("id").equals(elementos.get(j).toString())){
+							filtroSelecionado = true;
+						};
 					};
 				};
-				if (!filtroSelecionado){
-					selecionado = false;
-				};
 			};
+		};
+		if (!filtroSelecionado){
+			selecionado = false;
 		};
 		if (!testouElemento){
 			selecionado = false;			
 		};
 		return selecionado;
-	}
+	};
 
 	@SuppressWarnings({ "unchecked" })
 	private void processaObjetivos(String id, Listas listas, Opcoes opcoes) {
@@ -450,19 +484,22 @@ public class Rest_Index {
 				ArrayList<?> arrayListAreaAtuacao = new ArrayList<Object>(); 
 				arrayListAreaAtuacao = (ArrayList<?>) objetivo.get("areaAtuacao");
 
-				if (arrayListNecessarios != null && opcoes.carregaObjetivosHabilidades()){
-					Object arrayNecessarios[] = arrayListNecessarios.toArray();
-					//
-					// ***		carrega habilidades
-					//
-					int z = 0;
-					while (z < arrayNecessarios.length) {
-						processaHabilidades(arrayNecessarios[z].toString(), listas, opcoes);
-						++z;
-					};
-				};
-
 				if (!opcoes.filtro()){
+					//
+					// ***		carrega habilidades necessarias
+					//
+					if (arrayListNecessarios != null && opcoes.carregaObjetivosHabilidades()){
+						Object arrayNecessarios[] = arrayListNecessarios.toArray();
+						int z = 0;
+						while (z < arrayNecessarios.length) {
+							if (!opcoes.veioHabilidades()){
+								opcoes.setVeioObjetivos();
+								processaHabilidades(arrayNecessarios[z].toString(), listas, opcoes);
+								opcoes.setVeioObjetivos();
+							};
+							++z;
+						};
+					};
 					if (arrayListAreaAtuacao != null && opcoes.carregaObjetivosAreasAtuacao()){
 						Object arrayAreaAtuacao[] = arrayListAreaAtuacao.toArray();
 						//
@@ -496,10 +533,15 @@ public class Rest_Index {
 						Object arrayNecessarios[] = arrayListNecessarios.toArray();
 						JSONArray arrayJson = new JSONArray();
 						for (int i = 0; i < arrayNecessarios.length; i++) {
-							arrayJson.add(arrayNecessarios[i]);
+							arrayJson.add(arrayNecessarios[i].toString());
+							if (!opcoes.veioHabilidades()){
+								opcoes.setVeioObjetivos();
+								processaHabilidades(arrayNecessarios[i].toString(), listas, opcoes);
+								opcoes.setVeioObjetivos();
+							};
 						};
-						elemento.put("elemento", "habilidade");
-						elemento.put("assunto", "objetivo");
+						elemento.put("elemento", "habilidades");
+						elemento.put("assunto", "objetivos");
 						elemento.put("value", id);
 						elemento.put("elementos", arrayJson);
 						listas.addElementosFiltro(elemento);
@@ -509,11 +551,15 @@ public class Rest_Index {
 						Object arrayAreaAtuacao[] = arrayListAreaAtuacao.toArray();
 						JSONArray arrayJson = new JSONArray();
 						for (int i = 0; i < arrayAreaAtuacao.length; i++) {
-							carregaAreaAtuacao(arrayAreaAtuacao[i].toString(), listas, opcoes);
 							arrayJson.add(arrayAreaAtuacao[i].toString());
+							if (!opcoes.veioAreaAtuacao()){
+								opcoes.setVeioObjetivos();
+								processaAreaAtuacao(arrayAreaAtuacao[i].toString(), listas, opcoes);
+								opcoes.setVeioObjetivos();
+							};
 						};
 						elemento.put("elemento", "areaAtuacao");
-						elemento.put("assunto", "objetivo");
+						elemento.put("assunto", "objetivos");
 						elemento.put("value", id);
 						elemento.put("elementos", arrayJson);
 						listas.addElementosFiltro(elemento);
@@ -553,19 +599,23 @@ public class Rest_Index {
 				//			
 				ArrayList<?> arrayListAreaConhecimento = new ArrayList<Object>(); 
 				arrayListAreaConhecimento = (ArrayList<?>) habilidade.get("areaConhecimento");
-				//
-				// ***		carrega objetivos
-				//
-		    	if (arrayListObjetivos != null  && opcoes.carregaHabilidadesObjetivos()){
-			    	Object arrayObjetivos[] = arrayListObjetivos.toArray();
-					int w = 0;
-					while (w < arrayObjetivos.length) {
-						processaObjetivos(arrayObjetivos[w].toString(), listas, opcoes);
-						++w;
-					};
-		    	};
 
 				if (!opcoes.filtro()){
+					//
+					// ***		carrega objetivos
+					//
+			    	if (arrayListObjetivos != null  && opcoes.carregaHabilidadesObjetivos()){
+				    	Object arrayObjetivos[] = arrayListObjetivos.toArray();
+						int w = 0;
+						while (w < arrayObjetivos.length) {
+							if (!opcoes.veioObjetivos()){
+								opcoes.setVeioHabilidades();
+								processaObjetivos(arrayObjetivos[w].toString(), listas, opcoes);
+								opcoes.setVeioHabilidades();
+							};
+							++w;
+						};
+			    	};
 					if (arrayListCursos != null && opcoes.carregaHabilidadesCursos()){
 				    	Object[] arrayCursos = arrayListCursos.toArray();
 						//
@@ -602,11 +652,15 @@ public class Rest_Index {
 				    	Object[] arrayCursos = arrayListCursos.toArray();
 						JSONArray arrayJson = new JSONArray();
 						for (int i = 0; i < arrayCursos.length; i++) {
-							carregaCurso(arrayCursos[i].toString(), listas, opcoes);
 							arrayJson.add(arrayCursos[i].toString());
+							if (!opcoes.veioCursos()){
+								opcoes.setVeioHabilidades();
+								processaCursos(arrayCursos[i].toString(), listas, opcoes);
+								opcoes.setVeioHabilidades();
+							};
 						};
-						elemento.put("elemento", "curso");
-						elemento.put("assunto", "habilidade");
+						elemento.put("elemento", "cursos");
+						elemento.put("assunto", "habilidades");
 						elemento.put("value", id);
 						elemento.put("elementos", arrayJson);
 						listas.addElementosFiltro(elemento);
@@ -617,9 +671,14 @@ public class Rest_Index {
 						JSONArray arrayJson = new JSONArray();
 						for (int i = 0; i < arrayObjetivos.length; i++) {
 							arrayJson.add(arrayObjetivos[i]);
+							if (!opcoes.veioObjetivos()){
+								opcoes.setVeioHabilidades();
+								processaObjetivos(arrayObjetivos[i].toString(), listas, opcoes);
+								opcoes.setVeioHabilidades();
+							};
 						};
-						elemento.put("elemento", "objetivo");
-						elemento.put("assunto", "habilidade");
+						elemento.put("elemento", "objetivos");
+						elemento.put("assunto", "habilidades");
 						elemento.put("value", id);
 						elemento.put("elementos", arrayJson);
 						listas.addElementosFiltro(elemento);
@@ -629,11 +688,15 @@ public class Rest_Index {
 				    	Object arrayAreaConhecimento[] = arrayListAreaConhecimento.toArray();
 						JSONArray arrayJson = new JSONArray();
 						for (int i = 0; i < arrayAreaConhecimento.length; i++) {
-							carregaAreaConhecimento(arrayAreaConhecimento[i].toString(), listas, opcoes);
 							arrayJson.add(arrayAreaConhecimento[i].toString());
+							if (!opcoes.veioAreaConhecimento()){
+								opcoes.setVeioHabilidades();
+								processaAreaConhecimento(arrayAreaConhecimento[i].toString(), listas, opcoes);
+								opcoes.setVeioHabilidades();
+							};
 						};
 						elemento.put("elemento", "areaConhecimento");
-						elemento.put("assunto", "habilidade");
+						elemento.put("assunto", "habilidades");
 						elemento.put("value", id);
 						elemento.put("elementos", arrayJson);
 						listas.addElementosFiltro(elemento);
@@ -675,18 +738,22 @@ public class Rest_Index {
 				BasicDBObject curso = (BasicDBObject) cursor.get("documento");
 				ArrayList<?> arrayListHabilidades = new ArrayList<Object>(); 
 				arrayListHabilidades = (ArrayList<?>) curso.get("habilidades");
-				if (arrayListHabilidades != null && opcoes.carregaCursosHabilidades()){
-			    	Object arrayHabilidades[] = arrayListHabilidades.toArray();
-					//
-					// ***		carrega habilidades
-					//
-					int z = 0;
-					while (z < arrayHabilidades.length) {
-						processaHabilidades(arrayHabilidades[z].toString(), listas, opcoes);
-						++z;
-					};
-				};
 		    	if (!opcoes.filtro()){
+					if (arrayListHabilidades != null && opcoes.carregaCursosHabilidades()){
+				    	Object arrayHabilidades[] = arrayListHabilidades.toArray();
+						//
+						// ***		carrega habilidades
+						//
+						int z = 0;
+						while (z < arrayHabilidades.length) {
+							if (!opcoes.veioHabilidades()){
+								opcoes.setVeioCursos();
+								processaHabilidades(arrayHabilidades[z].toString(), listas, opcoes);
+								opcoes.setVeioCursos();
+							};
+							++z;
+						};
+					};
 					List arrayParent = (List) curso.get("parents");
 					if (arrayParent.size() == 0){
 						if (listas.userPerfil().get("cursosInteresse") != null){
@@ -705,14 +772,19 @@ public class Rest_Index {
 				    	Object arrayHabilidades[] = arrayListHabilidades.toArray();
 						JSONArray arrayJson = new JSONArray();
 						for (int i = 0; i < arrayHabilidades.length; i++) {
-							arrayJson.add(arrayHabilidades[i]);
+							arrayJson.add(arrayHabilidades[i].toString());
+							if (!opcoes.veioHabilidades()){
+								opcoes.setVeioCursos();
+								processaHabilidades(arrayHabilidades[i].toString(), listas, opcoes);
+								opcoes.setVeioCursos();
+							};
 						};
 						//
 						// ***		carrega filtros
 						//			
 						BasicDBObject elemento = new BasicDBObject();
-						elemento.put("elemento", "habilidade");
-						elemento.put("assunto", "curso");
+						elemento.put("elemento", "habilidades");
+						elemento.put("assunto", "cursos");
 						elemento.put("value", id);
 						elemento.put("elementos", arrayJson);
 						listas.addElementosFiltro(elemento);
@@ -740,22 +812,22 @@ public class Rest_Index {
 				BasicDBObject areaConhecimento = (BasicDBObject) cursor.get("documento");
 				ArrayList<?> arrayListHabilidades = new ArrayList<Object>(); 
 				arrayListHabilidades = (ArrayList<?>) areaConhecimento.get("habilidades");
-				if (arrayListHabilidades != null && opcoes.carregaAreaConhecimentoHabilidades()){
-					Object arrayHabilidades[] = arrayListHabilidades.toArray();
+				if (!opcoes.filtro()){
 					//
 					// ***		carrega habilidades
 					//
-					int z = 0;
-					while (z < arrayHabilidades.length) {
-						if (opcoes.filtro()){
-							carregaHabilidade(arrayHabilidades[z].toString(), listas, opcoes);
-						}else{
-							processaHabilidades(arrayHabilidades[z].toString(), listas, opcoes);
+					if (arrayListHabilidades != null && opcoes.carregaAreaConhecimentoHabilidades()){
+						Object arrayHabilidades[] = arrayListHabilidades.toArray();
+						int z = 0;
+						while (z < arrayHabilidades.length) {
+							if (!opcoes.veioHabilidades()){
+								opcoes.setVeioAreaConhecimento();
+								processaHabilidades(arrayHabilidades[z].toString(), listas, opcoes);
+								opcoes.setVeioAreaConhecimento();
+							};
+							++z;
 						};
-						++z;
 					};
-				};
-				if (!opcoes.filtro()){
 					//
 					// ***		carrega areas conhecimento
 					//
@@ -766,12 +838,17 @@ public class Rest_Index {
 						JSONArray arrayJson = new JSONArray();
 						for (int i = 0; i < arrayHabilidades.length; i++) {
 							arrayJson.add(arrayHabilidades[i]);
+							if (!opcoes.veioHabilidades()){
+								opcoes.setVeioAreaConhecimento();
+								processaHabilidades(arrayHabilidades[i].toString(), listas, opcoes);
+								opcoes.setVeioAreaConhecimento();
+							};
 						};
 						//
 						// ***		carrega filtros
 						//			
 						BasicDBObject elemento = new BasicDBObject();
-						elemento.put("elemento", "habilidade");
+						elemento.put("elemento", "habilidades");
 						elemento.put("assunto", "areaConhecimento");
 						elemento.put("value", id);
 						elemento.put("elementos", arrayJson);
@@ -804,18 +881,22 @@ public class Rest_Index {
 				//			
 				ArrayList<?> arrayListObjetivos = new ArrayList<Object>(); 
 				arrayListObjetivos = (ArrayList<?>) areaAtuacao.get("objetivos");
-				if (arrayListObjetivos != null && opcoes.carregaAreasAtuacaoObjetivos()){
-					Object arrayObjetivos[] = arrayListObjetivos.toArray();
+				if (!opcoes.filtro()){
 					//
 					// ***		carrega objetivos
 					//
-					int z = 0;
-					while (z < arrayObjetivos.length) {
-						processaObjetivos(arrayObjetivos[z].toString(), listas, opcoes);
-						++z;
+					if (arrayListObjetivos != null && opcoes.carregaAreasAtuacaoObjetivos()){
+						Object arrayObjetivos[] = arrayListObjetivos.toArray();
+						int z = 0;
+						while (z < arrayObjetivos.length) {
+							if (!opcoes.veioObjetivos()){
+								opcoes.setVeioAreaAtuacao();
+								processaObjetivos(arrayObjetivos[z].toString(), listas, opcoes);
+								opcoes.setVeioAreaAtuacao();
+							};
+							++z;
+						};
 					};
-				};
-				if (!opcoes.filtro()){
 					//
 					// ***		carrega areas atuacao
 					//
@@ -825,14 +906,18 @@ public class Rest_Index {
 						Object arrayObjetivos[] = arrayListObjetivos.toArray();
 						JSONArray arrayJson = new JSONArray();
 						for (int i = 0; i < arrayObjetivos.length; i++) {
-							processaObjetivos(arrayObjetivos[i].toString(), listas, opcoes);
 							arrayJson.add(arrayObjetivos[i].toString());
+							if (!opcoes.veioObjetivos()){
+								opcoes.setVeioAreaAtuacao();
+								processaObjetivos(arrayObjetivos[i].toString(), listas, opcoes);
+								opcoes.setVeioAreaAtuacao();
+							};
 						};
 						//
 						// ***		carrega filtros
 						//			
 						BasicDBObject elemento = new BasicDBObject();
-						elemento.put("elemento", "objetivo");
+						elemento.put("elemento", "objetivos");
 						elemento.put("assunto", "areaAtuacao");
 						elemento.put("value", id);
 						elemento.put("elementos", arrayJson);
@@ -1043,8 +1128,8 @@ public class Rest_Index {
 						for (int i = 0; i < arrayCursos.length; i++) {
 							arrayJson.add(arrayCursos[i]);
 						};
-						elemento.put("elemento", "curso");
-						elemento.put("assunto", "habilidade");
+						elemento.put("elemento", "cursos");
+						elemento.put("assunto", "habilidades");
 						elemento.put("value", id);
 						elemento.put("elementos", arrayJson);
 						listas.addElementosFiltro(elemento);
@@ -1056,8 +1141,8 @@ public class Rest_Index {
 						for (int i = 0; i < arrayObjetivos.length; i++) {
 							arrayJson.add(arrayObjetivos[i]);
 						};
-						elemento.put("elemento", "objetivo");
-						elemento.put("assunto", "habilidade");
+						elemento.put("elemento", "objetivos");
+						elemento.put("assunto", "habilidades");
 						elemento.put("value", id);
 						elemento.put("elementos", arrayJson);
 						listas.addElementosFiltro(elemento);
@@ -1070,7 +1155,7 @@ public class Rest_Index {
 							arrayJson.add(arrayAreaConhecimento[i]);
 						};
 						elemento.put("elemento", "areaConhecimento");
-						elemento.put("assunto", "habilidade");
+						elemento.put("assunto", "habilidades");
 						elemento.put("value", id);
 						elemento.put("elementos", arrayJson);
 						listas.addElementosFiltro(elemento);
