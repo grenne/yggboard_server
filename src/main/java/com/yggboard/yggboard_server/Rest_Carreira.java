@@ -35,7 +35,8 @@ public class Rest_Carreira {
 	@Produces(MediaType.APPLICATION_JSON)
 	public JSONObject ObterCarreira(@QueryParam("carreira") String carreira) throws UnknownHostException, MongoException {
 		Mongo mongo = new Mongo();
-		DB db = (DB) mongo.getDB("yggboard");
+		Commons commons = new Commons();
+		DB db = (DB) mongo.getDB(commons.getProperties().get("database").toString());
 		DBCollection collection = db.getCollection("objetivos");
 		BasicDBObject searchQuery = new BasicDBObject("documento.mail", carreira);
 		DBObject cursor = collection.findOne(searchQuery);
@@ -50,12 +51,11 @@ public class Rest_Carreira {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public JSONArray ObterCarreiras() {
-
+		Commons commons = new Commons();
 		Mongo mongo;
 		try {
 			mongo = new Mongo();
-			DB db = (DB) mongo.getDB("yggboard");
-
+			DB db = (DB) mongo.getDB(commons.getProperties().get("database").toString());
 			DBCollection collection = db.getCollection("objetivos");
 			BasicDBObject searchQuery = new BasicDBObject();			
 			DBCursor cursor = collection.find(searchQuery);
