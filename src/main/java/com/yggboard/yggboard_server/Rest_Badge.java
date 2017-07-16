@@ -37,7 +37,8 @@ public class Rest_Badge {
 	@Produces(MediaType.APPLICATION_JSON)
 	public JSONObject ObterBadge(@QueryParam("id") String id) throws UnknownHostException, MongoException {
 		Mongo mongo = new Mongo();
-		DB db = (DB) mongo.getDB("yggboard");
+		Commons commons = new Commons();
+		DB db = (DB) mongo.getDB(commons.getProperties().get("database").toString());
 		DBCollection collection = db.getCollection("badges");
 		BasicDBObject searchQuery = new BasicDBObject("documento.id", id);
 		DBObject cursor = collection.findOne(searchQuery);
@@ -55,10 +56,10 @@ public class Rest_Badge {
 	public JSONArray ObterBadges() {
 
 		Mongo mongo;
+		Commons commons = new Commons();
 		try {
 			mongo = new Mongo();
-			DB db = (DB) mongo.getDB("yggboard");
-
+			DB db = (DB) mongo.getDB(commons.getProperties().get("database").toString());
 			DBCollection collection = db.getCollection("badges");
 			BasicDBObject searchQuery = new BasicDBObject();
 			DBCursor cursor = collection.find(searchQuery);
