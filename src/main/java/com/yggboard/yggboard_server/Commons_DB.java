@@ -21,8 +21,7 @@ import com.mongodb.Mongo;
 import com.mongodb.MongoException;
 
 public class Commons_DB {
-
-
+	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Response obterCrud(String collectionName, Object arrayQueryInput) {
 

@@ -96,5 +96,13 @@
 	</dependencyManagement>
   	<build>
 		<finalName>yggboard_server</finalName>
-	</build>
+	    <resources>
+	        <resource>
+	            <directory>resources</directory>
+	            <includes>
+	                <include>**/*.properties</include>
+	            </includes>
+	        </resource>
+	    </resources>
+    </build>
 </project>

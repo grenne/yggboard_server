@@ -108,6 +108,9 @@ public class Rest_Usuario {
 						arrayToken = (List<String>) objUser.get("token");
 					};
 					String token = "";
+					if (macadress == null){
+						macadress = email + commons.todaysDate("inv_month_number") + password;
+					};
 					if (macadress != null){
 						byte[] tokenByte = commons.gerarHash(macadress);
 						token = commons.stringHexa(tokenByte);

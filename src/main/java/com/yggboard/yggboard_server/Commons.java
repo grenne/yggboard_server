@@ -1,6 +1,5 @@
 package com.yggboard.yggboard_server;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
@@ -373,15 +372,10 @@ public class Commons {
 	};
 	@SuppressWarnings("unchecked")
 	public JSONObject getProperties(){
-		String jbossPath = System.getProperty("$JBOSS_HOME");
 		Properties prop = new Properties();
 		InputStream input = null;
-
 		try {
-
-		      input = getClass().getClassLoader().getResourceAsStream("config.properties");
-
-
+		    input = getClass().getClassLoader().getResourceAsStream("config.properties");
 		    // load a properties file
 		    prop.load(input);
 		    JSONObject properties = new JSONObject();
