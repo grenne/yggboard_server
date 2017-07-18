@@ -1,7 +1,6 @@
 package com.yggboard.yggboard_server;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import javax.inject.Singleton;
@@ -80,7 +79,7 @@ public class Rest_Usuario {
 	@Path("/login")	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response Login(@QueryParam("email") String email, @QueryParam("password") String password, @QueryParam("macadress") String macadress) {
+	public Response Login(@QueryParam("email") String email, @QueryParam("password") String password, @QueryParam("macaddress") String macaddress) {
 	
 		Commons_DB commons_db = new Commons_DB();
 		Commons commons = new Commons();
@@ -100,28 +99,29 @@ public class Rest_Usuario {
 			if (doc != null){
 				objUser = (BasicDBObject) doc.get("documento");
 				if (objUser.get("password").toString().equals(password)){
+					key.clear();
+					keysArray.clear();
 					key.put("key", "documento.email");
 					key.put("value", email);
 					keysArray.add(key);
-					List<String> arrayToken = new ArrayList<String>();
-					if (objUser.get("token") != null){
-						arrayToken = (List<String>) objUser.get("token");
-					};
-					String token = "";
-					if (macadress == null){
-						macadress = email + commons.todaysDate("inv_month_number") + password;
-					};
-					if (macadress != null){
-						byte[] tokenByte = commons.gerarHash(macadress);
-						token = commons.stringHexa(tokenByte);
-					};
-					arrayToken.add(token);
+					byte[] tokenByte = commons.gerarHash(macaddress + commons.currentTime().toString());
+					String token = commons.stringHexa(tokenByte);
 					ArrayList<JSONObject> fieldsArray = new ArrayList<>();
 					JSONObject field = new JSONObject();
+
 					field.put("field", "token");
-					field.put("value", arrayToken);
+					field.put("value", token);
 					fieldsArray.add(field);				
 					commons_db.atualizarCrud("usuarios", fieldsArray, keysArray);
+/*
+ * 					atualizar perfil
+ */
+					key.clear();
+					keysArray.clear();
+					key.put("key", "documento.usuario");
+					key.put("value", email);
+					keysArray.add(key);
+					commons_db.atualizarCrud("userPerfil", fieldsArray, keysArray);
 					objUser.remove("password");
 					objUser.remove("token");
 					objUser.put("token", token);

@@ -49,12 +49,15 @@ public class Rest_Index {
 		
 		System.out.println("chamada index:" + assunto );
 		
+		if (id == null){
+			return null;
+		};
 		Commons commons = new Commons();
 		Listas listas = new Listas();
 		Opcoes opcoes = new Opcoes();
 		Commons_DB commons_db = new Commons_DB();
 	
-		Response response = commons_db.getCollection(usuario, "userPerfil", "documento.usuario");
+		Response response = commons_db.getCollection(usuario, "userPerfil", "documento.token");
 	
 		BasicDBObject objUserPerfil = new BasicDBObject();
 		if (!(response.getEntity() instanceof Boolean)){
@@ -63,6 +66,8 @@ public class Rest_Index {
 			if (doc != null){
 				objUserPerfil.putAll((Map) doc.get("documento"));
 			};
+		}else{
+			return null;
 		};
 
 		listas.setUserPerfil(objUserPerfil);
@@ -181,7 +186,7 @@ public class Rest_Index {
 
 		objItemFiltro_0.putAll((Map) objFiltros.get(0));
 
-		Response response = commons_db.getCollection(objItemFiltro_0.get("usuario").toString(), "userPerfil", "documento.usuario");
+		Response response = commons_db.getCollection(objItemFiltro_0.get("usuario").toString(), "userPerfil", "documento.token");
 	
 		if (!(response.getEntity() instanceof Boolean)){
 			BasicDBObject doc = new BasicDBObject();
@@ -189,6 +194,8 @@ public class Rest_Index {
 			if (doc != null){
 				objUserPerfil.putAll((Map) doc.get("documento"));
 			};
+		}else{
+			return null;
 		};
 
 		listas.setUserPerfil(objUserPerfil);
@@ -1478,7 +1485,7 @@ public class Rest_Index {
 		Opcoes opcoes = new Opcoes();
 		Commons_DB commons_db = new Commons_DB();
 		
-		Response response = commons_db.getCollection(usuario, "userPerfil", "documento.usuario");
+		Response response = commons_db.getCollection(usuario, "userPerfil", "documento.token");
 	
 		BasicDBObject objUserPerfil = new BasicDBObject();
 		if (!(response.getEntity() instanceof Boolean)){

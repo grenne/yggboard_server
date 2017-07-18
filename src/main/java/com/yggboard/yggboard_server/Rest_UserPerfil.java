@@ -48,7 +48,7 @@ public class Rest_UserPerfil {
 		Commons commons = new Commons();
 		DB db = (DB) mongo.getDB(commons.getProperties().get("database").toString());
 		DBCollection collection = db.getCollection("userPerfil");
-		BasicDBObject searchQuery = new BasicDBObject("documento.usuario", usuario);
+		BasicDBObject searchQuery = new BasicDBObject("documento.token", usuario);
 		DBObject cursor = collection.findOne(searchQuery);
 		if (cursor != null){
 			JSONObject documento = new JSONObject();
@@ -75,7 +75,7 @@ public class Rest_UserPerfil {
 		Mongo mongo = new Mongo();
 		DB db = (DB) mongo.getDB(commons.getProperties().get("database").toString());
 		DBCollection collection = db.getCollection("userPerfil");
-		BasicDBObject searchQuery = new BasicDBObject("documento.usuario", usuario);
+		BasicDBObject searchQuery = new BasicDBObject("documento.token", usuario);
 		DBObject cursor = collection.findOne(searchQuery);
 		mongo.close();
 		if (cursor != null){
@@ -754,7 +754,7 @@ public class Rest_UserPerfil {
 		System.out.println("atualiza perfil:" + newPerfil.get("tipo") + "- inout:"  + newPerfil.get("inout") + " - id:"  + newPerfil.get("id"));
 		Commons_DB commons_db = new Commons_DB();
 		Commons commons = new Commons();
-		Response response = commons_db.getCollection(newPerfil.get("usuario").toString(), "userPerfil", "documento.usuario");
+		Response response = commons_db.getCollection(newPerfil.get("usuario").toString(), "userPerfil", "documento.token");
 		if (!(response.getEntity() instanceof Boolean)){
 			BasicDBObject doc = new BasicDBObject();
 			doc.putAll((Map) response.getEntity());
@@ -843,7 +843,7 @@ public class Rest_UserPerfil {
 	
 				ArrayList<JSONObject> keysArray = new ArrayList<>();
 				JSONObject key = new JSONObject();
-				key.put("key", "documento.usuario");
+				key.put("key", "documento.token");
 				key.put("value", newPerfil.get("usuario").toString());
 				keysArray.add(key);
 
@@ -1273,7 +1273,7 @@ public class Rest_UserPerfil {
 					JSONObject cursosSugeridos = new JSONObject();
 					cursosSugeridos.putAll((Map) arrayCursosSugeridos.get(i));
 					String usuario = (String) cursosSugeridos.get("usuario");
-					BasicDBObject searchQuery = new BasicDBObject("documento.usuario", usuario);
+					BasicDBObject searchQuery = new BasicDBObject("documento.token", usuario);
 					DBObject cursor = collection.findOne(searchQuery);
 					if (cursor == null){
 						mongo.close();
@@ -1285,7 +1285,7 @@ public class Rest_UserPerfil {
 					BasicDBObject objUserPerfilDocumento = new BasicDBObject();
 					objUserPerfilDocumento.put("documento", objUserPerfilUpdate);
 					BasicDBObject update = new BasicDBObject("$set", new BasicDBObject(objUserPerfilDocumento));
-					searchQuery = new BasicDBObject("documento.usuario", usuario);
+					searchQuery = new BasicDBObject("documento.token", usuario);
 					cursor = collection.findAndModify(searchQuery,
 			                null,
 			                null,
@@ -1330,7 +1330,7 @@ public class Rest_UserPerfil {
 					JSONObject carreirasSugeridos = new JSONObject();
 					carreirasSugeridos.putAll((Map) arrayCarreirasSugeridos.get(i));
 					String usuario = (String) carreirasSugeridos.get("usuario");
-					BasicDBObject searchQuery = new BasicDBObject("documento.usuario", usuario);
+					BasicDBObject searchQuery = new BasicDBObject("documento.token", usuario);
 					DBObject cursor = collection.findOne(searchQuery);
 					if (cursor == null){
 						mongo.close();
@@ -1342,7 +1342,7 @@ public class Rest_UserPerfil {
 					BasicDBObject objUserPerfilDocumento = new BasicDBObject();
 					objUserPerfilDocumento.put("documento", objUserPerfilUpdate);
 					BasicDBObject update = new BasicDBObject("$set", new BasicDBObject(objUserPerfilDocumento));
-					searchQuery = new BasicDBObject("documento.usuario", usuario);
+					searchQuery = new BasicDBObject("documento.token", usuario);
 					cursor = collection.findAndModify(searchQuery,
 			                null,
 			                null,
@@ -1387,7 +1387,7 @@ public class Rest_UserPerfil {
 				BasicDBObject objDoc = (BasicDBObject) doc.get("documento");
 				jsonDocumento.put("usuario", objDoc);
 				String email = objDoc.get("email").toString();
-				Response responsePerfil = commons_db.getCollection(email, "userPerfil", "documento.usuario");
+				Response responsePerfil = commons_db.getCollection(email, "userPerfil", "documento.token");
 				BasicDBObject docPerfil = new BasicDBObject();
 				BasicDBObject objDocPerfil = new BasicDBObject();
 				if (!(responsePerfil.getEntity() instanceof Boolean)){
