@@ -46,21 +46,22 @@ public class Rest_UploadFiles {
      * @param image nome da imagem a procurar
      * @return imagem com o mime type da imagem fonte.
      */
+	@SuppressWarnings("rawtypes")
 	@GET
 	@Path("/images")
     @Produces("image/*")
     public Response getImage(@QueryParam("image") String image){
 
 		String tmp = "c:/images/yggboard/";
-		Mongo mongo;
-		mongo = new Mongo();
-		DB db = (DB) mongo.getDB("documento");
-		DBCollection collection = db.getCollection("setup");
-		BasicDBObject searchQuery = new BasicDBObject("documento.setupKey", "fotosYggboard");
-		DBObject cursor = collection.findOne(searchQuery);
-		if (cursor != null){
-			BasicDBObject obj = (BasicDBObject) cursor.get("documento");
-			tmp = obj.getString("setupValue");
+		Commons_DB commons_db = new Commons_DB();
+		Response response = commons_db.getCollection("fotosYggboard", "objetivos", "documento.setupKey");		
+		if (!(response.getEntity() instanceof Boolean)){
+			BasicDBObject cursor = new BasicDBObject();
+			cursor.putAll((Map) response.getEntity());
+			if (cursor != null){
+				BasicDBObject obj = (BasicDBObject) cursor.get("documento");
+				tmp = obj.getString("setupValue");
+			};
 		};
         
 		File target = new File(tmp + image);
@@ -71,25 +72,22 @@ public class Rest_UploadFiles {
         return Response.ok(target, mt).build();
     }
 	
+	@SuppressWarnings("rawtypes")
 	@POST
 	@Path("/files")
 	@Consumes("multipart/form-data")
 	public Response uploadFile(MultipartFormDataInput input, @QueryParam("prefix") String prefix) {
 		String tmp = "c:/images/yggboard/";
-		Mongo mongo;
-			try {
-				mongo = new Mongo();
-				DB db = (DB) mongo.getDB("documento");
-				DBCollection collection = db.getCollection("setup");
-				BasicDBObject searchQuery = new BasicDBObject("documento.setupKey", "fotosYggboard");
-				DBObject cursor = collection.findOne(searchQuery);
-				if (cursor != null){
-					BasicDBObject obj = (BasicDBObject) cursor.get("documento");
-					tmp = obj.getString("setupValue");
-				};
-			} catch (MongoException e1) {
-				e1.printStackTrace();
-			}
+		Commons_DB commons_db = new Commons_DB();
+		Response response = commons_db.getCollection("fotosYggboard", "objetivos", "documento.setupKey");		
+		if (!(response.getEntity() instanceof Boolean)){
+			BasicDBObject cursor = new BasicDBObject();
+			cursor.putAll((Map) response.getEntity());
+			if (cursor != null){
+				BasicDBObject obj = (BasicDBObject) cursor.get("documento");
+				tmp = obj.getString("setupValue");
+			};
+		};
 		String fileName = "";
 		Map<String, List<InputPart>> uploadForm = input.getFormDataMap();
 		List<InputPart> inputParts = uploadForm.get("uploadedFile");

@@ -1,7 +1,6 @@
 package com.yggboard.yggboard_server;
 
 import java.io.IOException;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -26,14 +25,8 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
-import com.mongodb.Mongo;
-import com.mongodb.MongoException;
 
-	
 @Singleton
 // @Lock(LockType.READ)
 @Path("/index")
@@ -44,7 +37,7 @@ public class Rest_Index {
 	@Path("/obter/itens")	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public BasicDBObject ObterItens(@QueryParam("assunto") String assunto, @QueryParam("id") String id, @QueryParam("usuario") String usuario ) throws UnknownHostException, MongoException {
+	public BasicDBObject ObterItens(@QueryParam("assunto") String assunto, @QueryParam("id") String id, @QueryParam("usuario") String usuario ) {
 
 		
 		System.out.println("chamada index:" + assunto );
@@ -150,11 +143,11 @@ public class Rest_Index {
 	
 	private BasicDBObject carregaTudo(Listas listas) {
 		
-		carregaObjetivos(listas.objetivos(), listas);
-		carregaHabilidades(listas.habilidades(), listas);
-		carregaCursos(listas.cursos(), listas);
-		carregaAreasAtuacao(listas.areasAtuacao(), listas);
-		carregaAreasConhecimento(listas.areasConhecimento(), listas);
+		carregaLista(listas.objetivos(), listas, "objetivos");
+		carregaLista(listas.habilidades(), listas, "habilidades");
+		carregaLista(listas.cursos(), listas, "cursos");
+		carregaLista(listas.areasAtuacao(), listas, "areaAtuacao");
+		carregaLista(listas.areasConhecimento(), listas, "areaConhecimento");
 		
 		BasicDBObject results = new BasicDBObject();
 		
@@ -172,7 +165,7 @@ public class Rest_Index {
 	@Path("/obter/filtro")	
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
-	public BasicDBObject ObterItensFiltro(JSONArray objFiltros) throws MongoException, JsonParseException, JsonMappingException, IOException {
+	public BasicDBObject ObterItensFiltro(JSONArray objFiltros) throws JsonParseException, JsonMappingException, IOException {
 		
 		Listas listas = new Listas();
 		Opcoes opcoes = new Opcoes();
@@ -471,18 +464,16 @@ public class Rest_Index {
 		return selecionado;
 	};
 
-	@SuppressWarnings({ "unchecked" })
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void processaObjetivos(String id, Listas listas, Opcoes opcoes) {
 		Commons commons = new Commons();
-		Mongo mongo;
-		try {
-			
-			mongo = new Mongo();
-			DB db = (DB) mongo.getDB(commons.getProperties().get("database").toString());
-			DBCollection collection = db.getCollection("objetivos");
-			BasicDBObject searchQuery = new BasicDBObject();
-			searchQuery = new BasicDBObject("documento.id", id);
-			DBObject cursor = collection.findOne(searchQuery);
+		Commons_DB commons_db = new Commons_DB();
+
+		Response response = commons_db.getCollection(id, "objetivos", "documento.id");
+		
+		if (!(response.getEntity() instanceof Boolean)){
+			BasicDBObject cursor = new BasicDBObject();
+			cursor.putAll((Map) response.getEntity());
 			if (cursor != null){
 				BasicDBObject objetivo = (BasicDBObject) cursor.get("documento");
 				ArrayList<?> arrayListNecessarios = new ArrayList<Object>(); 
@@ -573,22 +564,19 @@ public class Rest_Index {
 					};
 				};
 			};			
-			mongo.close();
-		} catch (MongoException e1) {
-			e1.printStackTrace();
 		};
 	};
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void processaHabilidades(String id, Listas listas, Opcoes opcoes) {
-		Mongo mongo;
 		Commons commons = new Commons();
-		try {
-			mongo = new Mongo();
-			DB db = (DB) mongo.getDB(commons.getProperties().get("database").toString());
-			DBCollection collection = db.getCollection("habilidades");
-			BasicDBObject searchQuery = new BasicDBObject("documento.id", id);
-			DBObject cursor = collection.findOne(searchQuery);
+		Commons_DB commons_db = new Commons_DB();
+
+		Response response = commons_db.getCollection(id, "habilidades", "documento.id");
+		
+		if (!(response.getEntity() instanceof Boolean)){
+			BasicDBObject cursor = new BasicDBObject();
+			cursor.putAll((Map) response.getEntity());
 			if (cursor != null){
 				BasicDBObject habilidade = (BasicDBObject) cursor.get("documento");
 				//
@@ -724,9 +712,6 @@ public class Rest_Index {
 			    	};
 				};
 			};			
-			mongo.close();
-		} catch (MongoException e1) {
-			e1.printStackTrace();
 		};
 	
 	};
@@ -734,13 +719,13 @@ public class Rest_Index {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void processaCursos(String id, Listas listas, Opcoes opcoes) {
 		Commons commons = new Commons();
-		Mongo mongo;
-		try {
-			mongo = new Mongo();
-			DB db = (DB) mongo.getDB(commons.getProperties().get("database").toString());
-			DBCollection collection = db.getCollection("cursos");
-			BasicDBObject searchQuery = new BasicDBObject("documento.id", id);
-			DBObject cursor = collection.findOne(searchQuery);
+		Commons_DB commons_db = new Commons_DB();
+
+		Response response = commons_db.getCollection(id, "cursos", "documento.id");
+		
+		if (!(response.getEntity() instanceof Boolean)){
+			BasicDBObject cursor = new BasicDBObject();
+			cursor.putAll((Map) response.getEntity());
 			if (cursor != null){
 				BasicDBObject curso = (BasicDBObject) cursor.get("documento");
 				ArrayList<?> arrayListHabilidades = new ArrayList<Object>(); 
@@ -798,22 +783,18 @@ public class Rest_Index {
 					};
 				};
 			};			
-			mongo.close();
-		} catch (MongoException e1) {
-			e1.printStackTrace();
-		}
+		};
 	};
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void processaAreaConhecimento(String id, Listas listas, Opcoes opcoes) {
-		Commons commons = new Commons();
-		Mongo mongo;
-		try {
-			mongo = new Mongo();
-			DB db = (DB) mongo.getDB(commons.getProperties().get("database").toString());
-			DBCollection collection = db.getCollection("areaConhecimento");
-			BasicDBObject searchQuery = new BasicDBObject("documento.id", id);
-			DBObject cursor = collection.findOne(searchQuery);
+		Commons_DB commons_db = new Commons_DB();
+
+		Response response = commons_db.getCollection(id, "areaConhecimento", "documento.id");
+		
+		if (!(response.getEntity() instanceof Boolean)){
+			BasicDBObject cursor = new BasicDBObject();
+			cursor.putAll((Map) response.getEntity());
 			if (cursor != null){
 				BasicDBObject areaConhecimento = (BasicDBObject) cursor.get("documento");
 				ArrayList<?> arrayListHabilidades = new ArrayList<Object>(); 
@@ -862,21 +843,17 @@ public class Rest_Index {
 					};
 				};
 			};
-			mongo.close();
-		} catch (MongoException e) {
-			e.printStackTrace();
 		};
 	};
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void processaAreaAtuacao(String id, Listas listas, Opcoes opcoes) {		
-		Commons commons = new Commons();
-		Mongo mongo;
-		try {
-			mongo = new Mongo();
-			DB db = (DB) mongo.getDB(commons.getProperties().get("database").toString());
-			DBCollection collection = db.getCollection("areaAtuacao");
-			BasicDBObject searchQuery = new BasicDBObject("documento.id", id);
-			DBObject cursor = collection.findOne(searchQuery);
+		Commons_DB commons_db = new Commons_DB();
+
+		Response response = commons_db.getCollection(id, "areaAtuacao", "documento.id");
+		
+		if (!(response.getEntity() instanceof Boolean)){
+			BasicDBObject cursor = new BasicDBObject();
+			cursor.putAll((Map) response.getEntity());
 			if (cursor != null){
 				BasicDBObject areaAtuacao = (BasicDBObject) cursor.get("documento");
 				//
@@ -928,22 +905,19 @@ public class Rest_Index {
 					};
 				};
 			};
-			mongo.close();
-		} catch (MongoException e) {
-			e.printStackTrace();
 		};
 	};
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void carregaHabilidade(String id, Listas listas, Opcoes opcoes) {
-		Mongo mongo;
 		Commons commons = new Commons();
-		try {
-			mongo = new Mongo();
-			DB db = (DB) mongo.getDB(commons.getProperties().get("database").toString());
-			DBCollection collection = db.getCollection("habilidades");
-			BasicDBObject searchQuery = new BasicDBObject("documento.id", id);
-			DBObject cursor = collection.findOne(searchQuery);
+		Commons_DB commons_db = new Commons_DB();
+
+		Response response = commons_db.getCollection(id, "habilidades", "documento.id");
+		
+		if (!(response.getEntity() instanceof Boolean)){
+			BasicDBObject cursor = new BasicDBObject();
+			cursor.putAll((Map) response.getEntity());
 			if (cursor != null){
 				BasicDBObject habilidade = (BasicDBObject) cursor.get("documento");
 				//
@@ -985,22 +959,19 @@ public class Rest_Index {
 					};
 	    		};
 			};			
-			mongo.close();
-		} catch (MongoException e) {
-			e.printStackTrace();
 		};
 	};
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void carregaPreRequisitos(String id, String nivel, Listas listas, Opcoes opcoes) {
-		Mongo mongo;
 		Commons commons = new Commons();
-		try {
-			mongo = new Mongo();
-			DB db = (DB) mongo.getDB(commons.getProperties().get("database").toString());
-			DBCollection collection = db.getCollection("habilidades");
-			BasicDBObject searchQuery = new BasicDBObject("documento.id", id);
-			DBObject cursor = collection.findOne(searchQuery);
+		Commons_DB commons_db = new Commons_DB();
+
+		Response response = commons_db.getCollection(id, "habilidades", "documento.id");
+		
+		if (!(response.getEntity() instanceof Boolean)){
+			BasicDBObject cursor = new BasicDBObject();
+			cursor.putAll((Map) response.getEntity());
 			if (cursor != null){
 				BasicDBObject habilidade = (BasicDBObject) cursor.get("documento");
 				Boolean carregouHabilidade = false;
@@ -1057,9 +1028,6 @@ public class Rest_Index {
 						++w;
 					};
 				};
-
-				mongo.close();
-
 				if (carregouHabilidade){
 					ArrayList<?> arrayList = new ArrayList<Object>(); 
 			    	arrayList = (ArrayList<?>) habilidade.get("preRequisitos");
@@ -1083,24 +1051,19 @@ public class Rest_Index {
 				    	};
 					};
 				};
-			}else{			
-				mongo.close();
 			};
-		} catch (MongoException e) {
-			e.printStackTrace();
 		};
 	};
 	
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void carregaPreRequisitosFiltro(String id, Listas listas, Opcoes opcoes) {
-		Commons commons = new Commons();
-		Mongo mongo;
-		try {
-			mongo = new Mongo();
-			DB db = (DB) mongo.getDB(commons.getProperties().get("database").toString());
-			DBCollection collection = db.getCollection("habilidades");
-			BasicDBObject searchQuery = new BasicDBObject("documento.id", id);
-			DBObject cursor = collection.findOne(searchQuery);
+		Commons_DB commons_db = new Commons_DB();
+
+		Response response = commons_db.getCollection(id, "habilidades", "documento.id");
+		
+		if (!(response.getEntity() instanceof Boolean)){
+			BasicDBObject cursor = new BasicDBObject();
+			cursor.putAll((Map) response.getEntity());
 			if (cursor != null){
 				BasicDBObject habilidade = (BasicDBObject) cursor.get("documento");
 				//
@@ -1164,22 +1127,19 @@ public class Rest_Index {
 			    	};
 				};
 			};			
-			mongo.close();
-		} catch (MongoException e) {
-			e.printStackTrace();
 		};
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void carregaCurso(String id, Listas listas, Opcoes opcoes) {
 		Commons commons = new Commons();
-		Mongo mongo;
-		try {
-			mongo = new Mongo();
-			DB db = (DB) mongo.getDB(commons.getProperties().get("database").toString());
-			DBCollection collection = db.getCollection("cursos");
-			BasicDBObject searchQuery = new BasicDBObject("documento.id", id);
-			DBObject cursor = collection.findOne(searchQuery);
+		Commons_DB commons_db = new Commons_DB();
+
+		Response response = commons_db.getCollection(id, "cursos", "documento.id");
+		
+		if (!(response.getEntity() instanceof Boolean)){
+			BasicDBObject cursor = new BasicDBObject();
+			cursor.putAll((Map) response.getEntity());
 			if (cursor != null){
 				BasicDBObject curso = (BasicDBObject) cursor.get("documento");
 				if (addObjeto(listas.cursos(), curso)){
@@ -1198,62 +1158,53 @@ public class Rest_Index {
 					};
 				};
 			};			
-			mongo.close();
-		} catch (MongoException e) {
-			e.printStackTrace();
 		};
 		
 	};
 	
+	@SuppressWarnings("rawtypes")
 	private void carregaAreaAtuacao(String id, Listas listas, Opcoes opcoes) {
-		Commons commons = new Commons();
-		Mongo mongo;
-		try {
-			mongo = new Mongo();
-			DB db = (DB) mongo.getDB(commons.getProperties().get("database").toString());
-			DBCollection collection = db.getCollection("areaAtuacao");
-			BasicDBObject searchQuery = new BasicDBObject("documento.id", id);
-			DBObject cursor = collection.findOne(searchQuery);
+		Commons_DB commons_db = new Commons_DB();
+
+		Response response = commons_db.getCollection(id, "areaAtuacao", "documento.id");
+		
+		if (!(response.getEntity() instanceof Boolean)){
+			BasicDBObject cursor = new BasicDBObject();
+			cursor.putAll((Map) response.getEntity());
 			if (cursor != null){
 				BasicDBObject areaAtuacao = (BasicDBObject) cursor.get("documento");
 				listas.addAreasAtuacao(areaAtuacao);
 			};			
-			mongo.close();
-		} catch (MongoException e) {
-			e.printStackTrace();
 		};
 		
 	};
+	@SuppressWarnings("rawtypes")
 	private void carregaAreaConhecimento(String id, Listas listas, Opcoes opcoes) {
-		Commons commons = new Commons();
-		Mongo mongo;
-		try {
-			mongo = new Mongo();
-			DB db = (DB) mongo.getDB(commons.getProperties().get("database").toString());
-			DBCollection collection = db.getCollection("areaConhecimento");
-			BasicDBObject searchQuery = new BasicDBObject("documento.id", id);
-			DBObject cursor = collection.findOne(searchQuery);
+		Commons_DB commons_db = new Commons_DB();
+
+		Response response = commons_db.getCollection(id, "areaConhecimento", "documento.id");
+		
+		if (!(response.getEntity() instanceof Boolean)){
+			BasicDBObject cursor = new BasicDBObject();
+			cursor.putAll((Map) response.getEntity());
 			if (cursor != null){
 				BasicDBObject areaConhecimento = (BasicDBObject) cursor.get("documento");
 				listas.addAreasConhecimento(areaConhecimento);
 			};			
-			mongo.close();
-		} catch (MongoException e) {
-			e.printStackTrace();
 		};
 		
 	};
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void carregaObjetivo(String id, Listas listas, Opcoes opcoes) {
-		Mongo mongo;
 		Commons commons = new Commons();
-		try {
-			mongo = new Mongo();
-			DB db = (DB) mongo.getDB(commons.getProperties().get("database").toString());
-			DBCollection collection = db.getCollection("objetivos");
-			BasicDBObject searchQuery = new BasicDBObject("documento.id", id);
-			DBObject cursor = collection.findOne(searchQuery);
+		Commons_DB commons_db = new Commons_DB();
+
+		Response response = commons_db.getCollection(id, "objetivos", "documento.id");
+		
+		if (!(response.getEntity() instanceof Boolean)){
+			BasicDBObject cursor = new BasicDBObject();
+			cursor.putAll((Map) response.getEntity());
 			if (cursor != null){
 				BasicDBObject objetivo = (BasicDBObject) cursor.get("documento");
 				//
@@ -1270,180 +1221,68 @@ public class Rest_Index {
 				};
 				listas.addObjetivos(objetivo);
 			};			
-			mongo.close();
-		} catch (MongoException e) {
-			e.printStackTrace();
-		};
-		
-	};
-
-	@SuppressWarnings("unchecked")
-	private void carregaAreasConhecimento(JSONArray areasConhecimento, Listas listas) {
-		Commons commons = new Commons();
-		Mongo mongo;
-		try {
-			mongo = new Mongo();
-			DB db = (DB) mongo.getDB(commons.getProperties().get("database").toString());
-			DBCollection collection = db.getCollection("areaConhecimento");
-			BasicDBObject searchQuery = new BasicDBObject();
-			DBCursor cursor = collection.find(searchQuery);
-			while (((Iterator<DBObject>) cursor).hasNext()) {
-				BasicDBObject objAreaConhecimento = (BasicDBObject) ((Iterator<DBObject>) cursor).next();
-				//
-				// ***		carrega areas atuacao
-				//			
-				if (addObjeto(areasConhecimento, objAreaConhecimento)){
-					areasConhecimento.add(objAreaConhecimento);
-				};
-			};
-			mongo.close();
-		} catch (MongoException e) {
-			e.printStackTrace();
-		};
-		
-	}
-
-	@SuppressWarnings("unchecked")
-	private void carregaAreasAtuacao(JSONArray areasAtuacao, Listas listas) {
-		Commons commons = new Commons();
-		Mongo mongo;
-		try {
-			mongo = new Mongo();
-			DB db = (DB) mongo.getDB(commons.getProperties().get("database").toString());
-			DBCollection collection = db.getCollection("areaAtuacao");
-			BasicDBObject searchQuery = new BasicDBObject();
-			DBCursor cursor = collection.find(searchQuery);
-			while (((Iterator<DBObject>) cursor).hasNext()) {
-				BasicDBObject objAreaAtuacao = (BasicDBObject) ((Iterator<DBObject>) cursor).next();
-				//
-				// ***		carrega areas atuacao
-				//			
-				if (addObjeto(areasAtuacao, objAreaAtuacao)){
-					areasAtuacao.add(objAreaAtuacao.get("documento"));
-				};
-			};
-			mongo.close();
-		} catch (MongoException e) {
-			e.printStackTrace();
 		};
 		
 	};
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private void carregaCursos(JSONArray cursos, Listas listas) {
-		Mongo mongo;
+	private void carregaLista(JSONArray arrayObj, Listas listas, String collection) {
 		Commons commons = new Commons();
-		try {
-			mongo = new Mongo();
-			DB db = (DB) mongo.getDB(commons.getProperties().get("database").toString());
-			DBCollection collection = db.getCollection("cursos");
-			BasicDBObject searchQuery = new BasicDBObject();
-			BasicDBObject setSort = new BasicDBObject();
-			setSort.put("documento.classificacao", 1);
-			DBCursor cursor = collection.find(searchQuery).sort(setSort);
-			while (((Iterator<DBObject>) cursor).hasNext()) {
-				BasicDBObject objCursos = (BasicDBObject) ((Iterator<DBObject>) cursor).next();
-				//
-				// ***		carrega cursos
-				//			
-				if (addObjeto(cursos, objCursos)){
-					BasicDBObject curso = (BasicDBObject) objCursos.get("documento");
-					List arrayParent = (List) curso.get("parents");
-					if (arrayParent.size() == 0){
-						if (listas.userPerfil().get("cursosInteresse") != null){
-							curso.put("interesse", commons.testaElementoArray(curso.get("id").toString(), (ArrayList<String>) listas.userPerfil().get("cursosInteresse")));
-						};
-						if (listas.userPerfil().get("cursos") != null){
-							curso.put("possui", commons.testaElementoArray(curso.get("id").toString(), (ArrayList<String>) listas.userPerfil().get("cursos")));
-						};
-						if (curso.get("habilidades") != null){
-							curso.put("habilidadesPerfil", commons.montaArrayPerfil(listas.userPerfil().get("habilidades"), curso.get("habilidades")));
-						};
-						cursos.add(curso);
-					};
-				};
-			};
-			mongo.close();
-		} catch (MongoException e) {
-			e.printStackTrace();
-		};
+		Commons_DB commons_db = new Commons_DB();
+		Response response = commons_db.getCollectionLista("", collection, "");
 		
-	};
-
-	@SuppressWarnings("unchecked")
-	private void carregaHabilidades(JSONArray habilidades, Listas listas) {
-		Mongo mongo;
-		Commons commons = new Commons();
-		try {
-			mongo = new Mongo();
-			DB db = (DB) mongo.getDB(commons.getProperties().get("database").toString());
-			DBCollection collection = db.getCollection("habilidades");
-			BasicDBObject searchQuery = new BasicDBObject();
-			DBCursor cursor = collection.find(searchQuery);
-			while (((Iterator<DBObject>) cursor).hasNext()) {
-				BasicDBObject objHabilidades = (BasicDBObject) ((Iterator<DBObject>) cursor).next();
-				//
-				// ***		carrega habilidades
-				//			
-				if (addObjeto(habilidades, objHabilidades)){
-					BasicDBObject habilidade = (BasicDBObject) objHabilidades.get("documento");
-					if (listas.userPerfil().get("habilidadesInteresse") != null){
-						habilidade.put("interesse", commons.testaElementoArray(habilidade.get("id").toString(), (ArrayList<String>) listas.userPerfil().get("habilidadesInteresse")));
-					};
-					if (listas.userPerfil().get("habilidades") != null){
-						habilidade.put("possui", commons.testaElementoArray(habilidade.get("id").toString(), (ArrayList<String>) listas.userPerfil().get("habilidades")));
-					};
-					habilidades.add(habilidade);
-				};
-			};
-			mongo.close();
-		} catch (MongoException e) {
-			e.printStackTrace();
-		};
-		
-	};
-
-	@SuppressWarnings("unchecked")
-	private void carregaObjetivos(JSONArray objetivos, Listas listas) {
-		Mongo mongo;
-		Commons commons = new Commons();
-		try {
-			mongo = new Mongo();
-			DB db = (DB) mongo.getDB(commons.getProperties().get("database").toString());
-			DBCollection collection = db.getCollection("objetivos");
-			BasicDBObject searchQuery = new BasicDBObject();
-			BasicDBObject setSort = new BasicDBObject();
-			setSort.put("documento.classificacao", 1);
-			DBCursor cursor = collection.find(searchQuery).sort(setSort);
-			while (((Iterator<DBObject>) cursor).hasNext()) {
-				BasicDBObject objCarreiras = (BasicDBObject) ((Iterator<DBObject>) cursor).next();
-				//
-				// ***		carrega objetivo
-				//			
-				if (addObjeto(objetivos, objCarreiras)){
-					BasicDBObject objetivo = (BasicDBObject) objCarreiras.get("documento");				
+		if (!(response.getEntity() instanceof Boolean)){
+			BasicDBObject cursor = new BasicDBObject();
+			cursor.putAll((Map) response.getEntity());
+			if (cursor != null){
+				while (((Iterator<DBObject>) cursor).hasNext()) {
+					BasicDBObject obj = (BasicDBObject) ((Iterator<DBObject>) cursor).next();
 					//
-					// ***		carrega objetivo
+					// ***		carrega lista
 					//			
-					if (addObjeto(objetivos, objetivo)){
-						if (listas.userPerfil().get("carreirasInteresse") != null){
-							objetivo.put("interesse", commons.testaElementoArray(objetivo.get("id").toString(), (ArrayList<String>) listas.userPerfil().get("carreirasInteresse")));
+					if (addObjeto(arrayObj, obj)){
+						BasicDBObject objDoc = (BasicDBObject) obj.get("documento");
+						if (collection.equals("cursos")) {
+							List arrayParent = (List) objDoc.get("parents");
+							if (arrayParent.size() == 0){
+								if (listas.userPerfil().get("cursosInteresse") != null){
+									objDoc.put("interesse", commons.testaElementoArray(objDoc.get("id").toString(), (ArrayList<String>) listas.userPerfil().get("cursosInteresse")));
+								};
+								if (listas.userPerfil().get("cursos") != null){
+									objDoc.put("possui", commons.testaElementoArray(objDoc.get("id").toString(), (ArrayList<String>) listas.userPerfil().get("cursos")));
+								};
+								if (objDoc.get("habilidades") != null){
+									objDoc.put("habilidadesPerfil", commons.montaArrayPerfil(listas.userPerfil().get("habilidades"), objDoc.get("habilidades")));
+								};
+								obj.put("documento", objDoc);
+							};
 						};
-						if (listas.userPerfil().get("carreiras") != null){
-							objetivo.put("possui", commons.testaElementoArray(objetivo.get("id").toString(), (ArrayList<String>) listas.userPerfil().get("carreiras")));
+						if (collection.equals("habilidades")) {
+							if (listas.userPerfil().get("habilidadesInteresse") != null){
+								objDoc.put("interesse", commons.testaElementoArray(objDoc.get("id").toString(), (ArrayList<String>) listas.userPerfil().get("habilidadesInteresse")));
+							};
+							if (listas.userPerfil().get("habilidades") != null){
+								objDoc.put("possui", commons.testaElementoArray(objDoc.get("id").toString(), (ArrayList<String>) listas.userPerfil().get("habilidades")));
+							};
+							obj.put("documento", objDoc);
 						};
-						if (objetivo.get("necessarios") != null){
-							objetivo.put("necessariosPerfil", commons.montaArrayPerfil(listas.userPerfil().get("habilidades"), objetivo.get("necessarios")));
+						if (collection.equals("objetivos")) {
+							if (listas.userPerfil().get("carreirasInteresse") != null){
+								objDoc.put("interesse", commons.testaElementoArray(objDoc.get("id").toString(), (ArrayList<String>) listas.userPerfil().get("carreirasInteresse")));
+							};
+							if (listas.userPerfil().get("carreiras") != null){
+								objDoc.put("possui", commons.testaElementoArray(objDoc.get("id").toString(), (ArrayList<String>) listas.userPerfil().get("carreiras")));
+							};
+							if (objDoc.get("necessarios") != null){
+								objDoc.put("necessariosPerfil", commons.montaArrayPerfil(listas.userPerfil().get("habilidades"), objDoc.get("necessarios")));
+							};
+							obj.put("documento", objDoc);
 						};
-						objetivos.add(objetivo);
+						arrayObj.add(obj);
 					};
 				};
 			};
-			mongo.close();
-		} catch (MongoException e) {
-			e.printStackTrace();
 		};
-		
 	};
 
 	private boolean addObjeto(JSONArray array, BasicDBObject elemento) {
@@ -1515,17 +1354,15 @@ public class Rest_Index {
 		return results;			
 	};
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void carregaIndex(String assunto, JSONArray documentos, String characters, Boolean lista, Listas listas, Opcoes opcoes, int qtdeItens) {
-		Commons commons = new Commons();
-		Mongo mongo;
-			try {
-				mongo = new Mongo();
-				DB db = (DB) mongo.getDB(commons.getProperties().get("database").toString());
-				BasicDBObject setQuery = new BasicDBObject();
-				DBCollection collection = db.getCollection("index");
-				setQuery.put("documento.assunto", assunto);			
-				DBCursor cursor = collection.find(setQuery);
+		Commons_DB commons_db = new Commons_DB();
+		Response response = commons_db.getCollectionLista("documento.assunto", "index", assunto);
+		
+		if (!(response.getEntity() instanceof Boolean)){
+			BasicDBObject cursor = new BasicDBObject();
+			cursor.putAll((Map) response.getEntity());
+			if (cursor != null){
 				int i = 0;
 				while (((Iterator<DBObject>) cursor).hasNext()) {
 					JSONParser parser = new JSONParser(); 
@@ -1569,7 +1406,6 @@ public class Rest_Index {
 								jsonDocumento.put("descricao", jsonObject.get("descricao"));
 								documentos.add(jsonDocumento);
 								if (i > qtdeItens){
-									mongo.close();
 									return;
 								};
 							};
@@ -1579,9 +1415,8 @@ public class Rest_Index {
 						e.printStackTrace();
 					}
 				};		
-			} catch (MongoException e1) {
-				e1.printStackTrace();
-			}
+			};
+		};
 	};
 	
 	private boolean wordsoK(String[] wordsSource, List<?> wordsCompare) {
