@@ -1,0 +1,874 @@
+
+/****
+
+SITE: Sistema YggBoard
+DATA: 20/09/2016
+VERSÃƒÆ’O: 1.0
+
+/***************************************************/
+
+/*
+01. IMPORTAÃƒâ€¡Ãƒâ€¢ES
+02. GERAL
+03. TEXTO, FORMS E BOTÃƒâ€¢ES
+04. TOPO
+05. TÃƒÂ�TULO DA PÃƒÂ�GINA
+06. CONTEUÃƒÅ¡DO PRINCIPAL
+*/
+
+/***************************************************/
+
+/***  01. IMPORTAÃƒâ€¡Ãƒâ€¢ES ***/
+
+@import 'https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700';
+
+/***************************************************/
+
+/***  02. GERAL ***/
+
+body {
+	font-family:'Poppins', Arial, Helvetica, sans-serif;
+	background-color: #DCE1D3;
+	background:url(../img/bg-login-cadastro.png) no-repeat; 
+}
+/* Reset de alguns elementos */
+
+h1, h2, h3, h4, h5, h6, p, ul, li {
+	padding:0;
+	margin:0;
+	line-height:100%;
+	font-weight:normal;
+	list-style:none;
+	border-radius:0;
+	box-shadow:none;
+}
+
+.clear {clear:both;}
+
+/***************************************************/
+
+/***  03. TEXTO, FORMS E BOTÃƒâ€¢ES ***/
+
+a {}
+a:hover {}
+
+h1 {}
+
+h2 {}
+
+h3 {}
+
+h4 {}
+
+h5 {}
+
+p {}
+
+.form-control {
+	border-top: transparent;
+    border-bottom: 1px solid #EBEBED;
+    border-left: transparent;
+    border-right: transparent;
+    border-radius: 0px;
+	box-shadow: none;	
+    color: #9D9D9D;
+    font-size: 16px;
+	font-weight:300;
+	height:40px;
+	line-height:40px;
+}
+
+.form-control:focus {
+    border-color: #7B7B81;
+	color:#505058;
+	box-shadow: none;	
+}
+/* Button Link */
+/*---------------------------------*/
+.btn-link {
+	border-color: transparent;
+	font-size:10px;
+	color: #808080;
+}
+.btn.btn-link:focus,
+.btn.btn-link:active {
+  box-shadow: none;
+}
+.btn-link.disabled:hover,
+.btn-link.disabled:focus {
+  text-decoration: none;
+}
+
+.btn-default {
+	border:1px solid #81818B;
+	background:#fff;
+	border-radius:0px;
+	font-size:12px;
+	display:inline-block;
+	padding:0px 25px;
+	color:#1F1F1F;
+	font-weight:500;
+	text-transform:uppercase;
+	height:40px;
+	line-height:40px;
+}
+
+.btn-default:hover {
+	transition: .2s;
+	background:#9A9AA2;	
+	color:#fff !important;
+}
+
+.btn-primary {
+	border:0;
+	background:#8EBB3C;
+	border-radius:0px;
+	font-size:12px;
+	display:inline-block;
+	padding:0px;
+	color:#FFFFFF;
+	font-weight:500;
+	text-transform:uppercase;
+	height:40px;
+	line-height:40px;
+}
+
+.btn-primary:hover {
+	transition: .2s;
+	background:none;
+	border-bottom:2px solid #1F1F1F;
+	color:#1F1F1F;
+}
+
+.btn-primary:active, .btn-primary.active {
+    background-color: transparent;
+    border-color: transparent;
+    color: #1F1F1F;
+}
+
+.btn:active, .btn.active {
+    background-image: none;
+    box-shadow: none;
+    outline: 0 none;
+	color: #1F1F1F;
+}
+/* CONTENT MARGIN */
+/*======================================*/
+.mar-no {
+  margin: 0 !important;
+}
+.mar-all {
+  margin: 15px;
+}
+.mar-top {
+  margin-top: 15px;
+}
+.mar-btm {
+  margin-bottom: 15px;
+}
+.mar-lft {
+  margin-left: 15px;
+}
+.mar-rgt {
+  margin-right: 15px;
+}
+.mar-hor {
+  margin-left: 15px;
+  margin-right: 15px;
+}
+.mar-ver {
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+/* CONTENT PADDING */
+/*======================================*/
+.pad-no {
+  padding: 0 !important;
+}
+.pad-all {
+  padding: 15px;
+}
+.pad-top {
+  padding-top: 15px;
+}
+.pad-btm {
+  padding-bottom: 15px;
+}
+.pad-lft {
+  padding-left: 15px;
+}
+.pad-rgt {
+  padding-right: 15px;
+}
+.pad-hor {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+.pad-ver {
+  padding-top: 15px;
+  padding-bottom: 15px;
+}
+
+/***************************************************/
+
+/***  04. TOPO ***/
+
+
+.header {
+   width:100px; 
+   height:150px;
+   background-image:"img/logo-login.png";
+   margin:0; 
+   padding-left:70px; 
+   display: block;
+}
+
+h6 {
+	font-weight: bold !important;
+	padding-bottom:30px; 	
+}
+/* Content */
+.cls-content {
+  padding: 50px 15px 15px;
+  padding-top: 10vh;
+  position: relative;
+}
+.cls-content .error-code {
+  font-size: 120px;
+  font-weight: 400;
+  margin-bottom: 50px;
+}
+.cls-content .error-search {
+  max-width: 512px;
+  margin: 0 auto;
+}
+.cls-content .cls-content-sm,
+.cls-content .cls-content-lg {
+  width: 70%;
+  min-width: 270px;
+  margin: 0 auto;
+  position: relative;
+  background-color: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+ .cls-content .cls-content-sm {
+   width: 350px;
+ }
+ .cls-content .cls-content-lg {
+   width: 550px;
+ }
+ 
+ .msgErro {
+	font-size: 12px  !important;
+	font-weight: normal !important; 
+	padding-top: 10px  !important;
+  	padding-bottom: 10px  !important;
+  	color : #f4987d  !important;
+ }
+ .info {
+	font-size: 10px  !important;
+	font-weight: normal !important; 
+	padding-top: 10px  !important;
+  	padding-bottom: 10px  !important;
+  	color : #808080!important;
+ }
+ .info-2 {
+	font-size: 12px  !important;
+	font-weight: normal !important; 
+	padding-top: 10px  !important;
+  	padding-bottom: 10px  !important;
+  	color : #808080!important;
+ }
+ .form-control{
+	background-color : #fff !important;; 
+ }
+
+.panel-body{
+	background-color : #fff;
+}
+.dropdown-menu > li {
+	margin:8px 0;
+}
+
+.dropdown-menu > li  i {
+	padding-right:8px;
+}
+
+.dropdown-menu > li > a {
+    clear: both;
+    color: #454545;
+    display: block;
+    font-weight: 400;
+    line-height: 1.42857;
+    padding: 3px 20px;
+    white-space: nowrap;
+}
+
+.navbar-default .navbar-default {
+	background:#fff;
+	height:52px;
+	border-color:none;
+}
+
+.navbar {
+    margin-bottom: 0px;
+}
+
+.navbar-default i {
+	padding-right:8px;
+}	
+
+.navbar-default ul.navbar-nav {
+	display:block;
+}
+
+.navbar-default .navbar-default a {
+	color:#545454;
+	font-size:14px;
+	font-weight:400;
+	padding-right: 10px;
+}
+
+.navbar-default .navbar-nav > li {
+    float: left;
+	padding-right:8px;
+}
+
+.navbar-default .navbar-nav > .active > a, .navbar-default .navbar-nav > .active > a:focus, .navbar-default .navbar-nav > .active > a:hover {
+    background-color: transparent;
+    color: #333;
+	border-bottom:2px solid #6D9E38;
+}
+
+.navbar-default .navbar-nav > li > a {
+    color: #545454;
+}
+
+/***  05. TÃƒÂ�TULO DA PÃƒÂ�GINA ***/
+    
+section#nome-pagina {
+	background:#EBEFF3;
+	border-bottom:1px solid #D5D9DD;
+	height:64px;
+}
+
+section#nome-pagina h2 {
+	color:#333333;
+	font-size:16px;
+	font-weight:600;
+	line-height:64px;
+	float:left;
+	width:40%;
+}
+
+.busca-geral {
+	margin:0;
+	margin-top: 10px;
+	padding: 0;
+	float:right;
+	width:40%;
+	display:none;
+}
+
+.busca-geral .form-control {
+	padding-right: 3px;
+	padding-right: 4px \9;
+	padding-left: 3px;
+	padding-left: 10px \9;
+	/* IE7-8 doesn't have border-radius, so don't indent the padding */
+	margin-bottom: 0;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 50px;
+}
+
+.busca-geral button {
+	border: 0;
+	background: none;
+	/** belows styles are working good */
+	padding: 2px 5px;
+	margin-top: 2px;
+	position: relative;
+	left: -28px;
+	/* IE7-8 doesn't have border-radius, so don't indent the padding */
+	margin-bottom: 0;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	color:#D9230F;
+}
+
+.busca-geral .form-control:focus + button {
+	z-index: 3;   
+}
+
+/***  06. CONTEÃƒÅ¡DO PRINCIPAL ***/
+
+section#conteudo {
+	background:#EAEEF1;
+	padding:40px; 0;
+}
+
+section#conteudo #box-mapa {
+	background:#FFFFFF;
+	padding:25px;
+}
+
+section#conteudo #box-mapa .legenda {
+	font-size:15px;
+	color:#333;
+	font-weight:400;
+}
+
+section#conteudo .box-direita {
+	background:#fff;
+}
+
+section#conteudo .box-direita #tabs {
+
+}
+
+section#conteudo .box-direita #tabs .nav-tabs h4 {
+	color:#333;
+	font-size:16px;
+	font-weight:400;
+	line-height:58px
+}
+
+.nav-tabs > li.active > a, .nav-tabs > li.active > a:focus, .nav-tabs > li.active > a:hover {
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    background-color: #fff;
+    border-color: transparent;
+    border-image: none;
+    border-style: none;
+    border-width: 0px;
+    cursor: default;
+}
+
+.navbar-nav > li.active > a, .navbar-nav > li.active > a:focus, .navbar-nav > li.active > a:hover {
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    background-color: #fff;
+    border-color: transparent;
+    border-image: none;
+    border-style: none;
+    border-width: 0px;
+    cursor: default;
+}
+
+section#conteudo  .nav-tabs > li {
+	width:50%;
+	text-align:center;
+	text-transform:uppercase;
+	height:58px;
+}
+
+section#conteudo  .nav-tabs > li > a:hover {
+    border-color: transparent;
+}
+
+section#conteudo .nav > li > a:focus, section#conteudo  .nav > li > a:hover {
+    background-color: transparent;
+    text-decoration: none;
+}
+
+section#conteudo .nav-tabs > li > a {
+    border: none;
+    border-radius: 0;
+    margin-right: 0px;
+		line-height:58px;
+}
+
+section#conteudo .nav > li > a {
+    display: block;
+    padding: 0px;
+    position: relative;
+
+}
+
+
+   
+
+/* Add this attribute to the element that needs a tooltip */
+[data-tooltip] {
+  position: relative;
+  z-index: 2;
+  cursor: pointer;
+}
+
+/* Hide the tooltip content by default */
+[data-tooltip]:before,
+[data-tooltip]:after {
+  visibility: hidden;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+  filter: progid: DXImageTransform.Microsoft.Alpha(Opacity=0);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Position tooltip above the element */
+[data-tooltip]:before {
+  position: absolute;
+  bottom: 150%;
+  left: 50%;
+  margin-bottom: 5px;
+  margin-left: -80px;
+  padding: 7px;
+  width: 160px;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+  background-color: #000;
+  background-color: hsla(0, 0%, 20%, 0.9);
+  color: #fff;
+  content: attr(data-tooltip);
+  text-align: center;
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+/* Triangle hack to make tooltip look like a speech bubble */
+[data-tooltip]:after {
+  position: absolute;
+  bottom: 150%;
+  left: 50%;
+  margin-left: -5px;
+  width: 0;
+  border-top: 5px solid #000;
+  border-top: 5px solid hsla(0, 0%, 20%, 0.9);
+  border-right: 5px solid transparent;
+  border-left: 5px solid transparent;
+  content: " ";
+  font-size: 0;
+  line-height: 0;
+}
+
+/* Show tooltip content on hover */
+[data-tooltip]:hover:before,
+[data-tooltip]:hover:after {
+  visibility: visible;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+  filter: progid: DXImageTransform.Microsoft.Alpha(Opacity=100);
+  opacity: 1;
+}
+
+.panel-label {
+	color: #6D9E38 !important;
+	font-weight: bold !important;
+}
+
+.panel-button-carreira {
+	padding : 5px !important;
+	background-color: #AC9480 !important;
+	color: #ffffff !important;
+}
+
+.panel-cursos {
+	color: #7C172B !important;
+}
+
+.panel-button-habilidade {
+	padding : 5px !important;
+	background-color: #7C172B !important;
+	color: #ffffff !important;
+}
+
+.icon-check-habilidade {
+	padding : 5px !important;
+	background-color:  #7C172B !important;
+	color: #ffffff!important;
+}
+
+.icon-check-carreira {
+	padding : 5px !important;
+	background-color: #AC9480 !important;
+	color: #ffffff!important;
+}
+
+.icon-logo {
+	padding : 0px !important;
+}
+
+.icon-querofazer {
+	padding-right : 20px !important;
+}
+
+.area-filtro {
+	padding : 10px !important;
+	background-color: #F7F7F7 !important;
+	color: #6D9E38!important;
+	font-weight: bold !important;
+}
+
+.icon-trash {
+	color: #FF6969 !important;
+}
+
+.tab-user-panel.active{
+	background-color: #FFD4AF !important;
+	text-transform: capitalize !important;
+}
+
+.tab-user-panel{
+	background-color: #FAFAFA !important;
+	text-transform: capitalize !important;
+}
+
+.nav-user-panel > li.active > a, .nav-user-panel > li.active > a:focus, .nav-user-panel > li.active > a:hover {
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    border-color: transparent;
+    border-image: none;
+    border-style: none;
+    border-width: 0px;
+    cursor: default;
+	background-color: #FFD4AF !important;
+}
+
+.nav-user-interesse > li {
+	width:15%  !important;
+	text-align:center  !important;
+	height:38px  !important;
+}
+.nav-user-interesse {
+	background-color: #fff !important;
+}
+
+.nav-user-conquista > li {
+	width:15%  !important;
+	text-align:center !important;
+	height:38px !important;
+	background-color: #fff !important;
+}
+.nav-user-conquista {
+	background-color: #fff !important;
+}
+
+.tab-user-panel-interesse.active{
+	background-color: #ffffff!important;
+	text-transform: capitalize !important;
+}
+
+.tab-user-panel-interesse{
+	background-color: #ffffff !important;
+	text-transform: capitalize !important;
+	border-color: #000000;
+    border-image: none;
+    border-style: none;
+    border-width: 2px;
+}
+
+.nav-user-interesse > li.active > a, .nav-user-interesse > li.active > a:focus, .nav-user-interesse > li.active > a:hover {
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    border-color: #000000;
+    border-image: none;
+    border-style: none;
+    border-width: 3px;
+    cursor: default;
+	background-color: #ffffff !important;
+	color : #EADACC !important;
+	height:38px !important;
+	
+}
+
+.tab-user-panel-conquista.active{
+	background-color: #ffffff!important;
+	text-transform: capitalize !important;
+}
+
+.tab-user-panel-conquista{
+	background-color: #ffffff !important;
+	text-transform: capitalize !important;
+}
+
+.nav-user-conquista > li.active > a, .nav-user-conquista > li.active > a:focus, .nav-user-conquista > li.active > a:hover {
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    border-color: transparent;
+    border-image: none;
+    border-style: none;
+    border-width: 0px;
+    cursor: default;
+	background-color: #ffffff !important;
+	color : #EADACC !important;
+	height:38px !important;
+}
+.box-user-name{
+	padding-top: 15px;
+	padding-bottom: 15px;
+	padding-left: 0px;
+	padding-right: 0px;	
+    background-color: #fff;
+	color: #000000 !important;
+	font-weight: bold !important;
+}
+.completeName{
+	padding-top: 0px;
+	padding-bottom: 0px;
+	padding-left: 15px;
+	padding-right: 0x;	
+}
+.box-text-user-panel{
+	padding-top: 0px;
+	padding-bottom: 5px;
+	padding-left: 0px;
+	padding-right: 0px;	
+    background-color: #fff;
+    border-color: transparent;
+    border-image: none;
+    border-style: none;
+    border-width: 0px;
+    cursor: default;	
+	color: #000000 !important;
+	font-size: 80%;
+}
+.text-user-panel{
+	padding-top: 0px;
+	padding-bottom: 0px;
+	padding-left: 15px;
+	padding-right: 0x;	
+}
+
+.box-user-tabs{
+	padding-top: 15px;
+	padding-bottom: 15px;
+	padding-left: 0px;
+	padding-right: 0px;	
+    background-color: #fff;
+    border-color: transparent;
+    border-image: none;
+    border-style: none;
+    border-width: 0px;
+    cursor: default;	
+	color: #000000 !important;
+	font-weight: bold !important;
+}
+.wiki {
+	padding-left : 110px !important;
+}
+
+.percentual-box{
+	padding : 8px;
+	background-color: #C5E89F;
+}
+.percentual-numero{
+	padding : 8px;
+	background-color: #C5E89F;
+	color: #6D9E38;
+	font-weight: bold !important;
+}
+.percentual-texto{
+	padding : 8px;
+	background-color: #C5E89F;
+	color: #91B56A;
+	font-size: 80%;
+}
+
+.label-tools{
+	padding : 8px;
+	background-color: #C5E89F;
+	color: #91B56A;
+	font-size: 80%;
+}
+
+.user-panel-label {
+	color: #797979!important;
+	font-weight: bold !important;
+	font-size : 95%;
+}
+.user-panel-td{
+	padding : 12px;
+}
+
+.user-panel-table{
+	background-color: #fff;
+	padding : 15px;
+}
+.user-panel-label-habilidade{
+	color : #616161;
+	text-transform:uppercase;
+	font-weight: bold !important;
+	font-size: 80%;
+}
+.user-panel-label-curso{
+	color : #616161;
+	text-transform:uppercase;
+	font-weight: bold !important;
+	font-size: 80%;
+}
+.user-panel-descricao-habilidade{
+	color : #91B56A;
+	font-weight: normal !important;
+	font-size: 90%;
+}
+.user-panel-habilidade-nome{
+	color : #6D9E38;
+	font-weight: normal !important;
+	font-size: 90%;	
+}
+.user-panel-habilidade-nome{
+	color : #6D9E38;
+	font-weight: normal !important;
+	
+}
+.user-panel-curso-habilidade-nome{
+	color : #c0c0c0;
+	font-weight: normal !important;
+	font-size: 90%;
+	
+}
+.user-panel-td-habilidade{
+	padding-left : 20px;
+}
+.user-panel-button-curso {
+	padding : 2px !important;
+	background-color: #FFD4AF !important;
+	color: #A87345 !important;
+	font-size: 60%;
+}
+.user-panel-habilidade-div{
+	padding-left : 20px !important;
+}
+.user-panel-curso-div{
+	padding-left : 40px !important;
+}
+.user-panel-detalhes-curso{
+	color : #91B56A;
+	font-weight: normal !important;
+	font-size: 80%;
+}
+
+.disabled{
+	color: #c0c0c0!important;
+	cursor:not-allowed	
+}
+.lineInvisible{
+	color : #fff;
+	backfground-color : #fff;
+	height : 0px;
+}
+
+
+input:focus::-webkit-input-placeholder { color:transparent; }
+input:focus:-moz-placeholder { color:transparent; } /* Firefox 18- */
+input:focus::-moz-placeholder { color:transparent; } /* Firefox 19+ */
+input:focus:-ms-input-placeholder { color:transparent; } /* oldIE ;) */
+
+/* 
+  <p><a href="#" data-tooltip="IÃ¢â‚¬â„¢m the tooltip text.">IÃ¢â‚¬â„¢m a link with a tooltip.</a></p>
+
+  <p><button data-tooltip="IÃ¢â‚¬â„¢m the tooltip text.">IÃ¢â‚¬â„¢m a button with a tooltip</button></p>*/

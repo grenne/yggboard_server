@@ -3,7 +3,7 @@
  */
 
 function atualizaCursosHabilidade (){
-	
+
 	habilidades = rest_listaReturn ("habilidades");
 	cursos = rest_listaReturn ("cursos");
 	
@@ -28,6 +28,7 @@ function atualizaCursosHabilidade (){
     	var habililadeUpdate = habilidade;
 		var objJson = 
 		{	
+			token: "1170706277ae0af0486017711353ee73",
 			collection : "habilidades",
 			keys : 
 				[
@@ -47,6 +48,7 @@ function atualizaCursosHabilidade (){
 			};
 		rest_atualizar (objJson, restOk, semAcao);
 	});
+	sessionStorage.setItem("rotina", "atualizaObjetivosHabilidadeMsg");  	
 	console.log ("terminou cursos");
 };
 
@@ -76,6 +78,7 @@ function atualizaObjetivosHabilidade (){
     	var habililadeUpdate = habilidade;
 		var objJson = 
 		{	
+			token: "1170706277ae0af0486017711353ee73",
 			collection : "habilidades",
 			keys : 
 				[
@@ -96,6 +99,7 @@ function atualizaObjetivosHabilidade (){
 		console.log ("habilidade id:" + habilidade.id)
 		rest_atualizar (objJson, restOk, semAcao);
 	});
+	sessionStorage.setItem("rotina", "atualizaAreaAtuacaoObjetivosMsg");  	
 	console.log ("terminou objetivos");
 };
 
@@ -124,6 +128,7 @@ function atualizaAreaAtuacaoObjetivos (){
     	var areaAtuacaoUpdate = areaAtuacao;
 		var objJson = 
 		{	
+			token: "1170706277ae0af0486017711353ee73",
 			collection : "areaAtuacao",
 			keys : 
 				[
@@ -143,13 +148,17 @@ function atualizaAreaAtuacaoObjetivos (){
 			};
 		rest_atualizar (objJson, restOk, semAcao);
 	});
-	
+	sessionStorage.setItem("rotina", "atualizaAreaConhecimentoHabilidadesMsg");  		
 	console.log ("terminou area atuacao");
 	
 };
 
 function atualizaAreaConhecimentoHabilidades (){
 	
+	$("#textoAtualizando").remove();
+	$("#registros").prepend('<li class="output"><strong class="label">Indices objetivos criados</strong></li>');
+	$("#registros").prepend('<li id="textoAtualizando" class="output"><strong class="label">Atualizando index area conhecimento...</strong></li>');
+
 	habilidades = rest_listaReturn ("habilidades");
 	areasConhecimento = rest_listaReturn ("areaConhecimento");
 	
@@ -173,6 +182,7 @@ function atualizaAreaConhecimentoHabilidades (){
     	var areaConhecimentoUpdate = areaConhecimento;
 		var objJson = 
 		{	
+			token: "1170706277ae0af0486017711353ee73",
 			collection : "areaConhecimento",
 			keys : 
 				[
@@ -193,6 +203,7 @@ function atualizaAreaConhecimentoHabilidades (){
 		rest_atualizar (objJson, restOk, semAcao);
 	});
 	
+	sessionStorage.setItem("rotina", "ultimaRotina");  			
 	console.log ("terminou area conhecimento");
 	
 };
@@ -230,6 +241,7 @@ function atualizaPerfil (){
 	
 		var objJson = 
 			{	
+				token: "1170706277ae0af0486017711353ee73",
 				async : false,
 				collection : "userPerfil",
 				keys : 
@@ -269,6 +281,7 @@ function atualizaPerfilProcess (usersPerfil){
     	userPerfil.showBadges = [];
 		var objJson = 
 			{	
+				token: "1170706277ae0af0486017711353ee73",
 				async : false,
 				collection : "userPerfil",
 				insert :

@@ -1,257 +1,75 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <meta name="robots" content="index, follow" />
-    <meta name="description" content="" />
-    <meta name="keywords" content="" />        
-	<link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
-	<link href="css/tether.min.css" rel="stylesheet" media="screen">
-	<link href="css/app.css" rel="stylesheet" media="screen">
-	<title>Testa server</title>
-</head>
-<body>
-<div class="container">
-    <div class="col-sm-6">
-	    <div class="[ row ]">
-	        <h2>Rotinas</h2>
-	    </div>
-        <div class="radio tools">
-          <label>
-            <input class="teste " data-teste="testaIncluir" type="radio" name="o1" value="">
-            <span class="cr"><i class="cr-icon glyphicon glyphicon-ok-sign"></i></span>
-            Testa incluir
-          </label>
-        </div>
-        <div class="radio tools">
-          <label>
-            <input class="teste " data-teste="testaAtualizar" type="radio" name="o1" value="">
-            <span class="cr"><i class="cr-icon glyphicon glyphicon-ok-sign"></i></span>
-            Testa Atualizar
-          </label>
-        </div>
-        <div class="radio tools">
-          <label>
-            <input class="teste " data-teste="testaObter" type="radio" name="o1" value="" >
-            <span class="cr"><i class="cr-icon glyphicon glyphicon-ok-sign"></i></span>
-            Testa Obter
-          </label>
-        </div>
-        <div class="radio tools">
-          <label>
-            <input class="teste " data-teste="testaObter" type="radio" name="o1" value="" >
-            <span class="cr"><i class="cr-icon glyphicon glyphicon-ok-sign"></i></span>
-            Testa Obter
-          </label>
-        </div>
-        <div class="radio tools" >
-          <label>
-            <input class="teste "  data-teste="testaLista" type="radio" name="o1" value="" >
-            <span class="cr"><i class="cr-icon glyphicon glyphicon-ok-sign"></i></span>
-            Testa Lista
-          </label>
-        </div>
-        <div class="radio tools" >
-          <label>
-            <input class="teste "  data-teste="testaAtualizaPerfil" type="radio" name="o1" value="" >
-            <span class="cr"><i class="cr-icon glyphicon glyphicon-ok-sign"></i></span>
-            Testa atualiza perfil
-          </label>
-        </div>
-        <div class="radio tools" >
-          <label>
-            <input class="teste "  data-teste="vago" type="radio" name="o1" value="" >
-            <span class="cr"><i class="cr-icon glyphicon glyphicon-ok-sign"></i></span>
-            vago
-          </label>
-        </div>
-        <div class="radio tools" >
-          <label>
-            <input class="teste "  data-teste="atualizaCursosHabilidade" type="radio" name="o1" value="" >
-            <span class="cr"><i class="cr-icon glyphicon glyphicon-ok-sign"></i></span>
-            Atualiza habilidades cursos
-          </label>
-        </div>
-        <div class="radio tools" >
-          <label>
-            <input class="teste "  data-teste="atualizaObjetivosHabilidade" type="radio" name="o1" value="" >
-            <span class="cr"><i class="cr-icon glyphicon glyphicon-ok-sign"></i></span>
-            Atualiza habilidades objetivos
-          </label>
-        </div>
-        <div class="radio tools" >
-          <label>
-            <input class="teste "  data-teste="atualizaBadges" type="radio" name="o1" value="" >
-            <span class="cr"><i class="cr-icon glyphicon glyphicon-ok-sign"></i></span>
-            Atualiza badges
-          </label>
-        </div>
-        <div class="radio tools" >
-          <label>
-            <input class="teste "  data-teste="atualizaAreaAtuacaoObjetivos" type="radio" name="o1" value="" >
-            <span class="cr"><i class="cr-icon glyphicon glyphicon-ok-sign"></i></span>
-            Atualiza area atuacao objetivos
-          </label>
-        </div>
-        <div class="radio tools" >
-          <label>
-            <input class="teste "  data-teste="atualizaAreaConhecimentoHabilidades" type="radio" name="o1" value="" >
-            <span class="cr"><i class="cr-icon glyphicon glyphicon-ok-sign"></i></span>
-            Atualiza area conhecimento habilidades
-          </label>
-        </div>
-        <div class="radio tools" >
-          <label>
-            <input class="teste "  data-teste="testaFiltro" type="radio" name="o1" value="" >
-            <span class="cr"><i class="cr-icon glyphicon glyphicon-ok-sign"></i></span>
-            Teste filtro
-          </label>
-        </div>
-        <div class="radio tools">
-          <label>
-            <input class="teste " data-teste="usuarios" type="radio" name="o1" value="" >
-            <span class="cr"><i class="cr-icon glyphicon glyphicon-ok-sign"></i></span>
-            Copia usuário
-          </label>
-        </div>
-        <div class="radio tools">
-          <label>
-            <input class="teste " data-teste="userPerfil" type="radio" name="o1" value="" >
-            <span class="cr"><i class="cr-icon glyphicon glyphicon-ok-sign"></i></span>
-            Copia user perfil
-          </label>
-        </div>
-        <div class="radio tools">
-          <label>
-            <input class="teste " data-teste="setup" type="radio" name="o1" value="" >
-            <span class="cr"><i class="cr-icon glyphicon glyphicon-ok-sign"></i></span>
-            Copia setup
-          </label>
-        </div>
-        <div class="radio">
-          <label>
-            <input class="teste" data-teste="index-cria" type="radio" name="o1" value="" >
-            <span class="cr"><i class="cr-icon glyphicon glyphicon-ok-sign"></i></span>
-            Cria index
-          </label>
-        </div>
-        <div class="radio">
-          <label>
-            <input class="teste" data-teste="mostraPrerequisitos" type="radio" name="o1" value="" >
-            <span class="cr"><i class="cr-icon glyphicon glyphicon-ok-sign"></i></span>
-            Mostra pre-requisitos
-          </label>
-        </div>
-        <div class="radio">
-          <label>
-            <input class="teste" data-teste="atualizaHabilidadesDuplicadas" type="radio" name="o1" value="" >
-            <span class="cr"><i class="cr-icon glyphicon glyphicon-ok-sign"></i></span>
-            Atualiza habilidade duplicada
-          </label>
-        </div>
-    </div>            
-    <div class="col-sm-6">
-    <div class="[ row ]">
-        <h2>Importação da tabelas (escolha o assunto depois o arquivo .csv)</h2>
-    </div>
-        <div class="radio">
-          <label>
-            <input class="escolha" data-escolha="habilidades" type="radio" name="o1" value="">
-            <span class="cr"><i class="cr-icon glyphicon glyphicon-ok-sign"></i></span>
-            Habilidades
-          </label>
-        </div>
-        <div class="radio">
-          <label>
-            <input class="escolha" data-escolha="cursos" type="radio" name="o1" value="">
-            <span class="cr"><i class="cr-icon glyphicon glyphicon-ok-sign"></i></span>
-            Cursos
-          </label>
-        </div>
-        <div class="radio">
-          <label>
-            <input class="escolha" data-escolha="objetivos" type="radio" name="o1" value="" >
-            <span class="cr"><i class="cr-icon glyphicon glyphicon-ok-sign"></i></span>
-            Objetivos
-          </label>
-        </div>
-        <div class="radio">
-          <label>
-            <input class="escolha" data-escolha="badges" type="radio" name="o1" value="" >
-            <span class="cr"><i class="cr-icon glyphicon glyphicon-ok-sign"></i></span>
-            Badges
-          </label>
-        </div>
-        <div class="radio">
-          <label>
-            <input class="escolha" data-escolha="areaAtuacao" type="radio" name="o1" value="" >
-            <span class="cr"><i class="cr-icon glyphicon glyphicon-ok-sign"></i></span>
-            Área atuação
-          </label>
-        </div>
-        <div class="radio">
-          <label>
-            <input class="escolha" data-escolha="areaConhecimento" type="radio" name="o1" value="" >
-            <span class="cr"><i class="cr-icon glyphicon glyphicon-ok-sign"></i></span>
-            Área conhecimento
-          </label>
-        </div>
-		<div class="[ form-group ]" id="filesInput">
-			<button class="hide reader" onclick="abortRead();">Cancela</button>
- 			<div class="hide reader" id="progress_bar"><div class="percent">0%</div></div>
-		</div>
-		<div class="registros">
-			<label class="label" id="labelRegistros"></label>
-			<small class="field final" id="totalRegistros"></small>
-			<ul id="registros">
-	
-			</ul>
-		</div>
-		<div class="[ form-group ]" id="filesInput">
-			<input class="reader" type="file" id="files" name="file" accept=".csv"/>
-		</div>
-    </div>
-</div>
+<!doctype html>
+<html lang="en-us">
+  <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+        <meta name="robots" content="index, follow" />
+        <meta name="description" content="" />
+        <meta name="keywords" content="" />        
+        <title>YggBoard</title>
 
+	    <link rel="shortcut icon" href="img/icone-arvore.png" />
 
-	<!--  bibliotecas -->
+        <link rel="icon" href="img/icone-arvore.png">
+        <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+        <link href="css/login.css" rel="stylesheet" media="screen">
+  </head>
+  <body class="">
+		<!-- LOGIN FORM -->
+		<!--===================================================-->
+		<div class="cls-content">
+		    <div class="cls-content-sm panel">
+		        <div class="panel-body">
+		            <div class="header col-md-12">
+		            	<div class="">
+		             		<img src="img/logo-login.png" alt="" />
+		             	</div>
+		            </div>
+		            <div class="col-md-12">
+			            <form id="form-login" >
+			            	<div>
+			            		<h6>ENTRAR</h6>
+			            	</div>
+			                <div class="form-group">
+			                    <input id="email" name="email" type="text" class="form-control" placeholder="Login" autofocus>
+			                </div>
+			                <div class="form-group">
+			                    <input id="password" name="password" type="password" class="form-control" placeholder="Senha">
+			                </div>
+			                <div class="col-md-12">
+			                    <label class='hide msgErro'>Usuário ou senha invalidos</label>
+			                </div>
+			                <div class="col-md-12">
+			                	<button id="btn-submit-login" class="btn btn-primary btn-lg btn-block" >Acessar</button>
+			                </div>
+			            </form>
+			    	</div>
+		        </div>		
+		    </div>
+		</div>
+		<!--===================================================-->
+
     <!--jQuery [ REQUIRED ]-->
     <script src="js/jquery-3.2.1.min.js"></script>
-
-    <!--Tether -->
-    <script src="js/tether.min.js"></script>
 
     <!--BootstrapJS -->
     <script src="js/bootstrap.min.js"></script>
 
-    <!--Rest -->
-    <script src="js/commons.js"></script>
+    <!--Bootstrap Validator [ OPTIONAL ]-->
+    <script src="js/bootstrap-validator/bootstrapValidator.min.js"></script>
 
-    <!--Rest -->
+    <!--rest commands-->
     <script src="js/rest_commands.js"></script>
 
-    <!--Main -->
+    <!--main-->
     <script src="js/main.js"></script>
 
-    <!--Testa rest -->
-    <script src="js/testa-rest.js"></script>
-
-    <!--ler arquivo -->
-    <script src="js/processa-file.js"></script>
-
-    <!--grava na base -->
-    <script src="js/processa-dados.js"></script>
-
-    <!--grava na base -->
-    <script src="js/cria-index.js"></script>
-
-    <!--grava na base -->
-    <script src="js/copias.js"></script>
-
-    <!--grava na base -->
+    <!--index-->
     <script src="js/index.js"></script>
 
-</body>
+    <!--LOGIN-->
+    <script src="js/login.js"></script>
+ 
+  </body>
 </html>

@@ -21,9 +21,9 @@ public class SendEmail {
 			email.setMsg(message);
 			email.addTo(to);
 			email.send();
-		} catch(EmailException ee) {
-		    ee.printStackTrace();
-		}
+			} catch (EmailException e) {
+				e.printStackTrace();
+			}
 
 	};
 };

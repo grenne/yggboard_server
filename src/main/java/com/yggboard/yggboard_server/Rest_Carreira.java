@@ -71,8 +71,6 @@ public class Rest_Carreira {
 			};
 			mongo.close();
 			return documentos;
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
 		} catch (MongoException e) {
 			e.printStackTrace();
 		};

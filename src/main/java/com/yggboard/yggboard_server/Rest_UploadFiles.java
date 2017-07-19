@@ -53,18 +53,14 @@ public class Rest_UploadFiles {
 
 		String tmp = "c:/images/yggboard/";
 		Mongo mongo;
-		try {
-			mongo = new Mongo();
-			DB db = (DB) mongo.getDB("documento");
-			DBCollection collection = db.getCollection("setup");
-			BasicDBObject searchQuery = new BasicDBObject("documento.setupKey", "fotosYggboard");
-			DBObject cursor = collection.findOne(searchQuery);
-			if (cursor != null){
-				BasicDBObject obj = (BasicDBObject) cursor.get("documento");
-				tmp = obj.getString("setupValue");
-			};
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
+		mongo = new Mongo();
+		DB db = (DB) mongo.getDB("documento");
+		DBCollection collection = db.getCollection("setup");
+		BasicDBObject searchQuery = new BasicDBObject("documento.setupKey", "fotosYggboard");
+		DBObject cursor = collection.findOne(searchQuery);
+		if (cursor != null){
+			BasicDBObject obj = (BasicDBObject) cursor.get("documento");
+			tmp = obj.getString("setupValue");
 		};
         
 		File target = new File(tmp + image);
@@ -91,8 +87,6 @@ public class Rest_UploadFiles {
 					BasicDBObject obj = (BasicDBObject) cursor.get("documento");
 					tmp = obj.getString("setupValue");
 				};
-			} catch (UnknownHostException e1) {
-				e1.printStackTrace();
 			} catch (MongoException e1) {
 				e1.printStackTrace();
 			}

@@ -4,10 +4,11 @@
 
 function testaObter() {
 	var objJson = {
+		token: "1170706277ae0af0486017711353ee73",
 		collection : "badges",
 		keys : [ {
 			key : "documento.id",
-			value : "99999999"
+			value : "1"
 		} ]
 	};
 	$.ajax({
@@ -28,6 +29,7 @@ function testaObter() {
 };
 function testaIncluir() {
 	var objJson = {
+		token: "1170706277ae0af0486017711353ee73",
 		collection : "usuarios",
 		insert : {
 			documento : {
@@ -40,6 +42,7 @@ function testaIncluir() {
 	};
 	var objUserPerfil =
 		{
+			token: "1170706277ae0af0486017711353ee73",
 			collection : "~userPerfil",
 			insert : {
 				documento : {
@@ -95,6 +98,7 @@ function testaAtualizar() {
 				 };
 	 
 	var objJson = {
+		token: "1170706277ae0af0486017711353ee73",
 		collection : "userPerfil",
 		keys : [ {
 			key : "documento.email",
@@ -162,6 +166,7 @@ function testaAtualizar() {
 function testaLista() {
 
 	var objJson = {
+		token: "1170706277ae0af0486017711353ee73",
 		collection : "cursos",
 		keys : []
 	};
@@ -329,25 +334,15 @@ function mostraPrerequisitos(habilidades) {
 
 function atualizaObjetivos() {
 
-	lerObjetivos();
+	objetivos = rest_listaReturn ("objetivos");
 
-};
-
-function lerObjetivos(f) {
-
-	rest_obterCarreiras(atualizaObjetivosProcess, semAcao);
-};
-
-function atualizaObjetivosProcess(objetivos) {
-
-	localStorage.setItem("objetivos", JSON.stringify(objetivos));
-
-	habilidades = JSON.parse(sessionStorage.getItem("habilidades"));
+	habilidades = rest_listaReturn ("habilidades");
 
 	$.each(habilidades, function(i, habilidade) {
 		habilidade = obterObjetivos(habilidade, habilidade.id);
 		console.log("id - " + habilidade.id);
 		var objJson = {
+			token: "1170706277ae0af0486017711353ee73",
 			collection : "habilidades",
 			keys : [ {
 				key : "documento.id",
@@ -384,6 +379,7 @@ function atualizaHabilidadesDuplicadas() {
 		});
 		userPerfil.habilidades = newHabilidades;
 		var objJson = {
+			token: "1170706277ae0af0486017711353ee73",
 			collection : "userPerfil",
 			keys : [ {
 				key : "documento.usuario",
@@ -431,25 +427,15 @@ function obterObjetivos(objJson, habilidadeTarget) {
 
 function atualizaBadges() {
 
-	rest_obterHabilidades(lerBadges, semAcao, "false");
+	badges = rest_listaReturn ("badges");
 
-};
-
-function lerBadges(habilidades) {
-
-	rest_obterBadges(atualizaBadgesProcess, semAcao);
-};
-
-function atualizaBadgesProcess(badges) {
-
-	localStorage.setItem("badges", JSON.stringify(badges));
-
-	habilidades = JSON.parse(sessionStorage.getItem("habilidades"));
+	habilidades = rest_listaReturn ("habilidades");
 
 	$.each(habilidades, function(i, habilidade) {
 		habilidade = obterBadges(habilidade, habilidade.id);
 		console.log("id - " + habilidade.id);
 		var objJson = {
+			token: "1170706277ae0af0486017711353ee73",
 			collection : "habilidades",
 			keys : [ {
 				key : "documento.id",

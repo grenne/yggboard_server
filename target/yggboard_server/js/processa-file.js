@@ -18,23 +18,69 @@
 	};
   	i++;
   	if (i > totalRecords){
-  		stopIntervalObject();
   		$(".final").show();
   		$("#labelRegistros").text("Registros processados:");
   		$("#totalRegistros").text(totalRecords);
   		if (sessionStorage.getItem("excutaPrepend") == "true"){
-			$("#registros").prepend('<li class="output"><strong class="label">Encerrada a carga</strong></li>');
-			$("#registros").prepend('<li id="criando-indices" class="output"><strong class="label">Criando indices...</strong></li>');
-	  		carregaIndex();
-	  		atualizaCursosHabilidade();
-	  		atualizaObjetivosHabilidade();
-	  		atualizaAreaAtuacaoObjetivos();
-	  		atualizaAreaConhecimentoHabilidades();
-	  		 $("#criando-indices").remove();
-			$("#registros").prepend('<li class="output"><strong class="label">Indices criados</strong></li>');
-			$("#registros").prepend('<li class="output"><strong class="label">**** Processo encerrado ****</strong></li>');
-			sessionStorage.setItem("excutaPrepend", "false");  	};
+	  		if (sessionStorage.getItem("rotina") == "carregaIndex"){
+	  			sessionStorage.setItem("rotina", "pulaExecucao");  	
+	  			carregaIndex();
+	  		};
+	  		if (sessionStorage.getItem("rotina") == "carregaIndexMsg"){
+	  			sessionStorage.setItem("rotina", "carregaIndex");  	
+	  			$("#textoAtualizando").remove();
+	  			$("#registros").prepend('<li class="output"><strong class="label">Encerrada a carga</strong></li>');
+	  			$("#registros").prepend('<li id="textoAtualizando" class="output"><strong class="label">Criando indices...</strong></li>');
+	  		};
+	  		if (sessionStorage.getItem("rotina") == "atualizaCursosHabilidade"){
+	  			sessionStorage.setItem("rotina", "pulaExecucao");  	
+	  			atualizaCursosHabilidade();
+	  		};
+	  		if (sessionStorage.getItem("rotina") == "atualizaObjetivosHabilidadeMsg"){
+	  			sessionStorage.setItem("rotina", "atualizaObjetivosHabilidade");  	
+	  			$("#textoAtualizando").remove();
+	  			$("#registros").prepend('<li class="output"><strong class="label">Indices criados</strong></li>');
+	  			$("#registros").prepend('<li id="textoAtualizando" class="output"><strong class="label">Atualizando index habilidades...</strong></li>');
+	  		};
+	  		if (sessionStorage.getItem("rotina") == "atualizaObjetivosHabilidade"){
+	  			sessionStorage.setItem("rotina", "pulaExecucao");  	
+		  		atualizaObjetivosHabilidade();
+	  		};
+	  		if (sessionStorage.getItem("rotina") == "atualizaObjetivosHabilidadeMsg"){
+	  			sessionStorage.setItem("rotina", "atualizaObjetivosHabilidade");  	
+	  			$("#textoAtualizando").remove();
+	  			$("#registros").prepend('<li class="output"><strong class="label">Indices habilidades criados</strong></li>');
+	  			$("#registros").prepend('<li id="textoAtualizando" class="output"><strong class="label">Atualizando index objetivos...</strong></li>');
+	  		};
+	  		if (sessionStorage.getItem("rotina") == "atualizaAreaAtuacaoObjetivos"){
+	  			sessionStorage.setItem("rotina", "pulaExecucao");  	
+		  		atualizaAreaAtuacaoObjetivos();
+	  		};
+	  		if (sessionStorage.getItem("rotina") == "atualizaAreaAtuacaoObjetivosMsg"){
+	  			sessionStorage.setItem("rotina", "atualizaAreaAtuacaoObjetivos");  	
+	  			$("#textoAtualizando").remove();
+	  			$("#registros").prepend('<li class="output"><strong class="label">Indices objetivos criados</strong></li>');
+	  			$("#registros").prepend('<li id="textoAtualizando" class="output"><strong class="label">Atualizando index objetivos...</strong></li>');
+	  		};
+	  		if (sessionStorage.getItem("rotina") == "atualizaAreaConhecimentoHabilidades"){
+	  			sessionStorage.setItem("rotina", "pulaExecucao");  	
+	  			atualizaAreaConhecimentoHabilidades();
+	  		};
+	  		if (sessionStorage.getItem("rotina") == "atualizaAreaConhecimentoHabilidadesMsg"){
+	  			sessionStorage.setItem("rotina", "atualizaAreaConhecimentoHabilidades");  	
+	  			$("#textoAtualizando").remove();
+	  			$("#registros").prepend('<li class="output"><strong class="label">Indices habilidades criados</strong></li>');
+	  			$("#registros").prepend('<li id="textoAtualizando" class="output"><strong class="label">Atualizando index area conhecimento...</strong></li>');
+	  		};
+	  		if (sessionStorage.getItem("rotina") == "ultimaRotina"){	  			
+		  		$("#textoAtualizando").remove();
+				$("#registros").prepend('<li class="output"><strong class="label">Indices area conhecimento criados</strong></li>');
+				$("#registros").prepend('<li class="output"><strong class="label">**** Processo encerrado ****</strong></li>');
+				sessionStorage.setItem("excutaPrepend", "false");  	
+		  		stopIntervalObject();
+	  		};
   		};
+  	};
     sessionStorage.setItem("index", i);
   };
    
@@ -96,7 +142,8 @@
        // limpar tabela antes de carregar
        var objJson = 
  	  	{
-			  collection : sessionStorage.escolha
+   			token: "1170706277ae0af0486017711353ee73",
+			collection : sessionStorage.escolha
  	  	};
  	   rest_remover (objJson, processaRegistros, semAcao, lines);
     }
@@ -110,6 +157,7 @@
      sessionStorage.setItem("index", 1);
      sessionStorage.setItem("totalRecords", lines.length);
      sessionStorage.setItem("excutaPrepend", "true");
+     sessionStorage.setItem("rotina", "carregaIndexMsg");  	
      $(".registros" ).show();
      $("#labelRegistros").text("Registros carregando...");
      var myVar = setInterval(function(){ setIntervalObject() }, 30);

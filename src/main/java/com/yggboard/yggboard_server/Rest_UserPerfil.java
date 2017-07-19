@@ -193,8 +193,6 @@ public class Rest_UserPerfil {
 					};
 					mongoBadge.close();
 					return documentos;
-				} catch (UnknownHostException e) {
-					e.printStackTrace();
 				} catch (MongoException e) {
 					e.printStackTrace();
 				};
@@ -710,7 +708,7 @@ public class Rest_UserPerfil {
 					};
 					mongoHabilidade.close();
 					++z;
-				} catch (UnknownHostException | MongoException e) {
+				} catch (MongoException e) {
 					e.printStackTrace();
 				}
 			}
@@ -868,9 +866,9 @@ public class Rest_UserPerfil {
 					return response;
 				}
 			};
-			return null;
+			return Response.status(401).entity("invalid token").build();	
 		};
-		return response;
+		return Response.status(401).entity("invalid token").build();	
 	};
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -926,7 +924,7 @@ public class Rest_UserPerfil {
 				};
 			};
 			mongo.close();
-		} catch (UnknownHostException | MongoException e) {
+		} catch (MongoException e) {
 			e.printStackTrace();
 		};
 	};
@@ -934,8 +932,13 @@ public class Rest_UserPerfil {
 	@Path("/lista")	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public JSONArray ObterUsersPerfil() {
+	public JSONArray ObterUsersPerfil(@QueryParam("usuario") String usuario) {
 		Commons commons = new Commons();
+		Commons_DB commons_db = new Commons_DB();
+		Response response = commons_db.getCollection(usuario, "userPerfil", "documento.token");
+		if ((response.getEntity() instanceof Boolean)){
+			return null;
+		};
 		Mongo mongo;
 		try {
 			mongo = new Mongo();
@@ -960,8 +963,6 @@ public class Rest_UserPerfil {
 			};
 			mongo.close();
 			return documentos;
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
 		} catch (MongoException e) {
 			e.printStackTrace();
 		}
@@ -1022,8 +1023,6 @@ public class Rest_UserPerfil {
 				++w;
 			};
 			mongo.close();					
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
 		} catch (MongoException e) {
 			e.printStackTrace();
 		}
@@ -1084,8 +1083,6 @@ public class Rest_UserPerfil {
 				++w;
 			};
 			mongo.close();					
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
 		} catch (MongoException e) {
 			e.printStackTrace();
 		}
@@ -1187,8 +1184,6 @@ public class Rest_UserPerfil {
 				mongo.close();
 				return jsonQtdeHabilidades;
 			}
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
 		} catch (MongoException e) {
 			e.printStackTrace();
 		}
@@ -1248,8 +1243,6 @@ public class Rest_UserPerfil {
 			};
 			mongo.close();
 			return documentos;
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
 		} catch (MongoException e) {
 			e.printStackTrace();
 		}
@@ -1277,7 +1270,7 @@ public class Rest_UserPerfil {
 					DBObject cursor = collection.findOne(searchQuery);
 					if (cursor == null){
 						mongo.close();
-						return Response.status(404).build();
+						return Response.status(401).build();
 					};
 					BasicDBObject objUserPerfilUpdate = (BasicDBObject) cursor.get("documento");
 					objUserPerfilUpdate.remove("cursosSugeridos");
@@ -1305,8 +1298,6 @@ public class Rest_UserPerfil {
 				};
 				mongo.close();
 				return Response.status(200).build();
-			} catch (UnknownHostException e) {
-				e.printStackTrace();
 			} catch (MongoException e) {
 				e.printStackTrace();
 			};
@@ -1334,7 +1325,7 @@ public class Rest_UserPerfil {
 					DBObject cursor = collection.findOne(searchQuery);
 					if (cursor == null){
 						mongo.close();
-						return Response.status(404).build();
+						return Response.status(401).build();
 					};
 					BasicDBObject objUserPerfilUpdate = (BasicDBObject) cursor.get("documento");
 					objUserPerfilUpdate.remove("carreirasSugeridas");
@@ -1362,8 +1353,6 @@ public class Rest_UserPerfil {
 				};
 				mongo.close();
 				return Response.status(200).build();
-			} catch (UnknownHostException e) {
-				e.printStackTrace();
 			} catch (MongoException e) {
 				e.printStackTrace();
 			};

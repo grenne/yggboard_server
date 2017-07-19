@@ -136,6 +136,7 @@ function rest_listaReturn (collection, action_ok, action_not_ok, var1, var2, var
 	var listas = null;
 	var objJson = 
 	{	
+		token: "1170706277ae0af0486017711353ee73",
 		asybc : false,
 		collection : collection,
 		keys : []
@@ -162,216 +163,24 @@ function rest_listaReturn (collection, action_ok, action_not_ok, var1, var2, var
 	return listas;
 };
 
-function rest_obterHabilidades(action_ok, action_not_ok, var1, var2) {
+function rest_login (email, senha){
+	var returnData = null;
 	$.ajax({
-        url: localStorage.mainUrl + "yggboard_server/rest/habilidades/lista?diagrama=habilidades&semCursos=" + var1,
+        url: localStorage.mainUrl + "yggboard_server/rest/usuario/login?email=" + email + "&password=" + senha,
         contentType: "application/json; charset=utf-8",
-        dataType: 'json'
-	})
+        dataType: 'json',
+       	async : false
+	})        	
 	.done(function( data ) {
-		if (data){
-			action_ok (data, var1, var2);
-		}else{
-			action_not_ok (data, var1, var2);	
-		};
+		returnData = data;
 	})
 	.fail(function(data) {
-		action_not_ok()
+		returnData = null;
 	})
 	.always(function(data) {
 	});
-};
 
-function rest_obterHabilidadesName(name, action_ok, action_not_ok, var1, var2) {
-	$.ajax({
-        url: localStorage.mainUrl + "yggboard_server/rest/habilidades/obter?name=" + name,
-        contentType: "application/json; charset=utf-8",
-        dataType: 'json'
-	})
-	.done(function( data ) {
-		if (data){
-			action_ok (data, var1, var2);
-		}else{
-			action_not_ok (data, var1, var2);	
-		};
-	})
-	.fail(function(data) {
-		action_not_ok(null, var1, var2);
-	})
-	.always(function(data) {
-	});
-};
-
-function rest_obterHabilidadesIdHabilidade(name, action_ok, action_not_ok, var1, var2) {
-	$.ajax({
-        url: localStorage.mainUrl + "yggboard_server/rest/habilidades/obter?idHabilidade=" + idHabilidade,
-        contentType: "application/json; charset=utf-8",
-        dataType: 'json'
-	})
-	.done(function( data ) {
-		if (data){
-			action_ok (data, var1, var2);
-		}else{
-			action_not_ok (data, var1, var2);	
-		};
-	})
-	.fail(function(data) {
-		action_not_ok(null, var1, var2)
-	})
-	.always(function(data) {
-	});
-};
-
-function rest_obterCarreiras(action_ok, action_not_ok, var1, var2) {
-	$.ajax({
-        url: localStorage.mainUrl + "yggboard_server/rest/carreiras/lista",
-        contentType: "application/json; charset=utf-8",
-        dataType: 'json'
-	})
-	.done(function( data ) {
-		if (data){
-			action_ok (data, var1, var2);
-		}else{
-			action_not_ok (data, var1, var2);	
-		};
-	})
-	.fail(function(data) {
-		action_not_ok (data, var1, var2);	
-	})
-	.always(function(data) {
-	});
-};
-
-function rest_obterCarreira(idCarreira, action_ok, action_not_ok, var1, var2) {
-	$.ajax({
-        url: localStorage.mainUrl + "yggboard_server/rest/carreiras/obter?idCarreira=" + idCarreira,
-        contentType: "application/json; charset=utf-8",
-        dataType: 'json'
-	})
-	.done(function( data ) {
-		action_ok(data, var1, var2);
-	})
-	.fail(function(data) {
-		action_not_ok(null, var1, var2);
-	})
-	.always(function(data) {
-	});
-};
-
-function rest_obterBadges(action_ok, action_not_ok, var1, var2) {
-	$.ajax({
-        url: localStorage.mainUrl + "yggboard_server/rest/badges/lista",
-        contentType: "application/json; charset=utf-8",
-        dataType: 'json'
-	})
-	.done(function( data ) {
-		if (data){
-			action_ok (data, var1, var2);
-		}else{
-			action_not_ok (data, var1, var2);	
-		};
-	})
-	.fail(function(data) {
-		action_not_ok (data, var1, var2);	
-	})
-	.always(function(data) {
-	});
-};
-
-function rest_obterBadge(idBadge, action_ok, action_not_ok, var1, var2) {
-	$.ajax({
-        url: localStorage.mainUrl + "yggboard_server/rest/carreiras/obter?idBadge=" + idBadge,
-        contentType: "application/json; charset=utf-8",
-        dataType: 'json'
-	})
-	.done(function( data ) {
-		action_ok(data, var1, var2);
-	})
-	.fail(function(data) {
-		action_not_ok(null, var1, var2);
-	})
-	.always(function(data) {
-	});
-};
-
-function rest_obterCursos(action_ok, action_not_ok, var1, var2) {
-	$.ajax({
-        url: localStorage.mainUrl + "yggboard_server/rest/cursos/lista",
-        contentType: "application/json; charset=utf-8",
-        dataType: 'json'
-	})
-	.done(function( data ) {
-		if (data){
-			action_ok (data, var1, var2);
-		}else{
-			action_not_ok (data, var1, var2);	
-		};
-	})
-	.fail(function(data) {
-		action_not_ok (data, var1, var2);	
-	})
-	.always(function(data) {
-	});
-};
-
-function rest_obterAreaAtuacao(action_ok, action_not_ok, var1, var2) {
-	$.ajax({
-        url: localStorage.mainUrl + "yggboard_server/rest/areaatuacao/lista",
-        contentType: "application/json; charset=utf-8",
-        dataType: 'json'
-	})
-	.done(function( data ) {
-		if (data){
-			action_ok (data, var1, var2);
-		}else{
-			action_not_ok (data, var1, var2);	
-		};
-	})
-	.fail(function(data) {
-		action_not_ok (data, var1, var2);	
-	})
-	.always(function(data) {
-	});
-};
-
-function rest_obterAreaConhecimento(action_ok, action_not_ok, var1, var2) {
-	$.ajax({
-        url: localStorage.mainUrl + "yggboard_server/rest/areaconhecimento/lista",
-        contentType: "application/json; charset=utf-8",
-        dataType: 'json'
-	})
-	.done(function( data ) {
-		if (data){
-			action_ok (data, var1, var2);
-		}else{
-			action_not_ok (data, var1, var2);	
-		};
-	})
-	.fail(function(data) {
-		action_not_ok (data, var1, var2);	
-	})
-	.always(function(data) {
-	});
-};
-
-function rest_obterBadges(action_ok, action_not_ok, var1, var2, var3) {
-	$.ajax({
-        url: localStorage.mainUrl + "yggboard_server/rest/badges/lista",
-        contentType: "application/json; charset=utf-8",
-        dataType: 'json'
-	})
-	.done(function( data ) {
-		if (data){
-			action_ok (data, var1, var2, var3);
-		}else{
-			action_not_ok (data, var1, var2, var3);	
-		};
-	})
-	.fail(function(data) {
-		action_not_ok (data, var1, var2, var3);	
-	})
-	.always(function(data) {
-	});
+	return returnData;
 };
 
 function rest_urlReturn(url, action_not_ok, var1, var2, var3) {

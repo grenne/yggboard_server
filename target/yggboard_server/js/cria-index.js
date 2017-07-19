@@ -1,8 +1,11 @@
 
 function carregaIndex (){
-       var objJson = 
+
+
+	var objJson = 
  	  	{
-			  collection : "index"
+   			token: "1170706277ae0af0486017711353ee73",
+			collection : "index"
  	  	};
  	   rest_remover (objJson, carregaIndexProcesso, semAcao); 	   
 };
@@ -21,6 +24,8 @@ function carregaIndexProcesso (){
 	carregaIndexElemento(rest_listaReturn ("usuarios"), "usuarios");
 	
 	console.log ("terminou cria index");
+	
+	sessionStorage.setItem("rotina", "atualizaCursosHabilidade");  	
 }; 
 
 function carregaIndexElemento(data, assunto){
@@ -78,6 +83,7 @@ function carregaIndexElemento(data, assunto){
 			
 			var objJson = 
 				{
+					token: "1170706277ae0af0486017711353ee73",
 					collection : "index",
 					insert :
 						{

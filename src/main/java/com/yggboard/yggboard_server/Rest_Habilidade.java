@@ -58,12 +58,9 @@ public class Rest_Habilidade {
 			}else{
 				return null;	
 			}
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
 		} catch (MongoException e) {
 			return null;
 		}
-		return null;
 	};
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Path("/lista")	
@@ -91,8 +88,6 @@ public class Rest_Habilidade {
 			};
 			mongo.close();
 			return documentos;
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
 		} catch (MongoException e) {
 			e.printStackTrace();
 		}

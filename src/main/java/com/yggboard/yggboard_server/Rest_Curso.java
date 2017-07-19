@@ -75,8 +75,6 @@ public class Rest_Curso {
 			};
 			mongo.close();
 			return documentos;
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
 		} catch (MongoException e) {
 			e.printStackTrace();
 		}

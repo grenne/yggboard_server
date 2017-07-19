@@ -1,8 +1,6 @@
 package com.yggboard.yggboard_server;
 
-import java.util.ArrayList;
 import java.util.Map;
-
 import javax.inject.Singleton;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -27,6 +25,17 @@ public class Rest_Crud {
 	public Response Obter(JSONObject queryParam)  {
 		System.out.println("obter:" + queryParam.get ("collection").toString());
 		Commons_DB commons_db = new Commons_DB();
+		Boolean testaToken = true;
+		if (queryParam.get("tipo") != null){
+			if (queryParam.get("tipo").toString().equals("login") && queryParam.get("collection").toString().equals("usuarios")){
+				testaToken = false;
+			};
+		};
+		if (testaToken){
+			if (commons_db.getCollection(queryParam.get("token").toString(), "usuarios", "documento.token").getEntity() instanceof Boolean){
+				return Response.status(401).entity("invalid token").build();	
+			};
+		};
 		if (queryParam.get("keys") != null && queryParam.get ("collection").toString() != null){
 			return commons_db.obterCrud(queryParam.get ("collection").toString(), queryParam.get("keys"));
 		}else{
@@ -41,6 +50,9 @@ public class Rest_Crud {
 	public Response Incluir(JSONObject queryParam)  {
 		System.out.println("incluir:" + queryParam.get ("collection").toString());
 		Commons_DB commons_db = new Commons_DB();
+		if (commons_db.getCollection(queryParam.get("token").toString(), "usuarios", "documento.token").getEntity() instanceof Boolean){
+			return Response.status(401).entity("invalid token").build();	
+		};
 		Commons commons = new Commons();
 		if (queryParam.get ("insert") != null && queryParam.get ("collection").toString() != null){
 			Response response = commons_db.incluirCrud(queryParam.get ("collection").toString(), queryParam.get ("insert")); 
@@ -71,6 +83,9 @@ public class Rest_Crud {
 	public Response Atualizar(JSONObject queryParam)  {
 		System.out.println("atualizar:" + queryParam.get ("collection").toString());
 		Commons_DB commons_db = new Commons_DB();
+		if (commons_db.getCollection(queryParam.get("token").toString(), "usuarios", "documento.token").getEntity() instanceof Boolean){
+			return Response.status(401).entity("invalid token").build();	
+		};
 		if (queryParam.get("update") != null && queryParam.get ("collection").toString() != null && queryParam.get("keys") != null){
 			return commons_db.atualizarCrud(queryParam.get ("collection").toString(), queryParam.get("update"), queryParam.get("keys"));
 		}else{
@@ -85,6 +100,9 @@ public class Rest_Crud {
 	public Response Lista(JSONObject queryParam)  {
 		System.out.println("lista:" + queryParam.get ("collection").toString());
 		Commons_DB commons_db = new Commons_DB();
+		if (commons_db.getCollection(queryParam.get("token").toString(), "usuarios", "documento.token").getEntity() instanceof Boolean){
+			return Response.status(401).entity("invalid token").build();	
+		};
 		if (queryParam.get("keys") != null && queryParam.get ("collection").toString() != null){
 			return commons_db.listaCrud(queryParam.get ("collection").toString(), queryParam.get("keys"));
 		}else{
@@ -97,6 +115,9 @@ public class Rest_Crud {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response Remover(JSONObject queryParam)  {
 		Commons_DB commons_db = new Commons_DB();
+		if (commons_db.getCollection(queryParam.get("token").toString(), "usuarios", "documento.token").getEntity() instanceof Boolean){
+			return Response.status(401).entity("invalid token").build();	
+		};
 		if (queryParam.get ("collection").toString() != null){
 			return commons_db.removerAllCrud(queryParam.get ("collection").toString());
 		}else{

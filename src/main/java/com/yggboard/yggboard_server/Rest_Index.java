@@ -49,7 +49,7 @@ public class Rest_Index {
 		
 		System.out.println("chamada index:" + assunto );
 		
-		if (id == null){
+		if (id == null && !assunto.equals("todos")){
 			return null;
 		};
 		Commons commons = new Commons();
@@ -65,7 +65,7 @@ public class Rest_Index {
 			doc.putAll((Map) response.getEntity());
 			if (doc != null){
 				objUserPerfil.putAll((Map) doc.get("documento"));
-			};
+			}
 		}else{
 			return null;
 		};
@@ -574,7 +574,7 @@ public class Rest_Index {
 				};
 			};			
 			mongo.close();
-		} catch (UnknownHostException | MongoException e1) {
+		} catch (MongoException e1) {
 			e1.printStackTrace();
 		};
 	};
@@ -725,7 +725,7 @@ public class Rest_Index {
 				};
 			};			
 			mongo.close();
-		} catch (UnknownHostException | MongoException e1) {
+		} catch (MongoException e1) {
 			e1.printStackTrace();
 		};
 	
@@ -799,7 +799,7 @@ public class Rest_Index {
 				};
 			};			
 			mongo.close();
-		} catch (UnknownHostException | MongoException e1) {
+		} catch (MongoException e1) {
 			e1.printStackTrace();
 		}
 	};
@@ -863,8 +863,6 @@ public class Rest_Index {
 				};
 			};
 			mongo.close();
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
 		} catch (MongoException e) {
 			e.printStackTrace();
 		};
@@ -931,8 +929,6 @@ public class Rest_Index {
 				};
 			};
 			mongo.close();
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
 		} catch (MongoException e) {
 			e.printStackTrace();
 		};
@@ -990,7 +986,7 @@ public class Rest_Index {
 	    		};
 			};			
 			mongo.close();
-		} catch (UnknownHostException | MongoException e) {
+		} catch (MongoException e) {
 			e.printStackTrace();
 		};
 	};
@@ -1090,7 +1086,7 @@ public class Rest_Index {
 			}else{			
 				mongo.close();
 			};
-		} catch (UnknownHostException | MongoException e) {
+		} catch (MongoException e) {
 			e.printStackTrace();
 		};
 	};
@@ -1169,7 +1165,7 @@ public class Rest_Index {
 				};
 			};			
 			mongo.close();
-		} catch (UnknownHostException | MongoException e) {
+		} catch (MongoException e) {
 			e.printStackTrace();
 		};
 	}
@@ -1203,7 +1199,7 @@ public class Rest_Index {
 				};
 			};			
 			mongo.close();
-		} catch (UnknownHostException | MongoException e) {
+		} catch (MongoException e) {
 			e.printStackTrace();
 		};
 		
@@ -1223,7 +1219,7 @@ public class Rest_Index {
 				listas.addAreasAtuacao(areaAtuacao);
 			};			
 			mongo.close();
-		} catch (UnknownHostException | MongoException e) {
+		} catch (MongoException e) {
 			e.printStackTrace();
 		};
 		
@@ -1242,7 +1238,7 @@ public class Rest_Index {
 				listas.addAreasConhecimento(areaConhecimento);
 			};			
 			mongo.close();
-		} catch (UnknownHostException | MongoException e) {
+		} catch (MongoException e) {
 			e.printStackTrace();
 		};
 		
@@ -1275,7 +1271,7 @@ public class Rest_Index {
 				listas.addObjetivos(objetivo);
 			};			
 			mongo.close();
-		} catch (UnknownHostException | MongoException e) {
+		} catch (MongoException e) {
 			e.printStackTrace();
 		};
 		
@@ -1301,8 +1297,6 @@ public class Rest_Index {
 				};
 			};
 			mongo.close();
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
 		} catch (MongoException e) {
 			e.printStackTrace();
 		};
@@ -1329,8 +1323,6 @@ public class Rest_Index {
 				};
 			};
 			mongo.close();
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
 		} catch (MongoException e) {
 			e.printStackTrace();
 		};
@@ -1372,8 +1364,6 @@ public class Rest_Index {
 				};
 			};
 			mongo.close();
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
 		} catch (MongoException e) {
 			e.printStackTrace();
 		};
@@ -1407,8 +1397,6 @@ public class Rest_Index {
 				};
 			};
 			mongo.close();
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
 		} catch (MongoException e) {
 			e.printStackTrace();
 		};
@@ -1452,8 +1440,6 @@ public class Rest_Index {
 				};
 			};
 			mongo.close();
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
 		} catch (MongoException e) {
 			e.printStackTrace();
 		};
@@ -1494,6 +1480,8 @@ public class Rest_Index {
 			if (doc != null){
 				objUserPerfil.putAll((Map) doc.get("documento"));
 			};
+		}else{
+			return null;
 		};
 
 		listas.setUserPerfil(objUserPerfil);
@@ -1591,7 +1579,7 @@ public class Rest_Index {
 						e.printStackTrace();
 					}
 				};		
-			} catch (UnknownHostException | MongoException e1) {
+			} catch (MongoException e1) {
 				e1.printStackTrace();
 			}
 	};
