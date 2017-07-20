@@ -1,6 +1,5 @@
 package com.yggboard.yggboard_server;
 
-import java.net.UnknownHostException;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -16,12 +15,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
-import com.mongodb.Mongo;
-import com.mongodb.MongoException;
 
 	
 @Singleton
@@ -30,24 +24,19 @@ import com.mongodb.MongoException;
 
 public class Rest_Carreira {
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ "unchecked" })
 	@Path("/obter")	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public JSONObject ObterCarreira(@QueryParam("carreira") String id) throws UnknownHostException, MongoException {
+	public JSONObject ObterCarreira(@QueryParam("carreira") String id) {
 		Commons_DB commons_db = new Commons_DB();
 
-		Response response = commons_db.getCollection(id, "objetivos", "documento.id");
-		
-		if (!(response.getEntity() instanceof Boolean)){
-			BasicDBObject cursor = new BasicDBObject();
-			cursor.putAll((Map) response.getEntity());
-			if (cursor != null){
-				JSONObject documento = new JSONObject();
-				BasicDBObject obj = (BasicDBObject) cursor.get("documento");
-				documento.put("documento", obj);
-				return documento;
-			}
+		BasicDBObject cursor = commons_db.getCollection(id, "objetivos", "documento.id");
+		if (cursor != null){
+			JSONObject documento = new JSONObject();
+			BasicDBObject obj = (BasicDBObject) cursor.get("documento");
+			documento.put("documento", obj);
+			return documento;
 		};
 		return null;
 	};

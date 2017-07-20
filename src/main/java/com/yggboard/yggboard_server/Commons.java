@@ -9,7 +9,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Map;
 import java.util.Properties;
 
 import javax.ws.rs.core.Response;
@@ -233,19 +232,14 @@ public class Commons {
 		return strDate.substring(0, 2) + mesAlpha + strDate.substring(4, 8);
 	};
 
-	@SuppressWarnings("rawtypes")
 	public Object nomeHabilidade(String id) {
 		Commons_DB commons_db = new Commons_DB();
-		Response response = commons_db.getCollection(id, "habilidades", "documento.id");
+		BasicDBObject doc = commons_db.getCollection(id, "habilidades", "documento.id");
 		String nome = "";
-		if (!(response.getEntity() instanceof Boolean)){
-			BasicDBObject doc = new BasicDBObject();
-			doc.putAll((Map) response.getEntity());
-			if (doc != null){
-				BasicDBObject objDoc = (BasicDBObject) doc.get("documento");
-				nome = objDoc.get("nome").toString();
-			};
-		}else{
+		if (doc != null){
+			BasicDBObject objDoc = (BasicDBObject) doc.get("documento");
+			nome = objDoc.get("nome").toString();
+			return nome;
 		};
 		return nome;
 	};

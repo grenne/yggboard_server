@@ -38,8 +38,7 @@ public class Rest_Index {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public BasicDBObject ObterItens(@QueryParam("assunto") String assunto, @QueryParam("id") String id, @QueryParam("usuario") String usuario ) {
-
-		
+	
 		System.out.println("chamada index:" + assunto );
 		
 		if (id == null && !assunto.equals("todos")){
@@ -48,17 +47,11 @@ public class Rest_Index {
 		Commons commons = new Commons();
 		Listas listas = new Listas();
 		Opcoes opcoes = new Opcoes();
-		Commons_DB commons_db = new Commons_DB();
-	
-		Response response = commons_db.getCollection(usuario, "userPerfil", "documento.token");
-	
+		Commons_DB commons_db = new Commons_DB();	
+		BasicDBObject doc = commons_db.getCollection(usuario, "userPerfil", "documento.token");	
 		BasicDBObject objUserPerfil = new BasicDBObject();
-		if (!(response.getEntity() instanceof Boolean)){
-			BasicDBObject doc = new BasicDBObject();
-			doc.putAll((Map) response.getEntity());
-			if (doc != null){
-				objUserPerfil.putAll((Map) doc.get("documento"));
-			}
+		if (doc != null){
+			objUserPerfil.putAll((Map) doc.get("documento"));
 		}else{
 			return null;
 		};
@@ -179,14 +172,10 @@ public class Rest_Index {
 
 		objItemFiltro_0.putAll((Map) objFiltros.get(0));
 
-		Response response = commons_db.getCollection(objItemFiltro_0.get("usuario").toString(), "userPerfil", "documento.token");
+		BasicDBObject doc = commons_db.getCollection(objItemFiltro_0.get("usuario").toString(), "userPerfil", "documento.token");
 	
-		if (!(response.getEntity() instanceof Boolean)){
-			BasicDBObject doc = new BasicDBObject();
-			doc.putAll((Map) response.getEntity());
-			if (doc != null){
-				objUserPerfil.putAll((Map) doc.get("documento"));
-			};
+		if (doc != null){
+			objUserPerfil.putAll((Map) doc.get("documento"));
 		}else{
 			return null;
 		};
@@ -413,7 +402,7 @@ public class Rest_Index {
 			// qdo escolhida uma area de conhecimento trazer todas habilidades, objetivos das habilidades, cursos das habilidades, area de conhecimento só a selecionada e área de atuação de todos os objetivos
 	};
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ "unchecked", "rawtypes"})
 	private Boolean selecionaFiltro(Object elemento, JSONArray objFiltros) {
 		
 		Boolean filtroSelecionado = false;
@@ -464,749 +453,48 @@ public class Rest_Index {
 		return selecionado;
 	};
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ "unchecked" })
 	private void processaObjetivos(String id, Listas listas, Opcoes opcoes) {
 		Commons commons = new Commons();
 		Commons_DB commons_db = new Commons_DB();
 
-		Response response = commons_db.getCollection(id, "objetivos", "documento.id");
+		BasicDBObject cursor = commons_db.getCollection(id, "objetivos", "documento.id");
 		
-		if (!(response.getEntity() instanceof Boolean)){
-			BasicDBObject cursor = new BasicDBObject();
-			cursor.putAll((Map) response.getEntity());
-			if (cursor != null){
-				BasicDBObject objetivo = (BasicDBObject) cursor.get("documento");
-				ArrayList<?> arrayListNecessarios = new ArrayList<Object>(); 
-		    	arrayListNecessarios = (ArrayList<?>) objetivo.get("necessarios");
-				
-				ArrayList<?> arrayListAreaAtuacao = new ArrayList<Object>(); 
-				arrayListAreaAtuacao = (ArrayList<?>) objetivo.get("areaAtuacao");
+		if (cursor != null){
+			BasicDBObject objetivo = (BasicDBObject) cursor.get("documento");
+			ArrayList<?> arrayListNecessarios = new ArrayList<Object>(); 
+	    	arrayListNecessarios = (ArrayList<?>) objetivo.get("necessarios");
+			
+			ArrayList<?> arrayListAreaAtuacao = new ArrayList<Object>(); 
+			arrayListAreaAtuacao = (ArrayList<?>) objetivo.get("areaAtuacao");
 
-				if (!opcoes.filtro()){
-					//
-					// ***		carrega habilidades necessarias
-					//
-					if (arrayListNecessarios != null && opcoes.carregaObjetivosHabilidades()){
-						Object arrayNecessarios[] = arrayListNecessarios.toArray();
-						int z = 0;
-						while (z < arrayNecessarios.length) {
-							if (!opcoes.veioHabilidades()){
-								opcoes.setVeioObjetivos();
-								processaHabilidades(arrayNecessarios[z].toString(), listas, opcoes);
-								opcoes.setVeioObjetivos();
-							};
-							++z;
-						};
-					};
-					if (arrayListAreaAtuacao != null && opcoes.carregaObjetivosAreasAtuacao()){
-						Object arrayAreaAtuacao[] = arrayListAreaAtuacao.toArray();
-						//
-						// ***		carrega área de atuação
-						//			
-						int w = 0;
-						while (w < arrayAreaAtuacao.length) {
-							carregaAreaAtuacao(arrayAreaAtuacao[w].toString(), listas, opcoes);
-							++w;
-						};
-					};
-					//
-					// ***		carrega objetivo
-					//
-					if (listas.userPerfil().get("carreirasInteresse") != null){
-						objetivo.put("interesse", commons.testaElementoArray(id, (ArrayList<String>) listas.userPerfil().get("carreirasInteresse")));
-					};
-					if (listas.userPerfil().get("carreiras") != null){
-						objetivo.put("possui", commons.testaElementoArray(id, (ArrayList<String>) listas.userPerfil().get("carreiras")));
-					};
-					if (objetivo.get("necessarios") != null){
-						objetivo.put("necessariosPerfil", commons.montaArrayPerfil(listas.userPerfil().get("habilidades"), objetivo.get("necessarios")));
-					};
-					listas.addObjetivos(objetivo);
-				}else{
-					//
-					// ***		carrega filtros
-					//
-					if (arrayListNecessarios != null && opcoes.carregaObjetivosHabilidades()){
-						BasicDBObject elemento = new BasicDBObject();
-						Object arrayNecessarios[] = arrayListNecessarios.toArray();
-						JSONArray arrayJson = new JSONArray();
-						for (int i = 0; i < arrayNecessarios.length; i++) {
-							arrayJson.add(arrayNecessarios[i].toString());
-							if (!opcoes.veioHabilidades()){
-								opcoes.setVeioObjetivos();
-								processaHabilidades(arrayNecessarios[i].toString(), listas, opcoes);
-								opcoes.setVeioObjetivos();
-							};
-						};
-						elemento.put("elemento", "habilidades");
-						elemento.put("assunto", "objetivos");
-						elemento.put("value", id);
-						elemento.put("elementos", arrayJson);
-						listas.addElementosFiltro(elemento);
-					};
-					if (arrayListAreaAtuacao != null && opcoes.carregaObjetivosAreasAtuacao()){
-						BasicDBObject elemento = new BasicDBObject();
-						Object arrayAreaAtuacao[] = arrayListAreaAtuacao.toArray();
-						JSONArray arrayJson = new JSONArray();
-						for (int i = 0; i < arrayAreaAtuacao.length; i++) {
-							arrayJson.add(arrayAreaAtuacao[i].toString());
-							if (!opcoes.veioAreaAtuacao()){
-								opcoes.setVeioObjetivos();
-								processaAreaAtuacao(arrayAreaAtuacao[i].toString(), listas, opcoes);
-								opcoes.setVeioObjetivos();
-							};
-						};
-						elemento.put("elemento", "areaAtuacao");
-						elemento.put("assunto", "objetivos");
-						elemento.put("value", id);
-						elemento.put("elementos", arrayJson);
-						listas.addElementosFiltro(elemento);
-					};
-				};
-			};			
-		};
-	};
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private void processaHabilidades(String id, Listas listas, Opcoes opcoes) {
-		Commons commons = new Commons();
-		Commons_DB commons_db = new Commons_DB();
-
-		Response response = commons_db.getCollection(id, "habilidades", "documento.id");
-		
-		if (!(response.getEntity() instanceof Boolean)){
-			BasicDBObject cursor = new BasicDBObject();
-			cursor.putAll((Map) response.getEntity());
-			if (cursor != null){
-				BasicDBObject habilidade = (BasicDBObject) cursor.get("documento");
+			if (!opcoes.filtro()){
 				//
-				// ***		array objetivos
-				//			
-				ArrayList<?> arrayListObjetivos = new ArrayList<Object>(); 
-		    	arrayListObjetivos = (ArrayList<?>) habilidade.get("objetivos");
+				// ***		carrega habilidades necessarias
 				//
-				// ***		array cursos
-				//			
-				ArrayList<?> arrayListCursos = new ArrayList<Object>(); 
-		    	arrayListCursos = (ArrayList<?>) habilidade.get("cursos");
-				//
-				// ***		array area conhecimento
-				//			
-				ArrayList<?> arrayListAreaConhecimento = new ArrayList<Object>(); 
-				arrayListAreaConhecimento = (ArrayList<?>) habilidade.get("areaConhecimento");
-
-				if (!opcoes.filtro()){
-					//
-					// ***		carrega objetivos
-					//
-			    	if (arrayListObjetivos != null  && opcoes.carregaHabilidadesObjetivos()){
-				    	Object arrayObjetivos[] = arrayListObjetivos.toArray();
-						int w = 0;
-						while (w < arrayObjetivos.length) {
-							if (!opcoes.veioObjetivos()){
-								opcoes.setVeioHabilidades();
-								processaObjetivos(arrayObjetivos[w].toString(), listas, opcoes);
-								opcoes.setVeioHabilidades();
-							};
-							++w;
-						};
-			    	};
-					if (arrayListCursos != null && opcoes.carregaHabilidadesCursos()){
-				    	Object[] arrayCursos = arrayListCursos.toArray();
-						//
-						// ***		carrega cursos
-						//
-						int i = 0;
-						while (i < arrayCursos.length) {
-							carregaCurso(arrayCursos[i].toString(), listas, opcoes);
-							++i;
-						};
-			    	};
-					//
-					// ***		carrega área de conhecimento
-					//			
-					if (arrayListAreaConhecimento != null && opcoes.carregaHabilidadesAreaConhecimento()){
-						Object arrayAreaConhecimento[] = arrayListAreaConhecimento.toArray();
-						int w = 0;
-						while (w < arrayAreaConhecimento.length) {
-							carregaAreaConhecimento(arrayAreaConhecimento[w].toString(), listas, opcoes);
-							++w;
-						};
-					};
-						//
-						// ***		carrega habilidade
-						//			
-					carregaHabilidade(id, listas, opcoes);
-	
-				}else{
-					//
-					// ***		carrega filtros
-					//			
-			    	if (arrayListCursos != null && opcoes.carregaHabilidadesCursos()){
-						BasicDBObject elemento = new BasicDBObject();
-				    	Object[] arrayCursos = arrayListCursos.toArray();
-						JSONArray arrayJson = new JSONArray();
-						for (int i = 0; i < arrayCursos.length; i++) {
-							arrayJson.add(arrayCursos[i].toString());
-							if (!opcoes.veioCursos()){
-								opcoes.setVeioHabilidades();
-								processaCursos(arrayCursos[i].toString(), listas, opcoes);
-								opcoes.setVeioHabilidades();
-							};
-						};
-						elemento.put("elemento", "cursos");
-						elemento.put("assunto", "habilidades");
-						elemento.put("value", id);
-						elemento.put("elementos", arrayJson);
-						listas.addElementosFiltro(elemento);
-			    	};
-			    	if (arrayListObjetivos != null && opcoes.carregaHabilidadesObjetivos()){
-						BasicDBObject elemento = new BasicDBObject();
-				    	Object arrayObjetivos[] = arrayListObjetivos.toArray();
-						JSONArray arrayJson = new JSONArray();
-						for (int i = 0; i < arrayObjetivos.length; i++) {
-							arrayJson.add(arrayObjetivos[i]);
-							if (!opcoes.veioObjetivos()){
-								opcoes.setVeioHabilidades();
-								processaObjetivos(arrayObjetivos[i].toString(), listas, opcoes);
-								opcoes.setVeioHabilidades();
-							};
-						};
-						elemento.put("elemento", "objetivos");
-						elemento.put("assunto", "habilidades");
-						elemento.put("value", id);
-						elemento.put("elementos", arrayJson);
-						listas.addElementosFiltro(elemento);
-			    	};
-			    	if (arrayListAreaConhecimento != null && opcoes.carregaHabilidadesAreaConhecimento()){
-						BasicDBObject elemento = new BasicDBObject();
-				    	Object arrayAreaConhecimento[] = arrayListAreaConhecimento.toArray();
-						JSONArray arrayJson = new JSONArray();
-						for (int i = 0; i < arrayAreaConhecimento.length; i++) {
-							arrayJson.add(arrayAreaConhecimento[i].toString());
-							if (!opcoes.veioAreaConhecimento()){
-								opcoes.setVeioHabilidades();
-								processaAreaConhecimento(arrayAreaConhecimento[i].toString(), listas, opcoes);
-								opcoes.setVeioHabilidades();
-							};
-						};
-						elemento.put("elemento", "areaConhecimento");
-						elemento.put("assunto", "habilidades");
-						elemento.put("value", id);
-						elemento.put("elementos", arrayJson);
-						listas.addElementosFiltro(elemento);
-			    	};
-					//
-					// ***		carrega pré requisitos
-					//			
-					ArrayList<?> arrayList = new ArrayList<Object>(); 
-			    	arrayList = (ArrayList<?>) habilidade.get("preRequisitos");
-
-			    	if (arrayList != null){
-			    		Object arrayPreRequisitos[] = arrayList.toArray();
-						int z = 0;
-						while (z < arrayPreRequisitos.length) {
-							carregaPreRequisitosFiltro(commons.preRequisito(arrayPreRequisitos[z].toString()), listas, opcoes);
-							++z;
-						};
-			    	};
-				};
-			};			
-		};
-	
-	};
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private void processaCursos(String id, Listas listas, Opcoes opcoes) {
-		Commons commons = new Commons();
-		Commons_DB commons_db = new Commons_DB();
-
-		Response response = commons_db.getCollection(id, "cursos", "documento.id");
-		
-		if (!(response.getEntity() instanceof Boolean)){
-			BasicDBObject cursor = new BasicDBObject();
-			cursor.putAll((Map) response.getEntity());
-			if (cursor != null){
-				BasicDBObject curso = (BasicDBObject) cursor.get("documento");
-				ArrayList<?> arrayListHabilidades = new ArrayList<Object>(); 
-				arrayListHabilidades = (ArrayList<?>) curso.get("habilidades");
-		    	if (!opcoes.filtro()){
-					if (arrayListHabilidades != null && opcoes.carregaCursosHabilidades()){
-				    	Object arrayHabilidades[] = arrayListHabilidades.toArray();
-						//
-						// ***		carrega habilidades
-						//
-						int z = 0;
-						while (z < arrayHabilidades.length) {
-							if (!opcoes.veioHabilidades()){
-								opcoes.setVeioCursos();
-								processaHabilidades(arrayHabilidades[z].toString(), listas, opcoes);
-								opcoes.setVeioCursos();
-							};
-							++z;
-						};
-					};
-					List arrayParent = (List) curso.get("parents");
-					if (arrayParent.size() == 0){
-						if (listas.userPerfil().get("cursosInteresse") != null){
-							curso.put("interesse", commons.testaElementoArray(id, (ArrayList<String>) listas.userPerfil().get("cursosInteresse")));
-						};
-						if (listas.userPerfil().get("cursos") != null){
-							curso.put("possui", commons.testaElementoArray(id, (ArrayList<String>) listas.userPerfil().get("cursos")));
-						};
-						if (curso.get("habilidades") != null){
-							curso.put("habilidadesPerfil", commons.montaArrayPerfil(listas.userPerfil().get("habilidades"), curso.get("habilidades")));
-						};
-						listas.addCursos(curso);
-					};
-		    	}else{
-					if (arrayListHabilidades != null && opcoes.carregaCursosHabilidades()){
-				    	Object arrayHabilidades[] = arrayListHabilidades.toArray();
-						JSONArray arrayJson = new JSONArray();
-						for (int i = 0; i < arrayHabilidades.length; i++) {
-							arrayJson.add(arrayHabilidades[i].toString());
-							if (!opcoes.veioHabilidades()){
-								opcoes.setVeioCursos();
-								processaHabilidades(arrayHabilidades[i].toString(), listas, opcoes);
-								opcoes.setVeioCursos();
-							};
-						};
-						//
-						// ***		carrega filtros
-						//			
-						BasicDBObject elemento = new BasicDBObject();
-						elemento.put("elemento", "habilidades");
-						elemento.put("assunto", "cursos");
-						elemento.put("value", id);
-						elemento.put("elementos", arrayJson);
-						listas.addElementosFiltro(elemento);
-					};
-				};
-			};			
-		};
-	};
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private void processaAreaConhecimento(String id, Listas listas, Opcoes opcoes) {
-		Commons_DB commons_db = new Commons_DB();
-
-		Response response = commons_db.getCollection(id, "areaConhecimento", "documento.id");
-		
-		if (!(response.getEntity() instanceof Boolean)){
-			BasicDBObject cursor = new BasicDBObject();
-			cursor.putAll((Map) response.getEntity());
-			if (cursor != null){
-				BasicDBObject areaConhecimento = (BasicDBObject) cursor.get("documento");
-				ArrayList<?> arrayListHabilidades = new ArrayList<Object>(); 
-				arrayListHabilidades = (ArrayList<?>) areaConhecimento.get("habilidades");
-				if (!opcoes.filtro()){
-					//
-					// ***		carrega habilidades
-					//
-					if (arrayListHabilidades != null && opcoes.carregaAreaConhecimentoHabilidades()){
-						Object arrayHabilidades[] = arrayListHabilidades.toArray();
-						int z = 0;
-						while (z < arrayHabilidades.length) {
-							if (!opcoes.veioHabilidades()){
-								opcoes.setVeioAreaConhecimento();
-								processaHabilidades(arrayHabilidades[z].toString(), listas, opcoes);
-								opcoes.setVeioAreaConhecimento();
-							};
-							++z;
-						};
-					};
-					//
-					// ***		carrega areas conhecimento
-					//
-					listas.addAreasConhecimento(areaConhecimento);
-				}else{
-					if (arrayListHabilidades != null && opcoes.carregaAreaConhecimentoHabilidades()){
-						Object arrayHabilidades[] = arrayListHabilidades.toArray();
-						JSONArray arrayJson = new JSONArray();
-						for (int i = 0; i < arrayHabilidades.length; i++) {
-							arrayJson.add(arrayHabilidades[i]);
-							if (!opcoes.veioHabilidades()){
-								opcoes.setVeioAreaConhecimento();
-								processaHabilidades(arrayHabilidades[i].toString(), listas, opcoes);
-								opcoes.setVeioAreaConhecimento();
-							};
-						};
-						//
-						// ***		carrega filtros
-						//			
-						BasicDBObject elemento = new BasicDBObject();
-						elemento.put("elemento", "habilidades");
-						elemento.put("assunto", "areaConhecimento");
-						elemento.put("value", id);
-						elemento.put("elementos", arrayJson);
-						listas.addElementosFiltro(elemento);
-					};
-				};
-			};
-		};
-	};
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private void processaAreaAtuacao(String id, Listas listas, Opcoes opcoes) {		
-		Commons_DB commons_db = new Commons_DB();
-
-		Response response = commons_db.getCollection(id, "areaAtuacao", "documento.id");
-		
-		if (!(response.getEntity() instanceof Boolean)){
-			BasicDBObject cursor = new BasicDBObject();
-			cursor.putAll((Map) response.getEntity());
-			if (cursor != null){
-				BasicDBObject areaAtuacao = (BasicDBObject) cursor.get("documento");
-				//
-				// ***		carrega objetivos
-				//			
-				ArrayList<?> arrayListObjetivos = new ArrayList<Object>(); 
-				arrayListObjetivos = (ArrayList<?>) areaAtuacao.get("objetivos");
-				if (!opcoes.filtro()){
-					//
-					// ***		carrega objetivos
-					//
-					if (arrayListObjetivos != null && opcoes.carregaAreasAtuacaoObjetivos()){
-						Object arrayObjetivos[] = arrayListObjetivos.toArray();
-						int z = 0;
-						while (z < arrayObjetivos.length) {
-							if (!opcoes.veioObjetivos()){
-								opcoes.setVeioAreaAtuacao();
-								processaObjetivos(arrayObjetivos[z].toString(), listas, opcoes);
-								opcoes.setVeioAreaAtuacao();
-							};
-							++z;
-						};
-					};
-					//
-					// ***		carrega areas atuacao
-					//
-					listas.addAreasAtuacao(areaAtuacao);
-				}else{
-					if (arrayListObjetivos != null  && opcoes.carregaAreasAtuacaoObjetivos()){
-						Object arrayObjetivos[] = arrayListObjetivos.toArray();
-						JSONArray arrayJson = new JSONArray();
-						for (int i = 0; i < arrayObjetivos.length; i++) {
-							arrayJson.add(arrayObjetivos[i].toString());
-							if (!opcoes.veioObjetivos()){
-								opcoes.setVeioAreaAtuacao();
-								processaObjetivos(arrayObjetivos[i].toString(), listas, opcoes);
-								opcoes.setVeioAreaAtuacao();
-							};
-						};
-						//
-						// ***		carrega filtros
-						//			
-						BasicDBObject elemento = new BasicDBObject();
-						elemento.put("elemento", "objetivos");
-						elemento.put("assunto", "areaAtuacao");
-						elemento.put("value", id);
-						elemento.put("elementos", arrayJson);
-						listas.addElementosFiltro(elemento);
-					};
-				};
-			};
-		};
-	};
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private void carregaHabilidade(String id, Listas listas, Opcoes opcoes) {
-		Commons commons = new Commons();
-		Commons_DB commons_db = new Commons_DB();
-
-		Response response = commons_db.getCollection(id, "habilidades", "documento.id");
-		
-		if (!(response.getEntity() instanceof Boolean)){
-			BasicDBObject cursor = new BasicDBObject();
-			cursor.putAll((Map) response.getEntity());
-			if (cursor != null){
-				BasicDBObject habilidade = (BasicDBObject) cursor.get("documento");
-				//
-				// ***		carrega habilidade
-				//			
-				BasicDBObject idObj = new BasicDBObject();
-				idObj.put("id", id);
-				habilidade.put ("nivel", "0");
-				if (listas.userPerfil().get("habilidadesInteresse") != null){
-					habilidade.put("interesse", commons.testaElementoArray(id, (ArrayList<String>) listas.userPerfil().get("habilidadesInteresse")));
-				};
-				if (listas.userPerfil().get("habilidades") != null){
-					habilidade.put("possui", commons.testaElementoArray(id, (ArrayList<String>) listas.userPerfil().get("habilidades")));
-				};
-				Boolean carregouHabilidade = false;
-				if (addObjeto(listas.habilidadesCarregadas(), idObj)){
-					listas.addHabilidades(habilidade);					
-					carregouHabilidade = true;
-				};
-				listas.addHabilidadesCarregadas(idObj);
-				ArrayList<?> arrayList = new ArrayList<Object>(); 
-		    	arrayList = (ArrayList<?>) habilidade.get("preRequisitos");
-		    	if (arrayList != null && carregouHabilidade){
-		    		Object arrayPreRequisitos[] = arrayList.toArray();
-					//
-					// ***		carrega pré requisitos
-					//			
-					if (opcoes.carregaPreRequisitos()){
-						int z = 0;
-						while (z < arrayPreRequisitos.length) {
-							String preRequisito = commons.preRequisito(arrayPreRequisitos[z].toString());
-							BasicDBObject idObjPreReq = new BasicDBObject();
-							idObjPreReq.put("id", preRequisito);
-							if (addObjeto(listas.habilidadesCarregadas(), idObjPreReq)){
-								carregaPreRequisitos((String) preRequisito, "1", listas, opcoes);
-							};
-							++z;
-						};
-					};
-	    		};
-			};			
-		};
-	};
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private void carregaPreRequisitos(String id, String nivel, Listas listas, Opcoes opcoes) {
-		Commons commons = new Commons();
-		Commons_DB commons_db = new Commons_DB();
-
-		Response response = commons_db.getCollection(id, "habilidades", "documento.id");
-		
-		if (!(response.getEntity() instanceof Boolean)){
-			BasicDBObject cursor = new BasicDBObject();
-			cursor.putAll((Map) response.getEntity());
-			if (cursor != null){
-				BasicDBObject habilidade = (BasicDBObject) cursor.get("documento");
-				Boolean carregouHabilidade = false;
-				BasicDBObject idObj = new BasicDBObject();
-				idObj.put("id", id);
-				habilidade.put ("nivel", nivel);
-				if (listas.userPerfil().get("habilidadesInteresse") != null){
-					habilidade.put("interesse", commons.testaElementoArray(id, (ArrayList<String>) listas.userPerfil().get("habilidadesInteresse")));
-				};
-				if (listas.userPerfil().get("habilidades") != null){
-					habilidade.put("possui", commons.testaElementoArray(id, (ArrayList<String>) listas.userPerfil().get("habilidades")));
-				};
-				if (addObjeto(listas.habilidadesCarregadas(), idObj)){
-					listas.addHabilidades(habilidade);
-					carregouHabilidade = true;
-				};
-				listas.addHabilidadesCarregadas(idObj);
-				//
-				// ***		carrega cursos
-				//
-				ArrayList<?> arrayListCursos = new ArrayList<Object>(); 
-		    	arrayListCursos = (ArrayList<?>) habilidade.get("cursos");
-		    	if (arrayListCursos != null && opcoes.carregaCursosPreRequisitos()){
-			    	Object arrayCursos[] = arrayListCursos.toArray();
+				if (arrayListNecessarios != null && opcoes.carregaObjetivosHabilidades()){
+					Object arrayNecessarios[] = arrayListNecessarios.toArray();
 					int z = 0;
-					while (z < arrayCursos.length) {
-						carregaCurso(arrayCursos[z].toString(), listas, opcoes);
+					while (z < arrayNecessarios.length) {
+						if (!opcoes.veioHabilidades()){
+							opcoes.setVeioObjetivos();
+							processaHabilidades(arrayNecessarios[z].toString(), listas, opcoes);
+							opcoes.setVeioObjetivos();
+						};
 						++z;
 					};
-		    	};
-				//
-				// ***		carrega objetivos
-				//
-				ArrayList<?> arrayListObjetivo = new ArrayList<Object>(); 
-		    	arrayListObjetivo = (ArrayList<?>) habilidade.get("objetivos");
-		    	if (arrayListObjetivo != null && opcoes.carregaObjetivosPreRequisitos()){
-			    	Object arrayObjetivo[] = arrayListObjetivo.toArray();
-					int w = 0;
-					while (w < arrayObjetivo.length) {
-						carregaObjetivo(arrayObjetivo[w].toString(), listas, opcoes);
-						++w;
-					};
-		    	};
-				//
-				// ***		carrega área de conhecimento
-				//			
-				ArrayList<?> arrayListAreaConhecimento = new ArrayList<Object>(); 
-				arrayListAreaConhecimento = (ArrayList<?>) habilidade.get("areaConhecimento");
-				if (arrayListAreaConhecimento != null && opcoes.carregaAreasConhecimentoPreRequisitos()){
-					Object arrayAreaConhecimento[] = arrayListAreaConhecimento.toArray();
-					int w = 0;
-					while (w < arrayAreaConhecimento.length) {
-						carregaAreaConhecimento(arrayAreaConhecimento[w].toString(), listas, opcoes);
-						++w;
-					};
 				};
-				if (carregouHabilidade){
-					ArrayList<?> arrayList = new ArrayList<Object>(); 
-			    	arrayList = (ArrayList<?>) habilidade.get("preRequisitos");
-			    	if (arrayList != null){
-						//
-						// ***		carrega pré requisitos
-						//			
-						int z = 0;
-			    		Object arrayPreRequisitos[] = arrayList.toArray();
-						while (z < arrayPreRequisitos.length) {
-							String preRequisito =commons.preRequisito(arrayPreRequisitos[z].toString());
-							BasicDBObject idObjPreReq = new BasicDBObject();
-							idObjPreReq.put("id", preRequisito);
-							if (addObjeto(listas.habilidadesCarregadas(), idObjPreReq)){
-								int nivelInt = Integer.valueOf(nivel);
-								nivelInt++;
-								String nivelString = String.valueOf(nivelInt);
-								carregaPreRequisitos(preRequisito.toString(), nivelString, listas, opcoes);
-							};
-							++z;
-				    	};
-					};
-				};
-			};
-		};
-	};
-	
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private void carregaPreRequisitosFiltro(String id, Listas listas, Opcoes opcoes) {
-		Commons_DB commons_db = new Commons_DB();
-
-		Response response = commons_db.getCollection(id, "habilidades", "documento.id");
-		
-		if (!(response.getEntity() instanceof Boolean)){
-			BasicDBObject cursor = new BasicDBObject();
-			cursor.putAll((Map) response.getEntity());
-			if (cursor != null){
-				BasicDBObject habilidade = (BasicDBObject) cursor.get("documento");
-				//
-				// ***		array objetivos
-				//			
-				ArrayList<?> arrayListObjetivos = new ArrayList<Object>(); 
-		    	arrayListObjetivos = (ArrayList<?>) habilidade.get("objetivos");
-				//
-				// ***		array cursos
-				//			
-				ArrayList<?> arrayListCursos = new ArrayList<Object>(); 
-		    	arrayListCursos = (ArrayList<?>) habilidade.get("cursos");
-				//
-				// ***		array area conhecimento
-				//			
-				ArrayList<?> arrayListAreaConhecimento = new ArrayList<Object>(); 
-				arrayListAreaConhecimento = (ArrayList<?>) habilidade.get("areaConhecimento");
-
-				if (opcoes.filtro()){
+				if (arrayListAreaAtuacao != null && opcoes.carregaObjetivosAreasAtuacao()){
+					Object arrayAreaAtuacao[] = arrayListAreaAtuacao.toArray();
 					//
-					// ***		carrega filtros
+					// ***		carrega área de atuação
 					//			
-			    	if (arrayListCursos != null && opcoes.carregaCursosPreRequisitos()){
-						BasicDBObject elemento = new BasicDBObject();
-				    	Object[] arrayCursos = arrayListCursos.toArray();
-						JSONArray arrayJson = new JSONArray();
-						for (int i = 0; i < arrayCursos.length; i++) {
-							arrayJson.add(arrayCursos[i]);
-						};
-						elemento.put("elemento", "cursos");
-						elemento.put("assunto", "habilidades");
-						elemento.put("value", id);
-						elemento.put("elementos", arrayJson);
-						listas.addElementosFiltro(elemento);
-			    	};
-			    	if (arrayListObjetivos != null && opcoes.carregaObjetivosPreRequisitos()){
-						BasicDBObject elemento = new BasicDBObject();
-				    	Object arrayObjetivos[] = arrayListObjetivos.toArray();
-						JSONArray arrayJson = new JSONArray();
-						for (int i = 0; i < arrayObjetivos.length; i++) {
-							arrayJson.add(arrayObjetivos[i]);
-						};
-						elemento.put("elemento", "objetivos");
-						elemento.put("assunto", "habilidades");
-						elemento.put("value", id);
-						elemento.put("elementos", arrayJson);
-						listas.addElementosFiltro(elemento);
-			    	};
-			    	if (arrayListAreaConhecimento != null && opcoes.carregaAreasConhecimentoPreRequisitos()){
-						BasicDBObject elemento = new BasicDBObject();
-				    	Object arrayAreaConhecimento[] = arrayListAreaConhecimento.toArray();
-						JSONArray arrayJson = new JSONArray();
-						for (int i = 0; i < arrayAreaConhecimento.length; i++) {
-							arrayJson.add(arrayAreaConhecimento[i]);
-						};
-						elemento.put("elemento", "areaConhecimento");
-						elemento.put("assunto", "habilidades");
-						elemento.put("value", id);
-						elemento.put("elementos", arrayJson);
-						listas.addElementosFiltro(elemento);
-			    	};
-				};
-			};			
-		};
-	}
-
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private void carregaCurso(String id, Listas listas, Opcoes opcoes) {
-		Commons commons = new Commons();
-		Commons_DB commons_db = new Commons_DB();
-
-		Response response = commons_db.getCollection(id, "cursos", "documento.id");
-		
-		if (!(response.getEntity() instanceof Boolean)){
-			BasicDBObject cursor = new BasicDBObject();
-			cursor.putAll((Map) response.getEntity());
-			if (cursor != null){
-				BasicDBObject curso = (BasicDBObject) cursor.get("documento");
-				if (addObjeto(listas.cursos(), curso)){
-					List arrayParent = (List) curso.get("parents");
-					if (listas.userPerfil().get("cursosInteresse") != null){
-						curso.put("interesse", commons.testaElementoArray(id, (ArrayList<String>) listas.userPerfil().get("cursosInteresse")));
-					};
-					if (listas.userPerfil().get("cursos") != null){
-						curso.put("possui", commons.testaElementoArray(id, (ArrayList<String>) listas.userPerfil().get("cursos")));
-					};
-					if (curso.get("habilidades") != null){
-						curso.put("habilidadesPerfil", commons.montaArrayPerfil(listas.userPerfil().get("habilidades"), curso.get("habilidades")));
-					};
-					if (arrayParent.size() == 0){
-						listas.addCursos(curso);
+					int w = 0;
+					while (w < arrayAreaAtuacao.length) {
+						carregaAreaAtuacao(arrayAreaAtuacao[w].toString(), listas, opcoes);
+						++w;
 					};
 				};
-			};			
-		};
-		
-	};
-	
-	@SuppressWarnings("rawtypes")
-	private void carregaAreaAtuacao(String id, Listas listas, Opcoes opcoes) {
-		Commons_DB commons_db = new Commons_DB();
-
-		Response response = commons_db.getCollection(id, "areaAtuacao", "documento.id");
-		
-		if (!(response.getEntity() instanceof Boolean)){
-			BasicDBObject cursor = new BasicDBObject();
-			cursor.putAll((Map) response.getEntity());
-			if (cursor != null){
-				BasicDBObject areaAtuacao = (BasicDBObject) cursor.get("documento");
-				listas.addAreasAtuacao(areaAtuacao);
-			};			
-		};
-		
-	};
-	@SuppressWarnings("rawtypes")
-	private void carregaAreaConhecimento(String id, Listas listas, Opcoes opcoes) {
-		Commons_DB commons_db = new Commons_DB();
-
-		Response response = commons_db.getCollection(id, "areaConhecimento", "documento.id");
-		
-		if (!(response.getEntity() instanceof Boolean)){
-			BasicDBObject cursor = new BasicDBObject();
-			cursor.putAll((Map) response.getEntity());
-			if (cursor != null){
-				BasicDBObject areaConhecimento = (BasicDBObject) cursor.get("documento");
-				listas.addAreasConhecimento(areaConhecimento);
-			};			
-		};
-		
-	};
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private void carregaObjetivo(String id, Listas listas, Opcoes opcoes) {
-		Commons commons = new Commons();
-		Commons_DB commons_db = new Commons_DB();
-
-		Response response = commons_db.getCollection(id, "objetivos", "documento.id");
-		
-		if (!(response.getEntity() instanceof Boolean)){
-			BasicDBObject cursor = new BasicDBObject();
-			cursor.putAll((Map) response.getEntity());
-			if (cursor != null){
-				BasicDBObject objetivo = (BasicDBObject) cursor.get("documento");
 				//
 				// ***		carrega objetivo
 				//
@@ -1220,66 +508,704 @@ public class Rest_Index {
 					objetivo.put("necessariosPerfil", commons.montaArrayPerfil(listas.userPerfil().get("habilidades"), objetivo.get("necessarios")));
 				};
 				listas.addObjetivos(objetivo);
+			}else{
+				//
+				// ***		carrega filtros
+				//
+				if (arrayListNecessarios != null && opcoes.carregaObjetivosHabilidades()){
+					BasicDBObject elemento = new BasicDBObject();
+					Object arrayNecessarios[] = arrayListNecessarios.toArray();
+					JSONArray arrayJson = new JSONArray();
+					for (int i = 0; i < arrayNecessarios.length; i++) {
+						arrayJson.add(arrayNecessarios[i].toString());
+						if (!opcoes.veioHabilidades()){
+							opcoes.setVeioObjetivos();
+							processaHabilidades(arrayNecessarios[i].toString(), listas, opcoes);
+							opcoes.setVeioObjetivos();
+						};
+					};
+					elemento.put("elemento", "habilidades");
+					elemento.put("assunto", "objetivos");
+					elemento.put("value", id);
+					elemento.put("elementos", arrayJson);
+					listas.addElementosFiltro(elemento);
+				};
+				if (arrayListAreaAtuacao != null && opcoes.carregaObjetivosAreasAtuacao()){
+					BasicDBObject elemento = new BasicDBObject();
+					Object arrayAreaAtuacao[] = arrayListAreaAtuacao.toArray();
+					JSONArray arrayJson = new JSONArray();
+					for (int i = 0; i < arrayAreaAtuacao.length; i++) {
+						arrayJson.add(arrayAreaAtuacao[i].toString());
+						if (!opcoes.veioAreaAtuacao()){
+							opcoes.setVeioObjetivos();
+							processaAreaAtuacao(arrayAreaAtuacao[i].toString(), listas, opcoes);
+							opcoes.setVeioObjetivos();
+						};
+					};
+					elemento.put("elemento", "areaAtuacao");
+					elemento.put("assunto", "objetivos");
+					elemento.put("value", id);
+					elemento.put("elementos", arrayJson);
+					listas.addElementosFiltro(elemento);
+				};
+			};
+		};
+	};
+
+	@SuppressWarnings({ "unchecked" })
+	private void processaHabilidades(String id, Listas listas, Opcoes opcoes) {
+		Commons commons = new Commons();
+		Commons_DB commons_db = new Commons_DB();
+
+		BasicDBObject cursor = commons_db.getCollection(id, "habilidades", "documento.id");
+		
+		if (cursor != null){
+			BasicDBObject habilidade = (BasicDBObject) cursor.get("documento");
+			//
+			// ***		array objetivos
+			//			
+			ArrayList<?> arrayListObjetivos = new ArrayList<Object>(); 
+	    	arrayListObjetivos = (ArrayList<?>) habilidade.get("objetivos");
+			//
+			// ***		array cursos
+			//			
+			ArrayList<?> arrayListCursos = new ArrayList<Object>(); 
+	    	arrayListCursos = (ArrayList<?>) habilidade.get("cursos");
+			//
+			// ***		array area conhecimento
+			//			
+			ArrayList<?> arrayListAreaConhecimento = new ArrayList<Object>(); 
+			arrayListAreaConhecimento = (ArrayList<?>) habilidade.get("areaConhecimento");
+
+			if (!opcoes.filtro()){
+				//
+				// ***		carrega objetivos
+				//
+		    	if (arrayListObjetivos != null  && opcoes.carregaHabilidadesObjetivos()){
+			    	Object arrayObjetivos[] = arrayListObjetivos.toArray();
+					int w = 0;
+					while (w < arrayObjetivos.length) {
+						if (!opcoes.veioObjetivos()){
+							opcoes.setVeioHabilidades();
+							processaObjetivos(arrayObjetivos[w].toString(), listas, opcoes);
+							opcoes.setVeioHabilidades();
+						};
+						++w;
+					};
+		    	};
+				if (arrayListCursos != null && opcoes.carregaHabilidadesCursos()){
+			    	Object[] arrayCursos = arrayListCursos.toArray();
+					//
+					// ***		carrega cursos
+					//
+					int i = 0;
+					while (i < arrayCursos.length) {
+						carregaCurso(arrayCursos[i].toString(), listas, opcoes);
+						++i;
+					};
+		    	};
+				//
+				// ***		carrega área de conhecimento
+				//			
+				if (arrayListAreaConhecimento != null && opcoes.carregaHabilidadesAreaConhecimento()){
+					Object arrayAreaConhecimento[] = arrayListAreaConhecimento.toArray();
+					int w = 0;
+					while (w < arrayAreaConhecimento.length) {
+						carregaAreaConhecimento(arrayAreaConhecimento[w].toString(), listas, opcoes);
+						++w;
+					};
+				};
+					//
+					// ***		carrega habilidade
+					//			
+				carregaHabilidade(id, listas, opcoes);
+
+			}else{
+				//
+				// ***		carrega filtros
+				//			
+		    	if (arrayListCursos != null && opcoes.carregaHabilidadesCursos()){
+					BasicDBObject elemento = new BasicDBObject();
+			    	Object[] arrayCursos = arrayListCursos.toArray();
+					JSONArray arrayJson = new JSONArray();
+					for (int i = 0; i < arrayCursos.length; i++) {
+						arrayJson.add(arrayCursos[i].toString());
+						if (!opcoes.veioCursos()){
+							opcoes.setVeioHabilidades();
+							processaCursos(arrayCursos[i].toString(), listas, opcoes);
+							opcoes.setVeioHabilidades();
+						};
+					};
+					elemento.put("elemento", "cursos");
+					elemento.put("assunto", "habilidades");
+					elemento.put("value", id);
+					elemento.put("elementos", arrayJson);
+					listas.addElementosFiltro(elemento);
+		    	};
+		    	if (arrayListObjetivos != null && opcoes.carregaHabilidadesObjetivos()){
+					BasicDBObject elemento = new BasicDBObject();
+			    	Object arrayObjetivos[] = arrayListObjetivos.toArray();
+					JSONArray arrayJson = new JSONArray();
+					for (int i = 0; i < arrayObjetivos.length; i++) {
+						arrayJson.add(arrayObjetivos[i]);
+						if (!opcoes.veioObjetivos()){
+							opcoes.setVeioHabilidades();
+							processaObjetivos(arrayObjetivos[i].toString(), listas, opcoes);
+							opcoes.setVeioHabilidades();
+						};
+					};
+					elemento.put("elemento", "objetivos");
+					elemento.put("assunto", "habilidades");
+					elemento.put("value", id);
+					elemento.put("elementos", arrayJson);
+					listas.addElementosFiltro(elemento);
+		    	};
+		    	if (arrayListAreaConhecimento != null && opcoes.carregaHabilidadesAreaConhecimento()){
+					BasicDBObject elemento = new BasicDBObject();
+			    	Object arrayAreaConhecimento[] = arrayListAreaConhecimento.toArray();
+					JSONArray arrayJson = new JSONArray();
+					for (int i = 0; i < arrayAreaConhecimento.length; i++) {
+						arrayJson.add(arrayAreaConhecimento[i].toString());
+						if (!opcoes.veioAreaConhecimento()){
+							opcoes.setVeioHabilidades();
+							processaAreaConhecimento(arrayAreaConhecimento[i].toString(), listas, opcoes);
+							opcoes.setVeioHabilidades();
+						};
+					};
+					elemento.put("elemento", "areaConhecimento");
+					elemento.put("assunto", "habilidades");
+					elemento.put("value", id);
+					elemento.put("elementos", arrayJson);
+					listas.addElementosFiltro(elemento);
+		    	};
+				//
+				// ***		carrega pré requisitos
+				//			
+				ArrayList<?> arrayList = new ArrayList<Object>(); 
+		    	arrayList = (ArrayList<?>) habilidade.get("preRequisitos");
+
+		    	if (arrayList != null){
+		    		Object arrayPreRequisitos[] = arrayList.toArray();
+					int z = 0;
+					while (z < arrayPreRequisitos.length) {
+						carregaPreRequisitosFiltro(commons.preRequisito(arrayPreRequisitos[z].toString()), listas, opcoes);
+						++z;
+					};
+		    	};
 			};			
+		};
+	
+	};
+
+	@SuppressWarnings({ "unchecked", "rawtypes"})
+	private void processaCursos(String id, Listas listas, Opcoes opcoes) {
+		Commons commons = new Commons();
+		Commons_DB commons_db = new Commons_DB();
+
+		BasicDBObject cursor = commons_db.getCollection(id, "cursos", "documento.id");
+		
+		if (cursor != null){
+			BasicDBObject curso = (BasicDBObject) cursor.get("documento");
+			ArrayList<?> arrayListHabilidades = new ArrayList<Object>(); 
+			arrayListHabilidades = (ArrayList<?>) curso.get("habilidades");
+	    	if (!opcoes.filtro()){
+				if (arrayListHabilidades != null && opcoes.carregaCursosHabilidades()){
+			    	Object arrayHabilidades[] = arrayListHabilidades.toArray();
+					//
+					// ***		carrega habilidades
+					//
+					int z = 0;
+					while (z < arrayHabilidades.length) {
+						if (!opcoes.veioHabilidades()){
+							opcoes.setVeioCursos();
+							processaHabilidades(arrayHabilidades[z].toString(), listas, opcoes);
+							opcoes.setVeioCursos();
+						};
+						++z;
+					};
+				};
+				List arrayParent = (List) curso.get("parents");
+				if (arrayParent.size() == 0){
+					if (listas.userPerfil().get("cursosInteresse") != null){
+						curso.put("interesse", commons.testaElementoArray(id, (ArrayList<String>) listas.userPerfil().get("cursosInteresse")));
+					};
+					if (listas.userPerfil().get("cursos") != null){
+						curso.put("possui", commons.testaElementoArray(id, (ArrayList<String>) listas.userPerfil().get("cursos")));
+					};
+					if (curso.get("habilidades") != null){
+						curso.put("habilidadesPerfil", commons.montaArrayPerfil(listas.userPerfil().get("habilidades"), curso.get("habilidades")));
+					};
+					listas.addCursos(curso);
+				};
+	    	}else{
+				if (arrayListHabilidades != null && opcoes.carregaCursosHabilidades()){
+			    	Object arrayHabilidades[] = arrayListHabilidades.toArray();
+					JSONArray arrayJson = new JSONArray();
+					for (int i = 0; i < arrayHabilidades.length; i++) {
+						arrayJson.add(arrayHabilidades[i].toString());
+						if (!opcoes.veioHabilidades()){
+							opcoes.setVeioCursos();
+							processaHabilidades(arrayHabilidades[i].toString(), listas, opcoes);
+							opcoes.setVeioCursos();
+						};
+					};
+					//
+					// ***		carrega filtros
+					//			
+					BasicDBObject elemento = new BasicDBObject();
+					elemento.put("elemento", "habilidades");
+					elemento.put("assunto", "cursos");
+					elemento.put("value", id);
+					elemento.put("elementos", arrayJson);
+					listas.addElementosFiltro(elemento);
+				};
+			};
+		};
+	};
+
+	@SuppressWarnings({ "unchecked" })
+	private void processaAreaConhecimento(String id, Listas listas, Opcoes opcoes) {
+		Commons_DB commons_db = new Commons_DB();
+
+		BasicDBObject cursor = commons_db.getCollection(id, "areaConhecimento", "documento.id");
+		
+		if (cursor != null){
+			BasicDBObject areaConhecimento = (BasicDBObject) cursor.get("documento");
+			ArrayList<?> arrayListHabilidades = new ArrayList<Object>(); 
+			arrayListHabilidades = (ArrayList<?>) areaConhecimento.get("habilidades");
+			if (!opcoes.filtro()){
+				//
+				// ***		carrega habilidades
+				//
+				if (arrayListHabilidades != null && opcoes.carregaAreaConhecimentoHabilidades()){
+					Object arrayHabilidades[] = arrayListHabilidades.toArray();
+					int z = 0;
+					while (z < arrayHabilidades.length) {
+						if (!opcoes.veioHabilidades()){
+							opcoes.setVeioAreaConhecimento();
+							processaHabilidades(arrayHabilidades[z].toString(), listas, opcoes);
+							opcoes.setVeioAreaConhecimento();
+						};
+						++z;
+					};
+				};
+				//
+				// ***		carrega areas conhecimento
+				//
+				listas.addAreasConhecimento(areaConhecimento);
+			}else{
+				if (arrayListHabilidades != null && opcoes.carregaAreaConhecimentoHabilidades()){
+					Object arrayHabilidades[] = arrayListHabilidades.toArray();
+					JSONArray arrayJson = new JSONArray();
+					for (int i = 0; i < arrayHabilidades.length; i++) {
+						arrayJson.add(arrayHabilidades[i]);
+						if (!opcoes.veioHabilidades()){
+							opcoes.setVeioAreaConhecimento();
+							processaHabilidades(arrayHabilidades[i].toString(), listas, opcoes);
+							opcoes.setVeioAreaConhecimento();
+						};
+					};
+					//
+					// ***		carrega filtros
+					//			
+					BasicDBObject elemento = new BasicDBObject();
+					elemento.put("elemento", "habilidades");
+					elemento.put("assunto", "areaConhecimento");
+					elemento.put("value", id);
+					elemento.put("elementos", arrayJson);
+					listas.addElementosFiltro(elemento);
+				};
+			};
+		};
+	};
+	@SuppressWarnings({ "unchecked" })
+	private void processaAreaAtuacao(String id, Listas listas, Opcoes opcoes) {		
+		Commons_DB commons_db = new Commons_DB();
+
+		BasicDBObject cursor = commons_db.getCollection(id, "areaAtuacao", "documento.id");
+		
+		if (cursor != null){
+			BasicDBObject areaAtuacao = (BasicDBObject) cursor.get("documento");
+			//
+			// ***		carrega objetivos
+			//			
+			ArrayList<?> arrayListObjetivos = new ArrayList<Object>(); 
+			arrayListObjetivos = (ArrayList<?>) areaAtuacao.get("objetivos");
+			if (!opcoes.filtro()){
+				//
+				// ***		carrega objetivos
+				//
+				if (arrayListObjetivos != null && opcoes.carregaAreasAtuacaoObjetivos()){
+					Object arrayObjetivos[] = arrayListObjetivos.toArray();
+					int z = 0;
+					while (z < arrayObjetivos.length) {
+						if (!opcoes.veioObjetivos()){
+							opcoes.setVeioAreaAtuacao();
+							processaObjetivos(arrayObjetivos[z].toString(), listas, opcoes);
+							opcoes.setVeioAreaAtuacao();
+						};
+						++z;
+					};
+				};
+				//
+				// ***		carrega areas atuacao
+				//
+				listas.addAreasAtuacao(areaAtuacao);
+			}else{
+				if (arrayListObjetivos != null  && opcoes.carregaAreasAtuacaoObjetivos()){
+					Object arrayObjetivos[] = arrayListObjetivos.toArray();
+					JSONArray arrayJson = new JSONArray();
+					for (int i = 0; i < arrayObjetivos.length; i++) {
+						arrayJson.add(arrayObjetivos[i].toString());
+						if (!opcoes.veioObjetivos()){
+							opcoes.setVeioAreaAtuacao();
+							processaObjetivos(arrayObjetivos[i].toString(), listas, opcoes);
+							opcoes.setVeioAreaAtuacao();
+						};
+					};
+					//
+					// ***		carrega filtros
+					//			
+					BasicDBObject elemento = new BasicDBObject();
+					elemento.put("elemento", "objetivos");
+					elemento.put("assunto", "areaAtuacao");
+					elemento.put("value", id);
+					elemento.put("elementos", arrayJson);
+					listas.addElementosFiltro(elemento);
+				};
+			};
+		};
+	};
+
+	@SuppressWarnings({ "unchecked"})
+	private void carregaHabilidade(String id, Listas listas, Opcoes opcoes) {
+		Commons commons = new Commons();
+		Commons_DB commons_db = new Commons_DB();
+
+		BasicDBObject cursor = commons_db.getCollection(id, "habilidades", "documento.id");
+		
+		if (cursor != null){
+			BasicDBObject habilidade = (BasicDBObject) cursor.get("documento");
+			//
+			// ***		carrega habilidade
+			//			
+			BasicDBObject idObj = new BasicDBObject();
+			idObj.put("id", id);
+			habilidade.put ("nivel", "0");
+			if (listas.userPerfil().get("habilidadesInteresse") != null){
+				habilidade.put("interesse", commons.testaElementoArray(id, (ArrayList<String>) listas.userPerfil().get("habilidadesInteresse")));
+			};
+			if (listas.userPerfil().get("habilidades") != null){
+				habilidade.put("possui", commons.testaElementoArray(id, (ArrayList<String>) listas.userPerfil().get("habilidades")));
+			};
+			Boolean carregouHabilidade = false;
+			if (addObjeto(listas.habilidadesCarregadas(), idObj)){
+				listas.addHabilidades(habilidade);					
+				carregouHabilidade = true;
+			};
+			listas.addHabilidadesCarregadas(idObj);
+			ArrayList<?> arrayList = new ArrayList<Object>(); 
+	    	arrayList = (ArrayList<?>) habilidade.get("preRequisitos");
+	    	if (arrayList != null && carregouHabilidade){
+	    		Object arrayPreRequisitos[] = arrayList.toArray();
+				//
+				// ***		carrega pré requisitos
+				//			
+				if (opcoes.carregaPreRequisitos()){
+					int z = 0;
+					while (z < arrayPreRequisitos.length) {
+						String preRequisito = commons.preRequisito(arrayPreRequisitos[z].toString());
+						BasicDBObject idObjPreReq = new BasicDBObject();
+						idObjPreReq.put("id", preRequisito);
+						if (addObjeto(listas.habilidadesCarregadas(), idObjPreReq)){
+							carregaPreRequisitos((String) preRequisito, "1", listas, opcoes);
+						};
+						++z;
+					};
+				};
+			};			
+		};
+	};
+
+	@SuppressWarnings({ "unchecked"})
+	private void carregaPreRequisitos(String id, String nivel, Listas listas, Opcoes opcoes) {
+		Commons commons = new Commons();
+		Commons_DB commons_db = new Commons_DB();
+
+		BasicDBObject cursor = commons_db.getCollection(id, "habilidades", "documento.id");
+		
+		if (cursor != null){
+			BasicDBObject habilidade = (BasicDBObject) cursor.get("documento");
+			Boolean carregouHabilidade = false;
+			BasicDBObject idObj = new BasicDBObject();
+			idObj.put("id", id);
+			habilidade.put ("nivel", nivel);
+			if (listas.userPerfil().get("habilidadesInteresse") != null){
+				habilidade.put("interesse", commons.testaElementoArray(id, (ArrayList<String>) listas.userPerfil().get("habilidadesInteresse")));
+			};
+			if (listas.userPerfil().get("habilidades") != null){
+				habilidade.put("possui", commons.testaElementoArray(id, (ArrayList<String>) listas.userPerfil().get("habilidades")));
+			};
+			if (addObjeto(listas.habilidadesCarregadas(), idObj)){
+				listas.addHabilidades(habilidade);
+				carregouHabilidade = true;
+			};
+			listas.addHabilidadesCarregadas(idObj);
+			//
+			// ***		carrega cursos
+			//
+			ArrayList<?> arrayListCursos = new ArrayList<Object>(); 
+	    	arrayListCursos = (ArrayList<?>) habilidade.get("cursos");
+	    	if (arrayListCursos != null && opcoes.carregaCursosPreRequisitos()){
+		    	Object arrayCursos[] = arrayListCursos.toArray();
+				int z = 0;
+				while (z < arrayCursos.length) {
+					carregaCurso(arrayCursos[z].toString(), listas, opcoes);
+					++z;
+				};
+	    	};
+			//
+			// ***		carrega objetivos
+			//
+			ArrayList<?> arrayListObjetivo = new ArrayList<Object>(); 
+	    	arrayListObjetivo = (ArrayList<?>) habilidade.get("objetivos");
+	    	if (arrayListObjetivo != null && opcoes.carregaObjetivosPreRequisitos()){
+		    	Object arrayObjetivo[] = arrayListObjetivo.toArray();
+				int w = 0;
+				while (w < arrayObjetivo.length) {
+					carregaObjetivo(arrayObjetivo[w].toString(), listas, opcoes);
+					++w;
+				};
+	    	};
+			//
+			// ***		carrega área de conhecimento
+			//			
+			ArrayList<?> arrayListAreaConhecimento = new ArrayList<Object>(); 
+			arrayListAreaConhecimento = (ArrayList<?>) habilidade.get("areaConhecimento");
+			if (arrayListAreaConhecimento != null && opcoes.carregaAreasConhecimentoPreRequisitos()){
+				Object arrayAreaConhecimento[] = arrayListAreaConhecimento.toArray();
+				int w = 0;
+				while (w < arrayAreaConhecimento.length) {
+					carregaAreaConhecimento(arrayAreaConhecimento[w].toString(), listas, opcoes);
+					++w;
+				};
+			};
+			if (carregouHabilidade){
+				ArrayList<?> arrayList = new ArrayList<Object>(); 
+		    	arrayList = (ArrayList<?>) habilidade.get("preRequisitos");
+		    	if (arrayList != null){
+					//
+					// ***		carrega pré requisitos
+					//			
+					int z = 0;
+		    		Object arrayPreRequisitos[] = arrayList.toArray();
+					while (z < arrayPreRequisitos.length) {
+						String preRequisito =commons.preRequisito(arrayPreRequisitos[z].toString());
+						BasicDBObject idObjPreReq = new BasicDBObject();
+						idObjPreReq.put("id", preRequisito);
+						if (addObjeto(listas.habilidadesCarregadas(), idObjPreReq)){
+							int nivelInt = Integer.valueOf(nivel);
+							nivelInt++;
+							String nivelString = String.valueOf(nivelInt);
+							carregaPreRequisitos(preRequisito.toString(), nivelString, listas, opcoes);
+						};
+						++z;
+			    	};
+				};
+			};
+		};
+	};
+	
+	@SuppressWarnings({ "unchecked"})
+	private void carregaPreRequisitosFiltro(String id, Listas listas, Opcoes opcoes) {
+		Commons_DB commons_db = new Commons_DB();
+
+		BasicDBObject cursor = commons_db.getCollection(id, "habilidades", "documento.id");
+		
+		if (cursor != null){
+			BasicDBObject habilidade = (BasicDBObject) cursor.get("documento");
+			//
+			// ***		array objetivos
+			//			
+			ArrayList<?> arrayListObjetivos = new ArrayList<Object>(); 
+	    	arrayListObjetivos = (ArrayList<?>) habilidade.get("objetivos");
+			//
+			// ***		array cursos
+			//			
+			ArrayList<?> arrayListCursos = new ArrayList<Object>(); 
+	    	arrayListCursos = (ArrayList<?>) habilidade.get("cursos");
+			//
+			// ***		array area conhecimento
+			//			
+			ArrayList<?> arrayListAreaConhecimento = new ArrayList<Object>(); 
+			arrayListAreaConhecimento = (ArrayList<?>) habilidade.get("areaConhecimento");
+
+			if (opcoes.filtro()){
+				//
+				// ***		carrega filtros
+				//			
+		    	if (arrayListCursos != null && opcoes.carregaCursosPreRequisitos()){
+					BasicDBObject elemento = new BasicDBObject();
+			    	Object[] arrayCursos = arrayListCursos.toArray();
+					JSONArray arrayJson = new JSONArray();
+					for (int i = 0; i < arrayCursos.length; i++) {
+						arrayJson.add(arrayCursos[i]);
+					};
+					elemento.put("elemento", "cursos");
+					elemento.put("assunto", "habilidades");
+					elemento.put("value", id);
+					elemento.put("elementos", arrayJson);
+					listas.addElementosFiltro(elemento);
+		    	};
+		    	if (arrayListObjetivos != null && opcoes.carregaObjetivosPreRequisitos()){
+					BasicDBObject elemento = new BasicDBObject();
+			    	Object arrayObjetivos[] = arrayListObjetivos.toArray();
+					JSONArray arrayJson = new JSONArray();
+					for (int i = 0; i < arrayObjetivos.length; i++) {
+						arrayJson.add(arrayObjetivos[i]);
+					};
+					elemento.put("elemento", "objetivos");
+					elemento.put("assunto", "habilidades");
+					elemento.put("value", id);
+					elemento.put("elementos", arrayJson);
+					listas.addElementosFiltro(elemento);
+		    	};
+		    	if (arrayListAreaConhecimento != null && opcoes.carregaAreasConhecimentoPreRequisitos()){
+					BasicDBObject elemento = new BasicDBObject();
+			    	Object arrayAreaConhecimento[] = arrayListAreaConhecimento.toArray();
+					JSONArray arrayJson = new JSONArray();
+					for (int i = 0; i < arrayAreaConhecimento.length; i++) {
+						arrayJson.add(arrayAreaConhecimento[i]);
+					};
+					elemento.put("elemento", "areaConhecimento");
+					elemento.put("assunto", "habilidades");
+					elemento.put("value", id);
+					elemento.put("elementos", arrayJson);
+					listas.addElementosFiltro(elemento);
+		    	};
+			};
+		};
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private void carregaCurso(String id, Listas listas, Opcoes opcoes) {
+		Commons commons = new Commons();
+		Commons_DB commons_db = new Commons_DB();
+
+		BasicDBObject cursor = commons_db.getCollection(id, "cursos", "documento.id");
+		
+		if (cursor != null){
+			BasicDBObject curso = (BasicDBObject) cursor.get("documento");
+			if (addObjeto(listas.cursos(), curso)){
+				List arrayParent = (List) curso.get("parents");
+				if (listas.userPerfil().get("cursosInteresse") != null){
+					curso.put("interesse", commons.testaElementoArray(id, (ArrayList<String>) listas.userPerfil().get("cursosInteresse")));
+				};
+				if (listas.userPerfil().get("cursos") != null){
+					curso.put("possui", commons.testaElementoArray(id, (ArrayList<String>) listas.userPerfil().get("cursos")));
+				};
+				if (curso.get("habilidades") != null){
+					curso.put("habilidadesPerfil", commons.montaArrayPerfil(listas.userPerfil().get("habilidades"), curso.get("habilidades")));
+				};
+				if (arrayParent.size() == 0){
+					listas.addCursos(curso);
+				};
+			};
 		};
 		
 	};
+	
+	private void carregaAreaAtuacao(String id, Listas listas, Opcoes opcoes) {
+		Commons_DB commons_db = new Commons_DB();
+		BasicDBObject cursor = commons_db.getCollection(id, "areaAtuacao", "documento.id");		
+		if (cursor != null){
+			BasicDBObject areaAtuacao = (BasicDBObject) cursor.get("documento");
+			listas.addAreasAtuacao(areaAtuacao);
+		};					
+	};
+	
+	private void carregaAreaConhecimento(String id, Listas listas, Opcoes opcoes) {
+		Commons_DB commons_db = new Commons_DB();
+		BasicDBObject cursor = commons_db.getCollection(id, "areaConhecimento", "documento.id");
+		if (cursor != null){
+			BasicDBObject areaConhecimento = (BasicDBObject) cursor.get("documento");
+			listas.addAreasConhecimento(areaConhecimento);
+		};					
+	};
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ "unchecked"})
+	private void carregaObjetivo(String id, Listas listas, Opcoes opcoes) {
+		Commons commons = new Commons();
+		Commons_DB commons_db = new Commons_DB();
+		BasicDBObject cursor = commons_db.getCollection(id, "objetivos", "documento.id");
+		if (cursor != null){
+			BasicDBObject objetivo = (BasicDBObject) cursor.get("documento");
+			//
+			// ***		carrega objetivo
+			//
+			if (listas.userPerfil().get("carreirasInteresse") != null){
+				objetivo.put("interesse", commons.testaElementoArray(id, (ArrayList<String>) listas.userPerfil().get("carreirasInteresse")));
+			};
+			if (listas.userPerfil().get("carreiras") != null){
+				objetivo.put("possui", commons.testaElementoArray(id, (ArrayList<String>) listas.userPerfil().get("carreiras")));
+			};
+			if (objetivo.get("necessarios") != null){
+				objetivo.put("necessariosPerfil", commons.montaArrayPerfil(listas.userPerfil().get("habilidades"), objetivo.get("necessarios")));
+			};
+			listas.addObjetivos(objetivo);
+		};					
+	};
+
+	@SuppressWarnings({ "unchecked", "rawtypes"})
 	private void carregaLista(JSONArray arrayObj, Listas listas, String collection) {
 		Commons commons = new Commons();
 		Commons_DB commons_db = new Commons_DB();
-		Response response = commons_db.getCollectionLista("", collection, "");
-		
-		if (!(response.getEntity() instanceof Boolean)){
-			BasicDBObject cursor = new BasicDBObject();
-			cursor.putAll((Map) response.getEntity());
-			if (cursor != null){
-				while (((Iterator<DBObject>) cursor).hasNext()) {
-					BasicDBObject obj = (BasicDBObject) ((Iterator<DBObject>) cursor).next();
-					//
-					// ***		carrega lista
-					//			
-					if (addObjeto(arrayObj, obj)){
-						BasicDBObject objDoc = (BasicDBObject) obj.get("documento");
-						if (collection.equals("cursos")) {
-							List arrayParent = (List) objDoc.get("parents");
-							if (arrayParent.size() == 0){
-								if (listas.userPerfil().get("cursosInteresse") != null){
-									objDoc.put("interesse", commons.testaElementoArray(objDoc.get("id").toString(), (ArrayList<String>) listas.userPerfil().get("cursosInteresse")));
-								};
-								if (listas.userPerfil().get("cursos") != null){
-									objDoc.put("possui", commons.testaElementoArray(objDoc.get("id").toString(), (ArrayList<String>) listas.userPerfil().get("cursos")));
-								};
-								if (objDoc.get("habilidades") != null){
-									objDoc.put("habilidadesPerfil", commons.montaArrayPerfil(listas.userPerfil().get("habilidades"), objDoc.get("habilidades")));
-								};
-								obj.put("documento", objDoc);
+		BasicDBObject cursor = commons_db.getCollectionListaNoKey(collection);	
+		if (cursor != null){
+			while (((Iterator<DBObject>) cursor).hasNext()) {
+				BasicDBObject obj = (BasicDBObject) ((Iterator<DBObject>) cursor).next();
+				//
+				// ***		carrega lista
+				//			
+				if (addObjeto(arrayObj, obj)){
+					BasicDBObject objDoc = (BasicDBObject) obj.get("documento");
+					if (collection.equals("cursos")) {
+						List arrayParent = (List) objDoc.get("parents");
+						if (arrayParent.size() == 0){
+							if (listas.userPerfil().get("cursosInteresse") != null){
+								objDoc.put("interesse", commons.testaElementoArray(objDoc.get("id").toString(), (ArrayList<String>) listas.userPerfil().get("cursosInteresse")));
 							};
-						};
-						if (collection.equals("habilidades")) {
-							if (listas.userPerfil().get("habilidadesInteresse") != null){
-								objDoc.put("interesse", commons.testaElementoArray(objDoc.get("id").toString(), (ArrayList<String>) listas.userPerfil().get("habilidadesInteresse")));
+							if (listas.userPerfil().get("cursos") != null){
+								objDoc.put("possui", commons.testaElementoArray(objDoc.get("id").toString(), (ArrayList<String>) listas.userPerfil().get("cursos")));
 							};
-							if (listas.userPerfil().get("habilidades") != null){
-								objDoc.put("possui", commons.testaElementoArray(objDoc.get("id").toString(), (ArrayList<String>) listas.userPerfil().get("habilidades")));
+							if (objDoc.get("habilidades") != null){
+								objDoc.put("habilidadesPerfil", commons.montaArrayPerfil(listas.userPerfil().get("habilidades"), objDoc.get("habilidades")));
 							};
 							obj.put("documento", objDoc);
 						};
-						if (collection.equals("objetivos")) {
-							if (listas.userPerfil().get("carreirasInteresse") != null){
-								objDoc.put("interesse", commons.testaElementoArray(objDoc.get("id").toString(), (ArrayList<String>) listas.userPerfil().get("carreirasInteresse")));
-							};
-							if (listas.userPerfil().get("carreiras") != null){
-								objDoc.put("possui", commons.testaElementoArray(objDoc.get("id").toString(), (ArrayList<String>) listas.userPerfil().get("carreiras")));
-							};
-							if (objDoc.get("necessarios") != null){
-								objDoc.put("necessariosPerfil", commons.montaArrayPerfil(listas.userPerfil().get("habilidades"), objDoc.get("necessarios")));
-							};
-							obj.put("documento", objDoc);
-						};
-						arrayObj.add(obj);
 					};
+					if (collection.equals("habilidades")) {
+						if (listas.userPerfil().get("habilidadesInteresse") != null){
+							objDoc.put("interesse", commons.testaElementoArray(objDoc.get("id").toString(), (ArrayList<String>) listas.userPerfil().get("habilidadesInteresse")));
+						};
+						if (listas.userPerfil().get("habilidades") != null){
+							objDoc.put("possui", commons.testaElementoArray(objDoc.get("id").toString(), (ArrayList<String>) listas.userPerfil().get("habilidades")));
+						};
+						obj.put("documento", objDoc);
+					};
+					if (collection.equals("objetivos")) {
+						if (listas.userPerfil().get("carreirasInteresse") != null){
+							objDoc.put("interesse", commons.testaElementoArray(objDoc.get("id").toString(), (ArrayList<String>) listas.userPerfil().get("carreirasInteresse")));
+						};
+						if (listas.userPerfil().get("carreiras") != null){
+							objDoc.put("possui", commons.testaElementoArray(objDoc.get("id").toString(), (ArrayList<String>) listas.userPerfil().get("carreiras")));
+						};
+						if (objDoc.get("necessarios") != null){
+							objDoc.put("necessariosPerfil", commons.montaArrayPerfil(listas.userPerfil().get("habilidades"), objDoc.get("necessarios")));
+						};
+						obj.put("documento", objDoc);
+					};
+					arrayObj.add(obj);
 				};
 			};
 		};
@@ -1310,15 +1236,10 @@ public class Rest_Index {
 		Opcoes opcoes = new Opcoes();
 		Commons_DB commons_db = new Commons_DB();
 		
-		Response response = commons_db.getCollection(usuario, "userPerfil", "documento.token");
-	
+		BasicDBObject doc = commons_db.getCollection(usuario, "userPerfil", "documento.token");
 		BasicDBObject objUserPerfil = new BasicDBObject();
-		if (!(response.getEntity() instanceof Boolean)){
-			BasicDBObject doc = new BasicDBObject();
-			doc.putAll((Map) response.getEntity());
-			if (doc != null){
-				objUserPerfil.putAll((Map) doc.get("documento"));
-			};
+		if (doc != null){
+			objUserPerfil.putAll((Map) doc.get("documento"));
 		}else{
 			return null;
 		};
@@ -1354,11 +1275,10 @@ public class Rest_Index {
 		return results;			
 	};
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ "unchecked", "rawtypes"})
 	private void carregaIndex(String assunto, JSONArray documentos, String characters, Boolean lista, Listas listas, Opcoes opcoes, int qtdeItens) {
 		Commons_DB commons_db = new Commons_DB();
-		Response response = commons_db.getCollectionLista("documento.assunto", "index", assunto);
-		
+		Response response = commons_db.getCollectionLista("documento.assunto", "index", assunto);		
 		if (!(response.getEntity() instanceof Boolean)){
 			BasicDBObject cursor = new BasicDBObject();
 			cursor.putAll((Map) response.getEntity());

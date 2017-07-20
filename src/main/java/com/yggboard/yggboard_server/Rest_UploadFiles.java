@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Map;
 
@@ -25,11 +24,6 @@ import org.jboss.resteasy.plugins.providers.multipart.InputPart;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 
 import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
-import com.mongodb.Mongo;
-import com.mongodb.MongoException;
 
 	
 @Singleton
@@ -46,7 +40,6 @@ public class Rest_UploadFiles {
      * @param image nome da imagem a procurar
      * @return imagem com o mime type da imagem fonte.
      */
-	@SuppressWarnings("rawtypes")
 	@GET
 	@Path("/images")
     @Produces("image/*")
@@ -54,14 +47,10 @@ public class Rest_UploadFiles {
 
 		String tmp = "c:/images/yggboard/";
 		Commons_DB commons_db = new Commons_DB();
-		Response response = commons_db.getCollection("fotosYggboard", "objetivos", "documento.setupKey");		
-		if (!(response.getEntity() instanceof Boolean)){
-			BasicDBObject cursor = new BasicDBObject();
-			cursor.putAll((Map) response.getEntity());
-			if (cursor != null){
-				BasicDBObject obj = (BasicDBObject) cursor.get("documento");
-				tmp = obj.getString("setupValue");
-			};
+		BasicDBObject cursor = commons_db.getCollection("fotosYggboard", "objetivos", "documento.setupKey");		
+		if (cursor != null){
+			BasicDBObject obj = (BasicDBObject) cursor.get("documento");
+			tmp = obj.getString("setupValue");
 		};
         
 		File target = new File(tmp + image);
@@ -72,21 +61,16 @@ public class Rest_UploadFiles {
         return Response.ok(target, mt).build();
     }
 	
-	@SuppressWarnings("rawtypes")
 	@POST
 	@Path("/files")
 	@Consumes("multipart/form-data")
 	public Response uploadFile(MultipartFormDataInput input, @QueryParam("prefix") String prefix) {
 		String tmp = "c:/images/yggboard/";
 		Commons_DB commons_db = new Commons_DB();
-		Response response = commons_db.getCollection("fotosYggboard", "objetivos", "documento.setupKey");		
-		if (!(response.getEntity() instanceof Boolean)){
-			BasicDBObject cursor = new BasicDBObject();
-			cursor.putAll((Map) response.getEntity());
-			if (cursor != null){
-				BasicDBObject obj = (BasicDBObject) cursor.get("documento");
-				tmp = obj.getString("setupValue");
-			};
+		BasicDBObject cursor = commons_db.getCollection("fotosYggboard", "objetivos", "documento.setupKey");		
+		if (cursor != null){
+			BasicDBObject obj = (BasicDBObject) cursor.get("documento");
+			tmp = obj.getString("setupValue");
 		};
 		String fileName = "";
 		Map<String, List<InputPart>> uploadForm = input.getFormDataMap();

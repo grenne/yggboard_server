@@ -217,16 +217,22 @@ public class Commons_DB {
 			}
 	};
 
-	@SuppressWarnings("unchecked")
-	public Response getCollection(String value, String collectionName, String keyInput) {
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public BasicDBObject getCollection(String value, String collectionName, String keyInput) {
 		
 		ArrayList<JSONObject> keysArray = new ArrayList<>();
 		JSONObject key = new JSONObject();
 		key.put("key", keyInput);
 		key.put("value", value);
 		keysArray.add(key);
-		
-		return obterCrud(collectionName, keysArray);
+
+		Response response = obterCrud(collectionName, keysArray);
+		if (!(response.getEntity() instanceof Boolean)){
+			BasicDBObject cursor = new BasicDBObject();
+			cursor.putAll((Map) response.getEntity());
+			return cursor;
+		};
+		return null;
 	};
 
 	@SuppressWarnings("unchecked")
@@ -240,5 +246,43 @@ public class Commons_DB {
 		
 		return listaCrud(collectionName, keysArray);
 	}
-	
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public BasicDBObject getCollectionListaNoKey(String collectionName) {
+		
+		ArrayList<JSONObject> keysArray = new ArrayList<>();
+		JSONObject key = new JSONObject();
+		key.put("key", "");
+		key.put("value", "");
+		keysArray.add(key);
+
+		Response responseUserPerfil = listaCrud(collectionName, keysArray);
+		if (!(responseUserPerfil.getEntity() instanceof Boolean)){
+			BasicDBObject cursor = new BasicDBObject();
+			cursor.putAll((Map) responseUserPerfil.getEntity());
+			return cursor;
+		};
+		return null;
+	}
+
+	@SuppressWarnings({ "unchecked" })
+	public Response atualizaDocumento(BasicDBObject objUpdate, String collection, String keyInput, String id) {
+		
+
+		ArrayList<JSONObject> keysArray = new ArrayList<>();
+		JSONObject key = new JSONObject();
+		key.put("key", keyInput);
+		key.put("value", id);
+		keysArray.add(key);
+
+		ArrayList<JSONObject> fieldsArray = new ArrayList<>();
+		JSONObject field = new JSONObject();
+		field.put("field", "documento");
+		field.put("value", objUpdate.get("documento"));
+		fieldsArray.add(field);
+
+		Response atualizacao = atualizarCrud(collection, fieldsArray, keysArray);
+		
+		return atualizacao;
+	};
 };

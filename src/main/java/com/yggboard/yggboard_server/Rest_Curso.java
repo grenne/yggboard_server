@@ -24,24 +24,19 @@ import com.mongodb.DBObject;
 
 public class Rest_Curso {
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ "unchecked" })
 	@Path("/obter")	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public JSONObject ObterCurso(@QueryParam("mail") String id)  {
 		Commons_DB commons_db = new Commons_DB();
 
-		Response response = commons_db.getCollection(id, "objetivos", "documento.id");
-		
-		if (!(response.getEntity() instanceof Boolean)){
-			BasicDBObject cursor = new BasicDBObject();
-			cursor.putAll((Map) response.getEntity());
-			if (cursor != null){
-				JSONObject documento = new JSONObject();
-				BasicDBObject obj = (BasicDBObject) cursor.get("documento");
-				documento.put("documento", obj);
-				return documento;
-			}
+		BasicDBObject cursor = commons_db.getCollection(id, "objetivos", "documento.id");		
+		if (cursor != null){
+			JSONObject documento = new JSONObject();
+			BasicDBObject obj = (BasicDBObject) cursor.get("documento");
+			documento.put("documento", obj);
+			return documento;
 		};
 		return null;
 	};
