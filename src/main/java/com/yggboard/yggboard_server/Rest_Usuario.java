@@ -83,6 +83,7 @@ public class Rest_Usuario {
 	
 		Commons_DB commons_db = new Commons_DB();
 		Commons commons = new Commons();
+
 		ArrayList<JSONObject> keysArray = new ArrayList<>();
 		JSONObject key = new JSONObject();
 		key.put("key", "documento.email");
@@ -91,31 +92,31 @@ public class Rest_Usuario {
 		keysArray.add(key);
 		
 		Response response = commons_db.obterCrud("usuarios", keysArray);
-		
-		BasicDBObject objUser = new BasicDBObject();
-		if (!(response.getEntity() instanceof Boolean)){
-			BasicDBObject doc = new BasicDBObject();
-			doc.putAll((Map) response.getEntity());
-			if (doc != null){
-				objUser = (BasicDBObject) doc.get("documento");
+		if ((response.getStatus() == 200)){
+			BasicDBObject cursor = new BasicDBObject();
+			cursor.putAll((Map) response.getEntity());
+			BasicDBObject objUser = new BasicDBObject();
+			objUser.putAll((Map) cursor.get("documento"));
+			if (objUser.get("password") != null){
 				if (objUser.get("password").toString().equals(password)){
 					key.clear();
 					keysArray.clear();
 					key.put("key", "documento.email");
 					key.put("value", email);
+					key.put("tipo", "login");
 					keysArray.add(key);
 					byte[] tokenByte = commons.gerarHash(macaddress + commons.currentTime().toString());
 					String token = commons.stringHexa(tokenByte);
 					ArrayList<JSONObject> fieldsArray = new ArrayList<>();
 					JSONObject field = new JSONObject();
-
+	
 					field.put("field", "token");
 					field.put("value", token);
 					fieldsArray.add(field);				
 					commons_db.atualizarCrud("usuarios", fieldsArray, keysArray);
-/*
- * 					atualizar perfil
- */
+	/*
+	 * 					atualizar perfil
+	 */
 					key.clear();
 					keysArray.clear();
 					key.put("key", "documento.usuario");

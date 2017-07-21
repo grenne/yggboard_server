@@ -83,6 +83,8 @@ function rest_atualizar (objJson, action_ok, action_not_ok, var1, var2, var3){
 		async = objJson.async
 	};
 
+	objJson.token = sessionStorage.token;
+	
 	$.ajax({
 		type: "POST",
         url: localStorage.mainUrl + "yggboard_server/rest/crud/atualizar",
@@ -111,6 +113,8 @@ function rest_lista (objJson, action_ok, action_not_ok, var1, var2, var3){
 		async = objJson.async
 	};
 
+	objJson.token = sessionStorage.token;
+	
 	$.ajax({
 		type: "POST",
         url: localStorage.mainUrl + "yggboard_server/rest/crud/lista",
@@ -136,7 +140,7 @@ function rest_listaReturn (collection, action_ok, action_not_ok, var1, var2, var
 	var listas = null;
 	var objJson = 
 	{	
-		token: "1170706277ae0af0486017711353ee73",
+		token: sessionStorage.token,
 		asybc : false,
 		collection : collection,
 		keys : []
@@ -181,25 +185,6 @@ function rest_login (email, senha){
 	});
 
 	return returnData;
-};
-
-function rest_urlReturn(url, action_not_ok, var1, var2, var3) {
-	var dataOutput = null;
-	$.ajax({
-        url: localStorage.mainUrl + "yggboard_server/rest/" + url,
-        contentType: "application/json; charset=utf-8",
-        dataType: 'json',
-        async : false
-	})
-	.done(function( data ) {
-		dataOutput = data;
-	})
-	.fail(function(data) {
-	})
-	.always(function(data) {
-	});
-	
-	return dataOutput;
 };
 
 function semAcao(){
