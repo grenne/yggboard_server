@@ -22,7 +22,6 @@ import com.mongodb.BasicDBObject;
 public class Commons {
 	
 	public Boolean verifyInterval (String date, String initInterval, String endInterval){
-	
 		DateFormat df = new SimpleDateFormat ("dd/MM/yyyy");
 		try {
 			if (initInterval != null && endInterval != null){
