@@ -6,8 +6,12 @@ function atualizaCursosHabilidade (){
 
 	habilidades = rest_listaReturn ("habilidades");
 	cursos = rest_listaReturn ("cursos");
-	
+
+	sessionStorage.setItem("index", 1);
+    sessionStorage.setItem("totalRecords", habilidades.length);
+
 	$.each( habilidades, function( i, habilidade) {		
+		sessionStorage.setItem("index", i);
 		var habilidadadesCursos = [];
 		var habilidadadesCursosNome = [];
 	    $.each(cursos, function (z, curso) {
@@ -28,7 +32,7 @@ function atualizaCursosHabilidade (){
     	var habililadeUpdate = habilidade;
 		var objJson = 
 		{	
-			token: "1170706277ae0af0486017711353ee73",
+			token: sessionStorage.token,
 			collection : "habilidades",
 			keys : 
 				[
@@ -47,6 +51,14 @@ function atualizaCursosHabilidade (){
 				]
 			};
 		rest_atualizar (objJson, restOk, semAcao);
+	  	i = sessionStorage.getItem("index");
+	  	totalRecords = sessionStorage.getItem("totalRecords");
+		var percentLoaded = Math.round((i / totalRecords) * 100);
+		if (percentLoaded < 100) {
+		     progress.style.width = percentLoaded + '%';
+		     progress.textContent = percentLoaded + '%';
+		};
+	    $('.progress-bar').css('width', percentLoaded + '%').attr('aria-valuenow', percentLoaded);
 	});
 	sessionStorage.setItem("rotina", "atualizaObjetivosHabilidadeMsg");  	
 	console.log ("terminou cursos");
@@ -56,8 +68,12 @@ function atualizaObjetivosHabilidade (){
 		
 	habilidades = rest_listaReturn ("habilidades");
 	objetivos = rest_listaReturn ("objetivos");
+
+	sessionStorage.setItem("index", 1);
+    sessionStorage.setItem("totalRecords", habilidades.length);
 	
 	$.each( habilidades, function( i, habilidade) {		
+		sessionStorage.setItem("index", i);
 		var habilidadadesObjetivos = [];
 		var habilidadadesObjetivosNome = [];
 	    $.each(objetivos, function (z, objetivo) {
@@ -78,7 +94,7 @@ function atualizaObjetivosHabilidade (){
     	var habililadeUpdate = habilidade;
 		var objJson = 
 		{	
-			token: "1170706277ae0af0486017711353ee73",
+			token: sessionStorage.token,
 			collection : "habilidades",
 			keys : 
 				[
@@ -96,8 +112,15 @@ function atualizaObjetivosHabilidade (){
 					}
 				]
 			};
-		console.log ("habilidade id:" + habilidade.id)
 		rest_atualizar (objJson, restOk, semAcao);
+	  	i = sessionStorage.getItem("index");
+	  	totalRecords = sessionStorage.getItem("totalRecords");
+		var percentLoaded = Math.round((i / totalRecords) * 100);
+		if (percentLoaded < 100) {
+		     progress.style.width = percentLoaded + '%';
+		     progress.textContent = percentLoaded + '%';
+		};
+	    $('.progress-bar').css('width', percentLoaded + '%').attr('aria-valuenow', percentLoaded);
 	});
 	sessionStorage.setItem("rotina", "atualizaAreaAtuacaoObjetivosMsg");  	
 	console.log ("terminou objetivos");
@@ -107,8 +130,12 @@ function atualizaAreaAtuacaoObjetivos (){
 		
 	objetivos = rest_listaReturn ("objetivos");
 	areasAtuacao = rest_listaReturn ("areaAtuacao");
+
+	sessionStorage.setItem("index", 1);
+    sessionStorage.setItem("totalRecords", areasAtuacao.length);
 	
 	$.each( areasAtuacao, function( i, areaAtuacao) {		
+		sessionStorage.setItem("index", i);
 		var objetivosArray = [];
 		var objetivosArrayNome = [];
 	    $.each(objetivos, function (z, objetivo) {
@@ -128,7 +155,7 @@ function atualizaAreaAtuacaoObjetivos (){
     	var areaAtuacaoUpdate = areaAtuacao;
 		var objJson = 
 		{	
-			token: "1170706277ae0af0486017711353ee73",
+			token: sessionStorage.token,
 			collection : "areaAtuacao",
 			keys : 
 				[
@@ -147,6 +174,14 @@ function atualizaAreaAtuacaoObjetivos (){
 				]
 			};
 		rest_atualizar (objJson, restOk, semAcao);
+	  	i = sessionStorage.getItem("index");
+	  	totalRecords = sessionStorage.getItem("totalRecords");
+		var percentLoaded = Math.round((i / totalRecords) * 100);
+		if (percentLoaded < 100) {
+		     progress.style.width = percentLoaded + '%';
+		     progress.textContent = percentLoaded + '%';
+		};
+	    $('.progress-bar').css('width', percentLoaded + '%').attr('aria-valuenow', percentLoaded);
 	});
 	sessionStorage.setItem("rotina", "atualizaAreaConhecimentoHabilidadesMsg");  		
 	console.log ("terminou area atuacao");
@@ -161,8 +196,13 @@ function atualizaAreaConhecimentoHabilidades (){
 
 	habilidades = rest_listaReturn ("habilidades");
 	areasConhecimento = rest_listaReturn ("areaConhecimento");
+
+	sessionStorage.setItem("index", 1);
+    sessionStorage.setItem("totalRecords", areasConhecimento.length);
+
 	
 	$.each( areasConhecimento, function( i, areaConhecimento) {		
+		sessionStorage.setItem("index", i);
 		var habilidadesArray = [];
 		var habilidadesArrayNome = [];
 	    $.each(habilidades, function (z, habilidade) {
@@ -182,7 +222,7 @@ function atualizaAreaConhecimentoHabilidades (){
     	var areaConhecimentoUpdate = areaConhecimento;
 		var objJson = 
 		{	
-			token: "1170706277ae0af0486017711353ee73",
+			token: sessionStorage.token,
 			collection : "areaConhecimento",
 			keys : 
 				[
@@ -201,6 +241,14 @@ function atualizaAreaConhecimentoHabilidades (){
 				]
 			};
 		rest_atualizar (objJson, restOk, semAcao);
+	  	i = sessionStorage.getItem("index");
+	  	totalRecords = sessionStorage.getItem("totalRecords");
+		var percentLoaded = Math.round((i / totalRecords) * 100);
+		if (percentLoaded < 100) {
+		     progress.style.width = percentLoaded + '%';
+		     progress.textContent = percentLoaded + '%';
+		};
+	    $('.progress-bar').css('width', percentLoaded + '%').attr('aria-valuenow', percentLoaded);
 	});
 	
 	sessionStorage.setItem("rotina", "ultimaRotina");  			
@@ -241,7 +289,7 @@ function atualizaPerfil (){
 	
 		var objJson = 
 			{	
-				token: "1170706277ae0af0486017711353ee73",
+				token: sessionStorage.token,
 				async : false,
 				collection : "userPerfil",
 				keys : 
@@ -281,7 +329,7 @@ function atualizaPerfilProcess (usersPerfil){
     	userPerfil.showBadges = [];
 		var objJson = 
 			{	
-				token: "1170706277ae0af0486017711353ee73",
+				token: sessionStorage.token,
 				async : false,
 				collection : "userPerfil",
 				insert :

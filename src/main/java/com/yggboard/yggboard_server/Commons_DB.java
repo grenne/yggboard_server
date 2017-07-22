@@ -1,7 +1,6 @@
 package com.yggboard.yggboard_server;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -13,7 +12,6 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
@@ -100,7 +98,7 @@ public class Commons_DB {
 				searchQuery.put((String) setQuery.get("key"), (String) setQuery.get("value"));
 			};
 		};
-		Response response = obterCrud("usuarios", arraySetQuery);
+		Response response = obterCrud(collectionName, arraySetQuery);
 		if ((response.getStatus() == 200)){
 			BasicDBObject cursor = new BasicDBObject();
 			cursor.putAll((Map) response.getEntity());
@@ -207,16 +205,13 @@ public class Commons_DB {
 		JSONArray documentos = new JSONArray();
 		for (Document current : cursor) {
 			BasicDBObject doc = new BasicDBObject();
-			doc = (BasicDBObject) current.get("documento");
+			doc.putAll((Map) current.get("documento"));
 			doc.remove("password");
 			doc.remove("token");
-			BasicDBObject docReturn = new BasicDBObject();
-			docReturn.put("documento", doc);
-			BasicDBObject objDocumento = (BasicDBObject) ((Iterator<DBObject>) cursor).next();
-			JSONObject jsonDocumento = new JSONObject();
-			jsonDocumento.putAll((Map) objDocumento.get("documento"));
-			jsonDocumento.put("_id", objDocumento.getString("_id"));
-			documentos.add(jsonDocumento);
+//			BasicDBObject docReturn = new BasicDBObject();
+//			docReturn.put("documento", doc);
+//			doc.put("_id", current.get("_id").toString());
+			documentos.add(doc);
 	    };
 	    mongo.close();
 		return Response.status(200).entity(documentos).build();

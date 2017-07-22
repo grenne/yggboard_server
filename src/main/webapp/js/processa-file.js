@@ -8,14 +8,15 @@
   	lines = JSON.parse(sessionStorage.getItem("lines"));
   	i = sessionStorage.getItem("index");
   	totalRecords = sessionStorage.getItem("totalRecords");
-  	if (lines[i]){
-  		carregaDados(lines[i]);
-  	};
 	var percentLoaded = Math.round((i / totalRecords) * 100);
 	if (percentLoaded < 100) {
 	     progress.style.width = percentLoaded + '%';
 	     progress.textContent = percentLoaded + '%';
 	};
+    $('.progress-bar').css('width', percentLoaded + '%').attr('aria-valuenow', percentLoaded);
+  	if (lines[i]){
+  		carregaDados(lines[i]);
+  	};
   	i++;
   	if (i > totalRecords){
   		$(".final").show();
@@ -29,18 +30,19 @@
 	  		if (sessionStorage.getItem("rotina") == "carregaIndexMsg"){
 	  			sessionStorage.setItem("rotina", "carregaIndex");  	
 	  			$("#textoAtualizando").remove();
-	  			$("#registros").prepend('<li class="output"><strong class="label">Encerrada a carga</strong></li>');
-	  			$("#registros").prepend('<li id="textoAtualizando" class="output"><strong class="label">Criando indices...</strong></li>');
+	  			$("#registros").prepend('<li id="textoAtualizando" class="output "><strong class="label executando">Criando indices...</strong></li>');
+	  		    $('.progress-bar').css('width', 0 + '%').attr('aria-valuenow', 0);
 	  		};
 	  		if (sessionStorage.getItem("rotina") == "atualizaCursosHabilidade"){
 	  			sessionStorage.setItem("rotina", "pulaExecucao");  	
 	  			atualizaCursosHabilidade();
 	  		};
-	  		if (sessionStorage.getItem("rotina") == "atualizaObjetivosHabilidadeMsg"){
-	  			sessionStorage.setItem("rotina", "atualizaObjetivosHabilidade");  	
+	  		if (sessionStorage.getItem("rotina") == "atualizaCursosHabilidadeMsg"){
+	  			sessionStorage.setItem("rotina", "atualizaCursosHabilidade");  	
 	  			$("#textoAtualizando").remove();
 	  			$("#registros").prepend('<li class="output"><strong class="label">Indices criados</strong></li>');
-	  			$("#registros").prepend('<li id="textoAtualizando" class="output"><strong class="label">Atualizando index habilidades...</strong></li>');
+	  			$("#registros").prepend('<li id="textoAtualizando" class="output "><strong class="label executando">Atualizando index habilidades...</strong></li>');
+	  		    $('.progress-bar').css('width', 0 + '%').attr('aria-valuenow', 0);
 	  		};
 	  		if (sessionStorage.getItem("rotina") == "atualizaObjetivosHabilidade"){
 	  			sessionStorage.setItem("rotina", "pulaExecucao");  	
@@ -50,7 +52,8 @@
 	  			sessionStorage.setItem("rotina", "atualizaObjetivosHabilidade");  	
 	  			$("#textoAtualizando").remove();
 	  			$("#registros").prepend('<li class="output"><strong class="label">Indices habilidades criados</strong></li>');
-	  			$("#registros").prepend('<li id="textoAtualizando" class="output"><strong class="label">Atualizando index objetivos...</strong></li>');
+	  			$("#registros").prepend('<li id="textoAtualizando" class="output "><strong class="label executando">Atualizando index objetivos...</strong></li>');
+	  		    $('.progress-bar').css('width', 0 + '%').attr('aria-valuenow', 0);
 	  		};
 	  		if (sessionStorage.getItem("rotina") == "atualizaAreaAtuacaoObjetivos"){
 	  			sessionStorage.setItem("rotina", "pulaExecucao");  	
@@ -60,7 +63,8 @@
 	  			sessionStorage.setItem("rotina", "atualizaAreaAtuacaoObjetivos");  	
 	  			$("#textoAtualizando").remove();
 	  			$("#registros").prepend('<li class="output"><strong class="label">Indices objetivos criados</strong></li>');
-	  			$("#registros").prepend('<li id="textoAtualizando" class="output"><strong class="label">Atualizando index objetivos...</strong></li>');
+	  			$("#registros").prepend('<li id="textoAtualizando" class="output"><strong class="label executando">Atualizando index objetivos...</strong></li>');
+	  		    $('.progress-bar').css('width', 0 + '%').attr('aria-valuenow', 0);
 	  		};
 	  		if (sessionStorage.getItem("rotina") == "atualizaAreaConhecimentoHabilidades"){
 	  			sessionStorage.setItem("rotina", "pulaExecucao");  	
@@ -70,7 +74,8 @@
 	  			sessionStorage.setItem("rotina", "atualizaAreaConhecimentoHabilidades");  	
 	  			$("#textoAtualizando").remove();
 	  			$("#registros").prepend('<li class="output"><strong class="label">Indices habilidades criados</strong></li>');
-	  			$("#registros").prepend('<li id="textoAtualizando" class="output"><strong class="label">Atualizando index area conhecimento...</strong></li>');
+	  			$("#registros").prepend('<li id="textoAtualizando" class="output "><strong class="label executando">Atualizando index area conhecimento...</strong></li>');
+	  		    $('.progress-bar').css('width', 0 + '%').attr('aria-valuenow', 0);
 	  		};
 	  		if (sessionStorage.getItem("rotina") == "ultimaRotina"){	  			
 		  		$("#textoAtualizando").remove();
@@ -111,14 +116,19 @@
 
   function updateProgress(evt) {
     // evt is an ProgressEvent.
-    if (evt.lengthComputable) {
+/*    if (evt.lengthComputable) {
       var percentLoaded = Math.round((evt.loaded / evt.total) * 100);
       // Increase the progress bar length.
       if (percentLoaded < 100) {
         progress.style.width = percentLoaded + '%';
         progress.textContent = percentLoaded + '%';
+      }else{
+    	  percentLoaded = 100;
+          progress.style.width = percentLoaded + '%';
+          progress.textContent = percentLoaded + '%';
       }
     }
+*/
   }
 
   function handleFileSelect(evt) {
@@ -160,6 +170,8 @@
      sessionStorage.setItem("rotina", "carregaIndexMsg");  	
      $(".registros" ).show();
      $("#labelRegistros").text("Registros carregando...");
+     $("#totalRegistros").text("");
+     $('.progress-bar').css('width', 0 + '%').attr('aria-valuenow', 0);
      var myVar = setInterval(function(){ setIntervalObject() }, 30);
      progress.style.width = '100%';
      progress.textContent = '100%';

@@ -7,6 +7,8 @@ sessionStorage.setItem("areaAtuacao", JSON.stringify(rest_listaReturn ("areaAtua
 sessionStorage.setItem("areaConhecimento", JSON.stringify(rest_listaReturn ("areaConhecimento")));
 sessionStorage.setItem("usuarios", JSON.stringify(rest_listaReturn ("usuarios")));
 
+$( ".registros" ).hide();
+
 $( ".escolha" ).click(function() {
     $( ".output" ).remove();
     $( ".reader" ).show();

@@ -14,24 +14,40 @@ function carregaIndexProcesso (){
 	
 	
 	console.log ("iniciou cria index");
-
+ 
 	carregaIndexElemento(rest_listaReturn ("habilidades"),"habilidades" );
+    $('.progress-bar').css('width', 0 + '%').attr('aria-valuenow', 0);
+	
 	carregaIndexElemento(rest_listaReturn ("objetivos"), "objetivos");
-	carregaIndexElemento(rest_listaReturn ("badges"), "badges");
-	carregaIndexElemento(rest_listaReturn ("cursos"), "cursos");
-	carregaIndexElemento(rest_listaReturn ("areaAtuacao"), "areaAtuacao");
-	carregaIndexElemento(rest_listaReturn ("areaConhecimento"), "areaConhecimento");
-	carregaIndexElemento(rest_listaReturn ("usuarios"), "usuarios");
+    $('.progress-bar').css('width', 0 + '%').attr('aria-valuenow', 0);
+
+    carregaIndexElemento(rest_listaReturn ("badges"), "badges");
+    $('.progress-bar').css('width', 0 + '%').attr('aria-valuenow', 0);
+
+    carregaIndexElemento(rest_listaReturn ("cursos"), "cursos");
+    $('.progress-bar').css('width', 0 + '%').attr('aria-valuenow', 0);
+
+    carregaIndexElemento(rest_listaReturn ("areaAtuacao"), "areaAtuacao");
+    $('.progress-bar').css('width', 0 + '%').attr('aria-valuenow', 0);
+
+    carregaIndexElemento(rest_listaReturn ("areaConhecimento"), "areaConhecimento");
+    $('.progress-bar').css('width', 0 + '%').attr('aria-valuenow', 0);
+
+    carregaIndexElemento(rest_listaReturn ("usuarios"), "usuarios");
+    $('.progress-bar').css('width', 0 + '%').attr('aria-valuenow', 0);
 	
 	console.log ("terminou cria index");
 	
-	sessionStorage.setItem("rotina", "atualizaCursosHabilidade");  	
+	sessionStorage.setItem("rotina", "atualizaCursosHabilidadeMsg");  	
 }; 
 
 function carregaIndexElemento(data, assunto){
 
+	sessionStorage.setItem("index", 1);
+    sessionStorage.setItem("totalRecords", data.length);
 	
 	$.each(data, function (i, index) {
+		sessionStorage.setItem("index", i);
 		var texto = "";
 		if (index){
 			var entidade = "";
@@ -99,6 +115,14 @@ function carregaIndexElemento(data, assunto){
 				};
 			
 			rest_incluir (objJson, restOk, semAcao);
+		  	i = sessionStorage.getItem("index");
+		  	totalRecords = sessionStorage.getItem("totalRecords");
+			var percentLoaded = Math.round((i / totalRecords) * 100);
+			if (percentLoaded < 100) {
+			     progress.style.width = percentLoaded + '%';
+			     progress.textContent = percentLoaded + '%';
+			};
+		    $('.progress-bar').css('width', percentLoaded + '%').attr('aria-valuenow', percentLoaded);
 		};
 	});
 	

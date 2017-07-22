@@ -32,7 +32,7 @@ public class Rest_Crud {
 			};
 		};
 		if (testaToken){
-			if (commons_db.getCollection(queryParam.get("token").toString(), "usuarios", "documento.token") != null){
+			if (commons_db.getCollection(queryParam.get("token").toString(), "usuarios", "documento.token") == null){
 				return Response.status(401).entity("invalid token").build();	
 			};
 		};
@@ -50,7 +50,7 @@ public class Rest_Crud {
 	public Response Incluir(JSONObject queryParam)  {
 		System.out.println("incluir:" + queryParam.get ("collection").toString());
 		Commons_DB commons_db = new Commons_DB();
-		if (commons_db.getCollection(queryParam.get("token").toString(), "usuarios", "documento.token") != null){
+		if (commons_db.getCollection(queryParam.get("token").toString(), "usuarios", "documento.token") == null){
 			return Response.status(401).entity("invalid token").build();	
 		};
 		Commons commons = new Commons();
@@ -83,7 +83,7 @@ public class Rest_Crud {
 	public Response Atualizar(JSONObject queryParam)  {
 		System.out.println("atualizar:" + queryParam.get ("collection").toString());
 		Commons_DB commons_db = new Commons_DB();
-		if (commons_db.getCollection(queryParam.get("token").toString(), "usuarios", "documento.token") != null){
+		if (commons_db.getCollection(queryParam.get("token").toString(), "usuarios", "documento.token") == null){
 			return Response.status(401).entity("invalid token").build();	
 		};
 		if (queryParam.get("update") != null && queryParam.get ("collection").toString() != null && queryParam.get("keys") != null){
@@ -100,7 +100,7 @@ public class Rest_Crud {
 	public Response Lista(JSONObject queryParam)  {
 		System.out.println("lista:" + queryParam.get ("collection").toString());
 		Commons_DB commons_db = new Commons_DB();
-		if (commons_db.getCollection(queryParam.get("token").toString(), "usuarios", "documento.token") != null){
+		if (commons_db.getCollection(queryParam.get("token").toString(), "usuarios", "documento.token") == null){
 			return Response.status(401).entity("invalid token").build();	
 		};
 		if (queryParam.get("keys") != null && queryParam.get ("collection").toString() != null){
@@ -115,7 +115,7 @@ public class Rest_Crud {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response Remover(JSONObject queryParam)  {
 		Commons_DB commons_db = new Commons_DB();
-		if (commons_db.getCollection(queryParam.get("token").toString(), "usuarios", "documento.token") != null){
+		if (commons_db.getCollection(queryParam.get("token").toString(), "usuarios", "documento.token") == null){
 			return Response.status(401).entity("invalid token").build();	
 		};
 		if (queryParam.get ("collection").toString() != null){
