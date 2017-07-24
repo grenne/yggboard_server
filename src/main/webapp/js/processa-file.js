@@ -23,36 +23,6 @@
 		case "carregaDados":
 			carregaDados(lines[i]);
 			break;
-		case "criaIndicesHabilidades":
-			criaIndice(lines[i], assunto);
-			break;
-		case "criaIndicesObjetivos":
-			criaIndice(lines[i], assunto);
-			break;
-		case "criaIndicesBadges":
-			criaIndice(lines[i], assunto);
-			break;
-		case "criaIndicesCursos":
-			criaIndice(lines[i], assunto);
-			break;
-		case "criaIndicesAreaAtuacao":
-			criaIndice(lines[i], assunto);
-			break;
-		case "criaIndicesAreaConhecimento":
-			criaIndice(lines[i], assunto);
-			break;
-		case "atualizaCursosHabilidade":
-			processaAtualizaCursosHabilidade(lines[i]);
-			break;
-		case "atualizaObjetivosHabilidade":
-			processaAtualizaObjetivosHabilidade(lines[i]);
-			break;
-		case "atualizaAreaAtuacaoObjetivos":
-			processaAtualizaAreaAtuacaoObjetivos(lines[i]);
-			break;
-		case "atualizaAreaConhecimentoHabilidades":
-			processaAtualizaAreaConhecimentoHabilidades(lines[i]);
-			break;
 		default:
 			break;
 		};
@@ -83,149 +53,28 @@
 	  				arrays : objArrays
 	  			};
 	  		rest_atualizaIndiceCollection (objJson, semAcao, semAcao);
+	  		var objArrays = {
+	  				arrayOrigem : ["areaAtuacao"],
+	  				arrayDestino : ["objetivos"],
+	  				arrayCollection : ["objetivos"]  				
+	  		};
+	  		var objJson = {
+	  				collection : "areaAtuacao",
+	  				arrays : objArrays
+	  			};
+	  		rest_atualizaIndiceCollection (objJson, semAcao, semAcao);
+	  		var objArrays = {
+	  				arrayOrigem : ["areaConhecimento"],
+	  				arrayDestino : ["habilidades"],
+	  				arrayCollection : ["habilidades"]  				
+	  		};
+	  		var objJson = {
+	  				collection : "areaConhecimento",
+	  				arrays : objArrays
+	  			};
+	  		rest_atualizaIndiceCollection (objJson, semAcao, semAcao);
 	  	    sessionStorage.setItem("excutaPrepend", "false");
   		};
-/*  		if (sessionStorage.getItem("excutaPrepend") == "true"){
-	  		if (sessionStorage.getItem("rotina") == "carregaIndex"){
-	  			sessionStorage.setItem("rotina", "pulaExecucao");  	
-	  			carregaIndex();
-	  		};
-	  		if (sessionStorage.getItem("rotina") == "carregaIndexMsg"){
-	  			sessionStorage.setItem("rotina", "carregaIndex");  	
-	  			$("#textoAtualizando").remove();
-	  			$("#registros").prepend('<li id="textoAtualizando" class="output "><strong class="label executando">Criando indices...</strong></li>');
-	  		    $('.progress-bar').css('width', 0 + '%').attr('aria-valuenow', 0);
-	  		};
-	  		if (sessionStorage.getItem("rotina") == "criaIndicesHabilidades"){
-	  			sessionStorage.setItem("rotina", "pulaExecucao");  	
-	  			criaIndicesHabilidades();
-	  		};
-	  		if (sessionStorage.getItem("rotina") == "criaIndicesHabilidadesMsg"){
-	  			sessionStorage.setItem("rotina", "criaIndicesHabilidades");  	
-	  			$("#textoAtualizando").remove();
-	  			$("#registros").prepend('<li class="output"><strong class="label">Indices criados</strong></li>');
-	  			$("#registros").prepend('<li id="textoAtualizando" class="output "><strong class="label executando">Atualizando index habilidades...</strong></li>');
-	  		    $('.progress-bar').css('width', 0 + '%').attr('aria-valuenow', 0);
-	  		};
-	  		if (sessionStorage.getItem("rotina") == "criaIndicesObjetivos"){
-	  			sessionStorage.setItem("rotina", "pulaExecucao");  	
-	  			criaIndicesObjetivos();
-	  		};
-	  		if (sessionStorage.getItem("rotina") == "criaIndicesObjetivosMsg"){
-	  			sessionStorage.setItem("rotina", "criaIndicesObjetivos");  	
-	  			$("#textoAtualizando").remove();
-	  			$("#registros").prepend('<li class="output"><strong class="label">Indices criados</strong></li>');
-	  			$("#registros").prepend('<li id="textoAtualizando" class="output "><strong class="label executando">Atualizando index habilidades...</strong></li>');
-	  		    $('.progress-bar').css('width', 0 + '%').attr('aria-valuenow', 0);
-	  		};
-	  		if (sessionStorage.getItem("rotina") == "criaIndicesBadges"){
-	  			sessionStorage.setItem("rotina", "pulaExecucao");  	
-	  			criaIndicesBadges();
-	  		};
-	  		if (sessionStorage.getItem("rotina") == "criaIndicesBadgesMsg"){
-	  			sessionStorage.setItem("rotina", "criaIndicesBadges");  	
-	  			$("#textoAtualizando").remove();
-	  			$("#registros").prepend('<li class="output"><strong class="label">Indices criados</strong></li>');
-	  			$("#registros").prepend('<li id="textoAtualizando" class="output "><strong class="label executando">Atualizando index habilidades...</strong></li>');
-	  		    $('.progress-bar').css('width', 0 + '%').attr('aria-valuenow', 0);
-	  		};
-	  		if (sessionStorage.getItem("rotina") == "criaIndicesCursos"){
-	  			sessionStorage.setItem("rotina", "pulaExecucao");  	
-	  			criaIndicesCursos();
-	  		};
-	  		if (sessionStorage.getItem("rotina") == "criaIndicesCursosMsg"){
-	  			sessionStorage.setItem("rotina", "criaIndicesCursos");  	
-	  			$("#textoAtualizando").remove();
-	  			$("#registros").prepend('<li class="output"><strong class="label">Indices criados</strong></li>');
-	  			$("#registros").prepend('<li id="textoAtualizando" class="output "><strong class="label executando">Atualizando index habilidades...</strong></li>');
-	  		    $('.progress-bar').css('width', 0 + '%').attr('aria-valuenow', 0);
-	  		};
-	  		if (sessionStorage.getItem("rotina") == "criaIndicesAreaAtuacao"){
-	  			sessionStorage.setItem("rotina", "pulaExecucao");  	
-	  			criaIndicesAreaAtuacao();
-	  		};
-	  		if (sessionStorage.getItem("rotina") == "criaIndicesAreaAtuacaoMsg"){
-	  			sessionStorage.setItem("rotina", "criaIndicesAreaAtuacao");  	
-	  			$("#textoAtualizando").remove();
-	  			$("#registros").prepend('<li class="output"><strong class="label">Indices criados</strong></li>');
-	  			$("#registros").prepend('<li id="textoAtualizando" class="output "><strong class="label executando">Atualizando index habilidades...</strong></li>');
-	  		    $('.progress-bar').css('width', 0 + '%').attr('aria-valuenow', 0);
-	  		};
-	  		if (sessionStorage.getItem("rotina") == "criaIndicesAreaConhecimento"){
-	  			sessionStorage.setItem("rotina", "pulaExecucao");  	
-	  			criaIndicesAreaConhecimento();
-	  		};
-	  		if (sessionStorage.getItem("rotina") == "criaIndicesAreaConhecimentoMsg"){
-	  			sessionStorage.setItem("rotina", "criaIndicesAreaConhecimento");  	
-	  			$("#textoAtualizando").remove();
-	  			$("#registros").prepend('<li class="output"><strong class="label">Indices criados</strong></li>');
-	  			$("#registros").prepend('<li id="textoAtualizando" class="output "><strong class="label executando">Atualizando index habilidades...</strong></li>');
-	  		    $('.progress-bar').css('width', 0 + '%').attr('aria-valuenow', 0);
-	  		};
-	  		if (sessionStorage.getItem("rotina") == "criaIndicesUsuarios"){
-	  			sessionStorage.setItem("rotina", "pulaExecucao");  	
-	  			criaIndicesUsuarios();
-	  		};
-	  		if (sessionStorage.getItem("rotina") == "criaIndicesUsuariosMsg"){
-	  			sessionStorage.setItem("rotina", "criaIndicesUsuarios");  	
-	  			$("#textoAtualizando").remove();
-	  			$("#registros").prepend('<li class="output"><strong class="label">Indices criados</strong></li>');
-	  			$("#registros").prepend('<li id="textoAtualizando" class="output "><strong class="label executando">Atualizando index habilidades...</strong></li>');
-	  		    $('.progress-bar').css('width', 0 + '%').attr('aria-valuenow', 0);
-	  		};
-	  		if (sessionStorage.getItem("rotina") == "atualizaCursosHabilidade"){
-	  			sessionStorage.setItem("rotina", "pulaExecucao");  	
-	  			atualizaCursosHabilidade();
-	  		};
-	  		if (sessionStorage.getItem("rotina") == "atualizaCursosHabilidadeMsg"){
-	  			sessionStorage.setItem("rotina", "atualizaCursosHabilidade");  	
-	  			$("#textoAtualizando").remove();
-	  			$("#registros").prepend('<li class="output"><strong class="label">Indices criados</strong></li>');
-	  			$("#registros").prepend('<li id="textoAtualizando" class="output "><strong class="label executando">Atualizando index habilidades...</strong></li>');
-	  		    $('.progress-bar').css('width', 0 + '%').attr('aria-valuenow', 0);
-	  		};
-	  		if (sessionStorage.getItem("rotina") == "atualizaObjetivosHabilidade"){
-	  			sessionStorage.setItem("rotina", "pulaExecucao");  	
-		  		atualizaObjetivosHabilidade();
-	  		};
-	  		if (sessionStorage.getItem("rotina") == "atualizaObjetivosHabilidadeMsg"){
-	  			sessionStorage.setItem("rotina", "atualizaObjetivosHabilidade");  	
-	  			$("#textoAtualizando").remove();
-	  			$("#registros").prepend('<li class="output"><strong class="label">Indices habilidades criados</strong></li>');
-	  			$("#registros").prepend('<li id="textoAtualizando" class="output "><strong class="label executando">Atualizando index objetivos...</strong></li>');
-	  		    $('.progress-bar').css('width', 0 + '%').attr('aria-valuenow', 0);
-	  		};
-	  		if (sessionStorage.getItem("rotina") == "atualizaAreaAtuacaoObjetivos"){
-	  			sessionStorage.setItem("rotina", "pulaExecucao");  	
-		  		atualizaAreaAtuacaoObjetivos();
-	  		};
-	  		if (sessionStorage.getItem("rotina") == "atualizaAreaAtuacaoObjetivosMsg"){
-	  			sessionStorage.setItem("rotina", "atualizaAreaAtuacaoObjetivos");  	
-	  			$("#textoAtualizando").remove();
-	  			$("#registros").prepend('<li class="output"><strong class="label">Indices objetivos criados</strong></li>');
-	  			$("#registros").prepend('<li id="textoAtualizando" class="output"><strong class="label executando">Atualizando index objetivos...</strong></li>');
-	  		    $('.progress-bar').css('width', 0 + '%').attr('aria-valuenow', 0);
-	  		};
-	  		if (sessionStorage.getItem("rotina") == "atualizaAreaConhecimentoHabilidades"){
-	  			sessionStorage.setItem("rotina", "pulaExecucao");  	
-	  			atualizaAreaConhecimentoHabilidades();
-	  		};
-	  		if (sessionStorage.getItem("rotina") == "atualizaAreaConhecimentoHabilidadesMsg"){
-	  			sessionStorage.setItem("rotina", "atualizaAreaConhecimentoHabilidades");  	
-	  			$("#textoAtualizando").remove();
-	  			$("#registros").prepend('<li class="output"><strong class="label">Indices habilidades criados</strong></li>');
-	  			$("#registros").prepend('<li id="textoAtualizando" class="output "><strong class="label executando">Atualizando index area conhecimento...</strong></li>');
-	  		    $('.progress-bar').css('width', 0 + '%').attr('aria-valuenow', 0);
-	  		};
-	  		if (sessionStorage.getItem("rotina") == "ultimaRotina"){	  			
-		  		$("#textoAtualizando").remove();
-				$("#registros").prepend('<li class="output"><strong class="label">Indices area conhecimento criados</strong></li>');
-				$("#registros").prepend('<li class="output"><strong class="label">**** Processo encerrado ****</strong></li>');
-				sessionStorage.setItem("excutaPrepend", "false");  	
-		  		stopIntervalObject();
-	  		};
-  		};
-  		*/
   	};
     sessionStorage.setItem("index", i);
   };
