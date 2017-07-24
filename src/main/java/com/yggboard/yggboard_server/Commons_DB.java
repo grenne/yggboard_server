@@ -159,7 +159,7 @@ public class Commons_DB {
 		MongoDatabase db = mongo.getDatabase(commons.getProperties().get("database").toString());
 //		boolean auth = db.authenticate("username", "password".toCharArray());
 		MongoCollection<Document> collection = db.getCollection(collectionName);
-		collection.deleteMany(new BasicDBObject());
+		collection.deleteMany(new Document());
 		mongo.close();
 		return Response.status(200).build();
 	};
@@ -217,7 +217,7 @@ public class Commons_DB {
 		return Response.status(200).entity(documentos).build();
 	};
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ "unchecked" })
 	public BasicDBObject getCollection(String value, String collectionName, String keyInput) {
 		
 		ArrayList<JSONObject> keysArray = new ArrayList<>();
@@ -228,15 +228,13 @@ public class Commons_DB {
 
 		Response response = obterCrud(collectionName, keysArray);
 		if ((response.getStatus() == 200)){
-			BasicDBObject cursor = new BasicDBObject();
-			cursor.putAll((Map) response.getEntity());
-			return cursor;
+			return (BasicDBObject) response.getEntity();
 		};
 		return null;
 	};
 
-	@SuppressWarnings("unchecked")
-	public Response getCollectionLista(String value, String collectionName, String keyInput) {
+	@SuppressWarnings({ "unchecked" })
+	public JSONArray getCollectionLista(String value, String collectionName, String keyInput) {
 		
 		ArrayList<JSONObject> keysArray = new ArrayList<>();
 		JSONObject key = new JSONObject();
@@ -244,23 +242,22 @@ public class Commons_DB {
 		key.put("value", value);
 		keysArray.add(key);
 		
-		return listaCrud(collectionName, keysArray);
-	}
+		Response response = listaCrud(collectionName, keysArray);
+		if ((response.getStatus() == 200)){
+			return (JSONArray) response.getEntity();
+		};
+		return null;
+
+	};
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public BasicDBObject getCollectionListaNoKey(String collectionName) {
+	public JSONArray getCollectionListaNoKey(String collectionName) {
 		
 		ArrayList<JSONObject> keysArray = new ArrayList<>();
-		JSONObject key = new JSONObject();
-		key.put("key", "");
-		key.put("value", "");
-		keysArray.add(key);
 
-		Response responseUserPerfil = listaCrud(collectionName, keysArray);
-		if ((responseUserPerfil.getStatus() == 200)){
-			BasicDBObject cursor = new BasicDBObject();
-			cursor.putAll((Map) responseUserPerfil.getEntity());
-			return cursor;
+		Response response = listaCrud(collectionName, keysArray);
+		if ((response.getStatus() == 200)){
+			return (JSONArray) response.getEntity();
 		};
 		return null;
 	}

@@ -104,7 +104,7 @@ public class Rest_UserPerfil {
 				}else{
 					carregaBadges((ArrayList) jsonPerfil.get("showBadges"), usuario, jsonPerfil, documentos, false);
 				};
-				BasicDBObject cursorBadges = commons_db.getCollectionListaNoKey("badges");	
+				JSONArray cursorBadges = commons_db.getCollectionListaNoKey("badges");	
 				if (cursorBadges != null){
 					while (((Iterator<DBObject>) cursorBadges).hasNext()) {
 						BasicDBObject objBadges = (BasicDBObject) ((Iterator<DBObject>) cursorBadges).next();
@@ -828,7 +828,7 @@ public class Rest_UserPerfil {
 		if ((commons_db.getCollection(usuario, "userPerfil", "documento.token")) == null){
 			return null;
 		};
-		BasicDBObject cursor = commons_db.getCollectionListaNoKey("userPerfil");
+		JSONArray cursor = commons_db.getCollectionListaNoKey("userPerfil");
 		if (cursor != null){
 			JSONArray documentos = new JSONArray();
 			while (((Iterator<DBObject>) cursor).hasNext()) {
@@ -1035,7 +1035,7 @@ public class Rest_UserPerfil {
 	private ArrayList<String> ObterCursosNecessarios (Object habilidade, JSONArray documentos, BasicDBObject jsonPerfil) {
 		Commons commons = new Commons();
 		Commons_DB commons_db = new Commons_DB();
-		BasicDBObject cursor = commons_db.getCollectionListaNoKey("cursos");
+		JSONArray cursor = commons_db.getCollectionListaNoKey("cursos");
 		if (cursor != null){
 			while (((Iterator<DBObject>) cursor).hasNext()) {
 				JSONParser parser = new JSONParser(); 

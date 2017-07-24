@@ -20,6 +20,15 @@ import com.mongodb.BasicDBObject;
 
 
 public class Commons {
+
+	public Response testaToken(String token) {
+		Commons_DB commons_db = new Commons_DB();
+		if (commons_db.getCollection(token, "usuarios", "documento.token") == null){
+			return Response.status(401).entity("invalid token").build();	
+		}else {
+			return Response.status(200).entity("token ok").build();
+		}
+	};
 	
 	public Boolean verifyInterval (String date, String initInterval, String endInterval){
 		DateFormat df = new SimpleDateFormat ("dd/MM/yyyy");

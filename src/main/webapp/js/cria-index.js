@@ -1,133 +1,200 @@
 
 function carregaIndex (){
 
-
 	var objJson = 
  	  	{
    			token: "1170706277ae0af0486017711353ee73",
-			collection : "index"
+			collection : "index",
+			async : false
  	  	};
- 	   rest_remover (objJson, carregaIndexProcesso, semAcao); 	   
+ 	rest_remover (objJson, semAcao, semAcao); 	   
+
+	sessionStorage.setItem("rotina", "criaIndicesHabilidadesMsg");
+	sessionStorage.setItem("processo", "");
 };
 
-function carregaIndexProcesso (){
-	
-	
-	console.log ("iniciou cria index");
- 
-	carregaIndexElemento(rest_listaReturn ("habilidades"),"habilidades" );
-    $('.progress-bar').css('width', 0 + '%').attr('aria-valuenow', 0);
-	
-	carregaIndexElemento(rest_listaReturn ("objetivos"), "objetivos");
-    $('.progress-bar').css('width', 0 + '%').attr('aria-valuenow', 0);
+function criaIndicesHabilidades(){
 
-    carregaIndexElemento(rest_listaReturn ("badges"), "badges");
-    $('.progress-bar').css('width', 0 + '%').attr('aria-valuenow', 0);
+	lines = rest_listaReturn ("habilidades")
+	sessionStorage.setItem("lines", lines);	
 
-    carregaIndexElemento(rest_listaReturn ("cursos"), "cursos");
-    $('.progress-bar').css('width', 0 + '%').attr('aria-valuenow', 0);
-
-    carregaIndexElemento(rest_listaReturn ("areaAtuacao"), "areaAtuacao");
-    $('.progress-bar').css('width', 0 + '%').attr('aria-valuenow', 0);
-
-    carregaIndexElemento(rest_listaReturn ("areaConhecimento"), "areaConhecimento");
-    $('.progress-bar').css('width', 0 + '%').attr('aria-valuenow', 0);
-
-    carregaIndexElemento(rest_listaReturn ("usuarios"), "usuarios");
-    $('.progress-bar').css('width', 0 + '%').attr('aria-valuenow', 0);
-	
-	console.log ("terminou cria index");
-	
-	sessionStorage.setItem("rotina", "atualizaCursosHabilidadeMsg");  	
-}; 
-
-function carregaIndexElemento(data, assunto){
+	sessionStorage.setItem("assunto", "habilidades");
 
 	sessionStorage.setItem("index", 1);
-    sessionStorage.setItem("totalRecords", data.length);
-	
-	$.each(data, function (i, index) {
-		sessionStorage.setItem("index", i);
-		var texto = "";
-		if (index){
-			var entidade = "";
-			var id = "";
-			var descricao = "";
-			if (index){
-				if (index.name){
-					texto  = texto + carregaTextoIndex (index.name);
-					entidade = index.name;
-					id = index.idHabilidade;
-					descricao = index.descricao;
-				};
-				if (index.firstName){
-					texto  = texto + carregaTextoIndex (index.firstName);
-					entidade = index.firstName;
-					id = index._id;
-					descricao = index.firstName + " " + index.lastName
-				};
-				if (index.lastName){
-					texto  = texto + "," + carregaTextoIndex (index.lastName);
-					entidade = index.lastName;
-					id = index._id;
-					descricao = index.firstName + " " + index.lastName
-				};
-				if (index.nome){
-					texto  = texto + carregaTextoIndex (index.nome);
-					entidade = index.nome;
-					id = index.idHabilidade;
-				};
-				if (index.idCurso){
-					id = index.idCurso;
-				};
-				if (index.id){
-					id = index.id;
-				};
-				if (index.descricao) {
-					texto  = texto + "," + carregaTextoIndex (index.descricao);
-					descricao = index.descricao;
-				};
-				if (index.tags){
-					$.each(index.tags, function (i, tag) {
-						texto  = texto + "," + carregaTextoIndex (tag);
-					});
-				};
-			};
-		};
-		if (texto != ""){
-			var textoArray = texto.split(",");
-			
-			var objJson = 
-				{
-					token: "1170706277ae0af0486017711353ee73",
-					collection : "index",
-					insert :
-						{
-						documento : 
-							{
-							texto : textoArray,
-							assunto : assunto,
-							entidade : entidade,
-							id : id,
-							descricao : descricao				
-							}
-						}
-				};
-			
-			rest_incluir (objJson, restOk, semAcao);
-		  	i = sessionStorage.getItem("index");
-		  	totalRecords = sessionStorage.getItem("totalRecords");
-			var percentLoaded = Math.round((i / totalRecords) * 100);
-			if (percentLoaded < 100) {
-			     progress.style.width = percentLoaded + '%';
-			     progress.textContent = percentLoaded + '%';
-			};
-		    $('.progress-bar').css('width', percentLoaded + '%').attr('aria-valuenow', percentLoaded);
-		};
-	});
-	
-};
+    sessionStorage.setItem("totalRecords", lines.length);
 
+	sessionStorage.setItem("rotina", "criaIndicesObjetivosMsg");
+	sessionStorage.setItem("processo", "criaIndicesHabilidades");
+	
+	console.log ("iniciou cria indice habilidades");
+};	
+
+function criaIndicesObjetivos(){
+
+	lines = rest_listaReturn ("objetivos")
+	sessionStorage.setItem("lines", lines);	
+
+	sessionStorage.setItem("assunto", "objetivos");
+
+	sessionStorage.setItem("index", 1);
+    sessionStorage.setItem("totalRecords", lines.length);
+
+	sessionStorage.setItem("rotina", "criaIndicesBadgesMsg");
+	sessionStorage.setItem("processo", "criaIndicesObjetivos");
+	
+	console.log ("iniciou cria indice objetivos");
+};	
+
+function criaIndicesBadges(){
+
+	lines = rest_listaReturn ("badges")
+	sessionStorage.setItem("lines", lines);	
+
+	sessionStorage.setItem("assunto", "badges");
+
+	sessionStorage.setItem("index", 1);
+    sessionStorage.setItem("totalRecords", lines.length);
+
+	sessionStorage.setItem("rotina", "criaIndicesCursosMsg");
+	sessionStorage.setItem("processo", "criaIndicesBadges");
+	
+	console.log ("iniciou cria indice badges");
+};	
+
+function criaIndicesCursos(){
+
+	lines = rest_listaReturn ("cursos")
+	sessionStorage.setItem("lines", lines);	
+
+	sessionStorage.setItem("assunto", "cursos");
+
+	sessionStorage.setItem("index", 1);
+    sessionStorage.setItem("totalRecords", lines.length);
+
+	sessionStorage.setItem("rotina", "criaIndicesAreaAtuacaoMsg");
+	sessionStorage.setItem("processo", "criaIndicesCursos");
+	
+	console.log ("iniciou cria indice cursos");
+};	
+
+function criaIndicesAreaAtuacao(){
+
+	lines = rest_listaReturn ("areaAtuacao")
+	sessionStorage.setItem("lines", lines);	
+
+	sessionStorage.setItem("assunto", "areaAtuacao");
+
+	sessionStorage.setItem("index", 1);
+    sessionStorage.setItem("totalRecords", lines.length);
+
+	sessionStorage.setItem("rotina", "criaIndicesareaConhecimentoMsg");
+	sessionStorage.setItem("processo", "criaIndicesAreaAtuacao");
+	
+	console.log ("iniciou cria indice area atuacao");
+};	
+
+function criaIndicesAreaConhecimento(){
+
+	lines = rest_listaReturn ("areaConhecimento")
+	sessionStorage.setItem("lines", lines);	
+
+	sessionStorage.setItem("assunto", "areaConhecimento");
+
+	sessionStorage.setItem("index", 1);
+    sessionStorage.setItem("totalRecords", lines.length);
+
+	sessionStorage.setItem("rotina", "criaIndicesUsuariosMsg");
+	sessionStorage.setItem("processo", "criaIndicesAreaConhecimento");
+	
+	console.log ("iniciou cria indice area conhecimento");
+};	
+
+function criaIndicesUsuarios(){
+
+	lines = rest_listaReturn ("usuarios")
+
+	sessionStorage.setItem("assunto", "usuario");
+
+	sessionStorage.setItem("index", 1);
+    sessionStorage.setItem("totalRecords", lines.length);
+
+	sessionStorage.setItem("rotina", "atualizaCursosHabilidadeMsg");
+	sessionStorage.setItem("processo", "criaIndicesUsuarios");
+	
+	console.log ("iniciou cria indice usuários");
+};	
+
+function criaIndice(index, assunto){
+	
+	var texto = "";
+	if (index){
+		var entidade = "";
+		var id = "";
+		var descricao = "";
+		if (index){
+			if (index.name){
+				texto  = texto + carregaTextoIndex (index.name);
+				entidade = index.name;
+				id = index.idHabilidade;
+				descricao = index.descricao;
+			};
+			if (index.firstName){
+				texto  = texto + carregaTextoIndex (index.firstName);
+				entidade = index.firstName;
+				id = index._id;
+				descricao = index.firstName + " " + index.lastName
+			};
+			if (index.lastName){
+				texto  = texto + "," + carregaTextoIndex (index.lastName);
+				entidade = index.lastName;
+				id = index._id;
+				descricao = index.firstName + " " + index.lastName
+			};
+			if (index.nome){
+				texto  = texto + carregaTextoIndex (index.nome);
+				entidade = index.nome;
+				id = index.idHabilidade;
+			};
+			if (index.idCurso){
+				id = index.idCurso;
+			};
+			if (index.id){
+				id = index.id;
+			};
+			if (index.descricao) {
+				texto  = texto + "," + carregaTextoIndex (index.descricao);
+				descricao = index.descricao;
+			};
+			if (index.tags){
+				$.each(index.tags, function (i, tag) {
+					texto  = texto + "," + carregaTextoIndex (tag);
+				});
+			};
+		};
+	};
+	if (texto != ""){
+		var textoArray = texto.split(",");
+		
+		var objJson = 
+			{
+				token: "1170706277ae0af0486017711353ee73",
+				collection : "index",
+				insert :
+					{
+					documento : 
+						{
+						texto : textoArray,
+						assunto : assunto,
+						entidade : entidade,
+						id : id,
+						descricao : descricao				
+						}
+					}
+			};
+		
+		rest_incluir (objJson, restOk, semAcao);
+	};	
+};
 function carregaTextoIndex (texto){
 	if (texto){
 		texto = texto.toLowerCase();

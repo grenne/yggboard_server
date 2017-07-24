@@ -4,256 +4,210 @@
 
 function atualizaCursosHabilidade (){
 
-	habilidades = rest_listaReturn ("habilidades");
-	cursos = rest_listaReturn ("cursos");
-
+	lines = rest_listaReturn ("habilidades");
+	
+	sessionStorage.setItem("lines", JSON.stringify(lines));
+	sessionStorage.setItem("cursos", JSON.stringify(rest_listaReturn ("cursos")));	
 	sessionStorage.setItem("index", 1);
-    sessionStorage.setItem("totalRecords", habilidades.length);
+    sessionStorage.setItem("totalRecords", lines.length);
 
-	$.each( habilidades, function( i, habilidade) {		
-		sessionStorage.setItem("index", i);
-		var habilidadadesCursos = [];
-		var habilidadadesCursosNome = [];
-	    $.each(cursos, function (z, curso) {
-		    $.each(curso.habilidades, function (w, cursoIdHabilidade) {
-		    	if (habilidade.id == cursoIdHabilidade){
-		    		var cursoInput = cursos[z]
-		    		if (!testaDuplicidadeArray(cursoInput.id, habilidadadesCursos)){
-			    		habilidadadesCursos.push(cursoInput.id);
-			    		habilidadadesCursosNome.push(cursoInput.nome);
-		    		};
-		    	};
-		    });
-		});
-    	delete habilidade["cursos"];
-    	delete habilidade["cursosNome"];
-    	habilidade.cursos = habilidadadesCursos;
-    	habilidade.cursosNome = habilidadadesCursosNome;
-    	var habililadeUpdate = habilidade;
-		var objJson = 
-		{	
-			token: sessionStorage.token,
-			collection : "habilidades",
-			keys : 
-				[
-					{
-						key : "documento.id",
-						value : habilidade.id
-					}
-				],
-			update : 
-				[
-					{
-						field : "documento",
-						value : habililadeUpdate
-						
-					}
-				]
-			};
-		rest_atualizar (objJson, restOk, semAcao);
-	  	i = sessionStorage.getItem("index");
-	  	totalRecords = sessionStorage.getItem("totalRecords");
-		var percentLoaded = Math.round((i / totalRecords) * 100);
-		if (percentLoaded < 100) {
-		     progress.style.width = percentLoaded + '%';
-		     progress.textContent = percentLoaded + '%';
-		};
-	    $('.progress-bar').css('width', percentLoaded + '%').attr('aria-valuenow', percentLoaded);
+	sessionStorage.setItem("rotina", "atualizaObjetivosHabilidadeMsg");
+	sessionStorage.setItem("processo", "atualizaCursosHabilidade");
+	
+	console.log ("iniciou habilidades/cursos");
+};
+
+function processaAtualizaCursosHabilidade (habilidade){
+
+	cursos = JSON.parse(sessionStorage.getItem("cursos"));
+	
+	var habilidadadesCursos = [];
+	var habilidadadesCursosNome = [];
+    $.each(cursos, function (z, curso) {
+	    $.each(curso.habilidades, function (w, cursoIdHabilidade) {
+	    	if (habilidade.id == cursoIdHabilidade){
+	    		var cursoInput = cursos[z]
+	    		if (!testaDuplicidadeArray(cursoInput.id, habilidadadesCursos)){
+		    		habilidadadesCursos.push(cursoInput.id);
+		    		habilidadadesCursosNome.push(cursoInput.nome);
+	    		};
+	    	};
+	    });
 	});
-	sessionStorage.setItem("rotina", "atualizaObjetivosHabilidadeMsg");  	
-	console.log ("terminou cursos");
+	delete habilidade["cursos"];
+	delete habilidade["cursosNome"];
+	habilidade.cursos = habilidadadesCursos;
+	habilidade.cursosNome = habilidadadesCursosNome;
+	var habililadeUpdate = habilidade;
+	var objJson = {
+		token : sessionStorage.token,
+		collection : "habilidades",
+		keys : [ {
+			key : "documento.id",
+			value : habilidade.id
+		} ],
+		update : [ {
+			field : "documento",
+			value : habililadeUpdate
+
+		} ]
+	};
+	rest_atualizar (objJson, restOk, semAcao);	
 };
 
 function atualizaObjetivosHabilidade (){
-		
-	habilidades = rest_listaReturn ("habilidades");
-	objetivos = rest_listaReturn ("objetivos");
-
-	sessionStorage.setItem("index", 1);
-    sessionStorage.setItem("totalRecords", habilidades.length);
 	
-	$.each( habilidades, function( i, habilidade) {		
-		sessionStorage.setItem("index", i);
-		var habilidadadesObjetivos = [];
-		var habilidadadesObjetivosNome = [];
-	    $.each(objetivos, function (z, objetivo) {
-		    $.each(objetivo.necessarios, function (w, objetivoIdHabilidade) {
-		    	if (habilidade.id == objetivoIdHabilidade){
-		    		var objetivo = objetivos[z]
-		    		if (!testaDuplicidadeArray(objetivo.id, habilidadadesObjetivos)){
-		    			habilidadadesObjetivos.push(objetivo.id);
-		    			habilidadadesObjetivosNome.push(objetivo.nome);
-		    		};
-		    	};
-		    });
-		});
-    	delete habilidade["objetivos"];
-    	delete habilidade["objetivosNome"];
-    	habilidade.objetivos = habilidadadesObjetivos;
-    	habilidade.objetivosNome = habilidadadesObjetivosNome;
-    	var habililadeUpdate = habilidade;
-		var objJson = 
-		{	
-			token: sessionStorage.token,
-			collection : "habilidades",
-			keys : 
-				[
-					{
-						key : "documento.id",
-						value : habilidade.id
-					}
-				],
-			update : 
-				[
-					{
-						field : "documento",
-						value : habililadeUpdate
-						
-					}
-				]
-			};
-		rest_atualizar (objJson, restOk, semAcao);
-	  	i = sessionStorage.getItem("index");
-	  	totalRecords = sessionStorage.getItem("totalRecords");
-		var percentLoaded = Math.round((i / totalRecords) * 100);
-		if (percentLoaded < 100) {
-		     progress.style.width = percentLoaded + '%';
-		     progress.textContent = percentLoaded + '%';
-		};
-	    $('.progress-bar').css('width', percentLoaded + '%').attr('aria-valuenow', percentLoaded);
-	});
+	lines = rest_listaReturn ("habilidades");		
+
+	sessionStorage.setItem("lines", JSON.stringify(lines));
+	sessionStorage.setItem("objetivos", JSON.stringify(rest_listaReturn ("objetivos")));	
+	sessionStorage.setItem("index", 1);
+    sessionStorage.setItem("totalRecords", lines.length);
+	
 	sessionStorage.setItem("rotina", "atualizaAreaAtuacaoObjetivosMsg");  	
-	console.log ("terminou objetivos");
+	sessionStorage.setItem("processo", "atualizaObjetivosHabilidade");  			
+
+	console.log ("iniciou habilidades/objetivos");
+};
+
+function processaAtualizaObjetivosHabilidade (habilidade){
+
+	objetivos = JSON.parse(sessionStorage.getItem("objetivos"));
+
+	var habilidadadesObjetivos = [];
+	var habilidadadesObjetivosNome = [];
+    $.each(objetivos, function (z, objetivo) {
+	    $.each(objetivo.necessarios, function (w, objetivoIdHabilidade) {
+	    	if (habilidade.id == objetivoIdHabilidade){
+	    		var objetivo = objetivos[z]
+	    		if (!testaDuplicidadeArray(objetivo.id, habilidadadesObjetivos)){
+	    			habilidadadesObjetivos.push(objetivo.id);
+	    			habilidadadesObjetivosNome.push(objetivo.nome);
+	    		};
+	    	};
+	    });
+	});
+	delete habilidade["objetivos"];
+	delete habilidade["objetivosNome"];
+	habilidade.objetivos = habilidadadesObjetivos;
+	habilidade.objetivosNome = habilidadadesObjetivosNome;
+	var habililadeUpdate = habilidade;
+	var objJson = {
+		token : sessionStorage.token,
+		collection : "habilidades",
+		keys : [ {
+			key : "documento.id",
+			value : habilidade.id
+		} ],
+		update : [ {
+			field : "documento",
+			value : habililadeUpdate
+
+		} ]
+	};
+	rest_atualizar (objJson, restOk, semAcao);	
 };
 
 function atualizaAreaAtuacaoObjetivos (){
 		
-	objetivos = rest_listaReturn ("objetivos");
-	areasAtuacao = rest_listaReturn ("areaAtuacao");
+	lines = rest_listaReturn ("objetivos");		
 
+	sessionStorage.setItem("lines", JSON.stringify(lines));
+	sessionStorage.setItem("areasAtuacao", JSON.stringify(rest_listaReturn ("areasAtuacao")));	
 	sessionStorage.setItem("index", 1);
-    sessionStorage.setItem("totalRecords", areasAtuacao.length);
+    sessionStorage.setItem("totalRecords", lines.length);
 	
-	$.each( areasAtuacao, function( i, areaAtuacao) {		
-		sessionStorage.setItem("index", i);
-		var objetivosArray = [];
-		var objetivosArrayNome = [];
-	    $.each(objetivos, function (z, objetivo) {
-		    $.each(objetivo.areaAtuacao, function (w, areasAtuacaoInput) {
-		    	if (areaAtuacao.id == areasAtuacaoInput){
-		    		if (!testaDuplicidadeArray(objetivo.id, objetivosArray)){
-		    			objetivosArray.push(objetivo.id);
-		    			objetivosArrayNome.push(objetivo.nome);
-		    		};
-		    	};
-		    });
-		});
-    	delete areaAtuacao["objetivos"];
-    	delete areaAtuacao["objetivosNome"];
-    	areaAtuacao.objetivos = objetivosArray;
-    	areaAtuacao.objetivosNome = objetivosArrayNome;
-    	var areaAtuacaoUpdate = areaAtuacao;
-		var objJson = 
-		{	
-			token: sessionStorage.token,
-			collection : "areaAtuacao",
-			keys : 
-				[
-					{
-						key : "documento.id",
-						value : areaAtuacao.id
-					}
-				],
-			update : 
-				[
-					{
-						field : "documento",
-						value : areaAtuacaoUpdate
-						
-					}
-				]
-			};
-		rest_atualizar (objJson, restOk, semAcao);
-	  	i = sessionStorage.getItem("index");
-	  	totalRecords = sessionStorage.getItem("totalRecords");
-		var percentLoaded = Math.round((i / totalRecords) * 100);
-		if (percentLoaded < 100) {
-		     progress.style.width = percentLoaded + '%';
-		     progress.textContent = percentLoaded + '%';
-		};
-	    $('.progress-bar').css('width', percentLoaded + '%').attr('aria-valuenow', percentLoaded);
-	});
 	sessionStorage.setItem("rotina", "atualizaAreaConhecimentoHabilidadesMsg");  		
-	console.log ("terminou area atuacao");
+	sessionStorage.setItem("processo", "atualizaAreaAtuacaoObjetivos");
 	
+	console.log ("Iniciou objetivos/area atuacao");
+	
+};
+
+function processaAtualizaAreaAtuacaoObjetivos (areaAtuacao){
+	
+	var objetivosArray = [];
+	var objetivosArrayNome = [];
+    $.each(objetivos, function (z, objetivo) {
+	    $.each(objetivo.areaAtuacao, function (w, areasAtuacaoInput) {
+	    	if (areaAtuacao.id == areasAtuacaoInput){
+	    		if (!testaDuplicidadeArray(objetivo.id, objetivosArray)){
+	    			objetivosArray.push(objetivo.id);
+	    			objetivosArrayNome.push(objetivo.nome);
+	    		};
+	    	};
+	    });
+	});
+	delete areaAtuacao["objetivos"];
+	delete areaAtuacao["objetivosNome"];
+	areaAtuacao.objetivos = objetivosArray;
+	areaAtuacao.objetivosNome = objetivosArrayNome;
+	var areaAtuacaoUpdate = areaAtuacao;
+	var objJson = {
+		token : sessionStorage.token,
+		collection : "areaAtuacao",
+		keys : [ {
+			key : "documento.id",
+			value : areaAtuacao.id
+		} ],
+		update : [ {
+			field : "documento",
+			value : areaAtuacaoUpdate
+
+		} ]
+	};
+	rest_atualizar (objJson, restOk, semAcao);	
 };
 
 function atualizaAreaConhecimentoHabilidades (){
 	
-	$("#textoAtualizando").remove();
-	$("#registros").prepend('<li class="output"><strong class="label">Indices objetivos criados</strong></li>');
-	$("#registros").prepend('<li id="textoAtualizando" class="output"><strong class="label">Atualizando index area conhecimento...</strong></li>');
+	lines = rest_listaReturn ("habilidades");		
 
-	habilidades = rest_listaReturn ("habilidades");
-	areasConhecimento = rest_listaReturn ("areaConhecimento");
-
+	sessionStorage.setItem("lines", JSON.stringify(lines));
+	sessionStorage.setItem("areasConhecimento", JSON.stringify(rest_listaReturn ("areasConhecimento")));	
 	sessionStorage.setItem("index", 1);
     sessionStorage.setItem("totalRecords", areasConhecimento.length);
-
-	
-	$.each( areasConhecimento, function( i, areaConhecimento) {		
-		sessionStorage.setItem("index", i);
-		var habilidadesArray = [];
-		var habilidadesArrayNome = [];
-	    $.each(habilidades, function (z, habilidade) {
-		    $.each(habilidade.areaConhecimento, function (w, areasConhecimentoInput) {
-		    	if (areaConhecimento.id == areasConhecimentoInput){
-		    		if (!testaDuplicidadeArray(habilidade.id, habilidadesArray)){
-		    			habilidadesArray.push(habilidade.id);
-		    			habilidadesArrayNome.push(habilidade.nome);
-		    		};
-		    	};
-		    });
-		});
-    	delete areaConhecimento["habilidades"];
-    	delete areaConhecimento["habilidadesNome"];
-    	areaConhecimento.habilidades = habilidadesArray;
-    	areaConhecimento.habilidadesNome = habilidadesArrayNome;
-    	var areaConhecimentoUpdate = areaConhecimento;
-		var objJson = 
-		{	
-			token: sessionStorage.token,
-			collection : "areaConhecimento",
-			keys : 
-				[
-					{
-						key : "documento.id",
-						value : areaConhecimento.id
-					}
-				],
-			update : 
-				[
-					{
-						field : "documento",
-						value : areaConhecimentoUpdate
-						
-					}
-				]
-			};
-		rest_atualizar (objJson, restOk, semAcao);
-	  	i = sessionStorage.getItem("index");
-	  	totalRecords = sessionStorage.getItem("totalRecords");
-		var percentLoaded = Math.round((i / totalRecords) * 100);
-		if (percentLoaded < 100) {
-		     progress.style.width = percentLoaded + '%';
-		     progress.textContent = percentLoaded + '%';
-		};
-	    $('.progress-bar').css('width', percentLoaded + '%').attr('aria-valuenow', percentLoaded);
-	});
 	
 	sessionStorage.setItem("rotina", "ultimaRotina");  			
-	console.log ("terminou area conhecimento");
+	sessionStorage.setItem("processo", "atualizaAreaConhecimentoHabilidades");  			
 	
+	console.log ("iniviou  area conhecimento/habilidade");
+	
+};
+
+function processaAtualizaAreaConhecimentoHabilidades (areaConhecimento){
+
+	var habilidadesArray = [];
+	var habilidadesArrayNome = [];
+    $.each(habilidades, function (z, habilidade) {
+	    $.each(habilidade.areaConhecimento, function (w, areasConhecimentoInput) {
+	    	if (areaConhecimento.id == areasConhecimentoInput){
+	    		if (!testaDuplicidadeArray(habilidade.id, habilidadesArray)){
+	    			habilidadesArray.push(habilidade.id);
+	    			habilidadesArrayNome.push(habilidade.nome);
+	    		};
+	    	};
+	    });
+	});
+	delete areaConhecimento["habilidades"];
+	delete areaConhecimento["habilidadesNome"];
+	areaConhecimento.habilidades = habilidadesArray;
+	areaConhecimento.habilidadesNome = habilidadesArrayNome;
+	var areaConhecimentoUpdate = areaConhecimento;
+	var objJson = {
+		token : sessionStorage.token,
+		collection : "areaConhecimento",
+		keys : [ {
+			key : "documento.id",
+			value : areaConhecimento.id
+		} ],
+		update : [ {
+			field : "documento",
+			value : areaConhecimentoUpdate
+
+		} ]
+	};
+	rest_atualizar (objJson, restOk, semAcao);
 };
 
 function addArray (id, array){

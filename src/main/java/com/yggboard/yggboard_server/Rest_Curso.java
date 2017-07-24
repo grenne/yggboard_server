@@ -9,7 +9,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -50,24 +49,20 @@ public class Rest_Curso {
 	    if (idHabilidade != null){
 	    	idHabilidade ="";
 	    };
-		Response response = commons_db.getCollectionLista(idHabilidade, "badges", "documento.habilidades.habilidade");
+	    JSONArray cursor = commons_db.getCollectionLista(idHabilidade, "badges", "documento.habilidades.habilidade");
 		
-		if (!(response.getEntity() instanceof Boolean)){
-			BasicDBObject cursor = new BasicDBObject();
-			cursor.putAll((Map) response.getEntity());
-			if (cursor != null){
-				JSONArray documentos = new JSONArray();
-				while (((Iterator<DBObject>) cursor).hasNext()) {
-					BasicDBObject obj = (BasicDBObject) ((Iterator<DBObject>) cursor).next();
-					JSONObject jsonDocumento = new JSONObject();
-					jsonDocumento.put("_id", obj.getString("_id"));
-					BasicDBObject setUpdate = new BasicDBObject();
-					setUpdate.putAll((Map) obj.get("documento"));
-					jsonDocumento.put("documento", setUpdate);
-					documentos.add(jsonDocumento);
-				};
-				return documentos;
-			}
+		if (cursor != null){
+			JSONArray documentos = new JSONArray();
+			while (((Iterator<DBObject>) cursor).hasNext()) {
+				BasicDBObject obj = (BasicDBObject) ((Iterator<DBObject>) cursor).next();
+				JSONObject jsonDocumento = new JSONObject();
+				jsonDocumento.put("_id", obj.getString("_id"));
+				BasicDBObject setUpdate = new BasicDBObject();
+				setUpdate.putAll((Map) obj.get("documento"));
+				jsonDocumento.put("documento", setUpdate);
+				documentos.add(jsonDocumento);
+			};
+			return documentos;
 		};
 		return null;
 	};

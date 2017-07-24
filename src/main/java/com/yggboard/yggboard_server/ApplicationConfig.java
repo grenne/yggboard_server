@@ -21,6 +21,7 @@ public class ApplicationConfig extends Application {
            		Rest_Carreira.class,
            		Rest_Email.class,
            		Rest_Usuario.class,
+           		Rest_ProcessosBatch.class,
            		Rest_UploadFiles.class
            	        		));
     }

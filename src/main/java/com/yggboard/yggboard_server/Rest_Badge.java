@@ -47,7 +47,7 @@ public class Rest_Badge {
 	@Produces(MediaType.APPLICATION_JSON)
 	public JSONArray ObterBadges() {
 		Commons_DB commons_db = new Commons_DB();
-		BasicDBObject cursor = commons_db.getCollectionListaNoKey("badges");
+		JSONArray cursor = commons_db.getCollectionListaNoKey("badges");
 		if (cursor != null){
 			JSONArray documentos = new JSONArray();
 			while (((Iterator<DBObject>) cursor).hasNext()) {

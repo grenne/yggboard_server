@@ -15,7 +15,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
@@ -1160,7 +1159,7 @@ public class Rest_Index {
 	private void carregaLista(JSONArray arrayObj, Listas listas, String collection) {
 		Commons commons = new Commons();
 		Commons_DB commons_db = new Commons_DB();
-		BasicDBObject cursor = commons_db.getCollectionListaNoKey(collection);	
+		JSONArray cursor = commons_db.getCollectionListaNoKey(collection);	
 		if (cursor != null){
 			while (((Iterator<DBObject>) cursor).hasNext()) {
 				BasicDBObject obj = (BasicDBObject) ((Iterator<DBObject>) cursor).next();
@@ -1275,67 +1274,63 @@ public class Rest_Index {
 		return results;			
 	};
 
-	@SuppressWarnings({ "unchecked", "rawtypes"})
+	@SuppressWarnings({ "unchecked"})
 	private void carregaIndex(String assunto, JSONArray documentos, String characters, Boolean lista, Listas listas, Opcoes opcoes, int qtdeItens) {
 		Commons_DB commons_db = new Commons_DB();
-		Response response = commons_db.getCollectionLista("documento.assunto", "index", assunto);		
-		if (!(response.getEntity() instanceof Boolean)){
-			BasicDBObject cursor = new BasicDBObject();
-			cursor.putAll((Map) response.getEntity());
-			if (cursor != null){
-				int i = 0;
-				while (((Iterator<DBObject>) cursor).hasNext()) {
-					JSONParser parser = new JSONParser(); 
-					BasicDBObject objIndex = (BasicDBObject) ((Iterator<DBObject>) cursor).next();
-					String documento = objIndex.getString("documento");
-					try {
-						JSONObject jsonObject; 
-						jsonObject = (JSONObject) parser.parse(documento);
-						JSONObject jsonDocumento = new JSONObject();
-						String [] wordsSource = limpaChar (characters).split(" ");
-						List<?> wordsCompare = (List<?>) jsonObject.get("texto");
-						if (wordsoK (wordsSource, wordsCompare)){
-							if (lista){
-								switch (assunto) {
-								case "objetivos":
-									processaObjetivos(jsonObject.get("id").toString(), listas, opcoes);
-									break;
-								case "objetivo":
-									processaObjetivos(jsonObject.get("id").toString(), listas, opcoes);
-									break;
-								case "habilidades":
-									processaHabilidades(jsonObject.get("id").toString(), listas, opcoes);
+		JSONArray cursor = commons_db.getCollectionLista("documento.assunto", "index", assunto);		
+		if (cursor != null){
+			int i = 0;
+			while (((Iterator<DBObject>) cursor).hasNext()) {
+				JSONParser parser = new JSONParser(); 
+				BasicDBObject objIndex = (BasicDBObject) ((Iterator<DBObject>) cursor).next();
+				String documento = objIndex.getString("documento");
+				try {
+					JSONObject jsonObject; 
+					jsonObject = (JSONObject) parser.parse(documento);
+					JSONObject jsonDocumento = new JSONObject();
+					String [] wordsSource = limpaChar (characters).split(" ");
+					List<?> wordsCompare = (List<?>) jsonObject.get("texto");
+					if (wordsoK (wordsSource, wordsCompare)){
+						if (lista){
+							switch (assunto) {
+							case "objetivos":
+								processaObjetivos(jsonObject.get("id").toString(), listas, opcoes);
 								break;
-								case "curso":
-									processaCursos(jsonObject.get("id").toString(), listas, opcoes);
+							case "objetivo":
+								processaObjetivos(jsonObject.get("id").toString(), listas, opcoes);
 								break;
-								case "areaAtuacao":
-									processaAreaAtuacao(jsonObject.get("id").toString(), listas, opcoes);
-								break;
-								case "areaConhecimento":
-									processaAreaConhecimento(jsonObject.get("id").toString(), listas, opcoes);
-								break;
+							case "habilidades":
+								processaHabilidades(jsonObject.get("id").toString(), listas, opcoes);
+							break;
+							case "curso":
+								processaCursos(jsonObject.get("id").toString(), listas, opcoes);
+							break;
+							case "areaAtuacao":
+								processaAreaAtuacao(jsonObject.get("id").toString(), listas, opcoes);
+							break;
+							case "areaConhecimento":
+								processaAreaConhecimento(jsonObject.get("id").toString(), listas, opcoes);
+							break;
 
-								default:
-									break;
-								}
-							}else{
-								jsonDocumento.put("assunto", jsonObject.get("assunto"));
-								jsonDocumento.put("entidade", jsonObject.get("entidade"));
-								jsonDocumento.put("id", jsonObject.get("id"));
-								jsonDocumento.put("descricao", jsonObject.get("descricao"));
-								documentos.add(jsonDocumento);
-								if (i > qtdeItens){
-									return;
-								};
+							default:
+								break;
+							}
+						}else{
+							jsonDocumento.put("assunto", jsonObject.get("assunto"));
+							jsonDocumento.put("entidade", jsonObject.get("entidade"));
+							jsonDocumento.put("id", jsonObject.get("id"));
+							jsonDocumento.put("descricao", jsonObject.get("descricao"));
+							documentos.add(jsonDocumento);
+							if (i > qtdeItens){
+								return;
 							};
-							++i;
 						};
-					} catch (ParseException e) {
-						e.printStackTrace();
-					}
-				};		
-			};
+						++i;
+					};
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+			};		
 		};
 	};
 	
