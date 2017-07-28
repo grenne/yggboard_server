@@ -46,13 +46,13 @@ public class Commons_DB {
 		};
 		FindIterable<Document> cursor = collection.find(searchQuery);
 		
-		for (Document current : cursor) {
+		if (cursor.first() != null) {
 			if (login){
 				mongo.close();
-				return Response.status(200).entity(current).build();
+				return Response.status(200).entity(cursor.first()).build();
 			}else{
 				BasicDBObject doc = new BasicDBObject();
-				doc.putAll((Map) current.get("documento"));
+				doc.putAll((Map) cursor.first().get("documento"));
 				doc.remove("password");
 				doc.remove("token");
 				BasicDBObject docReturn = new BasicDBObject();
@@ -60,7 +60,7 @@ public class Commons_DB {
 				mongo.close();
 				return Response.status(200).entity(docReturn).build();
 			}
-	    };
+		};
 		mongo.close();
 		return Response.status(400).entity(null).build();
 	};
@@ -81,7 +81,7 @@ public class Commons_DB {
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public Response atualizarCrud(String collectionName, Object updateInput, Object keysInput) {
+	public Response atualizarCrud(String collectionName, Object updateInput, Object keysInput, BasicDBObject documento) {
 		Commons commons = new Commons();
 		MongoClient mongo = new MongoClient();
 		MongoDatabase db = mongo.getDatabase(commons.getProperties().get("database").toString());
@@ -92,65 +92,74 @@ public class Commons_DB {
 		for (int i = 0; i < arraySetQuery.size(); i++) {
 			JSONObject setQuery = new JSONObject();
 			setQuery.putAll((Map) arraySetQuery.get(i));
+			System.out.println("Atualização:" + collectionName + " key:" + setQuery.get("key") + " value: " + setQuery.get("value").toString());
 			if (setQuery.get("value") instanceof Object){
 				searchQuery.put((String) setQuery.get("key"), setQuery.get("value"));
 			}else{
 				searchQuery.put((String) setQuery.get("key"), (String) setQuery.get("value"));
 			};
 		};
-		Response response = obterCrud(collectionName, arraySetQuery);
-		if ((response.getStatus() == 200)){
-			BasicDBObject cursor = new BasicDBObject();
-			cursor.putAll((Map) response.getEntity());
-			if (cursor != null){
-				BasicDBObject objDocumento = new BasicDBObject();
-				objDocumento.putAll((Map) cursor.get("documento"));
-				List arrayUpdate = (List) updateInput;
-				for (int i = 0; i < arrayUpdate.size(); i++) {
-					BasicDBObject setUpdate = new BasicDBObject();
-					setUpdate.putAll((Map) arrayUpdate.get(i));
-					Object value = setUpdate.get("value");
-					if (value instanceof String){
-						String docUpdate = setUpdate.get("value").toString();
+		
+		BasicDBObject objDocumento = new BasicDBObject();
+		if (documento == null) {
+			Response response = obterCrud(collectionName, arraySetQuery);
+			if ((response.getStatus() == 200)){
+				BasicDBObject cursor = new BasicDBObject();
+				cursor.putAll((Map) response.getEntity());
+				if (cursor != null){
+					objDocumento.putAll((Map) cursor.get("documento"));
+				};
+			};
+		}else {
+			objDocumento.putAll((Map) documento.get("documento"));
+		};
+		
+		if (objDocumento != null) {
+			List arrayUpdate = (List) updateInput;
+			for (int i = 0; i < arrayUpdate.size(); i++) {
+				BasicDBObject setUpdate = new BasicDBObject();
+				setUpdate.putAll((Map) arrayUpdate.get(i));
+				Object value = setUpdate.get("value");
+				if (value instanceof String){
+					String docUpdate = setUpdate.get("value").toString();
+					objDocumento.remove(setUpdate.get("field"));
+					objDocumento.put((String) setUpdate.get("field"), docUpdate);
+				}else{
+					if (value instanceof ArrayList){
+						ArrayList docUpdate = (ArrayList) setUpdate.get("value");
 						objDocumento.remove(setUpdate.get("field"));
-						objDocumento.put((String) setUpdate.get("field"), docUpdate);
-					}else{
-						if (value instanceof ArrayList){
-							ArrayList docUpdate = (ArrayList) setUpdate.get("value");
-							objDocumento.remove(setUpdate.get("field"));
-							JSONArray arrayField = new JSONArray();
-							for (int j = 0; j < docUpdate.size(); j++) {
-								if (docUpdate.get(j) instanceof String){
-									arrayField.add(docUpdate.get(j));									
-								}else{
-									BasicDBObject docUpdateItem = new BasicDBObject();
-									docUpdateItem.putAll((Map) docUpdate.get(j));
-									arrayField.add(docUpdateItem);
-								};
-							};
-							objDocumento.put((String) setUpdate.get("field"), arrayField);
-						}else{
-							BasicDBObject docUpdate = new BasicDBObject();
-							docUpdate.putAll((Map) setUpdate.get("value"));
-							if (setUpdate.get("field").equals("documento")){
-								objDocumento.clear();
-								objDocumento.putAll((Map) docUpdate);
+						JSONArray arrayField = new JSONArray();
+						for (int j = 0; j < docUpdate.size(); j++) {
+							if (docUpdate.get(j) instanceof String){
+								arrayField.add(docUpdate.get(j));									
 							}else{
-								objDocumento.remove(setUpdate.get("field"));
-								objDocumento.put((String) setUpdate.get("field"), docUpdate);
+								BasicDBObject docUpdateItem = new BasicDBObject();
+								docUpdateItem.putAll((Map) docUpdate.get(j));
+								arrayField.add(docUpdateItem);
 							};
+						};
+						objDocumento.put((String) setUpdate.get("field"), arrayField);
+					}else{
+						BasicDBObject docUpdate = new BasicDBObject();
+						docUpdate.putAll((Map) setUpdate.get("value"));
+						if (setUpdate.get("field").equals("documento")){
+							objDocumento.clear();
+							objDocumento.putAll((Map) docUpdate);
+						}else{
+							objDocumento.remove(setUpdate.get("field"));
+							objDocumento.put((String) setUpdate.get("field"), docUpdate);
 						};
 					};
 				};
-				Document objDocumentoUpdate = new Document();
-				objDocumentoUpdate.put("documento", objDocumento);
-				collection.replaceOne(searchQuery,objDocumentoUpdate);
-				mongo.close();
-				return Response.status(200).entity(cursor.get("documento")).build();
-			}
-		};
+			};
+			Document objDocumentoUpdate = new Document();
+			objDocumentoUpdate.put("documento", objDocumento);
+			collection.replaceOne(searchQuery,objDocumentoUpdate);
+			mongo.close();
+			return Response.status(200).entity(objDocumento).build();
+		}
 		mongo.close();
-		return Response.status(400).entity(keysInput).build();				
+		return Response.status(200).entity(objDocumento).build();
 	};
 
 	public Response removerAllCrud(String collectionName) {
@@ -203,16 +212,19 @@ public class Commons_DB {
 		};
 		FindIterable<Document> cursor = collection.find(searchQuery);
 		JSONArray documentos = new JSONArray();
-		for (Document current : cursor) {
-			BasicDBObject doc = new BasicDBObject();
-			doc.putAll((Map) current.get("documento"));
-			doc.remove("password");
-			doc.remove("token");
-//			BasicDBObject docReturn = new BasicDBObject();
-//			docReturn.put("documento", doc);
-//			doc.put("_id", current.get("_id").toString());
-			documentos.add(doc);
-	    };
+		System.out.println("chamou lista:" + collectionName);
+		if (cursor.first() != null) {
+			for (Document current : cursor) {
+				BasicDBObject doc = new BasicDBObject();
+				doc.putAll((Map) current.get("documento"));
+				doc.remove("password");
+				doc.remove("token");
+	//			BasicDBObject docReturn = new BasicDBObject();
+	//			docReturn.put("documento", doc);
+	//			doc.put("_id", current.get("_id").toString());
+				documentos.add(doc);
+		    };
+		};
 	    mongo.close();
 		return Response.status(200).entity(documentos).build();
 	};
@@ -250,7 +262,7 @@ public class Commons_DB {
 
 	};
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ })
 	public JSONArray getCollectionListaNoKey(String collectionName) {
 		
 		ArrayList<JSONObject> keysArray = new ArrayList<>();
@@ -277,7 +289,7 @@ public class Commons_DB {
 		field.put("value", objUpdate.get("documento"));
 		fieldsArray.add(field);
 
-		Response atualizacao = atualizarCrud(collection, fieldsArray, keysArray);
+		Response atualizacao = atualizarCrud(collection, fieldsArray, keysArray, objUpdate);
 		
 		return atualizacao;
 	};

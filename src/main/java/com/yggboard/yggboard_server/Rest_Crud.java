@@ -87,7 +87,7 @@ public class Rest_Crud {
 			return Response.status(401).entity("invalid token").build();	
 		};
 		if (queryParam.get("update") != null && queryParam.get ("collection").toString() != null && queryParam.get("keys") != null){
-			return commons_db.atualizarCrud(queryParam.get ("collection").toString(), queryParam.get("update"), queryParam.get("keys"));
+			return commons_db.atualizarCrud(queryParam.get ("collection").toString(), queryParam.get("update"), queryParam.get("keys"), null);
 		}else{
 			return Response.status(400).entity(null).build();	
 		}

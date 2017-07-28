@@ -755,7 +755,7 @@ public class Rest_UserPerfil {
 			field.put("value", array);
 			fieldsArray.add(field);
 							
-			Response atualizacao = commons_db.atualizarCrud("userPerfil", fieldsArray, keysArray);
+			Response atualizacao = commons_db.atualizarCrud("userPerfil", fieldsArray, keysArray, null);
 			
 			if (atualizacao.getStatus() == 200){
 				BasicDBObject evento = new BasicDBObject();

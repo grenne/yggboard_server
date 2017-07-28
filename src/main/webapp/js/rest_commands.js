@@ -185,13 +185,7 @@ function rest_login (email, senha){
 	return returnData;
 };
 
-function rest_atualizaIndiceCollection (objJson, action_ok, action_not_ok, var1, var2, var3){
-
-	var async = false;
-	
-	if (objJson.async != null){
-		async = objJson.async
-	};
+function rest_atualizaIndiceCollection (objJson, proximo_processo){
 
 	objJson.token = sessionStorage.token;
 	
@@ -201,7 +195,7 @@ function rest_atualizaIndiceCollection (objJson, action_ok, action_not_ok, var1,
         contentType: "application/json; charset=utf-8",
         dataType: 'json',
         data : JSON.stringify(objJson),
-    	async : async
+    	async : true
 	
 	})        	
 	.done(function(data) {
@@ -210,7 +204,7 @@ function rest_atualizaIndiceCollection (objJson, action_ok, action_not_ok, var1,
 	})
 	.always(function(data) {
 		if (data.status == 200){
-			action_ok (data, var1, var2, var3);
+			sessionStorage.setItem("processo", proximo_processo);
 		};
 	});
 };

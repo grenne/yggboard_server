@@ -13,6 +13,7 @@ $( ".escolha" ).click(function() {
     $( ".output" ).remove();
     $( ".reader" ).show();
     $( ".registros" ).hide();
+    $('.progress-bar').css('width', 0 + '%').attr('aria-valuenow', 0);
 	sessionStorage.escolha = $(this).attr("data-escolha");
 });
 

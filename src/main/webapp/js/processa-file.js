@@ -32,48 +32,64 @@
 	  		carregaDados(lines[i]);
 	  	};
     };
-    if (sessionStorage.getItem("processo") == "carrega-indice"){
-	  	if (lines[i]){
-	  		carregaDados(lines[i]);
-	  	};
+    if (sessionStorage.getItem("processo") == "carrega-indice-habilidades-cursos"){
+        $('.progress-bar').css('width', percentLoaded + '%').attr('aria-valuenow', percentLoaded);
+  		var objArrays = {
+  				arrayOrigem : ["necessarios","habilidades"],
+  				arrayDestino : ["objetivos","cursos"],
+  				arrayCollection : ["objetivos","cursos"]  				
+  		};
+  		var objJson = {
+  				collection : "habilidades",
+  				arrays : objArrays
+  			};
+  		console.log ("indice habilidades/cursos");
+  		sessionStorage.setItem("processo", "executando");
+  		rest_atualizaIndiceCollection (objJson, "carrega-indice-area-atuacao-objetivos");
+    };
+    if (sessionStorage.getItem("processo") == "carrega-indice-area-atuacao-objetivos"){
+  		var objArrays = {
+  				arrayOrigem : ["areaAtuacao"],
+  				arrayDestino : ["objetivos"],
+  				arrayCollection : ["objetivos"]  				
+  		};
+  		var objJson = {
+  				collection : "areaAtuacao",
+  				arrays : objArrays
+  			};
+  		sessionStorage.setItem("processo", "executando");
+  		rest_atualizaIndiceCollection (objJson, "carrega-indice-area-conhecimento-habilidades");
+  		console.log ("indice area atuacao/objetivos");
+    };
+    if (sessionStorage.getItem("processo") == "carrega-indice-area-conhecimento-habilidades"){
+  		var objArrays = {
+  				arrayOrigem : ["areaConhecimento"],
+  				arrayDestino : ["habilidades"],
+  				arrayCollection : ["habilidades"]  				
+  		};
+  		var objJson = {
+  				collection : "areaConhecimento",
+  				arrays : objArrays
+  			};
+  		console.log ("indice area conhecimento/objetivos");
+  		sessionStorage.setItem("processo", "executando");
+  		rest_atualizaIndiceCollection (objJson, "encerra-set-interval");
+    };
+    if (sessionStorage.getItem("processo") == "encerra-set-interval"){
+  	    for (var i = 1; i < 99999; i++){
+  	        window.clearInterval(i);
+  	    }
+    	console.log ("mata set interval");
     };
   	i++;
+
   	if (i > totalRecords){
   		if (sessionStorage.getItem("excutaPrepend") == "true"){
   			$(".final").show();
 	  		$("#labelRegistros").text("Registros processados:");
 	  		$("#totalRegistros").text(totalRecords);
-	  		var objArrays = {
-	  				arrayOrigem : ["necessarios","habilidades"],
-	  				arrayDestino : ["objetivos","cursos"],
-	  				arrayCollection : ["objetivos","cursos"]  				
-	  		};
-	  		var objJson = {
-	  				collection : "habilidades",
-	  				arrays : objArrays
-	  			};
-	  		rest_atualizaIndiceCollection (objJson, semAcao, semAcao);
-	  		var objArrays = {
-	  				arrayOrigem : ["areaAtuacao"],
-	  				arrayDestino : ["objetivos"],
-	  				arrayCollection : ["objetivos"]  				
-	  		};
-	  		var objJson = {
-	  				collection : "areaAtuacao",
-	  				arrays : objArrays
-	  			};
-	  		rest_atualizaIndiceCollection (objJson, semAcao, semAcao);
-	  		var objArrays = {
-	  				arrayOrigem : ["areaConhecimento"],
-	  				arrayDestino : ["habilidades"],
-	  				arrayCollection : ["habilidades"]  				
-	  		};
-	  		var objJson = {
-	  				collection : "areaConhecimento",
-	  				arrays : objArrays
-	  			};
-	  		rest_atualizaIndiceCollection (objJson, semAcao, semAcao);
 	  	    sessionStorage.setItem("excutaPrepend", "false");
+	  	    sessionStorage.setItem("processo", "carrega-indice-habilidades-cursos");
   		};
   	};
     sessionStorage.setItem("index", i);
@@ -105,20 +121,6 @@
   }
 
   function updateProgress(evt) {
-    // evt is an ProgressEvent.
-/*    if (evt.lengthComputable) {
-      var percentLoaded = Math.round((evt.loaded / evt.total) * 100);
-      // Increase the progress bar length.
-      if (percentLoaded < 100) {
-        progress.style.width = percentLoaded + '%';
-        progress.textContent = percentLoaded + '%';
-      }else{
-    	  percentLoaded = 100;
-          progress.style.width = percentLoaded + '%';
-          progress.textContent = percentLoaded + '%';
-      }
-    }
-*/
   }
 
   function handleFileSelect(evt) {
@@ -164,8 +166,5 @@
      $("#totalRegistros").text("");
      $('.progress-bar').css('width', 0 + '%').attr('aria-valuenow', 0);
      var myVar = setInterval(function(){ setIntervalObject() }, 30);
-     progress.style.width = '100%';
-     progress.textContent = '100%';
-     setTimeout("document.getElementById('progress_bar').className='';", 2000);
      $( ".reader" ).hide();
   };

@@ -44,7 +44,7 @@ public class Rest_Usuario {
 		field.put("value", "confirmado");
 		fieldsArray.add(field);
 		
-		return commons_db.atualizarCrud("usuarios", fieldsArray, keysArray);
+		return commons_db.atualizarCrud("usuarios", fieldsArray, keysArray, null);
 
 	};
 
@@ -71,7 +71,7 @@ public class Rest_Usuario {
 		field.put("value", novaSenha);
 		fieldsArray.add(field);
 		
-		return commons_db.atualizarCrud("usuarios", fieldsArray, keysArray);
+		return commons_db.atualizarCrud("usuarios", fieldsArray, keysArray, null);
 
 	};
 
@@ -113,7 +113,7 @@ public class Rest_Usuario {
 					field.put("field", "token");
 					field.put("value", token);
 					fieldsArray.add(field);				
-					commons_db.atualizarCrud("usuarios", fieldsArray, keysArray);
+					commons_db.atualizarCrud("usuarios", fieldsArray, keysArray, null);
 	/*
 	 * 					atualizar perfil
 	 */
@@ -122,7 +122,7 @@ public class Rest_Usuario {
 					key.put("key", "documento.usuario");
 					key.put("value", email);
 					keysArray.add(key);
-					commons_db.atualizarCrud("userPerfil", fieldsArray, keysArray);
+					commons_db.atualizarCrud("userPerfil", fieldsArray, keysArray, null);
 					objUser.remove("password");
 					objUser.remove("token");
 					objUser.put("token", token);
