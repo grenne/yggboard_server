@@ -85,6 +85,7 @@ public class Commons_DB {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public Response atualizarCrud(String collectionName, Object updateInput, Object keysInput, BasicDBObject documento) {
 		Commons commons = new Commons();
+		@SuppressWarnings("resource")
 		MongoClient mongo = new MongoClient();
 		MongoDatabase db = mongo.getDatabase(commons.getProperties().get("database").toString());
 //		boolean auth = db.authenticate("username", "password".toCharArray());
@@ -159,7 +160,7 @@ public class Commons_DB {
 			collection.replaceOne(searchQuery,objDocumentoUpdate);
 			mongo.close();
 			return Response.status(200).entity(objDocumento).build();
-		}
+		};
 		mongo.close();
 		return Response.status(200).entity(objDocumento).build();
 	};
