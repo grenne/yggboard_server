@@ -45,6 +45,7 @@
   			};
   		console.log ("indice habilidades/cursos");
   		sessionStorage.setItem("processo", "executando");
+		$("#registros").prepend('<li class="executando output"><strong class="label">Criando indices habilidades...</strong></li>');
   		rest_atualizaIndiceCollection (objJson, "carrega-indice-area-atuacao-objetivos");
     };
     if (sessionStorage.getItem("processo") == "carrega-indice-area-atuacao-objetivos"){
@@ -58,6 +59,9 @@
   				arrays : objArrays
   			};
   		sessionStorage.setItem("processo", "executando");
+		$("#registros").prepend('<li class="executando output"><strong class="label">Criando indices area atuação...</strong></li>');
+		$("#registros").prepend('<li class="output"><strong class="label">Índice habilidade criado</strong></li>');
+		$(".executando").remove();	
   		rest_atualizaIndiceCollection (objJson, "carrega-indice-area-conhecimento-habilidades");
   		console.log ("indice area atuacao/objetivos");
     };
@@ -73,6 +77,9 @@
   			};
   		console.log ("indice area conhecimento/objetivos");
   		sessionStorage.setItem("processo", "executando");
+		$("#registros").prepend('<li class="executando output"><strong class="label">Criando indices area conhecimento...</strong></li>');
+		$("#registros").prepend('<li class="output"><strong class="label">Índice área atuação criado</strong></li>');
+		$(".executando").remove();	
   		rest_atualizaIndiceCollection (objJson, "encerra-set-interval");
     };
     if (sessionStorage.getItem("processo") == "encerra-set-interval"){
@@ -80,6 +87,8 @@
   	        window.clearInterval(i);
   	    }
     	console.log ("mata set interval");
+		$("#registros").prepend('<li class="output"><strong class="label">Índice área conhecimento criado</strong></li>');
+		$(".executando").remove();	
     };
   	i++;
 

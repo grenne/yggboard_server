@@ -57,6 +57,8 @@ public class Rest_Index {
 
 		listas.setUserPerfil(objUserPerfil);
 		
+		BasicDBObject results = new BasicDBObject();
+		
 		if (!assunto.equals("todos")){
 			switch (assunto) {
 			case "objetivos":
@@ -106,10 +108,10 @@ public class Rest_Index {
 				break;
 			};
 		}else{
-			carregaTudo(listas);
+			results = carregaTudo(listas);
+			System.out.println("saida carrega tudo:" + assunto );
+			return results;
 		};
-		
-		BasicDBObject results = new BasicDBObject();
 		
 		results.put("objetivos", listas.objetivos());
 		results.put("habilidades", listas.habilidades());
@@ -1161,50 +1163,50 @@ public class Rest_Index {
 		Commons_DB commons_db = new Commons_DB();
 		JSONArray cursor = commons_db.getCollectionListaNoKey(collection);	
 		if (cursor != null){
-			while (((Iterator<DBObject>) cursor).hasNext()) {
-				BasicDBObject obj = (BasicDBObject) ((Iterator<DBObject>) cursor).next();
+			for (int i = 0; i < cursor.size(); i++) {
+				BasicDBObject obj = (BasicDBObject) cursor.get(i);
+				BasicDBObject objOut = new BasicDBObject();
 				//
 				// ***		carrega lista
 				//			
 				if (addObjeto(arrayObj, obj)){
-					BasicDBObject objDoc = (BasicDBObject) obj.get("documento");
 					if (collection.equals("cursos")) {
-						List arrayParent = (List) objDoc.get("parents");
+						List arrayParent = (List) obj.get("parents");
 						if (arrayParent.size() == 0){
 							if (listas.userPerfil().get("cursosInteresse") != null){
-								objDoc.put("interesse", commons.testaElementoArray(objDoc.get("id").toString(), (ArrayList<String>) listas.userPerfil().get("cursosInteresse")));
+								objOut.put("interesse", commons.testaElementoArray(obj.get("id").toString(), (ArrayList<String>) listas.userPerfil().get("cursosInteresse")));
 							};
 							if (listas.userPerfil().get("cursos") != null){
-								objDoc.put("possui", commons.testaElementoArray(objDoc.get("id").toString(), (ArrayList<String>) listas.userPerfil().get("cursos")));
+								obj.put("possui", commons.testaElementoArray(obj.get("id").toString(), (ArrayList<String>) listas.userPerfil().get("cursos")));
 							};
-							if (objDoc.get("habilidades") != null){
-								objDoc.put("habilidadesPerfil", commons.montaArrayPerfil(listas.userPerfil().get("habilidades"), objDoc.get("habilidades")));
+							if (obj.get("habilidades") != null){
+								objOut.put("habilidadesPerfil", commons.montaArrayPerfil(listas.userPerfil().get("habilidades"), obj.get("habilidades")));
 							};
-							obj.put("documento", objDoc);
+							objOut.put("documento", obj);
 						};
 					};
 					if (collection.equals("habilidades")) {
 						if (listas.userPerfil().get("habilidadesInteresse") != null){
-							objDoc.put("interesse", commons.testaElementoArray(objDoc.get("id").toString(), (ArrayList<String>) listas.userPerfil().get("habilidadesInteresse")));
+							objOut.put("interesse", commons.testaElementoArray(obj.get("id").toString(), (ArrayList<String>) listas.userPerfil().get("habilidadesInteresse")));
 						};
 						if (listas.userPerfil().get("habilidades") != null){
-							objDoc.put("possui", commons.testaElementoArray(objDoc.get("id").toString(), (ArrayList<String>) listas.userPerfil().get("habilidades")));
+							objOut.put("possui", commons.testaElementoArray(obj.get("id").toString(), (ArrayList<String>) listas.userPerfil().get("habilidades")));
 						};
-						obj.put("documento", objDoc);
+						objOut.put("documento", obj);
 					};
 					if (collection.equals("objetivos")) {
 						if (listas.userPerfil().get("carreirasInteresse") != null){
-							objDoc.put("interesse", commons.testaElementoArray(objDoc.get("id").toString(), (ArrayList<String>) listas.userPerfil().get("carreirasInteresse")));
+							objOut.put("interesse", commons.testaElementoArray(obj.get("id").toString(), (ArrayList<String>) listas.userPerfil().get("carreirasInteresse")));
 						};
 						if (listas.userPerfil().get("carreiras") != null){
-							objDoc.put("possui", commons.testaElementoArray(objDoc.get("id").toString(), (ArrayList<String>) listas.userPerfil().get("carreiras")));
+							objOut.put("possui", commons.testaElementoArray(obj.get("id").toString(), (ArrayList<String>) listas.userPerfil().get("carreiras")));
 						};
-						if (objDoc.get("necessarios") != null){
-							objDoc.put("necessariosPerfil", commons.montaArrayPerfil(listas.userPerfil().get("habilidades"), objDoc.get("necessarios")));
+						if (obj.get("necessarios") != null){
+							objOut.put("necessariosPerfil", commons.montaArrayPerfil(listas.userPerfil().get("habilidades"), obj.get("necessarios")));
 						};
-						obj.put("documento", objDoc);
+						objOut.put("documento", obj);
 					};
-					arrayObj.add(obj);
+					arrayObj.add(objOut);
 				};
 			};
 		};

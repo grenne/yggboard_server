@@ -48,8 +48,10 @@ public class Commons_DB {
 		
 		if (cursor.first() != null) {
 			if (login){
+				BasicDBObject doc = new BasicDBObject();
+				doc.putAll((Map) cursor.first());
 				mongo.close();
-				return Response.status(200).entity(cursor.first()).build();
+				return Response.status(200).entity(doc).build();
 			}else{
 				BasicDBObject doc = new BasicDBObject();
 				doc.putAll((Map) cursor.first().get("documento"));
