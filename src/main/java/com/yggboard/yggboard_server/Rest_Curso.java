@@ -53,12 +53,13 @@ public class Rest_Curso {
 		
 		if (cursor != null){
 			JSONArray documentos = new JSONArray();
-			while (((Iterator<DBObject>) cursor).hasNext()) {
-				BasicDBObject obj = (BasicDBObject) ((Iterator<DBObject>) cursor).next();
+			for (int i = 0; i < cursor.size(); i++) {
+				BasicDBObject objCurso = new BasicDBObject();
+				objCurso.putAll((Map) cursor.get(i));
 				JSONObject jsonDocumento = new JSONObject();
-				jsonDocumento.put("_id", obj.getString("_id"));
+				jsonDocumento.put("_id", objCurso.getString("_id"));
 				BasicDBObject setUpdate = new BasicDBObject();
-				setUpdate.putAll((Map) obj.get("documento"));
+				setUpdate.putAll((Map) objCurso.get("documento"));
 				jsonDocumento.put("documento", setUpdate);
 				documentos.add(jsonDocumento);
 			};

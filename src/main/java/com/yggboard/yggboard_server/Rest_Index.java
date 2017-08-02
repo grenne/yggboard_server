@@ -1276,15 +1276,15 @@ public class Rest_Index {
 		return results;			
 	};
 
-	@SuppressWarnings({ "unchecked"})
+	@SuppressWarnings({ "unchecked", "rawtypes"})
 	private void carregaIndex(String assunto, JSONArray documentos, String characters, Boolean lista, Listas listas, Opcoes opcoes, int qtdeItens) {
 		Commons_DB commons_db = new Commons_DB();
 		JSONArray cursor = commons_db.getCollectionLista("documento.assunto", "index", assunto);		
 		if (cursor != null){
-			int i = 0;
-			while (((Iterator<DBObject>) cursor).hasNext()) {
+			for (int i = 0; i < cursor.size(); i++) {
+				BasicDBObject objIndex = new BasicDBObject();
+				objIndex.putAll((Map) cursor.get(i));
 				JSONParser parser = new JSONParser(); 
-				BasicDBObject objIndex = (BasicDBObject) ((Iterator<DBObject>) cursor).next();
 				String documento = objIndex.getString("documento");
 				try {
 					JSONObject jsonObject; 
@@ -1327,7 +1327,6 @@ public class Rest_Index {
 								return;
 							};
 						};
-						++i;
 					};
 				} catch (ParseException e) {
 					e.printStackTrace();

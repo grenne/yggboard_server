@@ -4,81 +4,101 @@
   document.getElementById('files').addEventListener('change', handleFileSelect, false);
 
   var myVar = setInterval(function(){ setIntervalObject() }, 30);	  
+  
   function setIntervalObject() {
-  	lines = JSON.parse(sessionStorage.getItem("lines"));
+  	
+	lines = JSON.parse(sessionStorage.getItem("lines"));
+  	assunto = JSON.parse(sessionStorage.getItem("assunto"));
   	i = sessionStorage.getItem("index");
   	totalRecords = sessionStorage.getItem("totalRecords");
-  	if (lines[i]){
-  		carregaDados(lines[i]);
-  	};
 	var percentLoaded = Math.round((i / totalRecords) * 100);
 	if (percentLoaded < 100) {
 	     progress.style.width = percentLoaded + '%';
 	     progress.textContent = percentLoaded + '%';
 	};
+    $('.progress-bar').css('width', percentLoaded + '%').attr('aria-valuenow', percentLoaded);
+
+    if (lines[i]) {
+		switch (sessionStorage.getItem("processo")) {
+		case "carregaDados":
+			carregaDados(lines[i]);
+			break;
+		default:
+			break;
+		};
+	};
+    if (sessionStorage.getItem("processo") == "carrega-dados"){
+	  	if (lines[i]){
+	  		carregaDados(lines[i]);
+	  	};
+    };
+    if (sessionStorage.getItem("processo") == "carrega-indice-habilidades-cursos"){
+        $('.progress-bar').css('width', percentLoaded + '%').attr('aria-valuenow', percentLoaded);
+  		var objArrays = {
+  				arrayOrigem : ["necessarios","habilidades"],
+  				arrayDestino : ["objetivos","cursos"],
+  				arrayCollection : ["objetivos","cursos"]  				
+  		};
+  		var objJson = {
+  				collection : "habilidades",
+  				arrays : objArrays
+  			};
+  		console.log ("indice habilidades/cursos");
+  		sessionStorage.setItem("processo", "executando");
+		$("#registros").prepend('<li class="executando output"><strong class="label">Criando indices habilidades...</strong></li>');
+  		rest_atualizaIndiceCollection (objJson, "carrega-indice-area-atuacao-objetivos");
+    };
+    if (sessionStorage.getItem("processo") == "carrega-indice-area-atuacao-objetivos"){
+  		var objArrays = {
+  				arrayOrigem : ["areaAtuacao"],
+  				arrayDestino : ["objetivos"],
+  				arrayCollection : ["objetivos"]  				
+  		};
+  		var objJson = {
+  				collection : "areaAtuacao",
+  				arrays : objArrays
+  			};
+  		sessionStorage.setItem("processo", "executando");
+		$("#registros").prepend('<li class="executando output"><strong class="label">Criando indices area atuação...</strong></li>');
+		$("#registros").prepend('<li class="output"><strong class="label">Índice habilidade criado</strong></li>');
+		$(".executando").remove();	
+  		rest_atualizaIndiceCollection (objJson, "carrega-indice-area-conhecimento-habilidades");
+  		console.log ("indice area atuacao/objetivos");
+    };
+    if (sessionStorage.getItem("processo") == "carrega-indice-area-conhecimento-habilidades"){
+  		var objArrays = {
+  				arrayOrigem : ["areaConhecimento"],
+  				arrayDestino : ["habilidades"],
+  				arrayCollection : ["habilidades"]  				
+  		};
+  		var objJson = {
+  				collection : "areaConhecimento",
+  				arrays : objArrays
+  			};
+  		console.log ("indice area conhecimento/objetivos");
+  		sessionStorage.setItem("processo", "executando");
+		$("#registros").prepend('<li class="executando output"><strong class="label">Criando indices area conhecimento...</strong></li>');
+		$("#registros").prepend('<li class="output"><strong class="label">Índice área atuação criado</strong></li>');
+		$(".executando").remove();	
+  		rest_atualizaIndiceCollection (objJson, "encerra-set-interval");
+    };
+    if (sessionStorage.getItem("processo") == "encerra-set-interval"){
+  	    for (var i = 1; i < 99999; i++){
+  	        window.clearInterval(i);
+  	    }
+    	console.log ("mata set interval");
+		$("#registros").prepend('<li class="output"><strong class="label">Índice área conhecimento criado</strong></li>');
+		$(".executando").remove();	
+    };
   	i++;
+
   	if (i > totalRecords){
-  		$(".final").show();
-  		$("#labelRegistros").text("Registros processados:");
-  		$("#totalRegistros").text(totalRecords);
   		if (sessionStorage.getItem("excutaPrepend") == "true"){
-	  		if (sessionStorage.getItem("rotina") == "carregaIndex"){
-	  			sessionStorage.setItem("rotina", "pulaExecucao");  	
-	  			carregaIndex();
-	  		};
-	  		if (sessionStorage.getItem("rotina") == "carregaIndexMsg"){
-	  			sessionStorage.setItem("rotina", "carregaIndex");  	
-	  			$("#textoAtualizando").remove();
-	  			$("#registros").prepend('<li class="output"><strong class="label">Encerrada a carga</strong></li>');
-	  			$("#registros").prepend('<li id="textoAtualizando" class="output"><strong class="label">Criando indices...</strong></li>');
-	  		};
-	  		if (sessionStorage.getItem("rotina") == "atualizaCursosHabilidade"){
-	  			sessionStorage.setItem("rotina", "pulaExecucao");  	
-	  			atualizaCursosHabilidade();
-	  		};
-	  		if (sessionStorage.getItem("rotina") == "atualizaObjetivosHabilidadeMsg"){
-	  			sessionStorage.setItem("rotina", "atualizaObjetivosHabilidade");  	
-	  			$("#textoAtualizando").remove();
-	  			$("#registros").prepend('<li class="output"><strong class="label">Indices criados</strong></li>');
-	  			$("#registros").prepend('<li id="textoAtualizando" class="output"><strong class="label">Atualizando index habilidades...</strong></li>');
-	  		};
-	  		if (sessionStorage.getItem("rotina") == "atualizaObjetivosHabilidade"){
-	  			sessionStorage.setItem("rotina", "pulaExecucao");  	
-		  		atualizaObjetivosHabilidade();
-	  		};
-	  		if (sessionStorage.getItem("rotina") == "atualizaObjetivosHabilidadeMsg"){
-	  			sessionStorage.setItem("rotina", "atualizaObjetivosHabilidade");  	
-	  			$("#textoAtualizando").remove();
-	  			$("#registros").prepend('<li class="output"><strong class="label">Indices habilidades criados</strong></li>');
-	  			$("#registros").prepend('<li id="textoAtualizando" class="output"><strong class="label">Atualizando index objetivos...</strong></li>');
-	  		};
-	  		if (sessionStorage.getItem("rotina") == "atualizaAreaAtuacaoObjetivos"){
-	  			sessionStorage.setItem("rotina", "pulaExecucao");  	
-		  		atualizaAreaAtuacaoObjetivos();
-	  		};
-	  		if (sessionStorage.getItem("rotina") == "atualizaAreaAtuacaoObjetivosMsg"){
-	  			sessionStorage.setItem("rotina", "atualizaAreaAtuacaoObjetivos");  	
-	  			$("#textoAtualizando").remove();
-	  			$("#registros").prepend('<li class="output"><strong class="label">Indices objetivos criados</strong></li>');
-	  			$("#registros").prepend('<li id="textoAtualizando" class="output"><strong class="label">Atualizando index objetivos...</strong></li>');
-	  		};
-	  		if (sessionStorage.getItem("rotina") == "atualizaAreaConhecimentoHabilidades"){
-	  			sessionStorage.setItem("rotina", "pulaExecucao");  	
-	  			atualizaAreaConhecimentoHabilidades();
-	  		};
-	  		if (sessionStorage.getItem("rotina") == "atualizaAreaConhecimentoHabilidadesMsg"){
-	  			sessionStorage.setItem("rotina", "atualizaAreaConhecimentoHabilidades");  	
-	  			$("#textoAtualizando").remove();
-	  			$("#registros").prepend('<li class="output"><strong class="label">Indices habilidades criados</strong></li>');
-	  			$("#registros").prepend('<li id="textoAtualizando" class="output"><strong class="label">Atualizando index area conhecimento...</strong></li>');
-	  		};
-	  		if (sessionStorage.getItem("rotina") == "ultimaRotina"){	  			
-		  		$("#textoAtualizando").remove();
-				$("#registros").prepend('<li class="output"><strong class="label">Indices area conhecimento criados</strong></li>');
-				$("#registros").prepend('<li class="output"><strong class="label">**** Processo encerrado ****</strong></li>');
-				sessionStorage.setItem("excutaPrepend", "false");  	
-		  		stopIntervalObject();
-	  		};
+  			$(".final").show();
+	  		$("#labelRegistros").text("Registros processados:");
+	  		$("#totalRegistros").text(totalRecords);
+	  	    sessionStorage.setItem("excutaPrepend", "false");
+	  	    sessionStorage.setItem("processo", "carrega-indice-habilidades-cursos");
   		};
   	};
     sessionStorage.setItem("index", i);
@@ -110,15 +130,6 @@
   }
 
   function updateProgress(evt) {
-    // evt is an ProgressEvent.
-    if (evt.lengthComputable) {
-      var percentLoaded = Math.round((evt.loaded / evt.total) * 100);
-      // Increase the progress bar length.
-      if (percentLoaded < 100) {
-        progress.style.width = percentLoaded + '%';
-        progress.textContent = percentLoaded + '%';
-      }
-    }
   }
 
   function handleFileSelect(evt) {
@@ -157,12 +168,12 @@
      sessionStorage.setItem("index", 1);
      sessionStorage.setItem("totalRecords", lines.length);
      sessionStorage.setItem("excutaPrepend", "true");
-     sessionStorage.setItem("rotina", "carregaIndexMsg");  	
+     sessionStorage.setItem("rotina", "carregaIndexMsg");
+     sessionStorage.setItem("processo", "carrega-dados");
      $(".registros" ).show();
      $("#labelRegistros").text("Registros carregando...");
+     $("#totalRegistros").text("");
+     $('.progress-bar').css('width', 0 + '%').attr('aria-valuenow', 0);
      var myVar = setInterval(function(){ setIntervalObject() }, 30);
-     progress.style.width = '100%';
-     progress.textContent = '100%';
-     setTimeout("document.getElementById('progress_bar').className='';", 2000);
      $( ".reader" ).hide();
   };

@@ -105,9 +105,10 @@ public class Rest_UserPerfil {
 					carregaBadges((ArrayList) jsonPerfil.get("showBadges"), usuario, jsonPerfil, documentos, false);
 				};
 				JSONArray cursorBadges = commons_db.getCollectionListaNoKey("badges");	
-				if (cursorBadges != null){
-					while (((Iterator<DBObject>) cursorBadges).hasNext()) {
-						BasicDBObject objBadges = (BasicDBObject) ((Iterator<DBObject>) cursorBadges).next();
+/*				if (cursorBadges != null){
+					for (int i = 0; i < cursorBadges.size(); i++) {
+						BasicDBObject objBadges = new BasicDBObject();
+						objBadges.putAll((Map) cursorBadges.get(i));
 						JSONObject jsonBadge = new JSONObject();
 						jsonBadge.putAll((Map) objBadges.get("documento"));
 						if (jsonBadge.get("tipo") !=null  && jsonBadge.get("id").toString() != null){
@@ -143,7 +144,7 @@ public class Rest_UserPerfil {
 							};
 						};
 					};
-				};
+				};*/
 			};
 			if (item.equals("habilidades") | item.equals("habilidades-interesse") |
 				item.equals("cursos-necessarias-habilidades") | item.equals("cursos-interesse-habilidades")){
@@ -831,8 +832,9 @@ public class Rest_UserPerfil {
 		JSONArray cursor = commons_db.getCollectionListaNoKey("userPerfil");
 		if (cursor != null){
 			JSONArray documentos = new JSONArray();
-			while (((Iterator<DBObject>) cursor).hasNext()) {
-				BasicDBObject objUserPerfil = (BasicDBObject) ((Iterator<DBObject>) cursor).next();
+			for (int i = 0; i < cursor.size(); i++) {
+				BasicDBObject objUserPerfil = new BasicDBObject();
+				objUserPerfil.putAll((Map) cursor.get(i));
 				BasicDBObject documento = new BasicDBObject();
 				documento.putAll((Map) objUserPerfil.get("documento"));
 				JSONObject jsonDocumento = new JSONObject();
@@ -1031,27 +1033,28 @@ public class Rest_UserPerfil {
 		}
 	};
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private ArrayList<String> ObterCursosNecessarios (Object habilidade, JSONArray documentos, BasicDBObject jsonPerfil) {
 		Commons commons = new Commons();
 		Commons_DB commons_db = new Commons_DB();
 		JSONArray cursor = commons_db.getCollectionListaNoKey("cursos");
 		if (cursor != null){
-			while (((Iterator<DBObject>) cursor).hasNext()) {
+			for (int i = 0; i < cursor.size(); i++) {
+				BasicDBObject objCurso = new BasicDBObject();
+				objCurso.putAll((Map) cursor.get(i));
 				JSONParser parser = new JSONParser(); 
-				BasicDBObject objCurso = (BasicDBObject) ((Iterator<DBObject>) cursor).next();
 				String documento = objCurso.getString("documento");
 				try {
 					JSONObject jsonCurso = new JSONObject();
 					jsonCurso.put("documento", (JSONObject) parser.parse(documento));
 					Boolean existeCurso = false;
-					int i = 0;
-					while (i < documentos.size()) {
-						JSONObject jsonElementoArray = (JSONObject) documentos.get(i);
+					int j = 0;
+					while (j < documentos.size()) {
+						JSONObject jsonElementoArray = (JSONObject) documentos.get(j);
 						if (jsonCurso.get("documento").equals(jsonElementoArray.get("documento"))){
 							existeCurso = true;
 						}
-						++i;
+						++j;
 					};
 					if (!existeCurso){
 						JSONObject objCursos = (JSONObject) jsonCurso.get("documento");

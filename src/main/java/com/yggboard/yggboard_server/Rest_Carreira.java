@@ -49,15 +49,16 @@ public class Rest_Carreira {
 		
 		if (cursor != null){
 			JSONArray documentos = new JSONArray();
-			while (((Iterator<DBObject>) cursor).hasNext()) {
-				BasicDBObject objCarreiras = (BasicDBObject) ((Iterator<DBObject>) cursor).next();
+			for (int i = 0; i < cursor.size(); i++) {
+				BasicDBObject objCarreiras = new BasicDBObject();
+				objCarreiras.putAll((Map) cursor.get(i));
 				JSONObject jsonDocumento = new JSONObject();
 				jsonDocumento.put("_id", objCarreiras.getString("_id"));
 				BasicDBObject setUpdate = new BasicDBObject();
 				setUpdate.putAll((Map) objCarreiras.get("documento"));
 				jsonDocumento.put("documento", setUpdate);
-				documentos.add(jsonDocumento);
-			};
+				documentos.add(jsonDocumento);				
+			}
 			return documentos;
 		};
 		return null;

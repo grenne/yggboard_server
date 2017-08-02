@@ -1,7 +1,7 @@
 package com.yggboard.yggboard_server;
 
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Map;
 
 import javax.inject.Singleton;
 import javax.ws.rs.GET;
@@ -16,7 +16,6 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
 
 	
 @Singleton
@@ -24,6 +23,7 @@ import com.mongodb.DBObject;
 @Path("/badges")
 
 public class Rest_Badge {
+
 
 	@SuppressWarnings({ "unchecked" })
 	@Path("/obter")	
@@ -50,9 +50,10 @@ public class Rest_Badge {
 		JSONArray cursor = commons_db.getCollectionListaNoKey("badges");
 		if (cursor != null){
 			JSONArray documentos = new JSONArray();
-			while (((Iterator<DBObject>) cursor).hasNext()) {
+			for (int i = 0; i < cursor.size(); i++) {
 				JSONParser parser = new JSONParser(); 
-				BasicDBObject objBadges = (BasicDBObject) ((Iterator<DBObject>) cursor).next();
+				BasicDBObject objBadges = new BasicDBObject();
+				objBadges.putAll((Map) cursor.get(i));
 				String documento = objBadges.getString("documento");
 				try {
 					JSONObject jsonObject; 
@@ -78,7 +79,7 @@ public class Rest_Badge {
 					documentos.add(jsonDocumento);
 				} catch (ParseException e) {
 					e.printStackTrace();
-				}
+				}				
 			};
 			return documentos;
 		};

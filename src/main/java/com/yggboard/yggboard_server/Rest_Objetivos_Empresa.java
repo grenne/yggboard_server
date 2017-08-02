@@ -122,19 +122,12 @@ public class Rest_Objetivos_Empresa {
 			keysArray.add(key);
 
 			Response response = commons_db.obterCrud("objetivosEmpresa", keysArray);
-			if ((response.getStatus() == 200)){
-				commons_db.removerCrud("objetivosEmpresa", keysArray);
-				return true;
+			if ((response.getStatus() != 200)){
+				return false;
 			};
 			
 			BasicDBObject documento = new BasicDBObject();
-			BasicDBObject doc = new BasicDBObject();
-			ArrayList<String> list = new ArrayList();
-			doc.put("empresaId",empresaId);
-			doc.put("objetivoId",objetivoId);
-			doc.put("habilidadesIn",list);
-			doc.put("habilidadesOut",list);
-			documento.put("documento", doc);
+			documento.putAll((Map) response.getEntity());
 			
 			commons_db.incluirCrud("objetivosEmpresa", documento);
 			return true;	

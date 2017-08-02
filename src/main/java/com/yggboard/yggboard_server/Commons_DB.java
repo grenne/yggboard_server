@@ -55,8 +55,8 @@ public class Commons_DB {
 			}else{
 				BasicDBObject doc = new BasicDBObject();
 				doc.putAll((Map) cursor.first().get("documento"));
-				doc.remove("password");
-				doc.remove("token");
+//				doc.remove("password");
+//				doc.remove("token");
 				BasicDBObject docReturn = new BasicDBObject();
 				docReturn.put("documento", doc);
 				mongo.close();
@@ -92,20 +92,25 @@ public class Commons_DB {
 		MongoCollection<Document> collection = db.getCollection(collectionName);
 		BasicDBObject searchQuery = new BasicDBObject();
 		List arraySetQuery = (List) keysInput;
+		ArrayList<BasicDBObject> keysObter = new ArrayList<BasicDBObject>();
 		for (int i = 0; i < arraySetQuery.size(); i++) {
 			JSONObject setQuery = new JSONObject();
 			setQuery.putAll((Map) arraySetQuery.get(i));
-			System.out.println("Atualização:" + collectionName + " key:" + setQuery.get("key") + " value: " + setQuery.get("value").toString());
 			if (setQuery.get("value") instanceof Object){
 				searchQuery.put((String) setQuery.get("key"), setQuery.get("value"));
 			}else{
 				searchQuery.put((String) setQuery.get("key"), (String) setQuery.get("value"));
 			};
+			BasicDBObject setQueryKeyObter = new BasicDBObject();
+			setQueryKeyObter.put("key", setQuery.get("key"));
+			setQueryKeyObter.put("value", setQuery.get("value"));
+			setQueryKeyObter.put("tipo", setQuery.get("login"));
+			keysObter.add(setQueryKeyObter);
 		};
 		
 		BasicDBObject objDocumento = new BasicDBObject();
 		if (documento == null) {
-			Response response = obterCrud(collectionName, arraySetQuery);
+			Response response = obterCrud(collectionName, keysObter);
 			if ((response.getStatus() == 200)){
 				BasicDBObject cursor = new BasicDBObject();
 				cursor.putAll((Map) response.getEntity());

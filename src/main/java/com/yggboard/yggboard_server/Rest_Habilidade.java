@@ -31,8 +31,9 @@ public class Rest_Habilidade {
 		JSONArray cursor = commons_db.getCollectionLista("", "habilidades", "");
 		if (cursor != null){
 			JSONArray documentos = new JSONArray();
-			while (((Iterator<DBObject>) cursor).hasNext()) {
-				BasicDBObject obj = (BasicDBObject) ((Iterator<DBObject>) cursor).next();
+			for (int i = 0; i < cursor.size(); i++) {
+				BasicDBObject obj = new BasicDBObject();
+				obj.putAll((Map) cursor.get(i));
 				JSONObject jsonDocumento = new JSONObject();
 				jsonDocumento.put("_id", obj.getString("_id"));
 				BasicDBObject setUpdate = new BasicDBObject();
