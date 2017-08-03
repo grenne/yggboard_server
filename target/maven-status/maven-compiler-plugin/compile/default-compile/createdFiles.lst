@@ -3,6 +3,7 @@ com\yggboard\yggboard_server\Rest_ProcessosBatch.class
 com\yggboard\yggboard_server\App.class
 com\yggboard\yggboard_server\Rest_UploadFiles.class
 com\yggboard\yggboard_server\SendEmail.class
+com\yggboard\yggboard_server\Rest_Avaliacao.class
 com\yggboard\yggboard_server\Rest_Carreira.class
 com\yggboard\yggboard_server\Rest_Email.class
 com\yggboard\yggboard_server\Commons_DB.class

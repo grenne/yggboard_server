@@ -226,6 +226,7 @@ public class Commons_DB {
 			for (Document current : cursor) {
 				BasicDBObject doc = new BasicDBObject();
 				doc.putAll((Map) current.get("documento"));
+				doc.put("_id", current.get("_id"));
 				doc.remove("password");
 				doc.remove("token");
 	//			BasicDBObject docReturn = new BasicDBObject();

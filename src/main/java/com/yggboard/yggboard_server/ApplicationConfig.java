@@ -23,7 +23,8 @@ public class ApplicationConfig extends Application {
            		Rest_Usuario.class,
            		Rest_ProcessosBatch.class,
            		Rest_UploadFiles.class,
-           		Rest_Objetivos_Empresa.class
+           		Rest_Objetivos_Empresa.class,
+           		Rest_Avaliacao.class
            	        		));
     }
 
