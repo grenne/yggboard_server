@@ -3,7 +3,6 @@ package com.yggboard.yggboard_server;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -24,7 +23,6 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
 
 @Singleton
 // @Lock(LockType.READ)
@@ -1170,6 +1168,7 @@ public class Rest_Index {
 				// ***		carrega lista
 				//			
 				if (addObjeto(arrayObj, obj)){
+					Boolean carrega = false;
 					switch (collection) {
 					case "cursos":
 						List arrayParent = (List) obj.get("parents");
@@ -1184,6 +1183,7 @@ public class Rest_Index {
 								objOut.put("habilidadesPerfil", commons.montaArrayPerfil(listas.userPerfil().get("habilidades"), obj.get("habilidades")));
 							};
 							objOut.put("documento", obj);
+							carrega = true;
 						};
 						break;
 					case "habilidades":
@@ -1194,6 +1194,7 @@ public class Rest_Index {
 							objOut.put("possui", commons.testaElementoArray(obj.get("id").toString(), (ArrayList<String>) listas.userPerfil().get("habilidades")));
 						};
 						objOut.put("documento", obj);
+						carrega = true;
 						break;
 					case "objetivos":
 						if (listas.userPerfil().get("carreirasInteresse") != null){
@@ -1206,12 +1207,16 @@ public class Rest_Index {
 							objOut.put("necessariosPerfil", commons.montaArrayPerfil(listas.userPerfil().get("habilidades"), obj.get("necessarios")));
 						};
 						objOut.put("documento", obj);
+						carrega = true;
 						break;
 					default:
 						objOut.put("documento", obj);
+						carrega = true;
 						break;
 					};
-					arrayObj.add(objOut);
+					if (carrega) {
+						arrayObj.add(objOut);
+					};
 				};
 			};
 		};

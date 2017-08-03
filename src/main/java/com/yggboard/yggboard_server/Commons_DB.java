@@ -59,6 +59,7 @@ public class Commons_DB {
 //				doc.remove("token");
 				BasicDBObject docReturn = new BasicDBObject();
 				docReturn.put("documento", doc);
+				docReturn.put("_id", cursor.first().get("_id"));
 				mongo.close();
 				return Response.status(200).entity(docReturn).build();
 			}

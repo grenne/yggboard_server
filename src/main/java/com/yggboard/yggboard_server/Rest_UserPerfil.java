@@ -64,13 +64,12 @@ public class Rest_UserPerfil {
 					arrayList = (ArrayList) jsonPerfil.get("carreirasSugeridas");
 				};
 				if (arrayList != null){
-			    	Object array[] = arrayList.toArray();
 			    	JSONArray arrayListHabilidadesFaltantes = new JSONArray();
 			    	JSONArray arrayListHabilidadesPossui = new JSONArray();
 			    	JSONArray arrayListHabilidadesObjetivos = new JSONArray();
 			    	JSONArray arrayListHabilidadesObjetivosReal = new JSONArray();
-					for (int i = 0; i < array.length; i++) {
-						BasicDBObject cursorCarreiras = commons_db.getCollection(usuario, "objetivos", "documento.id");
+					for (int i = 0; i < arrayList.size(); i++) {
+						BasicDBObject cursorCarreiras = commons_db.getCollection((String) arrayList.get(i), "objetivos", "documento.id");
 						if (cursorCarreiras != null){
 							BasicDBObject objCarreiras = new BasicDBObject();
 							objCarreiras.put("documento", cursorCarreiras.get("documento"));

@@ -95,7 +95,7 @@ public class Rest_Objetivos_Empresa {
 		@Path("/inout")	
 		@GET
 		@Produces(MediaType.APPLICATION_JSON)
-		public Boolean AtualizarPerfil(@QueryParam("token") String token, @QueryParam("empresaId") String empresaId, @QueryParam("objetivoId") String objetivoId)  {
+		public Boolean AtualizarPerfil(@QueryParam("token") String token, @QueryParam("empresaId") String empresaId, @QueryParam("objetivoId") String objetivoId, @QueryParam("habilidadeId") String habilidadeId)  {
 			if ((commons_db.getCollection(token, "userPerfil", "documento.token")) == null) {
 				return null;
 			};
@@ -125,11 +125,83 @@ public class Rest_Objetivos_Empresa {
 			if ((response.getStatus() != 200)){
 				return false;
 			};
+			BasicDBObject objetivoEmpresaObj = new BasicDBObject();
+			objetivoEmpresaObj.putAll((Map) response.getEntity());
+			BasicDBObject objetivoEmpresaDoc = new BasicDBObject();
+			objetivoEmpresaDoc.putAll((Map) objetivoEmpresaObj.get("documento"));
 			
-			BasicDBObject documento = new BasicDBObject();
-			documento.putAll((Map) response.getEntity());
 			
-			commons_db.incluirCrud("objetivosEmpresa", documento);
+			Boolean existeHabilidadeIn = false;
+			Boolean existeHabilidadeOut = false;
+			Boolean existeHabilidadeNecessarios = false;
+			Boolean removerHabilidadeIn = false;
+			Boolean removerHabilidadeOut = false;
+			Boolean incluirHabilidadeIn = false;
+			Boolean incluirHabilidadeOut = false;
+
+			BasicDBObject objetivoObj = commons_db.getCollection(objetivoId, "objetivos", objetivoId);
+			BasicDBObject objetivoDoc = new BasicDBObject();
+			objetivoDoc.putAll((Map) objetivoObj.get("documento"));
+
+			ArrayList<Object> habilidadesIn = (ArrayList<Object>) objetivoEmpresaDoc.get("habilidadesIn");
+			for (int i = 0; i < habilidadesIn.size(); i++) {
+				if (habilidadesIn.get(i).equals(habilidadeId)) {
+					existeHabilidadeIn = true;	
+				};
+			};
+			
+			ArrayList<Object> habilidadesOut = (ArrayList<Object>) objetivoEmpresaDoc.get("habilidadesOut");
+			for (int i = 0; i < habilidadesOut.size(); i++) {
+				if (habilidadesOut.get(i).equals(habilidadeId)) {
+					existeHabilidadeOut = true;	
+				};
+			};
+	
+			ArrayList<String> necessarios = (ArrayList<String>) objetivoDoc.get("necessarios");
+			for (int i = 0; i < necessarios.size(); i++) {
+				if (necessarios.get(i).equals(habilidadeId)) {
+					existeHabilidadeNecessarios = true;	
+				};
+			};
+			
+			if (!existeHabilidadeNecessarios) {
+				if (existeHabilidadeIn) {
+					removerHabilidadeIn = true;
+				}else {
+					incluirHabilidadeIn = true;
+				};
+			}else {
+				if (existeHabilidadeOut) {
+					removerHabilidadeOut = true;
+				}else {
+					incluirHabilidadeOut = true;
+				};				
+			};
+			
+			if (incluirHabilidadeIn) {
+				habilidadesIn.add(habilidadeId);
+			};
+			if (incluirHabilidadeOut) {
+				habilidadesOut.add(habilidadeId);
+			};
+
+			if (removerHabilidadeIn) {
+				commons.removeObjeto(habilidadesIn, habilidadeId.toString());
+			};
+			if (removerHabilidadeOut) {
+				commons.removeObjeto(habilidadesOut, habilidadeId.toString());
+			};
+			
+			objetivoEmpresaDoc.put("habilidadesIn", habilidadesIn);
+			objetivoEmpresaDoc.put("habilidadesOut", habilidadesOut);
+			
+			ArrayList<JSONObject> fieldsArray = new ArrayList<>();
+			JSONObject field = new JSONObject();
+			field.put("field", "documento");
+			field.put("value", objetivoEmpresaDoc);
+			fieldsArray.add(field);
+
+			commons_db.atualizarCrud("objetivosEmpresa", fieldsArray, keysArray, objetivoEmpresaDoc);
 			return true;	
 		};
 		
