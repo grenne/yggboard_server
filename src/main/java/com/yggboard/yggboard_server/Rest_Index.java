@@ -1170,7 +1170,8 @@ public class Rest_Index {
 				// ***		carrega lista
 				//			
 				if (addObjeto(arrayObj, obj)){
-					if (collection.equals("cursos")) {
+					switch (collection) {
+					case "cursos":
 						List arrayParent = (List) obj.get("parents");
 						if (arrayParent.size() == 0){
 							if (listas.userPerfil().get("cursosInteresse") != null){
@@ -1184,8 +1185,8 @@ public class Rest_Index {
 							};
 							objOut.put("documento", obj);
 						};
-					};
-					if (collection.equals("habilidades")) {
+						break;
+					case "habilidades":
 						if (listas.userPerfil().get("habilidadesInteresse") != null){
 							objOut.put("interesse", commons.testaElementoArray(obj.get("id").toString(), (ArrayList<String>) listas.userPerfil().get("habilidadesInteresse")));
 						};
@@ -1193,8 +1194,8 @@ public class Rest_Index {
 							objOut.put("possui", commons.testaElementoArray(obj.get("id").toString(), (ArrayList<String>) listas.userPerfil().get("habilidades")));
 						};
 						objOut.put("documento", obj);
-					};
-					if (collection.equals("objetivos")) {
+						break;
+					case "objetivos":
 						if (listas.userPerfil().get("carreirasInteresse") != null){
 							objOut.put("interesse", commons.testaElementoArray(obj.get("id").toString(), (ArrayList<String>) listas.userPerfil().get("carreirasInteresse")));
 						};
@@ -1205,6 +1206,10 @@ public class Rest_Index {
 							objOut.put("necessariosPerfil", commons.montaArrayPerfil(listas.userPerfil().get("habilidades"), obj.get("necessarios")));
 						};
 						objOut.put("documento", obj);
+						break;
+					default:
+						objOut.put("documento", obj);
+						break;
 					};
 					arrayObj.add(objOut);
 				};
