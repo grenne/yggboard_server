@@ -139,7 +139,7 @@ public class Rest_Objetivos_Empresa {
 			Boolean incluirHabilidadeIn = false;
 			Boolean incluirHabilidadeOut = false;
 
-			BasicDBObject objetivoObj = commons_db.getCollection(objetivoId, "objetivos", objetivoId);
+			BasicDBObject objetivoObj = commons_db.getCollection(objetivoId, "objetivos", "documento.id");
 			BasicDBObject objetivoDoc = new BasicDBObject();
 			objetivoDoc.putAll((Map) objetivoObj.get("documento"));
 
@@ -186,10 +186,10 @@ public class Rest_Objetivos_Empresa {
 			};
 
 			if (removerHabilidadeIn) {
-				commons.removeObjeto(habilidadesIn, habilidadeId.toString());
+				habilidadesIn =commons.removeObjeto(habilidadesIn, habilidadeId.toString());
 			};
 			if (removerHabilidadeOut) {
-				commons.removeObjeto(habilidadesOut, habilidadeId.toString());
+				habilidadesOut = commons.removeObjeto(habilidadesOut, habilidadeId.toString());
 			};
 			
 			objetivoEmpresaDoc.put("habilidadesIn", habilidadesIn);
@@ -201,7 +201,10 @@ public class Rest_Objetivos_Empresa {
 			field.put("value", objetivoEmpresaDoc);
 			fieldsArray.add(field);
 
-			commons_db.atualizarCrud("objetivosEmpresa", fieldsArray, keysArray, objetivoEmpresaDoc);
+			BasicDBObject documento = new BasicDBObject();
+			documento.put("documento", objetivoEmpresaDoc);
+
+			commons_db.atualizarCrud("objetivosEmpresa", fieldsArray, keysArray, documento);
 			return true;	
 		};
 		

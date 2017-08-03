@@ -305,18 +305,19 @@ public class Commons {
 		return array;
 	};
 
-	public JSONArray removeObjeto(ArrayList<Object> array, Object elemento) {
-
+	
+	public ArrayList<Object> removeObjeto(ArrayList<Object> array, Object elemento) {
 		if (array != null){
 			for (int i = 0; i < array.size(); i++) {
 				if (array.get(i).equals(elemento)){
-					return (JSONArray) array.remove(i); 
+					array.remove(i);
+					return array;  
 				};
 			};
 		}else{
-			return (JSONArray) array;
+			return array;
 		};
-		return (JSONArray) array;
+		return array;
 	};
 
 	@SuppressWarnings("unchecked")
