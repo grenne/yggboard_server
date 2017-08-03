@@ -1,7 +1,6 @@
 package com.yggboard.yggboard_server;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -17,11 +16,8 @@ import javax.ws.rs.core.Response;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
 
 	
 @Singleton
@@ -1042,40 +1038,25 @@ public class Rest_UserPerfil {
 			for (int i = 0; i < cursor.size(); i++) {
 				BasicDBObject objCurso = new BasicDBObject();
 				objCurso.putAll((Map) cursor.get(i));
-				JSONParser parser = new JSONParser(); 
-				String documento = objCurso.getString("documento");
-				try {
-					JSONObject jsonCurso = new JSONObject();
-					jsonCurso.put("documento", (JSONObject) parser.parse(documento));
-					Boolean existeCurso = false;
-					int j = 0;
-					while (j < documentos.size()) {
-						JSONObject jsonElementoArray = (JSONObject) documentos.get(j);
-						if (jsonCurso.get("documento").equals(jsonElementoArray.get("documento"))){
-							existeCurso = true;
-						}
-						++j;
-					};
-					if (!existeCurso){
-						JSONObject objCursos = (JSONObject) jsonCurso.get("documento");
-						@SuppressWarnings("rawtypes")
-						List arrayParent = (List) objCursos.get("parents");
-						if (arrayParent.size() == 0){
-							if (jsonPerfil.get("cursosInteresse") != null){
-								objCursos.put("interesse", commons.testaElementoArray(objCursos.get("id").toString(), (ArrayList<String>) jsonPerfil.get("cursosInteresse")));
-							};
-							if (jsonPerfil.get("cursos") != null){
-								objCursos.put("possui", commons.testaElementoArray(objCursos.get("id").toString(), (ArrayList<String>) jsonPerfil.get("cursos")));
-							};
-							if (objCursos.get("habilidades") != null){
-								objCursos.put("habilidadesPerfil", commons.montaArrayPerfil(jsonPerfil.get("habilidades"), objCursos.get("habilidades")));
-							};
-							documentos.add(jsonCurso);
+				Boolean existeCurso = false;
+				if (commons.testaElementoArrayObject(objCurso, documentos)) {
+					existeCurso = true;
+				};
+				if (!existeCurso){
+					List arrayParent = (List) objCurso.get("parents");
+					if (arrayParent.size() == 0){
+						if (jsonPerfil.get("cursosInteresse") != null){
+							objCurso.put("interesse", commons.testaElementoArray(objCurso.get("id").toString(), (ArrayList<String>) jsonPerfil.get("cursosInteresse")));
 						};
+						if (jsonPerfil.get("cursos") != null){
+							objCurso.put("possui", commons.testaElementoArray(objCurso.get("id").toString(), (ArrayList<String>) jsonPerfil.get("cursos")));
+						};
+						if (objCurso.get("habilidades") != null){
+							objCurso.put("habilidadesPerfil", commons.montaArrayPerfil(jsonPerfil.get("habilidades"), objCurso.get("habilidades")));
+						};
+						documentos.add(objCurso);
 					};
-				} catch (ParseException e) {
-					e.printStackTrace();
-				}
+				};
 			};
 			return documentos;
 		}

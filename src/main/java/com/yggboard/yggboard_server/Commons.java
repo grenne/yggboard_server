@@ -262,6 +262,16 @@ public class Commons {
 		return false;
 	};
 
+	public Boolean testaElementoArrayObject(BasicDBObject elemento, ArrayList<BasicDBObject> array) {
+
+		for (int w = 0; w < array.size(); w++) {
+			if (array.get(w) == elemento){
+				return true;
+			};
+		};
+		return false;
+	};
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public JSONArray montaArrayPerfil(Object perfil, Object elementos) {
 		JSONArray array = new JSONArray();
