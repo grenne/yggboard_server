@@ -34,6 +34,9 @@ public class Rest_Objetivos_Empresa {
 		if ((commons_db.getCollection(token, "userPerfil", "documento.token")) == null) {
 			return null;
 		};
+		if (empresaId == null){
+			return null;
+		};
 		JSONArray cursor = commons_db.getCollectionLista(empresaId, "objetivosEmpresa", "documento.empresaId");
 		JSONArray documentos = new JSONArray();
 		if (cursor != null){
@@ -45,8 +48,51 @@ public class Rest_Objetivos_Empresa {
 			};
 			return documentos;
 		};
-		return null;	
-		
+		return null;			
+	};
+
+	@SuppressWarnings({ "unchecked" })
+	@Path("/areaAtuacao/lista")	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public JSONArray ListaAreaAtuacao(@QueryParam("token") String token, @QueryParam("empresaId") String empresaId)  {
+		if ((commons_db.getCollection(token, "userPerfil", "documento.token")) == null) {
+			return null;
+		};
+		if (empresaId == null){
+			return null;
+		};
+		JSONArray cursor = commons_db.getCollectionListaNoKey("areaAtuacao");
+		JSONArray documentos = new JSONArray();
+		if (cursor != null){
+			for (int i = 0; i < cursor.size(); i++) {
+				documentos.add(cursor.get(i));				
+			};
+			return documentos;
+		};
+		return null;			
+	};
+
+	@SuppressWarnings({ "unchecked" })
+	@Path("/areaConhecimento/lista")	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public JSONArray ListaAreaConhecimento(@QueryParam("token") String token, @QueryParam("empresaId") String empresaId)  {
+		if ((commons_db.getCollection(token, "userPerfil", "documento.token")) == null) {
+			return null;
+		};
+		if (empresaId == null){
+			return null;
+		};
+		JSONArray cursor = commons_db.getCollectionListaNoKey("areaConhecimento");
+		JSONArray documentos = new JSONArray();
+		if (cursor != null){
+			for (int i = 0; i < cursor.size(); i++) {
+				documentos.add(cursor.get(i));				
+			};
+			return documentos;
+		};
+		return null;			
 	};
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -55,6 +101,9 @@ public class Rest_Objetivos_Empresa {
 	@Produces(MediaType.APPLICATION_JSON)
 	public JSONObject ObjetivoListas(@QueryParam("token") String token, @QueryParam("empresaId") String empresaId,@QueryParam("objetivoId") String objetivoId)  {
 		if ((commons_db.getCollection(token, "userPerfil", "documento.token")) == null) {
+			return null;
+		};
+		if (empresaId == null){
 			return null;
 		};
 		JSONObject documentos = new JSONObject();
@@ -97,11 +146,14 @@ public class Rest_Objetivos_Empresa {
 	};
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	@Path("/areaAtuacao")	
+	@Path("/habilidades/areaAtuacao")	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public JSONObject HabildadesAreaAtuacao(@QueryParam("token") String token, @QueryParam("empresaId") String empresaId, @QueryParam("objetivoId") String objetivoId, @QueryParam("areaAtuacaoId") String areaAtuacaoId)  {
 		if ((commons_db.getCollection(token, "userPerfil", "documento.token")) == null) {
+			return null;
+		};
+		if (empresaId == null){
 			return null;
 		};
 		JSONObject documentos = new JSONObject();
@@ -115,7 +167,7 @@ public class Rest_Objetivos_Empresa {
 			for (int j = 0; j < objetivoArray.size(); j++) {
 				BasicDBObject docObjetivoObj = new BasicDBObject();
 				docObjetivoObj.putAll((Map) objetivoArray.get(j));
-				if (!docObjetivoObj.get("id").toString().equals(docObjetivo.get("id").toString())) {
+				if (!docObjetivoObj.get("_id").toString().equals(docObjetivo.get("_id").toString())) {
 					ArrayList<String> habilidadesArray = (ArrayList<String>) docObjetivoObj.get("necessarios");
 					for (int z = 0; z < habilidadesArray.size(); z++) {
 						BasicDBObject docHabilidade = new BasicDBObject();
@@ -133,11 +185,14 @@ public class Rest_Objetivos_Empresa {
 	};
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	@Path("/areaConhecimento")	
+	@Path("/habilidades/areaConhecimento")	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public JSONObject HabildadesAreaConhecimento(@QueryParam("token") String token, @QueryParam("empresaId") String empresaId, @QueryParam("objetivoId") String objetivoId, @QueryParam("areaConhecimentoId") String areaConhecimentoId)  {
 		if ((commons_db.getCollection(token, "userPerfil", "documento.token")) == null) {
+			return null;
+		};
+		if (empresaId == null){
 			return null;
 		};
 		JSONObject documentos = new JSONObject();
@@ -196,7 +251,7 @@ public class Rest_Objetivos_Empresa {
 	@Path("/inout")	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public Boolean AtualizarPerfil(@QueryParam("token") String token, @QueryParam("empresaId") String empresaId, @QueryParam("objetivoId") String objetivoId, @QueryParam("habilidadeId") String habilidadeId)  {
+	public Boolean MontaObjetivo(@QueryParam("token") String token, @QueryParam("empresaId") String empresaId, @QueryParam("objetivoId") String objetivoId, @QueryParam("habilidadeId") String habilidadeId)  {
 		if ((commons_db.getCollection(token, "userPerfil", "documento.token")) == null) {
 			return null;
 		};
