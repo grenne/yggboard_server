@@ -33,6 +33,9 @@ public class Rest_Avaliacao {
 		if ((commons_db.getCollection(token, "userPerfil", "documento.token")) == null) {
 			return null;
 		};
+		if (empresaId == null) {
+			return null;
+		};
 		BasicDBObject docObjetivo = new BasicDBObject();
 		docObjetivo = commons_db.getCollection(usuarioId, "mapaAvaliacao", "documento.usuarioId");
 		if (docObjetivo == null) {
@@ -100,6 +103,7 @@ public class Rest_Avaliacao {
 		ArrayList<String> habilidadesArray = (ArrayList<String>) objetivoDoc.get("necessarios");
 		ArrayList<String> habilidadesFinal = commons.montaObjetivoEmpresa(habilidadesArray, empresaId, objetivoId);
 		JSONArray habilidades = new JSONArray();
+		
 		for (int z = 0; z < habilidadesFinal.size(); z++) {
 			BasicDBObject docHabilidade = new BasicDBObject();
 			docHabilidade = commons_db.getCollection(habilidadesArray.get(z), "habilidades", "documento.id");
@@ -136,6 +140,9 @@ public class Rest_Avaliacao {
 	@Produces(MediaType.APPLICATION_JSON)
 	public JSONArray Colaboradores(@QueryParam("token") String token, @QueryParam("empresaId") String empresaId)  {
 		if ((commons_db.getCollection(token, "userPerfil", "documento.token")) == null) {
+			return null;
+		};
+		if (empresaId == null) {
 			return null;
 		};
 		JSONArray cursor = commons_db.getCollectionLista(empresaId, "mapaAvaliacao", "documento.empresaId");
@@ -177,6 +184,9 @@ public class Rest_Avaliacao {
 		};
 		if (assunto == null){
 			return false;
+		};
+		if (empresaId == null) {
+			return null;
 		};
 		BasicDBObject docObjetivo = new BasicDBObject();
 		docObjetivo = commons_db.getCollection(colaboradorId, "mapaAvaliacao", "documento.usuarioId");
