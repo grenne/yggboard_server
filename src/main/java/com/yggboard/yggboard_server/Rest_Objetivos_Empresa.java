@@ -122,7 +122,8 @@ public class Rest_Objetivos_Empresa {
 					docObjetivoObj.putAll((Map) objetivoArray.get(j));
 					if (!docObjetivoObj.get("_id").toString().equals(docObjetivo.get("_id").toString())) {
 						ArrayList<String> habilidadesArray = (ArrayList<String>) docObjetivoObj.get("necessarios");
-						for (int z = 0; z < habilidadesArray.size(); z++) {
+						ArrayList<String> habilidadesFinal = commons.montaObjetivoEmpresa(habilidadesArray, empresaId, objetivoId);
+						for (int z = 0; z < habilidadesFinal.size(); z++) {
 							BasicDBObject docHabilidade = new BasicDBObject();
 							docHabilidade = commons_db.getCollection(habilidadesArray.get(z), "habilidades", "documento.id");
 							if (docHabilidade != null) {

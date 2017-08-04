@@ -9,6 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.ws.rs.core.Response;
@@ -21,6 +22,8 @@ import com.mongodb.BasicDBObject;
 
 public class Commons {
 
+	Commons_DB commons_db = new Commons_DB();
+	
 	public Response testaToken(String token) {
 		Commons_DB commons_db = new Commons_DB();
 		if (commons_db.getCollection(token, "usuarios", "documento.token") == null){
@@ -320,7 +323,7 @@ public class Commons {
 		return array;
 	};
 	
-	public ArrayList<Object> removeString(ArrayList<Object> array, String elemento) {
+	public ArrayList<String> removeString(ArrayList<String> array, String elemento) {
 		if (array != null){
 			for (int i = 0; i < array.size(); i++) {
 				if (array.get(i).equals(elemento)){
@@ -437,4 +440,40 @@ public class Commons {
 		}
 		return null;
 	};
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public ArrayList<String> montaObjetivoEmpresa(ArrayList<String> habilidadesArray, String empresaId, String objetivoId) {
+
+		ArrayList<JSONObject> keysArray = new ArrayList<>();
+		JSONObject key = new JSONObject();
+		key.put("key", "documento.empresaId");
+		key.put("value", empresaId);
+		keysArray.add(key);
+		key = new JSONObject();
+		key.put("key", "documento.objetivoId");
+		key.put("value", objetivoId);
+		keysArray.add(key);
+
+		Response response = commons_db.obterCrud("objetivosEmpresa", keysArray);
+		if ((response.getStatus() != 200)){
+			return null;
+		};
+		
+		BasicDBObject objetivoEmpresaObj = new BasicDBObject();
+		objetivoEmpresaObj.putAll((Map) response.getEntity());
+		BasicDBObject objetivoEmpresaDoc = new BasicDBObject();
+		objetivoEmpresaDoc.putAll((Map) objetivoEmpresaObj.get("documento"));
+
+		ArrayList<String> habilidadesIn = (ArrayList<String>) objetivoEmpresaDoc.get("habilidadesIn");
+		ArrayList<String> habilidadesOut = (ArrayList<String>) objetivoEmpresaDoc.get("habilidadesOut");
+		
+		for (int i = 0; i < habilidadesIn.size(); i++) {
+			habilidadesArray.add(habilidadesIn.get(i).toString());
+		};
+		for (int i = 0; i < habilidadesOut.size(); i++) {
+			removeString(habilidadesArray, habilidadesIn.get(i).toString());
+		};
+		return habilidadesArray;
+	};
+	
 };
