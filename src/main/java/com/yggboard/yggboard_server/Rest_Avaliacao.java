@@ -9,7 +9,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -48,22 +47,22 @@ public class Rest_Avaliacao {
 
 		ArrayList<Object> superioresArray =  new ArrayList<Object>();
 		objArray = (ArrayList<String>) doc.get("superiores");
-		carregaMapa (superioresArray, objArray);
+		carregaMapa (doc, superioresArray, objArray);
 		
 		ArrayList<Object> parceirosArray =  new ArrayList<Object>();
 		objArray =  new ArrayList<String>();
 		objArray = (ArrayList<String>) doc.get("parceiros");
-		carregaMapa (parceirosArray, objArray);
+		carregaMapa (doc, parceirosArray, objArray);
 		
 		ArrayList<Object> subordinadosArray =  new ArrayList<Object>();
 		objArray =  new ArrayList<String>();
 		objArray = (ArrayList<String>) doc.get("subordinados");
-		carregaMapa (subordinadosArray, objArray);
+		carregaMapa (doc, subordinadosArray, objArray);
 		
 		ArrayList<Object> clientesArray =  new ArrayList<Object>();
 		objArray =  new ArrayList<String>();
 		objArray = (ArrayList<String>) doc.get("clientes");
-		carregaMapa (clientesArray, objArray);
+		carregaMapa (doc, clientesArray, objArray);
 
 		BasicDBObject documentos = new BasicDBObject();
 		
@@ -107,6 +106,7 @@ public class Rest_Avaliacao {
 		for (int z = 0; z < habilidadesFinal.size(); z++) {
 			BasicDBObject docHabilidade = new BasicDBObject();
 			docHabilidade = commons_db.getCollection(habilidadesArray.get(z), "habilidades", "documento.id");
+			docHabilidade.put("nota", getNotaHabilidade(doc,habilidadesArray.get(z)));
 			if (docHabilidade != null) {
 				commons.addObjeto(habilidades, docHabilidade);
 			};
@@ -118,7 +118,31 @@ public class Rest_Avaliacao {
 		return documento;
 	}
 
-	private void carregaMapa(ArrayList<Object> outArray, ArrayList<String> inArray) {
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private Object getNotaHabilidade(BasicDBObject doc, String habilidadeId) {
+		
+		String avaliacaoId = "5983d292d11f72ed9e7b4319";
+		
+		ArrayList<Object> avaliacoes = (ArrayList<Object>) doc.get("avaliacoes");
+		for (int i = 0; i < avaliacoes.size(); i++) {
+			BasicDBObject avaliacao = new BasicDBObject();	
+			avaliacao.putAll((Map) avaliacoes.get(i));
+			if (avaliacao.get("id").equals(avaliacaoId)) {
+				ArrayList<Object> habilidades = (ArrayList<Object>) doc.get("habilidades");
+				for (int j = 0; j < habilidades.size(); j++) {
+					BasicDBObject habilidade = new BasicDBObject();
+					habilidade.putAll((Map) habilidades.get(j));
+					if (habilidade.get("id").equals(habilidadeId)) {
+						return habilidade.get("nota");
+					};
+				};
+			};
+		};
+		return null;
+	}
+
+	@SuppressWarnings("rawtypes")
+	private void carregaMapa(BasicDBObject doc, ArrayList<Object> outArray, ArrayList<String> inArray) {
 
 		if (inArray != null) {
 			for (int i = 0; i < inArray.size(); i++) {
@@ -127,7 +151,12 @@ public class Rest_Avaliacao {
 					BasicDBObject outObj = new BasicDBObject();
 					BasicDBObject docObj = (BasicDBObject) registro.get("documento");
 					outObj.put("nome", docObj.get("firstName") + " " + docObj.get("lastName"));
+					outObj.put("photo", docObj.get("photo"));
 					outObj.put("id", registro.get("_id").toString());
+					String objetivoId = obterObjetivoColaborador(doc, doc.getString("usuarioId"));
+					BasicDBObject objetivoDoc = new BasicDBObject(); 
+					objetivoDoc.putAll((Map) commons_db.getCollection(objetivoId, "objetivos", "documento.id").get("documento"));
+					outObj.put("objetivo", objetivoDoc.get("nome"));
 					outArray.add(outObj);
 				};
 			};		
@@ -185,57 +214,82 @@ public class Rest_Avaliacao {
 		if (assunto == null){
 			return false;
 		};
-		if (empresaId == null) {
-			return null;
-		};
+
 		BasicDBObject docObjetivo = new BasicDBObject();
 		docObjetivo = commons_db.getCollection(colaboradorId, "mapaAvaliacao", "documento.usuarioId");
 		if (docObjetivo == null){
 			return false;
 		};
-
-		if (docObjetivo != null) {
-			BasicDBObject doc = new BasicDBObject();
-			doc.putAll((Map) docObjetivo.get("documento"));
-			ArrayList<String> array = new ArrayList<>();
-			array = (ArrayList<String>) doc.get(assunto);
-			if (array == null) {
-				return null;
+		
+		BasicDBObject doc = new BasicDBObject();
+		doc.putAll((Map) docObjetivo.get("documento"));
+		ArrayList<String> array = new ArrayList<>();
+		array = (ArrayList<String>) doc.get(assunto);
+		if (array == null) {
+			return null;
+		};
+		Boolean existeColaboradorObjeto = false;
+		for (int i = 0; i < array.size(); i++) {
+			if (array.get(i).equals(colaboradorObjetoId)) {
+				existeColaboradorObjeto = true;	
 			};
-			Boolean existeColaboradorObjeto = false;
-			for (int i = 0; i < array.size(); i++) {
-				if (array.get(i).equals(colaboradorObjetoId)) {
-					existeColaboradorObjeto = true;	
-				};
-			};
-			
-			if (existeColaboradorObjeto) {
-				array = commons.removeString(array, colaboradorObjetoId);
-			}else {
-				array.add(colaboradorObjetoId);
-			};
-			
-			doc.put(assunto, array);
-	
-			BasicDBObject documento = new BasicDBObject();
-			documento.put("documento", doc);
-
-			ArrayList<JSONObject> keysArray = new ArrayList<>();
-			JSONObject key = new JSONObject();
-			key.put("key", "documento.usuarioId");
-			key.put("value", colaboradorId);
-			keysArray.add(key);
-			
-			ArrayList<JSONObject> fieldsArray = new ArrayList<>();
-			JSONObject field = new JSONObject();
-			field.put("field", assunto);
-			field.put("value", array);
+		};
+		
+		ArrayList<JSONObject> fieldsArray = new ArrayList<>();
+		JSONObject field = new JSONObject();
+		if (existeColaboradorObjeto) {
+			array = commons.removeString(array, colaboradorObjetoId);
+		}else {
+			ArrayList<String> superiores = (ArrayList<String>) doc.get("superiores");
+			superiores = commons.removeString(superiores, colaboradorObjetoId);
+			fieldsArray = new ArrayList<>();
+			field = new JSONObject();
+			field.put("field", "superiores");
+			field.put("value", superiores);
 			fieldsArray.add(field);
-	
-			commons_db.atualizarCrud("mapaAvaliacao", fieldsArray, keysArray, documento);
-			return true;	
-		}
-		return false;
+			ArrayList<String> subordinados = (ArrayList<String>) doc.get("subordinados");
+			subordinados = commons.removeString(subordinados, colaboradorObjetoId);
+			fieldsArray = new ArrayList<>();
+			field = new JSONObject();
+			field.put("field", "subordinados");
+			field.put("value", subordinados);
+			fieldsArray.add(field);
+			ArrayList<String> parceiros = (ArrayList<String>) doc.get("parceiros");
+			parceiros = commons.removeString(parceiros, colaboradorObjetoId);
+			fieldsArray = new ArrayList<>();
+			field = new JSONObject();
+			field.put("field", "parceiros");
+			field.put("value", parceiros);
+			fieldsArray.add(field);
+			ArrayList<String> clientes = (ArrayList<String>) doc.get("clientes");
+			clientes = commons.removeString(clientes, colaboradorObjetoId);
+			fieldsArray = new ArrayList<>();
+			field = new JSONObject();
+			field.put("field", "clientes");
+			field.put("value", clientes);
+			fieldsArray.add(field);
+			array.add(colaboradorObjetoId);
+		};
+		
+		doc.put(assunto, array);
+
+		BasicDBObject documento = new BasicDBObject();
+		documento.put("documento", doc);
+
+		ArrayList<JSONObject> keysArray = new ArrayList<>();
+		JSONObject key = new JSONObject();
+		key.put("key", "documento.usuarioId");
+		key.put("value", colaboradorId);
+		keysArray.add(key);
+		
+		fieldsArray = new ArrayList<>();
+		field = new JSONObject();
+		field.put("field", assunto);
+		field.put("value", array);
+		fieldsArray.add(field);
+
+		commons_db.atualizarCrud("mapaAvaliacao", fieldsArray, keysArray, documento);
+		return true;	
 	};
 	
 };
