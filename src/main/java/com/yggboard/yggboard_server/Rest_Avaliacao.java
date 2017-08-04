@@ -65,29 +65,48 @@ public class Rest_Avaliacao {
 			documentos.put("parceiros", parceirosArray);
 			documentos.put("subordinados", subordinadosArray);
 			documentos.put("clientes", clientesArray);
-			documentos.put("habilidades", carregaHabilidades(doc.get("objetivoId").toString()));
+			documentos.put("habilidades", carregaHabilidades(doc).get("habilidades"));
+			documentos.put("objetivo", carregaHabilidades(doc).get("objetivo"));
 			return documentos;
 		};
 		return null;
 	};
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private ArrayList<String> carregaHabilidades(String objetivoId) {
+	private BasicDBObject carregaHabilidades(BasicDBObject doc) {
 		
-		BasicDBObject obj = new BasicDBObject();
-		obj = commons_db.getCollection(objetivoId, "objetivos", "documento.id"); 
-		BasicDBObject doc = new BasicDBObject();
-		doc.putAll((Map) obj.get("documento"));
-		ArrayList<String> habilidadesArray = (ArrayList<String>) doc.get("necessarios");
-		ArrayList<String> habilidades = new ArrayList<>();
-		for (int z = 0; z < habilidadesArray.size(); z++) {
-			BasicDBObject docHabilidade = new BasicDBObject();
-			docHabilidade = commons_db.getCollection(habilidadesArray.get(z), "habilidades", "documento.id");
-			if (docHabilidade != null) {
-				commons.addObjeto((JSONArray) habilidades, docHabilidade);
+		String avaliacaoId = "5983d292d11f72ed9e7b4319";
+		
+		String objetivoId = null;
+		ArrayList<Object> avaliacoes = (ArrayList<Object>) doc.get("avaliacoes");
+		for (int i = 0; i < avaliacoes.size(); i++) {
+			BasicDBObject avaliacao = new BasicDBObject();	
+			avaliacao.putAll((Map) avaliacoes.get(i));
+			if (avaliacao.get("id").equals(avaliacaoId)) {
+				objetivoId = (String) avaliacao.get("objetivoId");
 			};
 		};
-		return habilidades;
+		
+		if (objetivoId != null) {
+			BasicDBObject obj = new BasicDBObject();
+			obj = commons_db.getCollection(objetivoId, "objetivos", "documento.id"); 
+			BasicDBObject objetivoDoc = new BasicDBObject();
+			objetivoDoc.putAll((Map) obj.get("documento"));
+			ArrayList<String> habilidadesArray = (ArrayList<String>) objetivoDoc.get("necessarios");
+			JSONArray habilidades = new JSONArray();
+			for (int z = 0; z < habilidadesArray.size(); z++) {
+				BasicDBObject docHabilidade = new BasicDBObject();
+				docHabilidade = commons_db.getCollection(habilidadesArray.get(z), "habilidades", "documento.id");
+				if (docHabilidade != null) {
+					commons.addObjeto(habilidades, docHabilidade);
+				};
+			};
+			BasicDBObject documento = new BasicDBObject();
+			documento.put("habilidades", habilidades);
+			documento.put("objetivo", objetivoDoc.get("nome"));
+			return documento;
+		};
+		return null;
 	}
 
 	private void carregaMapa(ArrayList<Object> outArray, ArrayList<String> inArray) {
