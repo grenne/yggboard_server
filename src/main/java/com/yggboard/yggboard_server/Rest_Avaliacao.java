@@ -65,21 +65,45 @@ public class Rest_Avaliacao {
 			documentos.put("parceiros", parceirosArray);
 			documentos.put("subordinados", subordinadosArray);
 			documentos.put("clientes", clientesArray);
+			documentos.put("habilidades", carregaHabilidades(doc.get("objetivoId").toString()));
 			return documentos;
 		};
 		return null;
 	};
-	private void carregaMapa(ArrayList<Object> outArray, ArrayList<String> inArray) {
-		for (int i = 0; i < inArray.size(); i++) {
-			BasicDBObject registro = commons_db.getCollection(inArray.get(i), "usuarios", "_id");
-			if (registro != null) {
-				BasicDBObject outObj = new BasicDBObject();
-				BasicDBObject docObj = (BasicDBObject) registro.get("documento");
-				outObj.put("nome", docObj.get("firstName") + " " + docObj.get("lastName"));
-				outObj.put("id", registro.get("_id").toString());
-				outArray.add(outObj);
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private ArrayList<String> carregaHabilidades(String objetivoId) {
+		
+		BasicDBObject obj = new BasicDBObject();
+		obj = commons_db.getCollection(objetivoId, "objetivos", "documento.id"); 
+		BasicDBObject doc = new BasicDBObject();
+		doc.putAll((Map) obj.get("documento"));
+		ArrayList<String> habilidadesArray = (ArrayList<String>) doc.get("necessarios");
+		ArrayList<String> habilidades = new ArrayList<>();
+		for (int z = 0; z < habilidadesArray.size(); z++) {
+			BasicDBObject docHabilidade = new BasicDBObject();
+			docHabilidade = commons_db.getCollection(habilidadesArray.get(z), "habilidades", "documento.id");
+			if (docHabilidade != null) {
+				commons.addObjeto((JSONArray) habilidades, docHabilidade);
 			};
-		};		
+		};
+		return habilidades;
+	}
+
+	private void carregaMapa(ArrayList<Object> outArray, ArrayList<String> inArray) {
+
+		if (inArray != null) {
+			for (int i = 0; i < inArray.size(); i++) {
+				BasicDBObject registro = commons_db.getCollection(inArray.get(i), "usuarios", "_id");
+				if (registro != null) {
+					BasicDBObject outObj = new BasicDBObject();
+					BasicDBObject docObj = (BasicDBObject) registro.get("documento");
+					outObj.put("nome", docObj.get("firstName") + " " + docObj.get("lastName"));
+					outObj.put("id", registro.get("_id").toString());
+					outArray.add(outObj);
+				};
+			};		
+		};
 	};
 
 	@SuppressWarnings({ "unchecked" })
@@ -94,12 +118,13 @@ public class Rest_Avaliacao {
 		JSONArray documentos = new JSONArray();
 		if (cursor != null){
 			for (int i = 0; i < cursor.size(); i++) {
-				BasicDBObject obj = (BasicDBObject) cursor.get(i);
-				BasicDBObject docObj = new BasicDBObject();
-				docObj = commons_db.getCollection(obj.getString("usuarioId"), "usuarios", "_id");
-				docObj.remove("password");
-				docObj.remove("token");
-				documentos.add(docObj);				
+				BasicDBObject doc = (BasicDBObject) cursor.get(i);
+				BasicDBObject docUsu = new BasicDBObject();
+				docUsu = commons_db.getCollection(doc.getString("usuarioId"), "usuarios", "_id");
+				BasicDBObject docOut = (BasicDBObject) docUsu.get("documento");
+				docOut.remove("password");
+				docOut.remove("token");
+				documentos.add(docOut);				
 			};
 			return documentos;
 		};
@@ -124,7 +149,7 @@ public class Rest_Avaliacao {
 			return false;
 		};
 		BasicDBObject docObjetivo = new BasicDBObject();
-		docObjetivo = commons_db.getCollection(colaboradorId, "mapaAvaliacao", "usuario.id");
+		docObjetivo = commons_db.getCollection(colaboradorId, "mapaAvaliacao", "documento.usuarioId");
 		if (docObjetivo == null){
 			return false;
 		};
@@ -133,7 +158,10 @@ public class Rest_Avaliacao {
 			BasicDBObject doc = new BasicDBObject();
 			doc.putAll((Map) docObjetivo.get("documento"));
 			ArrayList<Object> array = new ArrayList<>();
-			array = (ArrayList<Object>) doc.get("assunto");
+			array = (ArrayList<Object>) doc.get(assunto);
+			if (array == null) {
+				return null;
+			};
 			Boolean existeColaboradorObjeto = false;
 			for (int i = 0; i < array.size(); i++) {
 				if (array.get(i).equals(colaboradorObjetoId)) {
