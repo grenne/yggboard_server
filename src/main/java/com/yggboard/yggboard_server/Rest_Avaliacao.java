@@ -10,6 +10,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import org.bson.Document;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -128,7 +129,7 @@ public class Rest_Avaliacao {
 			BasicDBObject avaliacao = new BasicDBObject();	
 			avaliacao.putAll((Map) avaliacoes.get(i));
 			if (avaliacao.get("id").equals(avaliacaoId)) {
-				ArrayList<Object> habilidades = (ArrayList<Object>) doc.get("habilidades");
+				ArrayList<Object> habilidades = (ArrayList<Object>) avaliacao.get("habilidades");
 				for (int j = 0; j < habilidades.size(); j++) {
 					BasicDBObject habilidade = new BasicDBObject();
 					habilidade.putAll((Map) habilidades.get(j));
@@ -139,7 +140,7 @@ public class Rest_Avaliacao {
 			};
 		};
 		return null;
-	}
+	};
 
 	@SuppressWarnings("rawtypes")
 	private void carregaMapa(BasicDBObject doc, ArrayList<Object> outArray, ArrayList<String> inArray) {
@@ -286,6 +287,92 @@ public class Rest_Avaliacao {
 		field = new JSONObject();
 		field.put("field", assunto);
 		field.put("value", array);
+		fieldsArray.add(field);
+
+		commons_db.atualizarCrud("mapaAvaliacao", fieldsArray, keysArray, documento);
+		return true;	
+	};
+	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Path("/atualiza/nota")	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public Boolean AtualizaNota(@QueryParam("token") String token, @QueryParam("colaboradorId") String avaliadorId, @QueryParam("avaliadorId") String colaboradorId, @QueryParam("habilidadeId") String habilidadeId, @QueryParam("nota") String nota, @QueryParam("empresaId") String empresaId)  {
+		if ((commons_db.getCollection(token, "userPerfil", "documento.token")) == null) {
+			return null;
+		};
+		if (colaboradorId == null){
+			return false;
+		};
+		if (habilidadeId == null){
+			return false;
+		};
+		if (nota == null){
+			return false;
+		};
+		if (avaliadorId == null){
+			return false;
+		};
+
+		BasicDBObject docObjetivo = new BasicDBObject();
+		docObjetivo = commons_db.getCollection(colaboradorId, "mapaAvaliacao", "documento.usuarioId");
+		if (docObjetivo == null){
+			return false;
+		};
+		BasicDBObject doc = new BasicDBObject();
+		doc.putAll((Map) docObjetivo.get("documento"));
+		
+		String avaliacaoId = "5983d292d11f72ed9e7b4319";
+		
+		ArrayList<Object> avaliacoes = (ArrayList<Object>) doc.get("avaliacoes");
+		ArrayList<Object> avaliacoesNova = new ArrayList<Object>();
+		for (int i = 0; i < avaliacoes.size(); i++) {
+			BasicDBObject avaliacao = new BasicDBObject();	
+			avaliacao.putAll((Map) avaliacoes.get(i));
+			if (avaliacao.get("id").equals(avaliacaoId)) {
+				ArrayList<BasicDBObject> habilidades = (ArrayList<BasicDBObject>) avaliacao.get("habilidades");
+				ArrayList<BasicDBObject> habilidadesNew = new ArrayList<BasicDBObject>();
+				BasicDBObject habilidade = new BasicDBObject();
+				Boolean existeAvaliacao = false;
+				for (int j = 0; j < habilidades.size(); j++) {
+					habilidade = new BasicDBObject();
+					habilidade.putAll((Map) habilidades.get(j));
+					if (habilidade.get("id").equals(habilidadeId) && habilidade.get("avaliadorId").equals(avaliadorId)) {
+						habilidade.put("nota", nota);
+						habilidadesNew.add(habilidade);
+						existeAvaliacao = true;
+					}else {
+						habilidadesNew.add(habilidade);
+					};
+				};
+				if (!existeAvaliacao) {
+					habilidade = new BasicDBObject();
+					habilidade.put("id", habilidadeId);
+					habilidade.put("nota", nota);
+					habilidade.put("avaliadorId", avaliadorId);
+					habilidadesNew.add(habilidade);
+				};
+				avaliacao.remove("habilidades");
+				avaliacao.put("habilidades", habilidadesNew);
+			};
+			avaliacoesNova.add(avaliacao);
+		};
+
+		BasicDBObject documento = new BasicDBObject();
+		documento.put("documento", doc);
+
+		ArrayList<JSONObject> keysArray = new ArrayList<>();
+		JSONObject key = new JSONObject();
+		key.put("key", "documento.usuarioId");
+		key.put("value", colaboradorId);
+		keysArray.add(key);
+		
+		ArrayList<JSONObject> fieldsArray = new ArrayList<>();
+		fieldsArray = new ArrayList<>();
+		JSONObject field = new JSONObject();
+		field = new JSONObject();
+		field.put("field", "avaliacoes");
+		field.put("value", avaliacoesNova);
 		fieldsArray.add(field);
 
 		commons_db.atualizarCrud("mapaAvaliacao", fieldsArray, keysArray, documento);
