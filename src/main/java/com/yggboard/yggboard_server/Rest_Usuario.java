@@ -144,4 +144,18 @@ public class Rest_Usuario {
 		
 
 	};
+
+	@Path("/token")	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public Boolean Token(@QueryParam("token") String token) {
+	
+		Commons_DB commons_db = new Commons_DB();
+
+		if (commons_db.getCollection(token, "usuarios", "documento.token") == null) {
+			return false;
+		}else {
+			return true;
+		}
+	};
 };

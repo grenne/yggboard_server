@@ -10,7 +10,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import org.bson.Document;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -107,9 +106,14 @@ public class Rest_Avaliacao {
 		for (int z = 0; z < habilidadesFinal.size(); z++) {
 			BasicDBObject docHabilidade = new BasicDBObject();
 			docHabilidade = commons_db.getCollection(habilidadesArray.get(z), "habilidades", "documento.id");
-			docHabilidade.put("nota", getNotaHabilidade(doc,habilidadesArray.get(z)));
+			BasicDBObject avaliacao = getAvaliacao(doc,habilidadesArray.get(z));
 			if (docHabilidade != null) {
-				commons.addObjeto(habilidades, docHabilidade);
+  			docHabilidade.put("nota", avaliacao.get("nota"));
+  			docHabilidade.put("avaliadorId", avaliacao.get("avaliadorId"));
+  			docHabilidade.put("avaliadorNome", avaliacao.get("avaliadorNome"));
+  			if (docHabilidade != null) {
+  				commons.addObjeto(habilidades, docHabilidade);
+  			};
 			};
 		};
 		
@@ -120,13 +124,12 @@ public class Rest_Avaliacao {
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private Object getNotaHabilidade(BasicDBObject doc, String habilidadeId) {
+	private BasicDBObject getAvaliacao(BasicDBObject doc, String habilidadeId) {
 		
 		String avaliacaoId = "5983d292d11f72ed9e7b4319";
-		
 		ArrayList<Object> avaliacoes = (ArrayList<Object>) doc.get("avaliacoes");
 		for (int i = 0; i < avaliacoes.size(); i++) {
-			BasicDBObject avaliacao = new BasicDBObject();	
+			BasicDBObject avaliacao = new BasicDBObject();
 			avaliacao.putAll((Map) avaliacoes.get(i));
 			if (avaliacao.get("id").equals(avaliacaoId)) {
 				ArrayList<Object> habilidades = (ArrayList<Object>) avaliacao.get("habilidades");
@@ -134,7 +137,16 @@ public class Rest_Avaliacao {
 					BasicDBObject habilidade = new BasicDBObject();
 					habilidade.putAll((Map) habilidades.get(j));
 					if (habilidade.get("id").equals(habilidadeId)) {
-						return habilidade.get("nota");
+						BasicDBObject avaliacaoResult = new BasicDBObject();
+						avaliacaoResult.put("nota", habilidade.get("nota"));
+						avaliacaoResult.put("avaliadorId", habilidade.get("avaliadorId"));
+		  			BasicDBObject usuario = commons_db.getCollection(habilidade.get("avaliadorId").toString(), "usuario", "_id");
+		  			if (usuario != null) {
+		  				avaliacaoResult.put("avaliadorNome", usuario.get("fisrtName") + " " + usuario.get("lastName"));
+		  			}else {
+		  				avaliacaoResult.put("avaliadorNome", " ");
+		  			};
+						return avaliacaoResult;
 					};
 				};
 			};
