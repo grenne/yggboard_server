@@ -25,6 +25,51 @@ public class Rest_Avaliacao {
 	Commons commons = new Commons();
 
 	@SuppressWarnings({"unchecked", "rawtypes" })
+	@Path("/cria/mapa")	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public void CriaMapa(@QueryParam("token") String token, @QueryParam("usuarioId") String usuarioId, @QueryParam("empresaId") String empresaId)  {
+	
+
+		ArrayList<Object> hierarquias = new ArrayList<Object>(); 
+		hierarquias = commons_db.getCollectionLista(empresaId, "hierarquias", "documento.empresaId");
+
+		JSONArray areas = new JSONArray();
+		for (int i = 0; i < hierarquias.size(); i++) {
+			BasicDBObject hierarquia = new BasicDBObject();
+			hierarquia.putAll((Map) hierarquias.get(i));
+			ArrayList<String> subordinados = superior(hierarquia.get("colaborador").toString());
+			ArrayList<String> parceiros = superior(hierarquia.get("superior").toString());
+			ArrayList<String> habilidades = habilidades(hierarquia.get("colaborador").toString(), empresaId);
+			
+		};	
+	};
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private ArrayList<String> habilidades(String usuarioId, String empresaId) {
+
+		BasicDBObject docObjetivo = new BasicDBObject();
+		docObjetivo = commons_db.getCollection(usuarioId, "mapaAvaliacao", "documento.usuarioId");
+		BasicDBObject doc = new BasicDBObject();
+		doc.putAll((Map) docObjetivo.get("documento"));
+		return (ArrayList<String>) carregaHabilidades(doc, empresaId, obterObjetivoColaborador(doc, usuarioId)).get("habilidades");
+	};
+	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private ArrayList<String> superior(String superior) {
+
+		ArrayList<Object> hierarquias = new ArrayList<Object>(); 
+		hierarquias = commons_db.getCollectionLista(superior, "hierarquias", "documento.superior");
+
+		JSONArray arrayColaboradores = new JSONArray();
+		for (int i = 0; i < hierarquias.size(); i++) {
+			BasicDBObject hierarquia = new BasicDBObject();
+			hierarquia.putAll((Map) hierarquias.get(i));
+			commons.addString(arrayColaboradores, hierarquia.get("superior").toString());
+		};
+		return arrayColaboradores;
+	}
+	@SuppressWarnings({"unchecked", "rawtypes" })
 	@Path("/mapa")	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
@@ -389,6 +434,23 @@ public class Rest_Avaliacao {
 
 		commons_db.atualizarCrud("mapaAvaliacao", fieldsArray, keysArray, documento);
 		return true;	
+	};
+
+	@SuppressWarnings({"unchecked" })
+	@Path("/lista")	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public ArrayList<Object> Lista(@QueryParam("token") String token, @QueryParam("empresaId") String empresaId)  {
+	
+
+		ArrayList<Object> avaliacoes = new ArrayList<Object>(); 
+		avaliacoes = commons_db.getCollectionLista(empresaId, "avaliacoes", "documento.empresaId");
+
+		JSONArray avaliacoesResult = new JSONArray();
+		for (int i = 0; i < avaliacoes.size(); i++) {
+			avaliacoesResult.add(avaliacoes.get(i));
+		};	
+		return avaliacoesResult;
 	};
 	
 };

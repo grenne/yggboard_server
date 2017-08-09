@@ -9,6 +9,7 @@ com\yggboard\yggboard_server\Rest_Email.class
 com\yggboard\yggboard_server\Commons_DB.class
 com\yggboard\yggboard_server\Rest_Crud.class
 com\yggboard\yggboard_server\Usuario.class
+com\yggboard\yggboard_server\Rest_Hierarquia.class
 com\yggboard\yggboard_server\Commons.class
 com\yggboard\yggboard_server\Listas.class
 com\yggboard\yggboard_server\Rest_Objetivos_Empresa.class
