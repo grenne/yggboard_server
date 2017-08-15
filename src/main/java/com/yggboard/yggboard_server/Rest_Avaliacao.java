@@ -92,7 +92,7 @@ public class Rest_Avaliacao {
 	@Path("/atualiza/nota")	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public Boolean AtualizaNota(@QueryParam("token") String token, @QueryParam("colaboradorId") String avaliadorId, @QueryParam("avaliadorId") String colaboradorId, @QueryParam("habilidadeId") String habilidadeId, @QueryParam("nota") String nota, @QueryParam("empresaId") String empresaId)  {
+	public Boolean AtualizaNota(@QueryParam("token") String token, @QueryParam("colaboradorId") String colaboradorId, @QueryParam("avaliadorId") String avaliadorId, @QueryParam("habilidadeId") String habilidadeId, @QueryParam("nota") String nota, @QueryParam("avaliacaoId") String avaliacaoId)  {
 		if (token == null) {
 			return false;
 		};
@@ -112,7 +112,7 @@ public class Rest_Avaliacao {
 			return false;
 		};
 
-		return avaliacao.atualizaNota(avaliadorId, colaboradorId, habilidadeId, nota, empresaId);
+		return avaliacao.atualizaNota(avaliadorId, colaboradorId, habilidadeId, nota, avaliacaoId);
 	};
 
 	@Path("/lista")	

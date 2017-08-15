@@ -1,7 +1,7 @@
   var reader;
   var progress = document.querySelector('.percent');
 
-  document.getElementById('files').addEventListener('change', handleFileSelect, false);
+//  document.getElementById('files').addEventListener('change', handleFileSelect, false);
 
   var myVar = setInterval(function(){ setIntervalObject() }, 30);	  
   

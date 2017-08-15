@@ -1,10 +1,14 @@
 package com.yggboard.yggboard_server;
 
+import java.util.ArrayList;
 import java.util.Map;
 import javax.inject.Singleton;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -113,7 +117,7 @@ public class Rest_Crud {
 	@Path("/remover/all")
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response Remover(JSONObject queryParam)  {
+	public Response RemoverAll(JSONObject queryParam)  {
 		Commons_DB commons_db = new Commons_DB();
 		if (commons_db.getCollection(queryParam.get("token").toString(), "usuarios", "documento.token") == null){
 			return Response.status(401).entity("invalid token").build();	
@@ -123,5 +127,27 @@ public class Rest_Crud {
 		}else{
 			return Response.status(400).entity(null).build();	
 		}
+	};
+	@SuppressWarnings("unchecked")
+	@Path("/remover")
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response Remover(JSONObject queryParam)  {
+		Commons_DB commons_db = new Commons_DB();
+		if (commons_db.getCollection(queryParam.get("token").toString(), "usuarios", "documento.token") == null){
+			return Response.status(401).entity("invalid token").build();	
+		};
+		if (queryParam.get ("collection").toString() == null){
+			return Response.status(400).entity(null).build();
+		};
+		
+		ArrayList<JSONObject> keysArray = new ArrayList<>();
+		JSONObject key = new JSONObject();
+		key.put("key", queryParam.get ("key").toString());
+		key.put("value", queryParam.get ("value").toString());
+		keysArray.add(key);
+
+		return commons_db.removerCrudMany(queryParam.get ("collection").toString(), keysArray);
+
 	};
 }

@@ -58,8 +58,9 @@ public class Avaliacao {
   			avaliacao.put("parceiros", hierarquia(hierarquia.get("superior").toString(), "superior"));
   			avaliacao.put("clientes", hierarquia(hierarquia.get("colaborador").toString(), "clientes"));
   			avaliacao.put("objetivoId", hierarquia.get("objetivoId").toString());
-  			ArrayList<JSONObject> habilidades = new ArrayList<>();
-  			avaliacao.put("habilidades", habilidades);
+  			ArrayList<JSONObject> arrayVazia = new ArrayList<>();
+  			avaliacao.put("habilidades", arrayVazia);
+  			avaliacao.put("resultados", arrayVazia);
   
   			ArrayList<JSONObject> avaliacoesNew = new ArrayList<>();
   			if (existeMapa) {
@@ -342,15 +343,13 @@ public class Avaliacao {
 		BasicDBObject avaliacao = new BasicDBObject();
 		
 		for (int i = 0; i < avaliacoes.size(); i++) {
-			if (avaliacoes.get(i).equals(avaliacaoId)) {
-				avaliacao = (BasicDBObject) avaliacoes.get(i).get("avaliacoes");
+			BasicDBObject avaliacaoObj = new BasicDBObject();
+			avaliacaoObj.putAll((Map) avaliacoes.get(i));
+			if (avaliacaoId.equals(avaliacaoObj.get("id").toString())){
+				avaliacao = avaliacaoObj;
 			}else {
 				avaliacoesNew.add(avaliacoes.get(i));
 			};
-		};
-		
-		if (avaliacao == null) {
-			return null;
 		};
 		
 		ArrayList<String> array = new ArrayList<>();
@@ -415,19 +414,17 @@ public class Avaliacao {
 	};
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public Boolean atualizaNota(String avaliadorId, String colaboradorId, String habilidadeId, String nota, String empresaId)  {
+	public Boolean atualizaNota(String avaliadorId, String colaboradorId, String habilidadeId, String nota, String avaliacaoId)  {
 
-		BasicDBObject docObjetivo = new BasicDBObject();
-		docObjetivo = commons_db.getCollection(colaboradorId, "mapaAvaliacao", "documento.usuarioId");
-		if (docObjetivo == null){
+		BasicDBObject mapa = new BasicDBObject();
+		mapa = commons_db.getCollection(colaboradorId, "mapaAvaliacao", "documento.usuarioId");
+		if (mapa == null){
 			return false;
 		};
-		BasicDBObject doc = new BasicDBObject();
-		doc.putAll((Map) docObjetivo.get("documento"));
+		BasicDBObject mapaDoc = new BasicDBObject();
+		mapaDoc.putAll((Map) mapa.get("documento"));
 		
-		String avaliacaoId = "5983d292d11f72ed9e7b4319";
-		
-		ArrayList<Object> avaliacoes = (ArrayList<Object>) doc.get("avaliacoes");
+		ArrayList<Object> avaliacoes = (ArrayList<Object>) mapaDoc.get("avaliacoes");
 		ArrayList<Object> avaliacoesNova = new ArrayList<Object>();
 		for (int i = 0; i < avaliacoes.size(); i++) {
 			BasicDBObject avaliacao = new BasicDBObject();	
@@ -457,12 +454,14 @@ public class Avaliacao {
 				};
 				avaliacao.remove("habilidades");
 				avaliacao.put("habilidades", habilidadesNew);
+				avaliacao.remove("resultados");
+				avaliacao.put("resultados", calculaResultados(habilidadesNew));
 			};
 			avaliacoesNova.add(avaliacao);
 		};
 
 		BasicDBObject documento = new BasicDBObject();
-		documento.put("documento", doc);
+		documento.put("documento", mapaDoc);
 
 		ArrayList<JSONObject> keysArray = new ArrayList<>();
 		JSONObject key = new JSONObject();
@@ -481,6 +480,31 @@ public class Avaliacao {
 		commons_db.atualizarCrud("mapaAvaliacao", fieldsArray, keysArray, documento);
 		return true;	
 	};
+	private ArrayList<BasicDBObject> calculaResultados(ArrayList<BasicDBObject> habilidades) {
+		
+		ArrayList<BasicDBObject> resultados = new ArrayList<>();
+		ArrayList<String> habilidadesTratadas = new ArrayList<>();
+		
+		for (int i = 0; i < habilidades.size(); i++) {
+			if (!(commons.testaElementoArray(habilidades.get(i).get("id").toString(), habilidadesTratadas))){
+  			int qtde = 0;
+  			Double notas = 0.00;
+  			for (int j = 0; j < habilidades.size(); j++) {
+  				if (habilidades.get(i).get("id").toString().equals(habilidades.get(j).get("id").toString())) {
+  					qtde++;
+  					notas = notas + Double.valueOf(habilidades.get(j).get("nota").toString());
+  				};
+  			};
+  			BasicDBObject resultado = new BasicDBObject();
+  			resultado.put("id", habilidades.get(i).get("id").toString());
+  			resultado.put("nota", String.valueOf((notas/qtde)));
+  			resultados.add(resultado);
+  			habilidadesTratadas.add(habilidades.get(i).get("id").toString());
+			};
+		};
+		return resultados;
+	}
+
 	@SuppressWarnings("unchecked")
 	public ArrayList<Object> lista(String empresaId)  {
 	
