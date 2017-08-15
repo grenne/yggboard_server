@@ -79,6 +79,9 @@ $( ".teste" ).click(function() {
 	case "atualizaHabilidadesDuplicadas":
 		atualizaHabilidadesDuplicadas();
 		break;
+	case "testaCriarHierarquia":
+		testaCriarHierarquia();
+		break;
 		
 	default:
 		break;

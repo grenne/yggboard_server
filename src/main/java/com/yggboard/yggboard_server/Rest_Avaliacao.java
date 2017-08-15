@@ -26,7 +26,7 @@ public class Rest_Avaliacao {
 	@Path("/cria/mapa")	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public Boolean criaMapa(@QueryParam("token") String token, @QueryParam("usuarioId") String usuarioId, @QueryParam("empresaId") String empresaId, @QueryParam("avaliacaoId") String avaliacaoId)  {
+	public Boolean criaMapa(@QueryParam("token") String token, @QueryParam("usuarioId") String usuarioId, @QueryParam("empresaId") String empresaId, @QueryParam("avaliacaoId") String avaliacaoId, @QueryParam("areasSelect") ArrayList<String> areasSelect, @QueryParam("hierarquiasSelect") ArrayList<String> hierarquiasSelect)  {
 	
 
 		if (token == null) {
@@ -36,7 +36,7 @@ public class Rest_Avaliacao {
 			return false;
 		};
 
-		return avaliacao.criaMapaAvaliacao (usuarioId, empresaId, avaliacaoId);
+		return avaliacao.criaMapaAvaliacao (usuarioId, empresaId, avaliacaoId, areasSelect, hierarquiasSelect);
 
 	};
 	@Path("/mapa")	

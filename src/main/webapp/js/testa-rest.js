@@ -2,9 +2,98 @@
  * 
  */
 
+function testaCriarHierarquia() {
+	var objJson = {
+		token: sessionStorage.token,
+		
+		empresaId : "598204e50c220b4b24c369ff",
+		colaboradores : 
+			[ 
+			{
+				email : "cola01@gmail.com",
+				firstName : "cola01",
+				lastName : "cola01",
+				login : "mudar@123",
+				objetivo : "2",
+				area : "ara01",
+				superior : ""
+			} ,
+			{
+				email : "cola02@gmail.com",
+				firstName : "cola02",
+				lastName : "cola02",
+				login : "mudar@123",
+				objetivo : "2",
+				area : "ara02",
+				superior : "cola01@gmail.com"
+			},
+			{
+				email : "cola03@gmail.com",
+				firstName : "cola03",
+				lastName : "cola03",
+				login : "mudar@123",
+				objetivo : "2",
+				area : "ara02",
+				superior : "cola01@gmail.com"
+			},
+			{
+				email : "cola04@gmail.com",
+				firstName : "cola04",
+				lastName : "cola04",
+				login : "mudar@123",
+				objetivo : "2",
+				area : "ara02",
+				superior : "cola01@gmail.com"
+			},
+			{
+				email : "cola05@gmail.com",
+				firstName : "cola05",
+				lastName : "cola05",
+				login : "mudar@123",
+				objetivo : "2",
+				area : "ara03",
+				superior : "cola02@gmail.com"
+			},
+			{
+				email : "cola06@gmail.com",
+				firstName : "cola06",
+				lastName : "cola06",
+				login : "mudar@123",
+				objetivo : "2",
+				area : "ara03",
+				superior : "cola02@gmail.com"
+			},
+			{
+				email : "cola07@gmail.com",
+				firstName : "cola07",
+				lastName : "cola07",
+				login : "mudar@123",
+				objetivo : "2",
+				area : "ara04",
+				superior : "cola03@gmail.com"
+			} 
+			]
+	};
+	$.ajax({
+		type : "POST",
+		url : localStorage.mainUrl + "yggboard_server/rest/hierarquia/importar",
+		contentType : "application/json; charset=utf-8",
+		dataType : 'json',
+		data : JSON.stringify(objJson),
+		async : true
+
+	}).done(function(data) {
+		console.log("done: " + data);
+	}).fail(function(data) {
+		console.log("fail: " + data);
+	}).always(function(data) {
+		console.log("always: " + data);
+	});
+};
+
 function testaObter() {
 	var objJson = {
-		token: "1170706277ae0af0486017711353ee73",
+		token: sessionStorage.token,
 		collection : "badges",
 		keys : [ {
 			key : "documento.id",
@@ -29,7 +118,7 @@ function testaObter() {
 };
 function testaIncluir() {
 	var objJson = {
-		token: "1170706277ae0af0486017711353ee73",
+		token: sessionStorage.token,
 		collection : "usuarios",
 		insert : {
 			documento : {
@@ -42,7 +131,7 @@ function testaIncluir() {
 	};
 	var objUserPerfil =
 		{
-			token: "1170706277ae0af0486017711353ee73",
+			token: sessionStorage.token,
 			collection : "~userPerfil",
 			insert : {
 				documento : {
@@ -98,7 +187,7 @@ function testaAtualizar() {
 				 };
 	 
 	var objJson = {
-		token: "1170706277ae0af0486017711353ee73",
+		token: sessionStorage.token,
 		collection : "userPerfil",
 		keys : [ {
 			key : "documento.email",
@@ -166,7 +255,7 @@ function testaAtualizar() {
 function testaLista() {
 
 	var objJson = {
-		token: "1170706277ae0af0486017711353ee73",
+		token: sessionStorage.token,
 		collection : "cursos",
 		keys : []
 	};
@@ -379,7 +468,7 @@ function atualizaHabilidadesDuplicadas() {
 		});
 		userPerfil.habilidades = newHabilidades;
 		var objJson = {
-			token: "1170706277ae0af0486017711353ee73",
+			token: sessionStorage.token,
 			collection : "userPerfil",
 			keys : [ {
 				key : "documento.usuario",
@@ -435,7 +524,7 @@ function atualizaBadges() {
 		habilidade = obterBadges(habilidade, habilidade.id);
 		console.log("id - " + habilidade.id);
 		var objJson = {
-			token: "1170706277ae0af0486017711353ee73",
+			token: sessionStorage.token,
 			collection : "habilidades",
 			keys : [ {
 				key : "documento.id",

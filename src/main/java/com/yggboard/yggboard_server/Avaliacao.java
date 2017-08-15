@@ -15,67 +15,86 @@ public class Avaliacao {
 	Commons commons = new Commons();
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public Boolean criaMapaAvaliacao(String usuarioId, String empresaId, String avaliacaoId) {
+	public Boolean criaMapaAvaliacao(String usuarioId, String empresaId, String avaliacaoId, ArrayList<String> areasSelect, ArrayList<String> hierarquiasSelect) {
 		
 		ArrayList<Object> hierarquias = new ArrayList<Object>(); 
 		hierarquias = commons_db.getCollectionLista(empresaId, "hierarquias", "documento.empresaId");
 
 		for (int i = 0; i < hierarquias.size(); i++) {
+
 			BasicDBObject hierarquia = new BasicDBObject();
 			hierarquia.putAll((Map) hierarquias.get(i));
 
-			Boolean existeMapa = false;
-			ArrayList<JSONObject> avaliacoes = new ArrayList<>();
-			BasicDBObject docMapa = new BasicDBObject();
-			docMapa = commons_db.getCollection(hierarquia.get("colaborador").toString(), "mapaAvaliacao", "documento.usuarioId");
-			if (docMapa != null){
-				existeMapa = true;
-				avaliacoes = (ArrayList<JSONObject>) docMapa.get("avaliacoes");
-			};
-
-			JSONObject avaliacao = new JSONObject();
-			avaliacao.put("id", avaliacaoId);
-			avaliacao.put("superiores", hierarquia(hierarquia.get("colaborador").toString(), "colaborador"));
-			avaliacao.put("subordinados", hierarquia(hierarquia.get("colaborador").toString(), "superior"));
-			avaliacao.put("parceiros", hierarquia(hierarquia.get("superior").toString(), "superior"));
-			avaliacao.put("clientes", hierarquia(hierarquia.get("colaborador").toString(), "clientes"));
-			ArrayList<JSONObject> habilidades = new ArrayList<>();
-			avaliacao.put("habilidades", habilidades);
-
-			ArrayList<JSONObject> avaliacoesNew = new ArrayList<>();
-			if (existeMapa) {
-				for (int j = 0; j < avaliacoes.size(); j++) {
-					if (!avaliacaoId.equals(avaliacoes.get(i).get("id").toString())){
-						avaliacoesNew.add(avaliacoes.get(i));			
-					};
-				};
-			};
-			
-			avaliacoesNew.add(avaliacao);
-
-			ArrayList<JSONObject> fieldsArray = new ArrayList<>();
-			JSONObject field = new JSONObject();
-			fieldsArray = new ArrayList<>();
-			field = new JSONObject();
-			field.put("field", "avaliacoes");
-			field.put("value", avaliacoesNew);
-			fieldsArray.add(field);
-
-			ArrayList<JSONObject> keysArray = new ArrayList<>();
-			JSONObject key = new JSONObject();
-			key.put("key", "documento.usuarioId");
-			key.put("value", usuarioId);
-			keysArray.add(key);
-
-			if (existeMapa) {
-				commons_db.atualizarCrud("mapaAvaliacao", fieldsArray, keysArray, null);
-			}else {
-				commons_db.incluirCrud("mapaAvaliacao", criaMapaDoc(usuarioId, empresaId, avaliacoesNew));
+			if (colaboradorValido(hierarquia, areasSelect, hierarquiasSelect)) {
+  			Boolean existeMapa = false;
+  			ArrayList<JSONObject> avaliacoes = new ArrayList<>();
+  			BasicDBObject docMapa = new BasicDBObject();
+  			docMapa = commons_db.getCollection(hierarquia.get("colaborador").toString(), "mapaAvaliacao", "documento.usuarioId");
+  			if (docMapa != null){
+  				existeMapa = true;
+  				avaliacoes = (ArrayList<JSONObject>) docMapa.get("avaliacoes");
+  			};
+  
+  			JSONObject avaliacao = new JSONObject();
+  			avaliacao.put("id", avaliacaoId);
+  			avaliacao.put("superiores", hierarquia(hierarquia.get("colaborador").toString(), "colaborador"));
+  			avaliacao.put("subordinados", hierarquia(hierarquia.get("colaborador").toString(), "superior"));
+  			avaliacao.put("parceiros", hierarquia(hierarquia.get("superior").toString(), "superior"));
+  			avaliacao.put("clientes", hierarquia(hierarquia.get("colaborador").toString(), "clientes"));
+  			avaliacao.put("objetivoId", hierarquia.get("objetivoId").toString());
+  			ArrayList<JSONObject> habilidades = new ArrayList<>();
+  			avaliacao.put("habilidades", habilidades);
+  
+  			ArrayList<JSONObject> avaliacoesNew = new ArrayList<>();
+  			if (existeMapa) {
+  				for (int j = 0; j < avaliacoes.size(); j++) {
+  					if (!avaliacaoId.equals(avaliacoes.get(i).get("id").toString())){
+  						avaliacoesNew.add(avaliacoes.get(i));			
+  					};
+  				};
+  			};
+  			
+  			avaliacoesNew.add(avaliacao);
+  
+  			ArrayList<JSONObject> fieldsArray = new ArrayList<>();
+  			JSONObject field = new JSONObject();
+  			fieldsArray = new ArrayList<>();
+  			field = new JSONObject();
+  			field.put("field", "avaliacoes");
+  			field.put("value", avaliacoesNew);
+  			fieldsArray.add(field);
+  
+  			ArrayList<JSONObject> keysArray = new ArrayList<>();
+  			JSONObject key = new JSONObject();
+  			key.put("key", "documento.usuarioId");
+  			key.put("value", usuarioId);
+  			keysArray.add(key);
+  
+  			if (existeMapa) {
+  				commons_db.atualizarCrud("mapaAvaliacao", fieldsArray, keysArray, null);
+  			}else {
+  				commons_db.incluirCrud("mapaAvaliacao", criaMapaDoc(usuarioId, empresaId, avaliacoesNew));
+  			};
 			};
 		};
 		return true;
 		
 	};
+
+	private boolean colaboradorValido(BasicDBObject hierarquia, ArrayList<String> areasSelect, ArrayList<String> hierarquiasSelect) {
+		
+		if (areasSelect != null) {
+			if (commons.testaElementoArray(hierarquia.get("area").toString(), areasSelect)) {
+				return false;
+			}
+		};
+		if (hierarquiasSelect != null) {
+			if (commons.testaElementoArray(hierarquia.get("nivel").toString(), hierarquiasSelect)) {
+				return false;
+			}
+		};
+		return true;
+	}
 
 	private Object criaMapaDoc(String usuarioId, String empresaId, ArrayList<JSONObject> avaliacoes) {
 
@@ -150,7 +169,7 @@ public class Avaliacao {
 	private BasicDBObject carregaHabilidades(BasicDBObject avaliacao, String empresaId) {
 		
 		BasicDBObject objetivo = new BasicDBObject();
-		objetivo = commons_db.getCollection(avaliacao.getString("objetivoId").toString(), "objetivos", "documento.id"); 
+		objetivo = commons_db.getCollection(avaliacao.get("objetivoId").toString(), "objetivos", "documento.id"); 
 		BasicDBObject objetivoDoc = new BasicDBObject();
 		objetivoDoc.putAll((Map) objetivo.get("documento"));
 		ArrayList<String> habilidadesArray = (ArrayList<String>) objetivoDoc.get("necessarios");

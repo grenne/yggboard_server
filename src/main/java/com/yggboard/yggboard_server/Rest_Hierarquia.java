@@ -1,6 +1,7 @@
 package com.yggboard.yggboard_server;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.inject.Singleton;
@@ -130,13 +131,23 @@ public class Rest_Hierarquia {
 		
 	};
 	
-
-	@SuppressWarnings("unchecked")
-	@Path("/importar/hierarquia")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Path("/importar")
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response Lista(JSONObject hierarquiaJson)  {
+	public Response Lista(BasicDBObject hierarquiaJson)  {
+
 		Commons_DB commons_db = new Commons_DB();
+
+		if (hierarquiaJson.get("token") == null) {
+			return null;
+		};
+		if ((commons_db.getCollection(hierarquiaJson.get("token").toString(), "usuarios", "documento.token")) == null) {
+			return null;
+		};
+		if (hierarquiaJson.get("empresaId") == null) {
+			return null;
+		};
 		
 		String empresaId = (String) hierarquiaJson.get("empresaId");
 		
@@ -148,31 +159,34 @@ public class Rest_Hierarquia {
 
 		commons_db.removerCrud("hierarquias", keysArray);
 		
-		ArrayList<BasicDBObject> usuarios = (ArrayList<BasicDBObject>) hierarquiaJson.get("usuarios");
+		ArrayList<Object> colaboradores = (ArrayList<Object>) hierarquiaJson.get("colaboradores");
 
-		for (int i = 0; i < usuarios.size(); i++) {
+		for (int i = 0; i < colaboradores.size(); i++) {
+			BasicDBObject colaborador = new BasicDBObject();
+			colaborador.putAll((Map) colaboradores.get(i));
 			BasicDBObject usuario = new BasicDBObject();
-			usuario = commons_db.getCollection(usuarios.get(i).get("email").toString(), "usuarios", "documento.email");
+			usuario = commons_db.getCollection(colaborador.get("email").toString(), "usuarios", "documento.email");
 			if (usuario == null){
-				usuario = criaUsuario(usuarios.get(i), empresaId);
+				usuario = criaUsuario(colaborador, empresaId);
 			};
-			usuarios.get(i).put("usuarioId", usuario.get("_id"));
-
 			BasicDBObject userPerfil = new BasicDBObject();
-			userPerfil = commons_db.getCollection(usuarios.get(i).get("email").toString(), "userPerfil", "documento.usuario");
+			userPerfil = commons_db.getCollection(colaborador.get("email").toString(), "userPerfil", "documento.usuario");
 			if (userPerfil == null){
-				userPerfil = criaUserPerfil(usuarios.get(i), empresaId);
+				userPerfil = criaUserPerfil(colaborador, empresaId);
 			};
 		};
 		
-		for (int i = 0; i < usuarios.size(); i++) {
-			criaHierarquia(usuarios.get(i), empresaId);
+		for (int i = 0; i < colaboradores.size(); i++) {
+			BasicDBObject colaborador = new BasicDBObject();
+			colaborador.putAll((Map) colaboradores.get(i));
+			criaHierarquia(colaborador, empresaId);
 		};
 
 		return Response.status(200).entity(true).build();	
 	
 	};	
 
+	@SuppressWarnings("rawtypes")
 	private BasicDBObject criaUsuario(BasicDBObject usuarioIn, String empresaId) {
 
 		BasicDBObject usuario = new BasicDBObject();
@@ -193,10 +207,13 @@ public class Rest_Hierarquia {
 		usuarioDoc.put("empresaId", empresaId);
 		usuario.put("documento", usuarioDoc);
 		
-		return (BasicDBObject) commons_db.incluirCrud("usuarios", usuario).getEntity();
+		BasicDBObject result = new BasicDBObject();
+		result.putAll((Map) commons_db.incluirCrud("usuarios", usuario).getEntity());
+		return result;
 		
 	};
 	
+	@SuppressWarnings("rawtypes")
 	private BasicDBObject criaUserPerfil(BasicDBObject usuario, String empresaId) {
 
 		BasicDBObject userPerfil = new BasicDBObject();
@@ -223,18 +240,25 @@ public class Rest_Hierarquia {
 		userPefilDoc.put("cursosAndamento", arrayVazia);
 		userPerfil.put("documento", userPefilDoc);
 		
-		return (BasicDBObject) commons_db.incluirCrud("userPerfil", userPerfil).getEntity();
+		BasicDBObject result = new BasicDBObject();
+		result.putAll((Map) commons_db.incluirCrud("userPerfil", userPerfil).getEntity());
+		return result;
 		
 	};
 
+	@SuppressWarnings("rawtypes")
 	private BasicDBObject criaHierarquia(BasicDBObject usuario, String empresaId) {
 
-		BasicDBObject superior = new BasicDBObject();
-		superior = commons_db.getCollection(usuario.get("superior").toString(), "usuarios", "documento.email");
-		if (superior == null){
-			return null;
+		BasicDBObject objetivo = new BasicDBObject();
+		BasicDBObject objetivoDoc = new BasicDBObject();
+		if (usuario.get("objetivo") != null) {
+  		objetivo = commons_db.getCollection(usuario.get("objetivo").toString(), "objetivos", "documento.id");
+  		if (objetivo == null) {
+  			return null;
+  		};
+  		objetivoDoc.putAll((Map) objetivo.get("documento"));
+  		usuario.put("objetivoId", objetivoDoc.get("id").toString());
 		};
-		String superiorId = superior.get("_id").toString();
 
 		BasicDBObject hierarquia = new BasicDBObject();
 		BasicDBObject hierarquiaDoc = new BasicDBObject();
@@ -242,11 +266,18 @@ public class Rest_Hierarquia {
 		hierarquiaDoc.put("empresaId", empresaId);
 		hierarquiaDoc.put("objetivoId", usuario.get("objetivoId"));
 		hierarquiaDoc.put("area", usuario.get("area"));
-		hierarquiaDoc.put("colaborador", usuario.get("usuarioId"));
-		hierarquiaDoc.put("superior", superiorId);
+		hierarquiaDoc.put("colaborador", commons_db.getCollection(usuario.get("email").toString(), "usuarios", "documento.email").get("_id").toString());
+		if (usuario.get("superior") != null && usuario.get("superior") != "") {
+			hierarquiaDoc.put("superior", commons_db.getCollection(usuario.get("superior").toString(), "usuarios", "documento.email").get("_id").toString());
+		}else {
+			hierarquiaDoc.put("superior","");
+		};
+		hierarquiaDoc.put("nivel", objetivoDoc.get("nivel").toString());
 		hierarquia.put("documento", hierarquiaDoc);
 		
-		return (BasicDBObject) commons_db.incluirCrud("hierarquias", hierarquia).getEntity();
+		BasicDBObject result = new BasicDBObject();
+		result.putAll((Map) commons_db.incluirCrud("hierarquias", hierarquia).getEntity());
+		return result;
 		
 	};
 
