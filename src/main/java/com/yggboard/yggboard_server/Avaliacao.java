@@ -177,6 +177,8 @@ public class Avaliacao {
 		documentos.put("clientes", clientesArray);
 		if (avaliacao != null) {
   		documentos.put("habilidades", carregaHabilidades(avaliacao, empresaId).get("habilidades"));
+  		documentos.put("avaliacoes", carregaAvaliacoes(avaliacao).get("avaliacoes"));
+  		documentos.put("resultados", carregaResultados(avaliacao).get("resultados"));
   		documentos.put("objetivo", avaliacao.get("objetivoNome"));
 		};
 		return documentos;
@@ -191,26 +193,91 @@ public class Avaliacao {
 		objetivoDoc.putAll((Map) objetivo.get("documento"));
 		ArrayList<String> habilidadesArray = (ArrayList<String>) objetivoDoc.get("necessarios");
 		ArrayList<String> habilidadesFinal = commons.montaObjetivoEmpresa(habilidadesArray, empresaId, avaliacao.getString("objetivoId").toString());
+
 		JSONArray habilidades = new JSONArray();
 		
 		for (int z = 0; z < habilidadesFinal.size(); z++) {
+			BasicDBObject habilidade = commons_db.getCollection(habilidadesArray.get(z), "habilidades", "documento.id");
 			BasicDBObject habilidadeDoc = new BasicDBObject();
-			habilidadeDoc = commons_db.getCollection(habilidadesArray.get(z), "habilidades", "documento.id");
+			habilidadeDoc.putAll((Map) habilidade.get("documento"));
 			if (habilidadeDoc != null) {
-				BasicDBObject avaliacaoHabilidade = getAvaliacaoHabilidade(avaliacao,habilidadesArray.get(z));
-				if (avaliacaoHabilidade != null) {
-    			habilidadeDoc.put("nota", avaliacaoHabilidade.get("nota"));
-    			habilidadeDoc.put("avaliadorId", avaliacaoHabilidade.get("avaliadorId"));
-    			habilidadeDoc.put("avaliadorNome", avaliacaoHabilidade.get("avaliadorNome"));
-    			if (habilidadeDoc != null) {
-    				commons.addObjeto(habilidades, habilidadeDoc);
-    			};
-				};
+				BasicDBObject avaliacaoResult = new BasicDBObject();
+				avaliacaoResult.put("habilidadeId", habilidadeDoc.get("id"));
+				avaliacaoResult.put("habilidadeNome", habilidadeDoc.get("nome"));
+  			if (habilidadeDoc != null) {
+  				commons.addObjeto(habilidades, avaliacaoResult);
+  			};
 			};
 		};
 		
 		BasicDBObject documento = new BasicDBObject();
 		documento.put("habilidades", habilidades);
+		return documento;
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private BasicDBObject carregaResultados(BasicDBObject avaliacao) {
+		
+		ArrayList<Object> resultadosArray = (ArrayList<Object>) avaliacao.get("resultados");
+
+		JSONArray resultados = new JSONArray();
+		
+		for (int z = 0; z < resultadosArray.size(); z++) {
+			BasicDBObject resultado = new BasicDBObject(); 
+			resultado.putAll((Map) resultadosArray.get(z)); 
+			BasicDBObject habilidade = new BasicDBObject(); 
+			habilidade = commons_db.getCollection(resultado.get("id").toString(), "habilidades", "documento.id");
+			BasicDBObject habilidadeDoc = new BasicDBObject();
+			habilidadeDoc.putAll((Map) habilidade.get("documento"));
+			if (habilidade != null) {
+				BasicDBObject resultadoResult = new BasicDBObject();
+				resultadoResult.put("habilidadeId", habilidadeDoc.get("id"));
+				resultadoResult.put("habilidadeNome", habilidadeDoc.get("nome"));
+				resultadoResult.put("nota", resultado.get("nota").toString());
+				resultados.add(resultadoResult);
+			};
+		};
+		
+		BasicDBObject documento = new BasicDBObject();
+		documento.put("resultados", resultados);
+		return documento;
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private BasicDBObject carregaAvaliacoes(BasicDBObject avaliacao) {
+		
+		
+		ArrayList<Object> avaliacoesArray = (ArrayList<Object>) avaliacao.get("habilidades");
+
+		JSONArray avaliacoes = new JSONArray();
+		
+		for (int z = 0; z < avaliacoesArray.size(); z++) {
+			BasicDBObject avaliacaoDoc = new BasicDBObject(); 
+			avaliacaoDoc.putAll((Map) avaliacoesArray.get(z)); 
+			BasicDBObject habilidade = new BasicDBObject(); 
+			habilidade = commons_db.getCollection(avaliacaoDoc.get("id").toString(), "habilidades", "documento.id");
+			BasicDBObject habilidadeDoc = new BasicDBObject();
+			habilidadeDoc.putAll((Map) habilidade.get("documento"));
+			if (habilidade != null) {
+				BasicDBObject avaliacaoResult = new BasicDBObject();
+				avaliacaoResult.put("habilidadeId", habilidadeDoc.get("id"));
+				avaliacaoResult.put("habilidadeNome", habilidadeDoc.get("nome"));
+				avaliacaoResult.put("nota", avaliacaoDoc.get("nota").toString());
+				avaliacaoResult.put("avaliadorId", avaliacaoDoc.get("avaliadorId").toString());
+  			BasicDBObject usuario = commons_db.getCollection(avaliacaoDoc.get("avaliadorId").toString(), "usuarios", "_id");
+  			if (usuario != null) {
+  				BasicDBObject usuarioDoc = new BasicDBObject();
+  				usuarioDoc.putAll((Map) usuario.get("documento"));
+  				avaliacaoResult.put("avaliadorNome", usuarioDoc.get("firstName") + " " + usuarioDoc.get("lastName"));
+  			}else {
+  				avaliacaoResult.put("avaliadorNome", " ");
+  			};
+				avaliacoes.add(avaliacaoResult);
+			};
+		};
+		
+		BasicDBObject documento = new BasicDBObject();
+		documento.put("avaliacoes", avaliacoes);
 		return documento;
 	}
 
@@ -239,7 +306,9 @@ public class Avaliacao {
 				avaliacaoResult = avaliacao;
 				BasicDBObject objetivo = new BasicDBObject(); 
 				objetivo.putAll((Map) commons_db.getCollection(avaliacao.get("objetivoId").toString(), "objetivos", "documento.id"));
-				if (objetivo != null) {
+				if (objetivo == null) {
+					avaliacaoResult.put("objetivoNome", "");
+				}else {					
 					BasicDBObject objetivoDoc = new BasicDBObject();
 					objetivoDoc.putAll((Map) objetivo.get("documento"));
 					avaliacaoResult.put("objetivoNome", objetivoDoc.get("nome"));
