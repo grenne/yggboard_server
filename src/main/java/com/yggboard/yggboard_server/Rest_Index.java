@@ -30,11 +30,14 @@ import com.mongodb.BasicDBObject;
 
 public class Rest_Index {
 	
+	Commons_DB commons_db = new Commons_DB();
+	Commons commons = new Commons();
+	
 	@SuppressWarnings({ "rawtypes" })
 	@Path("/obter/itens")	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public BasicDBObject ObterItens(@QueryParam("assunto") String assunto, @QueryParam("id") String id, @QueryParam("usuario") String usuario ) {
+	public BasicDBObject ObterItens(@QueryParam("assunto") String assunto, @QueryParam("id") String id, @QueryParam("usuario") String usuario, @QueryParam("empresaId") String empresaId ) {
 	
 		System.out.println("chamada index:" + assunto );
 		
@@ -106,12 +109,18 @@ public class Rest_Index {
 				break;
 			};
 		}else{
-			results = carregaTudo(listas);
+			results = carregaTudo(listas, empresaId);
 			System.out.println("saida carrega tudo:" + assunto );
 			return results;
 		};
+
+		if (empresaId != null) {
+			results.put("objetivos", filtraObjetivosEmpresa(listas.objetivos(), empresaId));
+		}else {
+			results.put("objetivos", listas.objetivos());
+		};
 		
-		results.put("objetivos", listas.objetivos());
+//		results.put("objetivos", listas.objetivos());
 		results.put("habilidades", listas.habilidades());
 		results.put("cursos", listas.cursos());
 		results.put("areaAtuacao", listas.areasAtuacao());
@@ -133,7 +142,35 @@ public class Rest_Index {
 			// qdo escolhida uma area de conhecimento trazer todas habilidades, objetivos das habilidades, cursos das habilidades, area de conhecimento só a selecionada e área de atuação de todos os objetivos
 	};
 	
-	private BasicDBObject carregaTudo(Listas listas) {
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private JSONArray filtraObjetivosEmpresa(JSONArray objetivos, String empresaId) {
+		
+		JSONArray objetivosEmpresa = commons_db.getCollectionLista(empresaId, "objetivosEmpresa", "documento.empresaId");
+		
+		if (objetivosEmpresa == null) {
+			return objetivos;
+		};
+
+		JSONArray objetivosResult = new JSONArray();
+		
+		for (int i = 0; i < objetivos.size(); i++) {
+			BasicDBObject objetivo = new BasicDBObject();
+			objetivo.putAll((Map) objetivos.get(i));
+			BasicDBObject objetivoDoc = new BasicDBObject();
+			objetivoDoc.putAll((Map) objetivo.get("documento"));
+			for (int j = 0; j < objetivosEmpresa.size(); j++) {
+				BasicDBObject objetivoEmpresa = new BasicDBObject();
+				objetivoEmpresa.putAll((Map) objetivosEmpresa.get(j));
+				if (objetivoDoc.get("id").equals(objetivoEmpresa.get("objetivoId"))) {
+					objetivosResult.add(objetivo);
+				};
+			};
+		};
+		return objetivosResult;
+		
+	};
+
+	private BasicDBObject carregaTudo(Listas listas, String empresaId) {
 		
 		carregaLista(listas.objetivos(), listas, "objetivos");
 		carregaLista(listas.habilidades(), listas, "habilidades");
@@ -142,8 +179,14 @@ public class Rest_Index {
 		carregaLista(listas.areasConhecimento(), listas, "areaConhecimento");
 		
 		BasicDBObject results = new BasicDBObject();
+
+		if (empresaId != null) {
+			results.put("objetivos", filtraObjetivosEmpresa(listas.objetivos(), empresaId));
+		}else {
+			results.put("objetivos", listas.objetivos());
+		};
 		
-		results.put("objetivos", listas.objetivos());
+//		results.put("objetivos", listas.objetivos());
 		results.put("habilidades", listas.habilidades());
 		results.put("cursos", listas.cursos());
 		results.put("areaAtuacao", listas.areasAtuacao());
