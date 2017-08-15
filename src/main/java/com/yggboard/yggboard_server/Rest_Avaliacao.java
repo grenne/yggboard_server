@@ -42,7 +42,7 @@ public class Rest_Avaliacao {
 	@Path("/mapa")	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public BasicDBObject Mapa(@QueryParam("token") String token, @QueryParam("usuarioId") String usuarioId, @QueryParam("empresaId") String empresaId, @QueryParam("empresaId") String avaliacaoId)  {
+	public BasicDBObject Mapa(@QueryParam("token") String token, @QueryParam("usuarioId") String usuarioId, @QueryParam("empresaId") String empresaId, @QueryParam("avaliacaoId") String avaliacaoId)  {
 		if (token == null) {
 			return null;
 		};
@@ -59,7 +59,7 @@ public class Rest_Avaliacao {
 	@Path("/colaboradores")	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public JSONArray Colaboradores(@QueryParam("token") String token, @QueryParam("empresaId") String empresaId)  {
+	public JSONArray Colaboradores(@QueryParam("token") String token, @QueryParam("empresaId") String empresaId, @QueryParam("avaliacaoId") String avaliacaoId)  {
 		if ((commons_db.getCollection(token, "usuarios", "documento.token")) == null) {
 			return null;
 		};
@@ -67,7 +67,7 @@ public class Rest_Avaliacao {
 			return null;
 		};
 		
-		return avaliacao.colaboradores(empresaId);
+		return avaliacao.colaboradores(empresaId, avaliacaoId);
 	};
 	
 	@Path("/inout")	
