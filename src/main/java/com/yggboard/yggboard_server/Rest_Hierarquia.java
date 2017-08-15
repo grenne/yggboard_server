@@ -157,7 +157,7 @@ public class Rest_Hierarquia {
 		key.put("value", empresaId);
 		keysArray.add(key);
 
-		commons_db.removerCrud("hierarquias", keysArray);
+		commons_db.removerCrudMany("hierarquias", keysArray);
 		
 		ArrayList<Object> colaboradores = (ArrayList<Object>) hierarquiaJson.get("colaboradores");
 
