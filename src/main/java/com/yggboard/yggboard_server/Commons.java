@@ -268,7 +268,7 @@ public class Commons {
 	public Boolean testaElementoArrayObject(BasicDBObject elemento, ArrayList<BasicDBObject> array) {
 
 		for (int w = 0; w < array.size(); w++) {
-			if (array.get(w) == elemento){
+			if (array.get(w).equals(elemento)){
 				return true;
 			};
 		};

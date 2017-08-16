@@ -109,35 +109,42 @@ public class Rest_Objetivos_Empresa {
 		JSONObject documentos = new JSONObject();
 		JSONArray habilidades = new JSONArray();
 		JSONArray habilidadesObjetivo = new JSONArray();
-		BasicDBObject docObjetivo = new BasicDBObject();
-		docObjetivo = commons_db.getCollection(objetivoId, "objetivos", "documento.id");
-		if (docObjetivo != null) {
-			BasicDBObject doc = new BasicDBObject();
-			doc.putAll((Map) docObjetivo.get("documento"));
-			ArrayList<String> areaAtuacaoArray = (ArrayList<String>) doc.get("areaAtuacao"); 
+		BasicDBObject objetivo = new BasicDBObject();
+		objetivo = commons_db.getCollection(objetivoId, "objetivos", "documento.id");
+		if (objetivo != null) {
+			BasicDBObject objetivoDoc = new BasicDBObject();
+			objetivoDoc.putAll((Map) objetivo.get("documento"));
+
+			ArrayList<String> habilidadesArray = (ArrayList<String>) objetivoDoc.get("necessarios");
+			for (int z = 0; z < habilidadesArray.size(); z++) {
+				BasicDBObject habilidade = new BasicDBObject();
+				habilidade = commons_db.getCollection(habilidadesArray.get(z), "habilidades", "documento.id");
+				habilidadesObjetivo.add(habilidade);
+			};
+
+			ArrayList<String> areaAtuacaoArray = (ArrayList<String>) objetivoDoc.get("areaAtuacao"); 
 			for (int i = 0; i < areaAtuacaoArray.size(); i++) {
 				JSONArray objetivoArray = commons_db.getCollectionLista(areaAtuacaoArray.get(i).toString(), "objetivos", "documento.areaAtuacao");
 				for (int j = 0; j < objetivoArray.size(); j++) {
 					BasicDBObject docObjetivoObj = new BasicDBObject();
 					docObjetivoObj.putAll((Map) objetivoArray.get(j));
-					if (!docObjetivoObj.get("_id").toString().equals(docObjetivo.get("_id").toString())) {
-						ArrayList<String> habilidadesArray = (ArrayList<String>) docObjetivoObj.get("necessarios");
+					if (!docObjetivoObj.get("_id").toString().equals(objetivo.get("_id").toString())) {
+						habilidadesArray = new ArrayList<String>();
+						habilidadesArray = (ArrayList<String>) docObjetivoObj.get("necessarios");
 						ArrayList<String> habilidadesFinal = commons.montaObjetivoEmpresa(habilidadesArray, empresaId, objetivoId);
-						for (int z = 0; z < habilidadesFinal.size(); z++) {
-							BasicDBObject docHabilidade = new BasicDBObject();
-							docHabilidade = commons_db.getCollection(habilidadesArray.get(z), "habilidades", "documento.id");
-							if (docHabilidade != null) {
-								commons.addObjeto(habilidades, docHabilidade);
-							};
+						if (habilidadesFinal != null) {
+  						for (int z = 0; z < habilidadesFinal.size(); z++) {
+  							BasicDBObject habilidade = new BasicDBObject();
+  							habilidade = commons_db.getCollection(habilidadesArray.get(z), "habilidades", "documento.id");
+  							if (habilidade != null) {
+  								if (!commons.testaElementoArrayObject(habilidade, habilidadesObjetivo)){
+  									commons.addObjeto(habilidades, habilidade);
+  								};
+  							};
+  						};
 						};
 					};
 				};									
-			};
-			ArrayList<String> habilidadesArray = (ArrayList<String>) doc.get("necessarios");
-			for (int z = 0; z < habilidadesArray.size(); z++) {
-				BasicDBObject docHabilidade = new BasicDBObject();
-				docHabilidade = commons_db.getCollection(habilidadesArray.get(z), "habilidades", "documento.id");
-				habilidadesObjetivo.add(docHabilidade);
 			};
 			documentos.put("habilidades", habilidades);
 			documentos.put("habilidadesObjetivo", habilidadesObjetivo);
