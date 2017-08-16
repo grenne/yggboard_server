@@ -118,21 +118,21 @@ public class Rest_Avaliacao {
 	@Path("/avaliacoes")	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public BasicDBObject Avaliacoes(@QueryParam("token") String token, @QueryParam("colaboradorId") String colaboradorId, @QueryParam("avaliadorId") String avaliadorId, @QueryParam("avaliacaoId") String avaliacaoId)  {
+	public BasicDBObject Avaliacoes(@QueryParam("token") String token, @QueryParam("usuarioId") String usuarioId, @QueryParam("avaliadorId") String avaliadorId, @QueryParam("avaliacaoId") String avaliacaoId)  {
 		if (token == null) {
 			return null;
 		};
 		if ((commons_db.getCollection(token, "usuarios", "documento.token")) == null) {
 			return null;
 		};
-		if (colaboradorId == null){
+		if (usuarioId == null){
 			return null;
 		};
 		if (avaliadorId == null){
 			return null;
 		};
 
-		return avaliacao.carregaHabilidadesAvaliacao(colaboradorId, avaliadorId, avaliacaoId);
+		return avaliacao.carregaHabilidadesAvaliacao(usuarioId, avaliadorId, avaliacaoId);
 	};
 
 	@Path("/lista")	
