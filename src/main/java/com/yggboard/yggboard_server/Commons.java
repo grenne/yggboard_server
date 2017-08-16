@@ -139,7 +139,7 @@ public class Commons {
  		};
  		
  		String dateString = "";
- 		if (type == "inv_month_number"){
+ 		if (type.equals("inv_month_number")){
  			dateString = String.valueOf(year) + monthString + dayString;
  		};
 		  
@@ -456,7 +456,7 @@ public class Commons {
 
 		Response response = commons_db.obterCrud("objetivosEmpresa", keysArray);
 		if ((response.getStatus() != 200)){
-			return null;
+			return habilidadesArray;
 		};
 		
 		BasicDBObject objetivoEmpresaObj = new BasicDBObject();

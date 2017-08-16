@@ -26,7 +26,7 @@ public class Rest_Avaliacao {
 	@Path("/cria/mapa")	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public Boolean criaMapa(@QueryParam("token") String token, @QueryParam("usuarioId") String usuarioId, @QueryParam("empresaId") String empresaId, @QueryParam("avaliacaoId") String avaliacaoId)  {
+	public Boolean criaMapa(@QueryParam("token") String token, @QueryParam("empresaId") String empresaId, @QueryParam("avaliacaoId") String avaliacaoId)  {
 	
 		if (token == null) {
 			return false;
@@ -34,9 +34,9 @@ public class Rest_Avaliacao {
 		if ((commons_db.getCollection(token, "usuarios", "documento.token")) == null) {
 			return false;
 		};
-
-		return avaliacao.criaMapaAvaliacao (usuarioId, empresaId, avaliacaoId);
-
+		
+		return avaliacao.criaMapaAvaliacao(empresaId, avaliacaoId);
+		
 	};
 	@Path("/mapa")	
 	@GET
@@ -113,6 +113,26 @@ public class Rest_Avaliacao {
 		};
 
 		return avaliacao.atualizaNota(avaliadorId, colaboradorId, habilidadeId, nota, avaliacaoId);
+	};
+	
+	@Path("/avaliacoes")	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public BasicDBObject Avaliacoes(@QueryParam("token") String token, @QueryParam("colaboradorId") String colaboradorId, @QueryParam("avaliadorId") String avaliadorId, @QueryParam("avaliacaoId") String avaliacaoId)  {
+		if (token == null) {
+			return null;
+		};
+		if ((commons_db.getCollection(token, "usuarios", "documento.token")) == null) {
+			return null;
+		};
+		if (colaboradorId == null){
+			return null;
+		};
+		if (avaliadorId == null){
+			return null;
+		};
+
+		return avaliacao.carregaHabilidadesAvaliacao(colaboradorId, avaliadorId, avaliacaoId);
 	};
 
 	@Path("/lista")	

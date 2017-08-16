@@ -33,8 +33,12 @@ public class Commons_DB {
 			JSONObject setQuery = new JSONObject();
 			setQuery.putAll((Map) arraySetQuery.get(i));
 			if (setQuery.get("key").equals("_id")){
-				ObjectId id = new ObjectId(setQuery.get("value").toString());
-				searchQuery.put((String) setQuery.get("key"), id);
+				if (setQuery.get("value") instanceof Object){
+					ObjectId id = new ObjectId(setQuery.get("value").toString());
+					searchQuery.put((String) setQuery.get("key"), id);
+				}else {
+					searchQuery.put((String) setQuery.get("key"), (String) setQuery.get("value"));	
+				};
 			}else{
 				searchQuery.put((String) setQuery.get("key"), (String) setQuery.get("value"));
 			};
@@ -97,8 +101,13 @@ public class Commons_DB {
 		for (int i = 0; i < arraySetQuery.size(); i++) {
 			JSONObject setQuery = new JSONObject();
 			setQuery.putAll((Map) arraySetQuery.get(i));
-			if (setQuery.get("value") instanceof Object){
-				searchQuery.put((String) setQuery.get("key"), setQuery.get("value"));
+			if (setQuery.get("key").toString().equals("_id")){
+				if (setQuery.get("value") instanceof Object){
+					ObjectId id = new ObjectId(setQuery.get("value").toString());
+					searchQuery.put((String) setQuery.get("key"), id);
+				}else {
+					searchQuery.put((String) setQuery.get("key"), (String) setQuery.get("value"));	
+				};
 			}else{
 				searchQuery.put((String) setQuery.get("key"), (String) setQuery.get("value"));
 			};

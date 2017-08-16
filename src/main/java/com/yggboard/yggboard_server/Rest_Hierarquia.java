@@ -1,7 +1,6 @@
 package com.yggboard.yggboard_server;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.inject.Singleton;

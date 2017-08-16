@@ -156,91 +156,32 @@ function testaIncluir() {
 	rest_incluir (objJson, restOk, semAcao);
 };
 function testaAtualizar() {
-
-	 var doc = {
-	        carreirasInteresse : [],
-	        habilidadesInteresse : [],
-	        cursosInteresse : [],
-	        cursosSugeridos : [
-	            659
-	        ],
-	        tags : [],
-	        elementos : [],
-	        usuario : "grenne@grenne.com",
-	        carreiras : [],
-	        habilidades : [ 
-	 
-	            "10417"
-	        ],
-	        badges : [],
-	        badgesInteresse : [],
-	        showBadges : [],
-	        carreirasSugeridas : [ 
-	            12
-	        ]
-	    };
-	 
-	 var doc1 =
-				 {
-				 teste :"ccc",
-				 teste2 : "ddd"
-				 };
-	 
+ 
 	var objJson = {
-		token: sessionStorage.token,
-		collection : "userPerfil",
+		token: "ea9bfeef31f0222fee6aea629802361f",
+		collection : "usuarios",
 		keys : [ {
-			key : "documento.email",
-			value : "grenne@grenne.com"
+			key : "_id",
+			value : "591d11c89431d262bafddce2"
 		} ],
 		update : 
 			[ 
 				{
 					field : "city",
-					value : ""
+					value : "aaaa"
 				}, 
 				{
 					field : "phone",
-					value : ""
-				}, 
-				{
-					field : "escolaridade",
-					value : ["","","",""]
+					value : "aaaa"
 				}				
 			]
 	};
-	var a = {"collection":"usuarios","keys":[{"key":"documento.usuario","value":"testeCerto@teste.com"}],"update":[{"field":"city","value":""},{"field":"birthDate","value":""},{"field":"celPhone","value":""},{"field":"escolaridade","value":[]},{"field":"cursos","value":["mais teste","teste","1900","1"]},{"field":"empresas","value":["teste","teste","Comercial","Infraestrutura","teste2","teste2","Tecnologia da Informação","Varejo"]},{"field":"email","value":"testeCerto@teste.com"}]}
-	var teste = 
-				{
-					"collection":"usuarios",
-					"keys":
-						[
-							{
-								"key":"documento.email",
-								"value":"testeCerto@teste.com"
-							}
-						],
-					"update":
-						[
-							{"field":"city","value":""},
-							{"field":"birthDate","value":""},
-							{"field":"celPhone","value":""},
-							{"field":"escolaridade","value":[]},
-							{"field":"cursos","value":["mais teste","teste","1900","1"]},
-							{"field":"empresas","value":
-								[{"teste":"teste","Comercial":"Infraestrutura","teste2":"teste2","Tecnologia da Informação":"Varejo"},
-									{"teste":"teste","Comercial":"Infraestrutura","teste2":"teste2","Tecnologia da Informação":"Varejo"},
-									{"teste":"teste","Comercial":"Infraestrutura","teste2":"teste2","Tecnologia da Informação":"Varejo"}]
-							},
-							{"field":"email","value":"testeCerto@teste.com"}
-							]
-				};
 	$.ajax({
 		type : "POST",
 		url : localStorage.mainUrl + "yggboard_server/rest/crud/atualizar",
 		contentType : "application/json; charset=utf-8",
 		dataType : 'json',
-		data : JSON.stringify(teste),
+		data : JSON.stringify(objJson),
 		async : false
 
 	}).done(function(data) {
