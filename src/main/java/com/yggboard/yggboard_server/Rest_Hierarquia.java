@@ -201,8 +201,9 @@ public class Rest_Hierarquia {
 		usuarioDoc.put("birthDate", usuarioIn.get("birthDate"));
 		usuarioDoc.put("email", usuarioIn.get("email"));
 		usuarioDoc.put("perfil", "user");
-		usuarioDoc.put("perfilEmpresa", usuarioIn.get("colaborador"));
-		usuarioDoc.put("login", usuarioIn.get("login"));
+		usuarioDoc.put("perfilEmpresa", "colaborador");
+		usuarioDoc.put("password", usuarioIn.get("login"));
+		usuarioDoc.put("status", usuarioIn.get("confirmado"));
 		usuarioDoc.put("empresaId", empresaId);
 		usuario.put("documento", usuarioDoc);
 		

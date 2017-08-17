@@ -126,6 +126,7 @@ public class Rest_Usuario {
 					objUser.remove("password");
 					objUser.remove("token");
 					objUser.put("token", token);
+					objUser.put("_id", cursor.get("_id").toString());
 					// incluir evento
 					BasicDBObject evento = new BasicDBObject();
 					evento.put("idUsuario", email);
