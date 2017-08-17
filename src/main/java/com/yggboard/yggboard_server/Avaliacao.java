@@ -227,6 +227,7 @@ public class Avaliacao {
 	
 		JSONArray avaliacoesResult = new JSONArray();
 		
+		carregaAvaliados(avaliacoesResult, avaliadorId, avaliacaoId, "auto-avaliacao");
 		carregaAvaliados(avaliacoesResult, avaliadorId, avaliacaoId, "superiores");
 		carregaAvaliados(avaliacoesResult, avaliadorId, avaliacaoId, "subordinados");
 		carregaAvaliados(avaliacoesResult, avaliadorId, avaliacaoId, "parceiros");
@@ -238,9 +239,14 @@ public class Avaliacao {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void carregaAvaliados(JSONArray avaliacoesResult, String avaliadorId, String avaliacaoId, String tipo) {
+
 		ArrayList<JSONObject> keysArray = new ArrayList<>();
 		JSONObject key = new JSONObject();
-		key.put("key", "documento.avaliacoes." + tipo);
+		if (tipo.equals("auto-avaliacao")) {
+			key.put("key", "documento.usuarioId");
+		}else {
+			key.put("key", "documento.avaliacoes." + tipo);
+		};
 		key.put("value", avaliadorId);
 		keysArray.add(key);
 		key = new JSONObject();
@@ -257,6 +263,7 @@ public class Avaliacao {
 			BasicDBObject avaliacao = getAvaliacao(avaliacaoId, avaliado.get("usuarioId").toString());
 			BasicDBObject habilidades = carregaHabilidadesAvaliacao(avaliado.get("usuarioId").toString(), avaliadorId, avaliacaoId); 
 			BasicDBObject avaliacaoResult = new BasicDBObject();
+			avaliacaoResult.put("tipo", tipo);
 			avaliacaoResult.put("avaliado", avaliacao);
 			avaliacaoResult.put("habilidades", habilidades.get("habilidades"));
 			avaliacoesResult.add(avaliacaoResult);
@@ -411,6 +418,7 @@ public class Avaliacao {
 				avaliacaoResult.put("empresaId", mapaDoc.get("empresaId"));
 				avaliacaoResult.put("status", "Pendente");
 				avaliacaoResult.put("colaboradorNome", colaboradorNome);
+				avaliacaoResult.put("colaboradorId", usuarioId);
 				avaliacaoResult.put("colaboradorEmail", colaboradorEmail);
 				avaliacaoResult.put("colaboradorArea", area);
 				BasicDBObject objetivo = new BasicDBObject(); 
