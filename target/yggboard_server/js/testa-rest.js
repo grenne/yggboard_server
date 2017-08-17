@@ -168,11 +168,11 @@ function testaAtualizar() {
 			[ 
 				{
 					field : "city",
-					value : "zzzz"
+					value : "aaaa"
 				}, 
 				{
 					field : "phone",
-					value : "zzzz"
+					value : "aaaa"
 				}				
 			]
 	};
