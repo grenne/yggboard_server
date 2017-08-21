@@ -159,22 +159,22 @@ public class Avaliacao {
 
 		ArrayList<Object> superioresArray =  new ArrayList<Object>();
 		objArray = (ArrayList<String>) avaliacao.get("superiores");
-		carregaMapa (avaliacao, superioresArray, objArray);
+		carregaMapa (avaliacaoId, superioresArray, objArray);
 		
 		ArrayList<Object> parceirosArray =  new ArrayList<Object>();
 		objArray =  new ArrayList<String>();
 		objArray = (ArrayList<String>) avaliacao.get("parceiros");
-		carregaMapa (avaliacao, parceirosArray, objArray);
+		carregaMapa (avaliacaoId, parceirosArray, objArray);
 		
 		ArrayList<Object> subordinadosArray =  new ArrayList<Object>();
 		objArray =  new ArrayList<String>();
 		objArray = (ArrayList<String>) avaliacao.get("subordinados");
-		carregaMapa (avaliacao, subordinadosArray, objArray);
+		carregaMapa (avaliacaoId, subordinadosArray, objArray);
 		
 		ArrayList<Object> clientesArray =  new ArrayList<Object>();
 		objArray =  new ArrayList<String>();
 		objArray = (ArrayList<String>) avaliacao.get("clientes");
-		carregaMapa (avaliacao, clientesArray, objArray);
+		carregaMapa (avaliacaoId, clientesArray, objArray);
 
 		BasicDBObject documentos = new BasicDBObject();
 		
@@ -464,7 +464,7 @@ public class Avaliacao {
 	};
 
 	@SuppressWarnings("rawtypes")
-	private void carregaMapa(BasicDBObject avaliacao, ArrayList<Object> outArray, ArrayList<String> inArray) {
+	private void carregaMapa(String avaliacaoId, ArrayList<Object> outArray, ArrayList<String> inArray) {
 
 		if (inArray != null) {
 			for (int i = 0; i < inArray.size(); i++) {
@@ -475,10 +475,13 @@ public class Avaliacao {
 					outObj.put("nome", docObj.get("firstName") + " " + docObj.get("lastName"));
 					outObj.put("photo", docObj.get("photo"));
 					outObj.put("id", registro.get("_id").toString());
-					String objetivoId = avaliacao.get("objetivoId").toString();
-					BasicDBObject objetivoDoc = new BasicDBObject(); 
-					objetivoDoc.putAll((Map) commons_db.getCollection(objetivoId, "objetivos", "documento.id").get("documento"));
-					outObj.put("objetivo", objetivoDoc.get("nome"));
+					BasicDBObject avaliacao = getAvaliacao(avaliacaoId, registro.get("_id").toString());
+					if (avaliacao != null) {
+  					String objetivoId = avaliacao.get("objetivoId").toString();
+  					BasicDBObject objetivoDoc = new BasicDBObject(); 
+  					objetivoDoc.putAll((Map) commons_db.getCollection(objetivoId, "objetivos", "documento.id").get("documento"));
+  					outObj.put("objetivo", objetivoDoc.get("nome"));
+					};
 					outArray.add(outObj);
 				};
 			};		
@@ -521,6 +524,10 @@ public class Avaliacao {
 			return false;
 		};
 
+		if (avaliacaoId == null){
+			return false;
+		};
+
 		BasicDBObject mapaDoc = new BasicDBObject();
 		mapaDoc.putAll((Map) mapa.get("documento"));
 		
@@ -551,8 +558,12 @@ public class Avaliacao {
 			};
 		};
 		
+		ArrayList<Object> habilidadesNew = new ArrayList<>();
+		habilidadesNew = (ArrayList<Object>) avaliacao.get("habilidades");
+		
 		if (existeColaboradorObjeto) {
 			array = commons.removeString(array, colaboradorObjetoId);
+			habilidadesNew = removeAvaliacao((ArrayList<Object>) avaliacao.get("habilidades"), colaboradorObjetoId);
 		}else {
 			ArrayList<String> superiores = (ArrayList<String>) avaliacao.get("superiores");
 			superiores = commons.removeString(superiores, colaboradorObjetoId);
@@ -572,6 +583,9 @@ public class Avaliacao {
 			avaliacao.put("parceiros", clientes);
 			array.add(colaboradorObjetoId);
 		};
+		
+		avaliacao.remove("habilidades");
+		avaliacao.put("habilidades", habilidadesNew);
 		
 		avaliacao.remove(assunto);
 		avaliacao.put(assunto, array);
@@ -599,6 +613,19 @@ public class Avaliacao {
 		return true;	
 	};
 	
+	@SuppressWarnings("rawtypes")
+	private ArrayList<Object> removeAvaliacao(ArrayList<Object> habilidades, String colaboradorObjetoId) {
+		ArrayList<Object> hablidadesNew = new ArrayList<>();
+		for (int i = 0; i < habilidades.size(); i++) {
+			BasicDBObject habilidade = new BasicDBObject();
+			habilidade.putAll((Map) habilidades.get(i));
+			if (!habilidade.get("avaliadorId").equals(colaboradorObjetoId)) {
+				hablidadesNew.add(habilidade);
+			};
+		};
+		return hablidadesNew;
+	}
+
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public Boolean montaHabilidades(String colaboradorId, String empresaId, String avaliacaoId, String habilidadeId)  {
 		return null;

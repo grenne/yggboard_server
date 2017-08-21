@@ -136,8 +136,6 @@ public class Rest_Hierarquia {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response Lista(BasicDBObject hierarquiaJson)  {
 
-		Commons_DB commons_db = new Commons_DB();
-
 		if (hierarquiaJson.get("token") == null) {
 			return null;
 		};
@@ -167,6 +165,22 @@ public class Rest_Hierarquia {
 			usuario = commons_db.getCollection(colaborador.get("email").toString(), "usuarios", "documento.email");
 			if (usuario == null){
 				usuario = criaUsuario(colaborador, empresaId);
+			}else {
+				keysArray = new ArrayList<>();
+				key = new JSONObject();
+				key.put("key", "documento.email");
+				key.put("value", colaborador.get("email").toString());
+				keysArray.add(key);				
+				ArrayList<JSONObject> fieldsArray = new ArrayList<>();
+				JSONObject field = new JSONObject();				
+				fieldsArray = new ArrayList<>();
+				field = new JSONObject();
+				field.put("field", "photo");
+				field.put("value", colaborador.get("email") + ".jpg");
+				fieldsArray.add(field);
+				BasicDBObject documento = new BasicDBObject();
+				documento.put("documento", colaborador);
+				commons_db.atualizarCrud("mapaAvaliacao", fieldsArray, keysArray, documento);
 			};
 			BasicDBObject userPerfil = new BasicDBObject();
 			userPerfil = commons_db.getCollection(colaborador.get("email").toString(), "userPerfil", "documento.usuario");
