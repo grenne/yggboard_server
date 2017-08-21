@@ -205,6 +205,7 @@ public class Rest_Hierarquia {
 		usuarioDoc.put("password", usuarioIn.get("login"));
 		usuarioDoc.put("status", usuarioIn.get("confirmado"));
 		usuarioDoc.put("empresaId", empresaId);
+		usuarioDoc.put("photo", usuarioIn.get("email") + ".jpg");
 		usuario.put("documento", usuarioDoc);
 		
 		BasicDBObject result = new BasicDBObject();

@@ -3,7 +3,7 @@ function carregaIndex (){
 
 	var objJson = 
  	  	{
-   			token: "1170706277ae0af0486017711353ee73",
+   			token: "ea9bfeef31f0222fee6aea629802361f",
 			collection : "index",
 			async : false
  	  	};

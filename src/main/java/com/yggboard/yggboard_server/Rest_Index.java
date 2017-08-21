@@ -1283,14 +1283,14 @@ public class Rest_Index {
 	@Path("/lista")	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public BasicDBObject ObterLista(@QueryParam("characters") String characters, @QueryParam("planejamentoLista") String planejamentoLista, @QueryParam("usuario") String usuario) {
+	public BasicDBObject ObterLista(@QueryParam("characters") String characters, @QueryParam("planejamentoLista") String planejamentoLista, @QueryParam("usuario") String usuario, @QueryParam("empresaId") String empresaId) {
 		
 		BasicDBObject results = new BasicDBObject();
 		Listas listas = new Listas();
 		Opcoes opcoes = new Opcoes();
 		Commons_DB commons_db = new Commons_DB();
 		
-		BasicDBObject doc = commons_db.getCollection(usuario, "userPerfil", "documento.token");
+		BasicDBObject doc = commons_db.getCollection(usuario, "usuarios", "documento.token");
 		BasicDBObject objUserPerfil = new BasicDBObject();
 		if (doc != null){
 			objUserPerfil.putAll((Map) doc.get("documento"));
@@ -1300,94 +1300,110 @@ public class Rest_Index {
 
 		listas.setUserPerfil(objUserPerfil);
 		
-		if (planejamentoLista.equals("true")){			
-			carregaIndex("objetivos", listas.objetivos(), characters, true, listas, opcoes, 0);
-			carregaIndex("habilidades", listas.habilidades(), characters, true, listas, opcoes, 0);
-			carregaIndex("cursos", listas.cursos(), characters, true, listas, opcoes, 0);
-			carregaIndex("areaAtuacao", listas.areasAtuacao(), characters, true, listas, opcoes, 0);
-			carregaIndex("areaConhecimento", listas.areasConhecimento(), characters, true, listas, opcoes, 0);
-			results.put("objetivos", listas.objetivos());
-			results.put("habilidades", listas.habilidades());
-			results.put("cursos", listas.cursos());
-			results.put("areaAtuacao", listas.areasAtuacao());
-			results.put("areaConhecimento", listas.areasConhecimento());
-		}else{
-			if (planejamentoLista.equals("false")){			
-				JSONArray documentos = new JSONArray();
-				carregaIndex("objetivos", documentos, characters, false, listas, opcoes, 4);
-				carregaIndex("habilidades", documentos, characters, false, listas, opcoes, 4);
-				carregaIndex("cursos", documentos, characters, false, listas, opcoes, 4);
-				carregaIndex("areaAtuacao", documentos, characters, false, listas, opcoes, 4);
-				carregaIndex("areaConhecimento", documentos, characters, false, listas, opcoes, 4);
-				results.put("pesquisa", documentos);				
-			}else{
-				JSONArray documentos = new JSONArray();
-				carregaIndex(planejamentoLista, documentos, characters, false, listas, opcoes, 10);
-				results.put("pesquisa", documentos);				
-			};
+		if (planejamentoLista != null){			
+  		if (planejamentoLista.equals("true")){			
+  			carregaIndex("objetivos", listas.objetivos(), characters, true, listas, opcoes, 0, empresaId);
+  			carregaIndex("habilidades", listas.habilidades(), characters, true, listas, opcoes, 0, empresaId);
+  			carregaIndex("cursos", listas.cursos(), characters, true, listas, opcoes, 0, empresaId);
+  			carregaIndex("areaAtuacao", listas.areasAtuacao(), characters, true, listas, opcoes, 0, empresaId);
+  			carregaIndex("areaConhecimento", listas.areasConhecimento(), characters, true, listas, opcoes, 0, empresaId);
+  			results.put("objetivos", listas.objetivos());
+  			results.put("habilidades", listas.habilidades());
+  			results.put("cursos", listas.cursos());
+  			results.put("areaAtuacao", listas.areasAtuacao());
+  			results.put("areaConhecimento", listas.areasConhecimento());
+  		}else{
+  			if (planejamentoLista.equals("false")){			
+  				JSONArray documentos = new JSONArray();
+  				carregaIndex("objetivos", documentos, characters, false, listas, opcoes, 4, empresaId);
+  				carregaIndex("habilidades", documentos, characters, false, listas, opcoes, 4, empresaId);
+  				carregaIndex("cursos", documentos, characters, false, listas, opcoes, 4, empresaId);
+  				carregaIndex("areaAtuacao", documentos, characters, false, listas, opcoes, 4, empresaId);
+  				carregaIndex("areaConhecimento", documentos, characters, false, listas, opcoes, 4, empresaId);
+  				results.put("pesquisa", documentos);				
+  			}else{
+  				JSONArray documentos = new JSONArray();
+  				carregaIndex(planejamentoLista, documentos, characters, false, listas, opcoes, 10, empresaId);
+  				results.put("pesquisa", documentos);				
+  			};
+  		};
 		};
 		return results;			
 	};
 
 	@SuppressWarnings({ "unchecked", "rawtypes"})
-	private void carregaIndex(String assunto, JSONArray documentos, String characters, Boolean lista, Listas listas, Opcoes opcoes, int qtdeItens) {
+	private void carregaIndex(String assunto, JSONArray documentos, String characters, Boolean lista, Listas listas, Opcoes opcoes, int qtdeItens, String empresaId) {
 		Commons_DB commons_db = new Commons_DB();
-		JSONArray cursor = commons_db.getCollectionLista("documento.assunto", "index", assunto);		
+		JSONArray cursor = commons_db.getCollectionLista(assunto, "index", "documento.assunto");		
 		if (cursor != null){
 			for (int i = 0; i < cursor.size(); i++) {
-				BasicDBObject objIndex = new BasicDBObject();
-				objIndex.putAll((Map) cursor.get(i));
-				JSONParser parser = new JSONParser(); 
-				String documento = objIndex.getString("documento");
-				try {
-					JSONObject jsonObject; 
-					jsonObject = (JSONObject) parser.parse(documento);
-					JSONObject jsonDocumento = new JSONObject();
-					String [] wordsSource = limpaChar (characters).split(" ");
-					List<?> wordsCompare = (List<?>) jsonObject.get("texto");
-					if (wordsoK (wordsSource, wordsCompare)){
-						if (lista){
-							switch (assunto) {
-							case "objetivos":
-								processaObjetivos(jsonObject.get("id").toString(), listas, opcoes);
-								break;
-							case "objetivo":
-								processaObjetivos(jsonObject.get("id").toString(), listas, opcoes);
-								break;
-							case "habilidades":
-								processaHabilidades(jsonObject.get("id").toString(), listas, opcoes);
+				BasicDBObject index = new BasicDBObject();
+				index.putAll((Map) cursor.get(i));
+				JSONObject jsonDocumento = new JSONObject();
+				String [] wordsSource = limpaChar (characters).split(" ");
+				List<?> wordsCompare = (List<?>) index.get("texto");
+				if (wordsoK (wordsSource, wordsCompare)){
+					if (lista){
+						switch (assunto) {
+						case "objetivos":
+							processaObjetivos(index.get("id").toString(), listas, opcoes);
 							break;
-							case "curso":
-								processaCursos(jsonObject.get("id").toString(), listas, opcoes);
+						case "objetivo":
+							processaObjetivos(index.get("id").toString(), listas, opcoes);
 							break;
-							case "areaAtuacao":
-								processaAreaAtuacao(jsonObject.get("id").toString(), listas, opcoes);
-							break;
-							case "areaConhecimento":
-								processaAreaConhecimento(jsonObject.get("id").toString(), listas, opcoes);
-							break;
+						case "habilidades":
+							processaHabilidades(index.get("id").toString(), listas, opcoes);
+						break;
+						case "curso":
+							processaCursos(index.get("id").toString(), listas, opcoes);
+						break;
+						case "areaAtuacao":
+							processaAreaAtuacao(index.get("id").toString(), listas, opcoes);
+						break;
+						case "areaConhecimento":
+							processaAreaConhecimento(index.get("id").toString(), listas, opcoes);
+						break;
 
-							default:
-								break;
-							}
-						}else{
-							jsonDocumento.put("assunto", jsonObject.get("assunto"));
-							jsonDocumento.put("entidade", jsonObject.get("entidade"));
-							jsonDocumento.put("id", jsonObject.get("id"));
-							jsonDocumento.put("descricao", jsonObject.get("descricao"));
-							documentos.add(jsonDocumento);
-							if (i > qtdeItens){
-								return;
+						default:
+							break;
+						}
+					}else{
+						jsonDocumento.put("assunto", index.get("assunto"));
+						jsonDocumento.put("entidade", index.get("entidade"));
+						jsonDocumento.put("id", index.get("id").toString());
+						jsonDocumento.put("descricao", index.get("descricao"));
+						if (assunto.equals("usuarios") && empresaId != null) {
+							if (testaEmpresa(index.get("id").toString(), empresaId)) {
+								documentos.add(jsonDocumento);									
 							};
+						}else {
+							documentos.add(jsonDocumento);
+						};
+						if (i > qtdeItens){
+							return;
 						};
 					};
-				} catch (ParseException e) {
-					e.printStackTrace();
-				}
+				};
 			};		
 		};
 	};
 	
+	@SuppressWarnings("rawtypes")
+	private boolean testaEmpresa(String usuarioId, String empresaId) {
+		
+		BasicDBObject usuario = commons_db.getCollection(usuarioId, "usuarios", "_id");
+		if (usuario != null) {
+			BasicDBObject usuarioDoc = new BasicDBObject();
+			usuarioDoc.putAll((Map) usuario.get("documento"));
+			if (usuarioDoc.get("empresaId") != null) {
+				if (usuarioDoc.get("empresaId").equals(empresaId)){
+					return true;
+				}
+			}
+		};
+		return false;
+	}
+
 	private boolean wordsoK(String[] wordsSource, List<?> wordsCompare) {
 		int i = 0;
 		int palavraIgual = 0;

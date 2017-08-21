@@ -1,7 +1,7 @@
   var reader;
   var progress = document.querySelector('.percent');
 
-//  document.getElementById('files').addEventListener('change', handleFileSelect, false);
+  document.getElementById('files').addEventListener('change', handleFileSelect, false);
 
   var myVar = setInterval(function(){ setIntervalObject() }, 30);	  
   
@@ -153,7 +153,7 @@
        // limpar tabela antes de carregar
        var objJson = 
  	  	{
-   			token: "1170706277ae0af0486017711353ee73",
+   			token: "ea9bfeef31f0222fee6aea629802361f",
 			collection : sessionStorage.escolha
  	  	};
  	   rest_remover (objJson, processaRegistros, semAcao, lines);

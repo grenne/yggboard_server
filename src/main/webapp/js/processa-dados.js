@@ -33,7 +33,7 @@ function processaCursos (data){
 	};
 	var objJson = 
 		{
-			token: "1170706277ae0af0486017711353ee73",
+			token: "ea9bfeef31f0222fee6aea629802361f",
 			async : false,
 			collection : "cursos",
 			insert :
@@ -111,7 +111,7 @@ function processaHabilidades (data){
 	
 	var objJson = 
 		{
-			token: "1170706277ae0af0486017711353ee73",
+			token: "ea9bfeef31f0222fee6aea629802361f",
 			async: false,
 			collection : "habilidades",
 			insert :
@@ -194,7 +194,7 @@ function processaObjetivos (data){
 	
 	var objJson = 
 		{
-			token: "1170706277ae0af0486017711353ee73",
+			token: "ea9bfeef31f0222fee6aea629802361f",
 			async : false,
 			collection : "objetivos",
 			insert :
@@ -279,7 +279,7 @@ function processaBadges (data){
 	
 	var objJson = 
 		{
-			token: "1170706277ae0af0486017711353ee73",
+			token: "ea9bfeef31f0222fee6aea629802361f",
 			asybc : false,
 			collection : "badges",
 			insert :
@@ -347,7 +347,7 @@ function processaAreaConhecimento (data){
 	
 	var objJson = 
 		{
-			token: "1170706277ae0af0486017711353ee73",
+			token: "ea9bfeef31f0222fee6aea629802361f",
 			async : false,
 			collection : "areaConhecimento",
 			insert :
@@ -387,7 +387,7 @@ function processaAreaAtuacao (data){
 	
 	var objJson = 
 		{
-			token: "1170706277ae0af0486017711353ee73",
+			token: "ea9bfeef31f0222fee6aea629802361f",
 			async : false,
 			collection : "areaAtuacao",
 			insert :

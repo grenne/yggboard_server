@@ -3,30 +3,62 @@ function carregaIndex (){
 
 	var objJson = 
  	  	{
-   			token: "1170706277ae0af0486017711353ee73",
+   			token: "ea9bfeef31f0222fee6aea629802361f",
 			collection : "index",
 			async : false
  	  	};
  	rest_remover (objJson, semAcao, semAcao); 	   
 
-	sessionStorage.setItem("rotina", "criaIndicesHabilidadesMsg");
-	sessionStorage.setItem("processo", "");
+	index = rest_listaReturn ("habilidades");
+	for (var i = 0; i < index.length; i++) {
+		criaIndice(index[i], "habilidades")
+	};
+	index = rest_listaReturn ("objetivos");
+	for (var i = 0; i < index.length; i++) {
+		criaIndice(index[i], "objetivos")
+	};
+	index = rest_listaReturn ("cargos");
+	for (var i = 0; i < index.length; i++) {
+		criaIndice(index[i], "cargos")
+	};
+	index = rest_listaReturn ("badges");
+	for (var i = 0; i < index.length; i++) {
+		criaIndice(index[i], "badges")
+	};
+	index = rest_listaReturn ("areaAtuacao");
+	for (var i = 0; i < index.length; i++) {
+		criaIndice(index[i], "areaAtuacao")
+	};
+	index = rest_listaReturn ("areaConhecimento");
+	for (var i = 0; i < index.length; i++) {
+		criaIndice(index[i], "areaConhecimento")
+	};
+	index = rest_listaReturn ("usuarios");
+	for (var i = 0; i < index.length; i++) {
+		criaIndice(index[i], "usuarios")
+	};
+	
+	sessionStorage.setItem("processo", "encerra-set-interval");
+
 };
 
-function criaIndicesHabilidades(){
+function criaIndices(assunto, rotina, processo, proximoAssunto){
 
-	lines = rest_listaReturn ("habilidades")
+	lines = rest_listaReturn (assunto)
 	sessionStorage.setItem("lines", lines);	
 
-	sessionStorage.setItem("assunto", "habilidades");
+	sessionStorage.setItem("assunto", assunto);
 
 	sessionStorage.setItem("index", 1);
     sessionStorage.setItem("totalRecords", lines.length);
 
-	sessionStorage.setItem("rotina", "criaIndicesObjetivosMsg");
-	sessionStorage.setItem("processo", "criaIndicesHabilidades");
+	sessionStorage.setItem("rotina", rotina);
+	sessionStorage.setItem("processo", processo);
+	sessionStorage.setItem("proximoAssunto", proximoAssunto);
 	
-	console.log ("iniciou cria indice habilidades");
+	console.log ("iniciou cria indice " + assunto);
+	
+	criaIndice(lines, assunto)
 };	
 
 function criaIndicesObjetivos(){
@@ -132,12 +164,6 @@ function criaIndice(index, assunto){
 		var id = "";
 		var descricao = "";
 		if (index){
-			if (index.name){
-				texto  = texto + carregaTextoIndex (index.name);
-				entidade = index.name;
-				id = index.idHabilidade;
-				descricao = index.descricao;
-			};
 			if (index.firstName){
 				texto  = texto + carregaTextoIndex (index.firstName);
 				entidade = index.firstName;
@@ -153,14 +179,10 @@ function criaIndice(index, assunto){
 			if (index.nome){
 				texto  = texto + carregaTextoIndex (index.nome);
 				entidade = index.nome;
-				id = index.idHabilidade;
-			};
-			if (index.idCurso){
-				id = index.idCurso;
 			};
 			if (index.id){
 				id = index.id;
-			};
+			}
 			if (index.descricao) {
 				texto  = texto + "," + carregaTextoIndex (index.descricao);
 				descricao = index.descricao;
@@ -177,7 +199,7 @@ function criaIndice(index, assunto){
 		
 		var objJson = 
 			{
-				token: "1170706277ae0af0486017711353ee73",
+				token: "ea9bfeef31f0222fee6aea629802361f",
 				collection : "index",
 				insert :
 					{
