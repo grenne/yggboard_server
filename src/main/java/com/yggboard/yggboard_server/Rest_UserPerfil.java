@@ -14,6 +14,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.bson.types.ObjectId;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -1126,10 +1127,13 @@ public class Rest_UserPerfil {
     	JSONArray arrayListHabilidadesObjetivosReal = new JSONArray(); 
 		if (doc != null){
 			BasicDBObject objDoc = (BasicDBObject) doc.get("documento");
+			objDoc.put("_id", id);
+			objDoc.remove("token");
+			objDoc.remove("password");
 			jsonDocumento.put("usuario", objDoc);
 			String email = objDoc.get("email").toString();
 			BasicDBObject objDocPerfil = new BasicDBObject();
-			BasicDBObject docPerfil = commons_db.getCollection(email, "userPerfil", "documento.token");
+			BasicDBObject docPerfil = commons_db.getCollection(email, "userPerfil", "documento.usuario");
 			if (docPerfil != null){
 				objDocPerfil = (BasicDBObject) docPerfil.get("documento");
 				jsonDocumento.put("userPerfil", objDocPerfil);

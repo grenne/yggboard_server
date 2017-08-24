@@ -80,14 +80,22 @@
 		$("#registros").prepend('<li class="executando output"><strong class="label">Criando indices area conhecimento...</strong></li>');
 		$("#registros").prepend('<li class="output"><strong class="label">Índice área atuação criado</strong></li>');
 		$(".executando").remove();	
-  		rest_atualizaIndiceCollection (objJson, "encerra-set-interval");
+  		rest_atualizaIndiceCollection (objJson, "carrega-indices");
+    };
+    if (sessionStorage.getItem("processo") == "carrega-indices"){
+  		console.log ("criando os indices de pesquisa");
+  		sessionStorage.setItem("processo", "executando");
+		$("#registros").prepend('<li class="executando output"><strong class="label">Criando indices de pesquisa...</strong></li>');
+		$("#registros").prepend('<li class="output"><strong class="label">Índice área atuação criado</strong></li>');
+		$(".executando").remove();			
+		carregaIndex();
     };
     if (sessionStorage.getItem("processo") == "encerra-set-interval"){
   	    for (var i = 1; i < 99999; i++){
   	        window.clearInterval(i);
   	    }
     	console.log ("mata set interval");
-		$("#registros").prepend('<li class="output"><strong class="label">Índice área conhecimento criado</strong></li>');
+		$("#registros").prepend('<li class="output"><strong class="label">Índices pesquisa criado</strong></li>');
 		$(".executando").remove();	
     };
   	i++;
