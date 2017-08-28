@@ -508,17 +508,37 @@ public class Avaliacao {
 	};
 
 	@SuppressWarnings({ "unchecked" })
-	public JSONArray colaboradores(String empresaId, String avaliacaoId)  {
+	public JSONArray colaboradores(String empresaId, String avaliacaoId, String usuarioId, String perfil)  {
 
 		if (avaliacaoId == null){
 			return null;
 		};
+		ArrayList<JSONObject> keysArray = new ArrayList<>();
+		JSONObject key = new JSONObject();
+		key.put("key", "documento.empresaId");
+		key.put("value", empresaId);
+		keysArray.add(key);
 
-		JSONArray cursor = commons_db.getCollectionLista(empresaId, "mapaAvaliacao", "documento.empresaId");
-		JSONArray documentos = new JSONArray();
-		if (cursor == null){
-			return null;
+		key = new JSONObject();
+		key.put("key", "documento.avaliacoes.id");
+		key.put("value", avaliacaoId);
+		keysArray.add(key);			
+
+		key = new JSONObject();
+		key.put("key", "documento.avaliacoes.status");
+		key.put("value", "mapa_aberto");
+		keysArray.add(key);			
+
+		if (!perfil.equals("rh")) {
+			key = new JSONObject();
+			key.put("key", "documento.avaliacoes.superiores");
+			key.put("value", usuarioId);
+			keysArray.add(key);
 		};
+
+		Response response = commons_db.listaCrud("mapaAvaliacao", keysArray);
+		JSONArray cursor = (JSONArray) response.getEntity();
+		JSONArray documentos = new JSONArray();
 		for (int i = 0; i < cursor.size(); i++) {
 			BasicDBObject doc = (BasicDBObject) cursor.get(i);
 			BasicDBObject docUsu = new BasicDBObject();
@@ -954,7 +974,7 @@ public class Avaliacao {
 		
 		if (result.getStatus() != 200) {
 			return false;
-		}
+		};
 		
 		return true;
 	}

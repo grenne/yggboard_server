@@ -59,15 +59,18 @@ public class Rest_Avaliacao {
 	@Path("/colaboradores")	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public JSONArray Colaboradores(@QueryParam("token") String token, @QueryParam("empresaId") String empresaId, @QueryParam("avaliacaoId") String avaliacaoId)  {
+	public JSONArray Colaboradores(@QueryParam("token") String token, @QueryParam("empresaId") String empresaId, @QueryParam("avaliacaoId") String avaliacaoId, @QueryParam("usuarioId") String usuarioId, @QueryParam("perfil") String perfil)  {
 		if ((commons_db.getCollection(token, "usuarios", "documento.token")) == null) {
 			return null;
 		};
 		if (empresaId == null) {
 			return null;
 		};
+		if (avaliacaoId == null) {
+			return null;
+		};
 		
-		return avaliacao.colaboradores(empresaId, avaliacaoId);
+		return avaliacao.colaboradores(empresaId, avaliacaoId, usuarioId, perfil);
 	};
 	
 	@Path("/inout")	
