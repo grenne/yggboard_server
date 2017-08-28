@@ -10,6 +10,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import com.mongodb.BasicDBObject;
 
@@ -170,6 +171,25 @@ public class Rest_Avaliacao {
 		};
 
 		return avaliacao.fechaMapa(empresaId, avaliacaoId, usuarioId);
+	};
+
+	@Path("/fecha/mapa")	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public JSONObject EstatisticaMapa(@QueryParam("token") String token, @QueryParam("empresaId") String empresaId, @QueryParam("avaliacaoId") String avaliacaoId)  {
+		if (token == null) {
+			return null;
+		};
+		if ((commons_db.getCollection(token, "usuarios", "documento.token")) == null) {
+			return null;
+		};
+		if (empresaId == null){
+			return null;
+		};
+		if (avaliacaoId == null){
+			return null;
+		};
+		return avaliacao.estatisticaMapa(empresaId, avaliacaoId);
 	};
 	
 };

@@ -474,6 +474,13 @@ public class Commons {
 			removeString(habilidadesArray, habilidadesIn.get(i).toString());
 		};
 		return habilidadesArray;
+	}
+
+	@SuppressWarnings("unchecked")
+	public int tamanhoArray(Object object) {
+		
+		ArrayList<String> array = (ArrayList<String>) object;	
+		return array.size();
 	};
 	
 };

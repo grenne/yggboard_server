@@ -1018,6 +1018,65 @@ public class Avaliacao {
 		
 		return true;
 		
+	}
+
+	@SuppressWarnings("unchecked")
+	public JSONObject estatisticaMapa(String empresaId, String avaliacaoId) {
+		
+		JSONObject estatistica = new JSONObject();
+		
+		
+		ArrayList<Object> mapas = commons_db.getCollectionLista(avaliacaoId, "mapaAvaliacao", "documento.avaliacoes.id");
+		
+		int totalAvaliados = 0;
+		int totalAvaliacoes = 0;
+		int mapasAbertos = 0;
+		int mapasFechados = 0;
+		int avaliacoesIniciadas = 0;
+		int avaliacoesEncerradas = 0;
+		int avaliacoesNaoIniciadas = 0;
+		for (int i = 0; i < mapas.size(); i++) {
+			BasicDBObject mapa = new BasicDBObject();
+			mapa.putAll((Map) mapas.get(i));
+			++totalAvaliados;
+			ArrayList<Object> avaliacoes = (ArrayList<Object>) mapa.get("avaliacoes");
+			for (int j = 0; j < avaliacoes.size(); j++) {
+				BasicDBObject avaliacao = new BasicDBObject();
+				avaliacao.putAll((Map) avaliacoes.get(i));
+				if (avaliacao.get("id").equals(avaliacaoId)) {
+					totalAvaliacoes = totalAvaliacoes + commons.tamanhoArray(avaliacao.get("superiores"));
+					totalAvaliacoes = totalAvaliacoes + commons.tamanhoArray(avaliacao.get("subordinados"));
+					totalAvaliacoes = totalAvaliacoes + commons.tamanhoArray(avaliacao.get("parceiros"));
+					totalAvaliacoes = totalAvaliacoes + commons.tamanhoArray(avaliacao.get("clientes"));
+					if (avaliacao.get("status").equals("mapa_aberto")){
+						++mapasAbertos;
+					};
+					if (avaliacao.get("status").equals("mapa_fechado")){
+						++mapasAbertos;
+					};
+					BasicDBObject habilidades = carregaHabilidadesAvaliacao(mapa.getString("usuarioId"), null, avaliacaoId);
+					if (commons.tamanhoArray(habilidades.get("habilidades")) == commons.tamanhoArray(avaliacao.get("habilidades"))) {
+						++avaliacoesEncerradas;
+					}else {
+  					if (commons.tamanhoArray(avaliacao.get("habilidades")) > 0) {
+  						++avaliacoesIniciadas;
+  					};
+  					if (commons.tamanhoArray(avaliacao.get("habilidades")) == 0) {
+  						++avaliacoesNaoIniciadas;
+  					};
+					};
+				};
+			};
+		};
+		
+		estatistica.put("totalAvaliados", totalAvaliados);
+		estatistica.put("totalAvaliacoes", totalAvaliacoes);
+		estatistica.put("mapasAbertos", mapasAbertos);
+		estatistica.put("mapasFechados", mapasFechados);
+		estatistica.put("avaliacoesIniciadas", avaliacoesIniciadas);
+		estatistica.put("avaliacoesEncerradas", avaliacoesEncerradas);
+		estatistica.put("avaliacoesNaoIniciadas", avaliacoesNaoIniciadas);
+		return estatistica;
 	};
 
 };
