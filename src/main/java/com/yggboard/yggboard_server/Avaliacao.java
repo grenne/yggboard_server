@@ -276,13 +276,15 @@ public class Avaliacao {
 			BasicDBObject avaliado = new BasicDBObject();
 			avaliado.putAll((Map) avaliados.get(i));
 			BasicDBObject avaliacao = getAvaliacao(avaliacaoId, avaliado.get("usuarioId").toString());
-			BasicDBObject habilidades = carregaHabilidadesAvaliacao(avaliado.get("usuarioId").toString(), avaliadorId, avaliacaoId); 
-			BasicDBObject avaliacaoResult = new BasicDBObject();
-			avaliacaoResult.put("tipo", tipo);
-			avaliacaoResult.put("inout", inout);
-			avaliacaoResult.put("avaliado", avaliacao);
-			avaliacaoResult.put("habilidades", habilidades.get("habilidades"));
-			avaliacoesResult.add(avaliacaoResult);
+			if (avaliacao.get("status").equals("mapa_fechado")) {
+  			BasicDBObject habilidades = carregaHabilidadesAvaliacao(avaliado.get("usuarioId").toString(), avaliadorId, avaliacaoId); 
+  			BasicDBObject avaliacaoResult = new BasicDBObject();
+  			avaliacaoResult.put("tipo", tipo);
+  			avaliacaoResult.put("inout", inout);
+  			avaliacaoResult.put("avaliado", avaliacao);
+  			avaliacaoResult.put("habilidades", habilidades.get("habilidades"));
+  			avaliacoesResult.add(avaliacaoResult);
+			};
 		};
 	};
 
@@ -867,7 +869,7 @@ public class Avaliacao {
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public ArrayList<Object> lista(String empresaId)  {
+	public ArrayList<Object> lista(String empresaId, String usuarioId)  {
 	
 		BasicDBObject empresa = new BasicDBObject();
 		empresa.putAll((Map) commons_db.getCollection(empresaId, "empresas", "_id"));
@@ -901,7 +903,11 @@ public class Avaliacao {
   				avaliacaoResult.put("_id", avaliacao.get("_id").toString());
   				avaliacaoResult.put("documento", avaliacao);
   				if (!avaliacao.get("_id").toString().equals(lastAvalId)) {
-  					avaliacoesResult.add(avaliacaoResult);
+  					if (usuarioId != null) {
+    					if (!testaMapaFechado(empresaId, usuarioId, avaliacao.get("_id").toString())) {
+    						avaliacoesResult.add(avaliacaoResult);
+    					};
+  					};
   				};
   			};
 			}else {
@@ -909,13 +915,50 @@ public class Avaliacao {
 				avaliacaoResult.put("_id", avaliacao.get("_id").toString());
 				avaliacaoResult.put("documento", avaliacao);
 				if (!avaliacao.get("_id").toString().equals(lastAvalId)) {
-					avaliacoesResult.add(avaliacaoResult);
+					if (usuarioId != null) {
+  					if (!testaMapaFechado(empresaId, usuarioId, avaliacao.get("_id").toString())) {
+  						avaliacoesResult.add(avaliacaoResult);
+  					};
+					};
 				};				
 			};
 		};	
 		return avaliacoesResult;
 	};
 	
+	@SuppressWarnings("unchecked")
+	private boolean testaMapaFechado(String empresaId, String usuarioId, String avaliacaoId) {
+
+		ArrayList<JSONObject> keysArray = new ArrayList<>();
+		JSONObject key = new JSONObject();
+		key.put("key", "documento.empresaId");
+		key.put("value", empresaId);
+		keysArray.add(key);
+
+		key = new JSONObject();
+		key.put("key", "documento.avaliacoes.id");
+		key.put("value", avaliacaoId);
+		keysArray.add(key);
+
+		key = new JSONObject();
+		key.put("key", "documento.avaliacoes.superiores");
+		key.put("value", usuarioId);
+		keysArray.add(key);
+
+		key = new JSONObject();
+		key.put("key", "documento.avaliacoes.status");
+		key.put("value", "mapa_aberto");
+		keysArray.add(key);
+		
+		Response result = commons_db.obterCrud("mapaAvalicao", keysArray);
+		
+		if (result.getStatus() != 200) {
+			return false;
+		}
+		
+		return true;
+	}
+
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public Boolean fechaMapa (String empresaId, String avaliacaoId, String gestorId) {
 		

@@ -135,7 +135,7 @@ public class Rest_Avaliacao {
 	@Path("/lista")	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public ArrayList<Object> Lista(@QueryParam("token") String token, @QueryParam("empresaId") String empresaId)  {
+	public ArrayList<Object> Lista(@QueryParam("token") String token, @QueryParam("empresaId") String empresaId, String usuarioId)  {
 		if (token == null) {
 			return null;
 		};
@@ -146,13 +146,13 @@ public class Rest_Avaliacao {
 			return null;
 		};
 
-		return avaliacao.lista(empresaId);
+		return avaliacao.lista(empresaId, usuarioId);
 	};
 
 	@Path("/fecha/mapa")	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public Boolean FechaMapa(@QueryParam("token") String token, @QueryParam("empresaId") String empresaId, @QueryParam("avaliacaoId") String avaliacaoId, @QueryParam("gestorId") String gestorId)  {
+	public Boolean FechaMapa(@QueryParam("token") String token, @QueryParam("empresaId") String empresaId, @QueryParam("avaliacaoId") String avaliacaoId, @QueryParam("usuarioId") String usuarioId)  {
 		if (token == null) {
 			return null;
 		};
@@ -165,11 +165,11 @@ public class Rest_Avaliacao {
 		if (avaliacaoId == null){
 			return null;
 		};
-		if (gestorId == null){
+		if (usuarioId == null){
 			return null;
 		};
 
-		return avaliacao.fechaMapa(empresaId, avaliacaoId, gestorId);
+		return avaliacao.fechaMapa(empresaId, avaliacaoId, usuarioId);
 	};
 	
 };
