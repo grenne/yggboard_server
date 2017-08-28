@@ -148,5 +148,28 @@ public class Rest_Avaliacao {
 
 		return avaliacao.lista(empresaId);
 	};
+
+	@Path("/fecha/mapa")	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public Boolean FechaMapa(@QueryParam("token") String token, @QueryParam("empresaId") String empresaId, @QueryParam("avaliacaoId") String avaliacaoId, @QueryParam("gestorId") String gestorId)  {
+		if (token == null) {
+			return null;
+		};
+		if ((commons_db.getCollection(token, "usuarios", "documento.token")) == null) {
+			return null;
+		};
+		if (empresaId == null){
+			return null;
+		};
+		if (avaliacaoId == null){
+			return null;
+		};
+		if (gestorId == null){
+			return null;
+		};
+
+		return avaliacao.fechaMapa(empresaId, avaliacaoId, gestorId);
+	};
 	
 };

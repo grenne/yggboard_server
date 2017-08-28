@@ -52,17 +52,20 @@ public class Avaliacao {
 			};
 
 			if (colaboradorValido(hierarquia, areas, niveis)) {
-  
   			JSONObject avaliacao = new JSONObject();
+  			ArrayList<JSONObject> arrayVazia = new ArrayList<>();
   			avaliacao.put("id", avaliacaoId);
   			avaliacao.put("superiores", hierarquia(hierarquia.get("colaborador").toString(), "colaborador", "superior", hierarquia.get("colaborador").toString()));
+  			avaliacao.put("superioresOut", arrayVazia);
   			avaliacao.put("subordinados", hierarquia(hierarquia.get("colaborador").toString(), "superior", "colaborador", hierarquia.get("colaborador").toString()));
+  			avaliacao.put("subordinadosOut", arrayVazia);
   			avaliacao.put("parceiros", hierarquia(hierarquia.get("superior").toString(), "superior","colaborador", hierarquia.get("colaborador").toString()));
+  			avaliacao.put("parceirosOut", arrayVazia);
   			avaliacao.put("clientes", hierarquia(hierarquia.get("colaborador").toString(), "clientes", "colaborador", hierarquia.get("colaborador").toString()));
   			avaliacao.put("objetivoId", hierarquia.get("objetivoId").toString());
-  			ArrayList<JSONObject> arrayVazia = new ArrayList<>();
   			avaliacao.put("habilidades", arrayVazia);
   			avaliacao.put("resultados", arrayVazia);
+  			avaliacao.put("status", "mapa_aberto");
   
   			ArrayList<JSONObject> avaliacoesNew = new ArrayList<JSONObject>();
   			if (existeMapa) {
@@ -911,6 +914,67 @@ public class Avaliacao {
 			};
 		};	
 		return avaliacoesResult;
+	};
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public Boolean fechaMapa (String empresaId, String avaliacaoId, String gestorId) {
+		
+		ArrayList<Object> hierarquia = commons_db.getCollectionLista(gestorId, "hierarquia", "documento.superior");
+		
+		for (int i = 0; i < hierarquia.size(); i++) {
+			BasicDBObject colaborador = new BasicDBObject();
+			colaborador.putAll((Map) hierarquia.get(i));
+			if (colaborador.get("colaborador") != null){
+				fechaMapaColaborador(colaborador.get("colaborador").toString(), avaliacaoId);
+			};
+		};
+		
+		return true;		
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private boolean fechaMapaColaborador(String colaboradorId, String avaliacaoId) {
+
+		BasicDBObject mapa = new BasicDBObject();
+		mapa = commons_db.getCollection(colaboradorId, "mapaAvaliacao", "documento.usuarioId");
+		if (mapa == null){
+			return false;
+		};
+		BasicDBObject mapaDoc = new BasicDBObject();
+		mapaDoc.putAll((Map) mapa.get("documento"));
+
+		ArrayList<Object> avaliacoes = (ArrayList<Object>) mapaDoc.get("avaliacoes");
+		ArrayList<Object> avaliacoesNova = new ArrayList<Object>();
+		for (int i = 0; i < avaliacoes.size(); i++) {
+			BasicDBObject avaliacao = new BasicDBObject();	
+			avaliacao.putAll((Map) avaliacoes.get(i));
+			if (avaliacao.get("id").equals(avaliacaoId)) {
+				avaliacao.put("status", "mapa_fechado");
+			};
+			avaliacoesNova.add(avaliacao);
+		};
+
+		BasicDBObject documento = new BasicDBObject();
+		documento.put("documento", mapaDoc);
+
+		ArrayList<JSONObject> keysArray = new ArrayList<>();
+		JSONObject key = new JSONObject();
+		key.put("key", "documento.usuarioId");
+		key.put("value", colaboradorId);
+		keysArray.add(key);
+		
+		ArrayList<JSONObject> fieldsArray = new ArrayList<>();
+		fieldsArray = new ArrayList<>();
+		JSONObject field = new JSONObject();
+		field = new JSONObject();
+		field.put("field", "avaliacoes");
+		field.put("value", avaliacoesNova);
+		fieldsArray.add(field);
+
+		commons_db.atualizarCrud("mapaAvaliacao", fieldsArray, keysArray, documento);
+		
+		return true;
+		
 	};
 
 };
