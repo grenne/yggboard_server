@@ -159,22 +159,31 @@ public class Avaliacao {
 
 		ArrayList<Object> superioresArray =  new ArrayList<Object>();
 		objArray = (ArrayList<String>) avaliacao.get("superiores");
-		carregaMapa (avaliacaoId, superioresArray, objArray);
+		carregaMapa (avaliacaoId, superioresArray, objArray,"in");
+
+		objArray = (ArrayList<String>) avaliacao.get("superioresOut");
+		carregaMapa (avaliacaoId, superioresArray, objArray,"out");
 		
 		ArrayList<Object> parceirosArray =  new ArrayList<Object>();
 		objArray =  new ArrayList<String>();
 		objArray = (ArrayList<String>) avaliacao.get("parceiros");
-		carregaMapa (avaliacaoId, parceirosArray, objArray);
+		carregaMapa (avaliacaoId, parceirosArray, objArray,"in");
 		
+		objArray = (ArrayList<String>) avaliacao.get("parceiros");
+		carregaMapa (avaliacaoId, parceirosArray, objArray,"out");
+
 		ArrayList<Object> subordinadosArray =  new ArrayList<Object>();
 		objArray =  new ArrayList<String>();
 		objArray = (ArrayList<String>) avaliacao.get("subordinados");
-		carregaMapa (avaliacaoId, subordinadosArray, objArray);
+		carregaMapa (avaliacaoId, subordinadosArray, objArray,"in");
+
+		objArray = (ArrayList<String>) avaliacao.get("subordinados");
+		carregaMapa (avaliacaoId, subordinadosArray, objArray,"out");
 		
 		ArrayList<Object> clientesArray =  new ArrayList<Object>();
 		objArray =  new ArrayList<String>();
 		objArray = (ArrayList<String>) avaliacao.get("clientes");
-		carregaMapa (avaliacaoId, clientesArray, objArray);
+		carregaMapa (avaliacaoId, clientesArray, objArray,"in");
 
 		BasicDBObject documentos = new BasicDBObject();
 		
@@ -227,18 +236,21 @@ public class Avaliacao {
 	
 		JSONArray avaliacoesResult = new JSONArray();
 		
-		carregaAvaliados(avaliacoesResult, avaliadorId, avaliacaoId, "auto-avaliacao");
-		carregaAvaliados(avaliacoesResult, avaliadorId, avaliacaoId, "superiores");
-		carregaAvaliados(avaliacoesResult, avaliadorId, avaliacaoId, "subordinados");
-		carregaAvaliados(avaliacoesResult, avaliadorId, avaliacaoId, "parceiros");
-		carregaAvaliados(avaliacoesResult, avaliadorId, avaliacaoId, "clientes");
+		carregaAvaliados(avaliacoesResult, avaliadorId, avaliacaoId, "auto-avaliacao", "in");
+		carregaAvaliados(avaliacoesResult, avaliadorId, avaliacaoId, "superiores", "in");
+		carregaAvaliados(avaliacoesResult, avaliadorId, avaliacaoId, "superioresOut", "out");
+		carregaAvaliados(avaliacoesResult, avaliadorId, avaliacaoId, "subordinados", "in");
+		carregaAvaliados(avaliacoesResult, avaliadorId, avaliacaoId, "subordinadosOut", "out");
+		carregaAvaliados(avaliacoesResult, avaliadorId, avaliacaoId, "parceiros", "in");
+		carregaAvaliados(avaliacoesResult, avaliadorId, avaliacaoId, "parceirosOut", "out");
+		carregaAvaliados(avaliacoesResult, avaliadorId, avaliacaoId, "clientes", "in");
 		
 		return avaliacoesResult;
 		
 	};
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private void carregaAvaliados(JSONArray avaliacoesResult, String avaliadorId, String avaliacaoId, String tipo) {
+	private void carregaAvaliados(JSONArray avaliacoesResult, String avaliadorId, String avaliacaoId, String tipo, String inout) {
 
 		ArrayList<JSONObject> keysArray = new ArrayList<>();
 		JSONObject key = new JSONObject();
@@ -264,6 +276,7 @@ public class Avaliacao {
 			BasicDBObject habilidades = carregaHabilidadesAvaliacao(avaliado.get("usuarioId").toString(), avaliadorId, avaliacaoId); 
 			BasicDBObject avaliacaoResult = new BasicDBObject();
 			avaliacaoResult.put("tipo", tipo);
+			avaliacaoResult.put("inout", inout);
 			avaliacaoResult.put("avaliado", avaliacao);
 			avaliacaoResult.put("habilidades", habilidades.get("habilidades"));
 			avaliacoesResult.add(avaliacaoResult);
@@ -464,7 +477,7 @@ public class Avaliacao {
 	};
 
 	@SuppressWarnings("rawtypes")
-	private void carregaMapa(String avaliacaoId, ArrayList<Object> outArray, ArrayList<String> inArray) {
+	private void carregaMapa(String avaliacaoId, ArrayList<Object> outArray, ArrayList<String> inArray, String inout) {
 
 		if (inArray != null) {
 			for (int i = 0; i < inArray.size(); i++) {
@@ -475,6 +488,7 @@ public class Avaliacao {
 					outObj.put("nome", docObj.get("firstName") + " " + docObj.get("lastName"));
 					outObj.put("photo", docObj.get("photo"));
 					outObj.put("id", registro.get("_id").toString());
+					outObj.put("inout", inout);
 					BasicDBObject avaliacao = getAvaliacao(avaliacaoId, registro.get("_id").toString());
 					if (avaliacao != null) {
   					String objetivoId = avaliacao.get("objetivoId").toString();
@@ -527,7 +541,7 @@ public class Avaliacao {
 		if (avaliacaoId == null){
 			return false;
 		};
-
+	
 		BasicDBObject mapaDoc = new BasicDBObject();
 		mapaDoc.putAll((Map) mapa.get("documento"));
 		
@@ -545,52 +559,50 @@ public class Avaliacao {
 			};
 		};
 		
-		ArrayList<String> array = new ArrayList<>();
-		array = (ArrayList<String>) avaliacao.get(assunto);
-		if (array == null) {
-			return null;
-		};
+		JSONObject arrays = new JSONObject(); 
 		
-		Boolean existeColaboradorObjeto = false;
-		for (int i = 0; i < array.size(); i++) {
-			if (array.get(i).equals(colaboradorObjetoId)) {
-				existeColaboradorObjeto = true;	
+		if (assunto != null) {
+			ArrayList<String> array = new ArrayList<>();
+			array = (ArrayList<String>) avaliacao.get(assunto);
+			if (commons.testaElementoArray(colaboradorObjetoId, array)) {
+				arrays.put("out", assunto);
+			}else {
+				arrays.put("in", assunto);
 			};
-		};
-		
-		ArrayList<Object> habilidadesNew = new ArrayList<>();
-		habilidadesNew = (ArrayList<Object>) avaliacao.get("habilidades");
-		
-		if (existeColaboradorObjeto) {
-			array = commons.removeString(array, colaboradorObjetoId);
-			habilidadesNew = removeAvaliacao((ArrayList<Object>) avaliacao.get("habilidades"), colaboradorObjetoId);
 		}else {
-			ArrayList<String> superiores = (ArrayList<String>) avaliacao.get("superiores");
-			superiores = commons.removeString(superiores, colaboradorObjetoId);
-			avaliacao.remove("superiores");
-			avaliacao.put("superiores", superiores);
-			ArrayList<String> subordinados = (ArrayList<String>) avaliacao.get("subordinados");
-			subordinados = commons.removeString(subordinados, colaboradorObjetoId);
-			avaliacao.remove("subordinados");
-			avaliacao.put("subordinados", subordinados);
-			ArrayList<String> parceiros = (ArrayList<String>) avaliacao.get("parceiros");
-			parceiros = commons.removeString(parceiros, colaboradorObjetoId);
-			avaliacao.remove("parceiros");
-			avaliacao.put("parceiros", parceiros);
-			ArrayList<String> clientes = (ArrayList<String>) avaliacao.get("clientes");
-			clientes = commons.removeString(clientes, colaboradorObjetoId);
-			avaliacao.remove("clientes");
-			avaliacao.put("parceiros", clientes);
-			array.add(colaboradorObjetoId);
+			arrays = localizaColaborador(colaboradorObjetoId, avaliacao);
 		};
 		
+		// *** retira da array origem
+		ArrayList<String> arrayOut = new ArrayList<>();
+		if (arrays.get("out") != null) {
+  		arrayOut = (ArrayList<String>) avaliacao.get(arrays.get("out"));
+  		if (arrayOut == null) {
+  			return null;
+  		};
+  		arrayOut = commons.removeString(arrayOut, colaboradorObjetoId);
+  		avaliacao.remove(arrays.get("out"));
+  		avaliacao.put(arrays.get("out").toString(), arrayOut);
+  		avaliacoesNew.add(avaliacao);
+		};
+		
+		// *** coloca na array destino
+		ArrayList<String> arrayIn = new ArrayList<>();
+		if (arrays.get("in") != null) {
+  		if (avaliacao.get(arrays.get("in")) == null) {
+  			avaliacao.put(arrays.get("in").toString(), arrayIn);
+  		};
+  		arrayIn.add(colaboradorObjetoId);
+		};
+		
+		// *** remove habilidade avaliada
+		ArrayList<Object> habilidadesNew = new ArrayList<>();
+		habilidadesNew = (ArrayList<Object>) avaliacao.get("habilidades");		
+		habilidadesNew = removeAvaliacao((ArrayList<Object>) avaliacao.get("habilidades"), colaboradorObjetoId);
 		avaliacao.remove("habilidades");
 		avaliacao.put("habilidades", habilidadesNew);
 		
-		avaliacao.remove(assunto);
-		avaliacao.put(assunto, array);
-		avaliacoesNew.add(avaliacao);
-
+		// *** atualiza
 		ArrayList<JSONObject> keysArray = new ArrayList<>();
 		JSONObject key = new JSONObject();
 		key.put("key", "documento.usuarioId");
@@ -613,6 +625,50 @@ public class Avaliacao {
 		return true;	
 	};
 	
+	@SuppressWarnings("unchecked")
+	private JSONObject localizaColaborador(String colaboradorObjetoId, BasicDBObject avaliacao) {
+		JSONObject arrays = new JSONObject();
+		
+		ArrayList<String> array = new ArrayList<>();
+		array = (ArrayList<String>) avaliacao.get("superiores");
+		if (commons.testaElementoArray(colaboradorObjetoId, array)) {
+			arrays.put("out", "superiores");
+			arrays.put("in", "superioresOut");
+		};
+		array = new ArrayList<>();
+		array = (ArrayList<String>) avaliacao.get("superioresOut");
+		if (commons.testaElementoArray(colaboradorObjetoId, array)) {
+			arrays.put("out", "superioresOut");
+			arrays.put("in", "superiores");
+		};
+		array = new ArrayList<>();
+		array = (ArrayList<String>) avaliacao.get("subordinados");
+		if (commons.testaElementoArray(colaboradorObjetoId, array)) {
+			arrays.put("out", "subordinados");
+			arrays.put("in", "subordinadosOut");
+		};
+		array = new ArrayList<>();
+		array = (ArrayList<String>) avaliacao.get("subordinadosOut");
+		if (commons.testaElementoArray(colaboradorObjetoId, array)) {
+			arrays.put("out", "subordinadosOut");
+			arrays.put("in", "subordinados");
+		};
+		array = new ArrayList<>();
+		array = (ArrayList<String>) avaliacao.get("parceiros");
+		if (commons.testaElementoArray(colaboradorObjetoId, array)) {
+			arrays.put("out", "parceiros");
+			arrays.put("in", "parceirosOut");
+		};
+		array = new ArrayList<>();
+		array = (ArrayList<String>) avaliacao.get("parceirosOut");
+		if (commons.testaElementoArray(colaboradorObjetoId, array)) {
+			arrays.put("out", "parceirosOut");
+			arrays.put("in", "parceiros");
+		};
+
+		return arrays;
+	}
+
 	@SuppressWarnings("rawtypes")
 	private ArrayList<Object> removeAvaliacao(ArrayList<Object> habilidades, String colaboradorObjetoId) {
 		ArrayList<Object> hablidadesNew = new ArrayList<>();
@@ -626,7 +682,7 @@ public class Avaliacao {
 		return hablidadesNew;
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({ })
 	public Boolean montaHabilidades(String colaboradorId, String empresaId, String avaliacaoId, String habilidadeId)  {
 		return null;
 /*

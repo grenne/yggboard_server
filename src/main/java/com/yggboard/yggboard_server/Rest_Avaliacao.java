@@ -82,9 +82,6 @@ public class Rest_Avaliacao {
 		if (colaboradorObjetoId == null){
 			return false;
 		};
-		if (assunto == null){
-			return false;
-		};
 		
 		return avaliacao.montaMapa(colaboradorId, colaboradorObjetoId, assunto, empresaId, avaliacaoId);
 	};

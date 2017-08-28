@@ -125,11 +125,7 @@ public class Rest_Usuario {
 					// obter dados user perfil
 					BasicDBObject userPerfil = commons_db.getCollection(email, "userPerfil", "documento.usuario");
 					if (userPerfil != null) {
-  					BasicDBObject userPerfilDoc = new BasicDBObject();
-  					userPerfilDoc.putAll((Map) userPerfil.get("documento"));
-  					if (userPerfilDoc != null) {
-  						objUser.put("idUserPerfil", userPerfilDoc.get("_id").toString());
-  					};
+						objUser.put("idUserPerfil", userPerfil.get("_id").toString());
 					};
 					// incluir evento
 					BasicDBObject evento = new BasicDBObject();
