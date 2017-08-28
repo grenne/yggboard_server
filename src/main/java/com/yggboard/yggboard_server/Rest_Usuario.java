@@ -23,13 +23,14 @@ import com.mongodb.BasicDBObject;
 
 public class Rest_Usuario {
 
+	Commons_DB commons_db = new Commons_DB();
+	Commons commons = new Commons();
+ 	
 	@SuppressWarnings({ "unchecked" })
 	@Path("/confirma")	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response ConfirmaSenha(@QueryParam("id") String id) {
-		
-		Commons_DB commons_db = new Commons_DB();
 		
 		ObjectId idObject = new ObjectId(id);
 		
@@ -54,9 +55,6 @@ public class Rest_Usuario {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response ResetaSenha(@QueryParam("email") String email) {
 	
-		Commons_DB commons_db = new Commons_DB();
-		Commons commons = new Commons();
-
 		Long time = commons.currentTime();
 		String novaSenha = "ygg" + time;
 
@@ -81,9 +79,6 @@ public class Rest_Usuario {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response Login(@QueryParam("email") String email, @QueryParam("password") String password, @QueryParam("macaddress") String macaddress) {
 	
-		Commons_DB commons_db = new Commons_DB();
-		Commons commons = new Commons();
-
 		ArrayList<JSONObject> keysArray = new ArrayList<>();
 		JSONObject key = new JSONObject();
 		key.put("key", "documento.email");
@@ -127,6 +122,15 @@ public class Rest_Usuario {
 					objUser.remove("token");
 					objUser.put("token", token);
 					objUser.put("_id", cursor.get("_id").toString());
+					// obter dados user perfil
+					BasicDBObject userPerfil = commons_db.getCollection(email, "userPerfil", "documento.usuario");
+					if (userPerfil != null) {
+  					BasicDBObject userPerfilDoc = new BasicDBObject();
+  					userPerfilDoc.putAll((Map) userPerfil.get("documento"));
+  					if (userPerfilDoc != null) {
+  						objUser.put("idUserPerfil", userPerfilDoc.get("_id").toString());
+  					};
+					};
 					// incluir evento
 					BasicDBObject evento = new BasicDBObject();
 					evento.put("idUsuario", email);
@@ -150,8 +154,6 @@ public class Rest_Usuario {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Boolean Token(@QueryParam("token") String token) {
-	
-		Commons_DB commons_db = new Commons_DB();
 
 		if (commons_db.getCollection(token, "usuarios", "documento.token") == null) {
 			return false;
