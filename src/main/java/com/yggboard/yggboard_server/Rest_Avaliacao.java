@@ -139,7 +139,7 @@ public class Rest_Avaliacao {
 	@Path("/lista")	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public ArrayList<Object> Lista(@QueryParam("token") String token, @QueryParam("empresaId") String empresaId, String usuarioId)  {
+	public ArrayList<Object> Lista(@QueryParam("token") String token, @QueryParam("empresaId") String empresaId, @QueryParam("usuarioId") String usuarioId)  {
 		if (token == null) {
 			return null;
 		};
@@ -156,7 +156,7 @@ public class Rest_Avaliacao {
 	@Path("/fecha/mapa")	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public Boolean FechaMapa(@QueryParam("token") String token, @QueryParam("empresaId") String empresaId, @QueryParam("avaliacaoId") String avaliacaoId, @QueryParam("usuarioId") String usuarioId)  {
+	public JSONObject FechaMapa(@QueryParam("token") String token, @QueryParam("empresaId") String empresaId, @QueryParam("avaliacaoId") String avaliacaoId, @QueryParam("usuarioId") String usuarioId)  {
 		if (token == null) {
 			return null;
 		};

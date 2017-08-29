@@ -284,6 +284,7 @@ public class Rest_Hierarquia {
 		hierarquiaDoc.put("colaborador", commons_db.getCollection(usuario.get("email").toString(), "usuarios", "documento.email").get("_id").toString());
 		if (usuario.get("superior") != null && usuario.get("superior") != "") {
 			hierarquiaDoc.put("superior", commons_db.getCollection(usuario.get("superior").toString(), "usuarios", "documento.email").get("_id").toString());
+			atualizaGestor(usuario.get("superior").toString());
 		}else {
 			hierarquiaDoc.put("superior","");
 		};
@@ -294,6 +295,26 @@ public class Rest_Hierarquia {
 		result.putAll((Map) commons_db.incluirCrud("hierarquias", hierarquia).getEntity());
 		return result;
 		
+	}
+
+	@SuppressWarnings("unchecked")
+	private void atualizaGestor(String usuarioEmail) {
+
+		ArrayList<JSONObject> keysArray = new ArrayList<>();
+		JSONObject key = new JSONObject();
+		key.put("key", "documento.email");
+		key.put("value", usuarioEmail);
+		keysArray.add(key);
+
+		ArrayList<JSONObject> fieldsArray = new ArrayList<>();
+		JSONObject field = new JSONObject();				
+		fieldsArray = new ArrayList<>();
+		field = new JSONObject();
+		field.put("field", "perfilEmpresa");
+		field.put("value", "gestor");
+		fieldsArray.add(field);
+		commons_db.atualizarCrud("usuarios", fieldsArray, keysArray, null);
+			
 	};
 
 };

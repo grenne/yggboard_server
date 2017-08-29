@@ -555,10 +555,10 @@ public class Avaliacao {
 		key.put("value", avaliacaoId);
 		keysArray.add(key);			
 
-		key = new JSONObject();
-		key.put("key", "documento.avaliacoes.status");
-		key.put("value", "mapa_aberto");
-		keysArray.add(key);			
+//		key = new JSONObject();
+//		key.put("key", "documento.avaliacoes.status");
+//		key.put("value", "mapa_aberto");
+//		keysArray.add(key);			
 
 		if (!perfil.equals("rh")) {
 			key = new JSONObject();
@@ -650,6 +650,12 @@ public class Avaliacao {
 			}else {
 				avaliacoesNew.add(avaliacoes.get(i));
 			};
+		};
+
+		if (avaliacao.get("status") != null) {
+  		if (avaliacao.get("status").equals("mapa_fechado")) {
+  			return false;
+  		};
 		};
 		
 		JSONObject arrays = new JSONObject(); 
@@ -979,6 +985,12 @@ public class Avaliacao {
   		BasicDBObject avaliacaoResult = new BasicDBObject();
   		avaliacaoResult.put("_id", avaliacaoLast.get("_id").toString());
   		avaliacaoResult.put("documento", avaliacaoLastDoc);
+			avaliacaoResult.put("statusMapa", "mapa_aberto");
+			if (usuarioId != null) {
+				if (testaMapaFechado(empresaId, usuarioId, avaliacaoLast.get("_id").toString())) {
+					avaliacaoResult.put("statusMapa", "mapa_fechado");
+				};
+			};
   		avaliacoesResult.add(avaliacaoResult);
   		lastAvalId = avaliacaoLast.get("_id").toString();
 		};
@@ -994,31 +1006,35 @@ public class Avaliacao {
   				BasicDBObject avaliacaoResult = new BasicDBObject();
   				avaliacaoResult.put("_id", avaliacao.get("_id").toString());
   				avaliacaoResult.put("documento", avaliacao);
-  				if (!avaliacao.get("_id").toString().equals(lastAvalId)) {
-  					if (usuarioId != null) {
-    					if (!testaMapaFechado(empresaId, usuarioId, avaliacao.get("_id").toString())) {
-    						avaliacoesResult.add(avaliacaoResult);
-    					};
+					avaliacaoResult.put("statusMapa", "mapa_aberto");
+					if (usuarioId != null) {
+  					if (testaMapaFechado(empresaId, usuarioId, avaliacao.get("_id").toString())) {
+  						avaliacaoResult.put("statusMapa", "mapa_fechado");
   					};
-  				};
+					};
+    			if (!avaliacao.get("_id").toString().equals(lastAvalId)) {
+						avaliacoesResult.add(avaliacaoResult);
+					};
   			};
 			}else {
 				BasicDBObject avaliacaoResult = new BasicDBObject();
 				avaliacaoResult.put("_id", avaliacao.get("_id").toString());
 				avaliacaoResult.put("documento", avaliacao);
-				if (!avaliacao.get("_id").toString().equals(lastAvalId)) {
-					if (usuarioId != null) {
-  					if (!testaMapaFechado(empresaId, usuarioId, avaliacao.get("_id").toString())) {
-  						avaliacoesResult.add(avaliacaoResult);
-  					};
+				avaliacaoResult.put("statusMapa", "mapa_aberto");
+				if (usuarioId != null) {
+					if (testaMapaFechado(empresaId, usuarioId, avaliacao.get("_id").toString())) {
+						avaliacaoResult.put("statusMapa", "mapa_fechado");
 					};
-				};				
+				};
+  			if (!avaliacao.get("_id").toString().equals(lastAvalId)) {
+					avaliacoesResult.add(avaliacaoResult);
+				};
 			};
 		};	
 		return avaliacoesResult;
 	};
 	
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private boolean testaMapaFechado(String empresaId, String usuarioId, String avaliacaoId) {
 
 		ArrayList<JSONObject> keysArray = new ArrayList<>();
@@ -1042,19 +1058,30 @@ public class Avaliacao {
 		key.put("value", "mapa_aberto");
 		keysArray.add(key);
 		
-		Response result = commons_db.obterCrud("mapaAvalicao", keysArray);
+		Response response = commons_db.listaCrud("mapaAvaliacao", keysArray);
 		
-		if (result.getStatus() != 200) {
-			return false;
+		if (response.getStatus() == 200) {
+			JSONArray mapas = (JSONArray) response.getEntity();
+			for (int i = 0; i < mapas.size(); i++) {
+				BasicDBObject mapa = new BasicDBObject();
+				mapa.putAll((Map) mapas.get(i));
+				ArrayList<Object> avaliacoes = (ArrayList<Object>) mapa.get("avaliacoes");
+				for (int j = 0; j < avaliacoes.size(); j++) {
+					BasicDBObject avaliacao = new BasicDBObject();
+					avaliacao.putAll((Map) avaliacoes.get(j));
+					if (avaliacao.get("status").equals("mapa_aberto") && avaliacao.get("id").toString().equals(avaliacaoId)) {
+						return false;
+					};
+				};
+			};
 		};
 		
 		return true;
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public Boolean fechaMapa (String empresaId, String avaliacaoId, String gestorId) {
+	public JSONObject fechaMapa (String empresaId, String avaliacaoId, String gestorId) {
 		
-
 		ArrayList<JSONObject> keysArray = new ArrayList<>();
 		JSONObject key = new JSONObject();
 		key.put("key", "documento.empresaId");
@@ -1075,20 +1102,29 @@ public class Avaliacao {
 		Response response = commons_db.listaCrud("mapaAvaliacao", keysArray);
 
 		JSONArray mapas = (JSONArray) response.getEntity();
+		JSONArray colaboradores = new JSONArray();
 		for (int i = 0; i < mapas.size(); i++) {
 			BasicDBObject mapa = new BasicDBObject();
 			mapa.putAll((Map) mapas.get(i));
 			if (mapa.get("usuarioId") != null){
-				fechaMapaColaborador(mapa.get("usuarioId").toString(), avaliacaoId, mapa);
+				fechaMapaColaborador(mapa.get("usuarioId").toString(), avaliacaoId, mapa, colaboradores);
 			};
 		};
-		
-		return true;		
+
+		BasicDBObject avaliacao = commons_db.getCollection(avaliacaoId, "avaliacoes", "_id");
+		BasicDBObject avaliacaoDoc = new BasicDBObject();
+		avaliacaoDoc.putAll((Map) avaliacao.get("documento"));
+				
+		JSONObject result = new JSONObject();
+		result.put("avaliacaoNome", avaliacaoDoc.get("nome"));
+		result.put("dataConclusao", avaliacaoDoc.get("dataConclusao"));
+		result.put("dataMapa", commons.calcNewDate(avaliacaoDoc.get("dataConclusao").toString(), Integer.valueOf(avaliacaoDoc.get("diasMapa").toString())));
+		result.put("colaboradores", colaboradores); 
+		return result;		
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private boolean fechaMapaColaborador(String colaboradorId, String avaliacaoId, BasicDBObject mapa) {
-
+	private boolean fechaMapaColaborador(String colaboradorId, String avaliacaoId, BasicDBObject mapa, JSONArray colaboradores) {
 
 		ArrayList<Object> avaliacoes = (ArrayList<Object>) mapa.get("avaliacoes");
 		ArrayList<Object> avaliacoesNova = new ArrayList<Object>();
@@ -1119,6 +1155,16 @@ public class Avaliacao {
 		fieldsArray.add(field);
 
 		commons_db.atualizarCrud("mapaAvaliacao", fieldsArray, keysArray, documento);
+		
+		BasicDBObject usuario = commons_db.getCollection(colaboradorId, "usuarios", "_id");
+		if (usuario != null) {
+  		BasicDBObject usuarioDoc = new BasicDBObject();
+  		usuarioDoc.putAll((Map) usuario.get("documento"));
+  		JSONObject result = new JSONObject();
+ 			result.put("nomeColaborador", usuarioDoc.get("firstName") + " " + usuarioDoc.get("lastName"));
+ 			result.put("emailColaborador", usuarioDoc.get("email"));
+ 			colaboradores.add(result);
+		};
 		
 		return true;
 		
