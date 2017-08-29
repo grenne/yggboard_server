@@ -17,7 +17,7 @@ public class Avaliacao {
 	Commons commons = new Commons();
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public Boolean criaMapaAvaliacao(String empresaId, String avaliacaoId) {
+	public JSONObject criaMapaAvaliacao(String empresaId, String avaliacaoId) {
 
 		
 		ArrayList<JSONObject> keysArray = new ArrayList<>();
@@ -30,6 +30,8 @@ public class Avaliacao {
 		
 		ArrayList<Object> hierarquias = new ArrayList<Object>(); 
 		hierarquias = commons_db.getCollectionLista(empresaId, "hierarquias", "documento.empresaId");
+
+		JSONArray gestores = new JSONArray();
 
 		for (int i = 0; i < hierarquias.size(); i++) {
 
@@ -99,10 +101,39 @@ public class Avaliacao {
   			}else {
   				commons_db.incluirCrud("mapaAvaliacao", criaMapaDoc(hierarquia.get("colaborador").toString(), empresaId, avaliacoesNew));
   			};
+  			carregaGestores((ArrayList<String>) avaliacao.get("superiores"), gestores);
 			};
 		};
-		return true;
 		
+		
+		JSONObject result = new JSONObject();
+		BasicDBObject avaliacao = commons_db.getCollection(avaliacaoId, "avaliacoes", "_id");
+		BasicDBObject avaliacaoDoc = new BasicDBObject();
+		avaliacaoDoc.putAll((Map) avaliacao.get("documento"));
+		
+		result.put("avaliacaoNome", avaliacaoDoc.get("nome"));
+		result.put("dataConclusao", avaliacaoDoc.get("dataConclusao"));
+		result.put("dataMapa", commons.calcNewDate(avaliacaoDoc.get("dataConclusao").toString(), Integer.valueOf(avaliacaoDoc.get("diasMapa").toString())));
+		result.put("gestores", gestores);
+		return result;
+		
+	};
+
+	@SuppressWarnings({ "rawtypes" })
+	private void carregaGestores(ArrayList<String> superiores, JSONArray gestores) {
+		for (int i = 0; i < superiores.size(); i++) {
+			BasicDBObject superior = new BasicDBObject();
+			BasicDBObject usuario = commons_db.getCollection(superiores.get(i).toString(), "usuarios", "_id");
+			if (usuario != null) {
+				BasicDBObject usuarioDoc = new BasicDBObject();
+				usuarioDoc.putAll((Map) usuario.get("documento"));
+				if (usuarioDoc != null) {
+					superior.put("gestorNome", usuarioDoc.get("firstName") + " " + usuarioDoc.get("lastName"));
+					superior.put("gestorEmail", usuarioDoc.get("email"));
+					commons.addObjeto(gestores, superior);
+				};
+			}
+		};
 	};
 
 	private boolean colaboradorValido(BasicDBObject hierarquia, ArrayList<String> areas, ArrayList<String> niveis) {
@@ -172,7 +203,7 @@ public class Avaliacao {
 		objArray = (ArrayList<String>) avaliacao.get("parceiros");
 		carregaMapa (avaliacaoId, parceirosArray, objArray,"in");
 		
-		objArray = (ArrayList<String>) avaliacao.get("parceiros");
+		objArray = (ArrayList<String>) avaliacao.get("parceirosOut");
 		carregaMapa (avaliacaoId, parceirosArray, objArray,"out");
 
 		ArrayList<Object> subordinadosArray =  new ArrayList<Object>();
@@ -180,7 +211,7 @@ public class Avaliacao {
 		objArray = (ArrayList<String>) avaliacao.get("subordinados");
 		carregaMapa (avaliacaoId, subordinadosArray, objArray,"in");
 
-		objArray = (ArrayList<String>) avaliacao.get("subordinados");
+		objArray = (ArrayList<String>) avaliacao.get("subordinadosOut");
 		carregaMapa (avaliacaoId, subordinadosArray, objArray,"out");
 		
 		ArrayList<Object> clientesArray =  new ArrayList<Object>();
@@ -551,6 +582,43 @@ public class Avaliacao {
 			documentos.add(docOut);
 		};
 		
+		keysArray = new ArrayList<>();
+		key = new JSONObject();
+		key.put("key", "documento.empresaId");
+		key.put("value", empresaId);
+		keysArray.add(key);
+
+		key = new JSONObject();
+		key.put("key", "documento.avaliacoes.id");
+		key.put("value", avaliacaoId);
+		keysArray.add(key);			
+
+		key = new JSONObject();
+		key.put("key", "documento.avaliacoes.status");
+		key.put("value", "mapa_aberto");
+		keysArray.add(key);			
+
+		if (!perfil.equals("rh")) {
+			key = new JSONObject();
+			key.put("key", "documento.avaliacoes.superioresOut");
+			key.put("value", usuarioId);
+			keysArray.add(key);
+  		response = commons_db.listaCrud("mapaAvaliacao", keysArray);
+  		cursor = new JSONArray();
+  		cursor = (JSONArray) response.getEntity();
+  		for (int i = 0; i < cursor.size(); i++) {
+  			BasicDBObject doc = (BasicDBObject) cursor.get(i);
+  			BasicDBObject docUsu = new BasicDBObject();
+  			docUsu = commons_db.getCollection(doc.getString("usuarioId"), "usuarios", "_id");
+  			BasicDBObject docOut = (BasicDBObject) docUsu.get("documento");
+  			docOut.remove("password");
+  			docOut.remove("token");
+  			docOut.put("id", doc.getString("usuarioId"));
+  			docOut.put("objetivo", getAvaliacao(avaliacaoId, doc.getString("usuarioId")).get("objetivoNome"));
+  			documentos.add(docOut);
+  		};
+		};
+		
 		return documentos;
 	};
 	
@@ -586,7 +654,7 @@ public class Avaliacao {
 		
 		JSONObject arrays = new JSONObject(); 
 		
-		if (assunto != null) {
+		if (assunto.equals("cliente")) {
 			ArrayList<String> array = new ArrayList<>();
 			array = (ArrayList<String>) avaliacao.get(assunto);
 			if (commons.testaElementoArray(colaboradorObjetoId, array)) {
@@ -608,18 +676,22 @@ public class Avaliacao {
   		arrayOut = commons.removeString(arrayOut, colaboradorObjetoId);
   		avaliacao.remove(arrays.get("out"));
   		avaliacao.put(arrays.get("out").toString(), arrayOut);
-  		avaliacoesNew.add(avaliacao);
 		};
 		
 		// *** coloca na array destino
 		ArrayList<String> arrayIn = new ArrayList<>();
 		if (arrays.get("in") != null) {
+  		arrayIn = (ArrayList<String>) avaliacao.get(arrays.get("in"));
   		if (avaliacao.get(arrays.get("in")) == null) {
   			avaliacao.put(arrays.get("in").toString(), arrayIn);
   		};
   		arrayIn.add(colaboradorObjetoId);
+  		avaliacao.remove(arrays.get("in"));
+  		avaliacao.put(arrays.get("in").toString(), arrayIn);
 		};
 		
+		avaliacoesNew.add(avaliacao);
+
 		// *** remove habilidade avaliada
 		ArrayList<Object> habilidadesNew = new ArrayList<>();
 		habilidadesNew = (ArrayList<Object>) avaliacao.get("habilidades");		
@@ -982,13 +1054,32 @@ public class Avaliacao {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public Boolean fechaMapa (String empresaId, String avaliacaoId, String gestorId) {
 		
-		ArrayList<Object> hierarquia = commons_db.getCollectionLista(gestorId, "hierarquia", "documento.superior");
-		
-		for (int i = 0; i < hierarquia.size(); i++) {
-			BasicDBObject colaborador = new BasicDBObject();
-			colaborador.putAll((Map) hierarquia.get(i));
-			if (colaborador.get("colaborador") != null){
-				fechaMapaColaborador(colaborador.get("colaborador").toString(), avaliacaoId);
+
+		ArrayList<JSONObject> keysArray = new ArrayList<>();
+		JSONObject key = new JSONObject();
+		key.put("key", "documento.empresaId");
+		key.put("value", empresaId);
+		keysArray.add(key);
+
+		key = new JSONObject();
+		key.put("key", "documento.avaliacoes.id");
+		key.put("value", avaliacaoId);
+		keysArray.add(key);
+
+		key = new JSONObject();
+		key.put("key", "documento.avaliacoes.superiores");
+		key.put("value", gestorId);
+		keysArray.add(key);
+
+
+		Response response = commons_db.listaCrud("mapaAvaliacao", keysArray);
+
+		JSONArray mapas = (JSONArray) response.getEntity();
+		for (int i = 0; i < mapas.size(); i++) {
+			BasicDBObject mapa = new BasicDBObject();
+			mapa.putAll((Map) mapas.get(i));
+			if (mapa.get("usuarioId") != null){
+				fechaMapaColaborador(mapa.get("usuarioId").toString(), avaliacaoId, mapa);
 			};
 		};
 		
@@ -996,17 +1087,10 @@ public class Avaliacao {
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private boolean fechaMapaColaborador(String colaboradorId, String avaliacaoId) {
+	private boolean fechaMapaColaborador(String colaboradorId, String avaliacaoId, BasicDBObject mapa) {
 
-		BasicDBObject mapa = new BasicDBObject();
-		mapa = commons_db.getCollection(colaboradorId, "mapaAvaliacao", "documento.usuarioId");
-		if (mapa == null){
-			return false;
-		};
-		BasicDBObject mapaDoc = new BasicDBObject();
-		mapaDoc.putAll((Map) mapa.get("documento"));
 
-		ArrayList<Object> avaliacoes = (ArrayList<Object>) mapaDoc.get("avaliacoes");
+		ArrayList<Object> avaliacoes = (ArrayList<Object>) mapa.get("avaliacoes");
 		ArrayList<Object> avaliacoesNova = new ArrayList<Object>();
 		for (int i = 0; i < avaliacoes.size(); i++) {
 			BasicDBObject avaliacao = new BasicDBObject();	
@@ -1018,7 +1102,7 @@ public class Avaliacao {
 		};
 
 		BasicDBObject documento = new BasicDBObject();
-		documento.put("documento", mapaDoc);
+		documento.put("documento", mapa);
 
 		ArrayList<JSONObject> keysArray = new ArrayList<>();
 		JSONObject key = new JSONObject();
@@ -1040,7 +1124,7 @@ public class Avaliacao {
 		
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public JSONObject estatisticaMapa(String empresaId, String avaliacaoId) {
 		
 		JSONObject estatistica = new JSONObject();
@@ -1098,5 +1182,4 @@ public class Avaliacao {
 		estatistica.put("avaliacoesNaoIniciadas", avaliacoesNaoIniciadas);
 		return estatistica;
 	};
-
 };

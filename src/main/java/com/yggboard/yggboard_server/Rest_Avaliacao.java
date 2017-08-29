@@ -27,13 +27,13 @@ public class Rest_Avaliacao {
 	@Path("/cria/mapa")	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public Boolean criaMapa(@QueryParam("token") String token, @QueryParam("empresaId") String empresaId, @QueryParam("avaliacaoId") String avaliacaoId)  {
+	public JSONObject criaMapa(@QueryParam("token") String token, @QueryParam("empresaId") String empresaId, @QueryParam("avaliacaoId") String avaliacaoId)  {
 	
 		if (token == null) {
-			return false;
+			return null;
 		};
 		if ((commons_db.getCollection(token, "usuarios", "documento.token")) == null) {
-			return false;
+			return null;
 		};
 		
 		return avaliacao.criaMapaAvaliacao(empresaId, avaliacaoId);
@@ -176,7 +176,7 @@ public class Rest_Avaliacao {
 		return avaliacao.fechaMapa(empresaId, avaliacaoId, usuarioId);
 	};
 
-	@Path("/fecha/mapa")	
+	@Path("/estatistica")	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public JSONObject EstatisticaMapa(@QueryParam("token") String token, @QueryParam("empresaId") String empresaId, @QueryParam("avaliacaoId") String avaliacaoId)  {

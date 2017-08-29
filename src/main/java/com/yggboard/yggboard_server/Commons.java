@@ -90,13 +90,13 @@ public class Commons {
 
 	public String calcNewDate (String date, int days){
 		
-		DateFormat df = new SimpleDateFormat ("ddMMyyyy");
+		DateFormat df = new SimpleDateFormat ("yyyy-MM-dd");
 		Calendar cal = Calendar.getInstance();   
-		cal.set(Calendar.DAY_OF_MONTH, Integer.parseInt(convertDateMes(date).substring(0, 2)));
-		cal.set(Calendar.MONTH, (Integer.parseInt(convertDateMes(date).substring(3, 5)) ) - 1 );
-		cal.set(Calendar.YEAR, Integer.parseInt(convertDateMes(date).substring(6, 10)));
-		cal.add(Calendar.DAY_OF_MONTH, 5);
-		return convertDateMesAlfa(df.format(cal.getTime())).replaceAll("/", "");
+		cal.set(Calendar.DAY_OF_MONTH, Integer.parseInt(date.substring(0, 4)));
+		cal.set(Calendar.MONTH, (Integer.parseInt(date.substring(5, 7)) ) - 1 );
+		cal.set(Calendar.YEAR, Integer.parseInt(date.substring(8, 10)));
+		cal.add(Calendar.DAY_OF_MONTH, days);
+		return df.format(cal.getTime());
 	};
 
 	public Calendar convertToCalendar (String date){
