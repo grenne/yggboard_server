@@ -424,16 +424,72 @@ public class Avaliacao {
 		return documento;
 	}
 
-	@SuppressWarnings({ "unchecked" })
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public JSONObject resultados(String usuarioId, String avaliacaoId) {
 
 		JSONObject result = new JSONObject();
 		
-		result.put("meusresultados", carregaResultadosHabilidades(getAvaliacao(avaliacaoId, usuarioId)));
+		BasicDBObject avaliacao = getAvaliacao(avaliacaoId, usuarioId);
+		if (avaliacao != null) {
+			result.put("meusresultados", carregaResultadosHabilidades(avaliacao));
+		};
 		
-		
+		JSONArray subordinados = getSubordinados(usuarioId, avaliacaoId);
+
+		JSONArray subordinadosResult = new JSONArray();
+		for (int i = 0; i < subordinados.size(); i++) {
+			avaliacao = getAvaliacao(avaliacaoId, usuarioId);
+			if (avaliacao != null) {
+				BasicDBObject subordinadoResult = new  BasicDBObject();
+				BasicDBObject subordinado = new  BasicDBObject();
+				subordinado.putAll((Map) subordinados.get(i));
+				subordinadoResult.put("id", subordinado.get("id"));
+				subordinadoResult.put("nome", subordinado.get("nome"));
+				subordinadoResult.put("resultados", carregaResultadosHabilidades(avaliacao));
+				subordinadosResult.add(subordinadoResult);
+			};			
+		};
+
+		result.put("subordinados", subordinadosResult);
+
 		return result;		
 	};
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private JSONArray getSubordinados(String usuarioId, String avaliacaoId) {
+		
+		Usuario usuario = new Usuario();
+		
+		ArrayList<JSONObject> keysArray = new ArrayList<>();
+		JSONObject key = new JSONObject();
+		key.put("key", "documento.avaliacoes.superiores");
+		key.put("value", usuarioId);
+		keysArray.add(key);
+		key = new JSONObject();
+		key.put("key", "documento.avaliacoes.id");
+		key.put("value", avaliacaoId);
+		keysArray.add(key);
+
+		Response response = commons_db.listaCrud("mapaAvaliacao", keysArray);
+
+		JSONArray subordinados = new JSONArray();
+
+		JSONArray mapas = (JSONArray) response.getEntity();
+		for (int i = 0; i < mapas.size(); i++) {
+			BasicDBObject mapa = new BasicDBObject();
+			mapa.putAll((Map) mapas.get(i));
+			if (mapa.get("usuarioId") != null) {
+  			BasicDBObject avaliacao = getAvaliacao(avaliacaoId, mapa.get("usuarioId").toString());
+  			if (avaliacao.get("id").equals(avaliacaoId)) {
+  					BasicDBObject subordinado = new BasicDBObject();
+  					subordinado.put("id", mapa.get("usuarioId"));
+  					subordinado.put("nome", usuario.get(mapa.get("usuarioId").toString()).get("nome"));
+       			subordinados.add(subordinado);
+     		};
+			};
+ 		};
+		return subordinados;
+	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private JSONArray carregaResultadosHabilidades(BasicDBObject avaliacao) {
@@ -448,13 +504,15 @@ public class Avaliacao {
 			BasicDBObject habilidade = new BasicDBObject(); 
 			habilidade = commons_db.getCollection(resultado.get("id").toString(), "habilidades", "documento.id");
 			BasicDBObject habilidadeDoc = new BasicDBObject();
-			habilidadeDoc.putAll((Map) habilidade.get("documento"));
-			if (habilidade != null) {
-				BasicDBObject resultadoResult = new BasicDBObject();
-				resultadoResult.put("habilidadeId", habilidadeDoc.get("id"));
-				resultadoResult.put("habilidadeNome", habilidadeDoc.get("nome"));
-				resultadoResult.put("nota", resultado.get("nota").toString());
-				resultados.add(resultadoResult);
+			if (habilidade.get("documento") != null) {
+  			habilidadeDoc.putAll((Map) habilidade.get("documento"));
+  			if (habilidade != null) {
+  				BasicDBObject resultadoResult = new BasicDBObject();
+  				resultadoResult.put("habilidadeId", habilidadeDoc.get("id"));
+  				resultadoResult.put("habilidadeNome", habilidadeDoc.get("nome"));
+  				resultadoResult.put("nota", resultado.get("nota").toString());
+  				resultados.add(resultadoResult);
+  			};
 			};
 		};
 
@@ -1097,7 +1155,11 @@ public class Avaliacao {
   			};
   			BasicDBObject resultado = new BasicDBObject();
   			resultado.put("id", habilidades.get(i).get("id").toString());
-  			resultado.put("nota", String.valueOf((notas/qtde)));
+  			if (qtde == 0) {
+  				resultado.put("nota", String.valueOf((notas/qtde)));
+  			}else {
+  				resultado.put("nota", "na");
+  			};
   			resultados.add(resultado);
   			habilidadesTratadas.add(habilidades.get(i).get("id").toString());
 			};
@@ -1123,6 +1185,7 @@ public class Avaliacao {
   		avaliacaoLastDoc.putAll((Map) avaliacaoLast.get("documento"));
   		BasicDBObject avaliacaoResult = new BasicDBObject();
   		avaliacaoResult.put("_id", avaliacaoLast.get("_id").toString());
+  		avaliacaoLastDoc.put("status", getStatusAvaliacao(avaliacaoLastDoc));
   		avaliacaoResult.put("documento", avaliacaoLastDoc);
 			avaliacaoResult.put("statusMapa", "mapa_aberto");
 			if (usuarioId != null) {
@@ -1140,21 +1203,20 @@ public class Avaliacao {
 		for (int i = 0; i < avaliacoes.size(); i++) {
 			BasicDBObject avaliacao = new BasicDBObject();
 			avaliacao.putAll((Map) avaliacoes.get(i));
+			avaliacao.put("status", getStatusAvaliacao(avaliacao));
 			if (avaliacao.get("status") != null){
-  			if (avaliacao.get("status").equals("emandamento")){
-  				BasicDBObject avaliacaoResult = new BasicDBObject();
-  				avaliacaoResult.put("_id", avaliacao.get("_id").toString());
-  				avaliacaoResult.put("documento", avaliacao);
-					avaliacaoResult.put("statusMapa", "mapa_aberto");
-					if (usuarioId != null) {
-  					if (testaMapaFechado(empresaId, usuarioId, avaliacao.get("_id").toString())) {
-  						avaliacaoResult.put("statusMapa", "mapa_fechado");
-  					};
+				BasicDBObject avaliacaoResult = new BasicDBObject();
+				avaliacaoResult.put("_id", avaliacao.get("_id").toString());
+				avaliacaoResult.put("documento", avaliacao);
+				avaliacaoResult.put("statusMapa", "mapa_aberto");
+				if (usuarioId != null) {
+					if (testaMapaFechado(empresaId, usuarioId, avaliacao.get("_id").toString())) {
+						avaliacaoResult.put("statusMapa", "mapa_fechado");
 					};
-    			if (!avaliacao.get("_id").toString().equals(lastAvalId)) {
-						avaliacoesResult.add(avaliacaoResult);
-					};
-  			};
+				};
+  			if (!avaliacao.get("_id").toString().equals(lastAvalId)) {
+					avaliacoesResult.add(avaliacaoResult);
+				};
 			}else {
 				BasicDBObject avaliacaoResult = new BasicDBObject();
 				avaliacaoResult.put("_id", avaliacao.get("_id").toString());
@@ -1173,6 +1235,14 @@ public class Avaliacao {
 		return avaliacoesResult;
 	};
 	
+	private String getStatusAvaliacao(BasicDBObject avaliacao) {
+		if (commons.calcTime(avaliacao.get("dataConclusao").toString().replace("-", "")) < commons.calcTime(commons.todaysDate("yyyymmdd"))) {
+			return "encerrada";
+		}else {
+			return "emandamento";
+		}
+	};
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private boolean testaMapaFechado(String empresaId, String usuarioId, String avaliacaoId) {
 

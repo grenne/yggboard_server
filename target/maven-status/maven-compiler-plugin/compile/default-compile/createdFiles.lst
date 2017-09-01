@@ -18,7 +18,6 @@ com\yggboard\yggboard_server\ApplicationConfig.class
 com\yggboard\yggboard_server\Rest_Habilidade.class
 com\yggboard\yggboard_server\ProcessosBatch.class
 com\yggboard\yggboard_server\Rest_Badge.class
-com\yggboard\yggboard_server\UserPerfil.class
 com\yggboard\yggboard_server\Perfis.class
 com\yggboard\yggboard_server\TemplateEmail.class
 com\yggboard\yggboard_server\Objetivos.class

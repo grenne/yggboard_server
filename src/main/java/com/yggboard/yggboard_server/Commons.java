@@ -142,15 +142,18 @@ public class Commons {
  		if (type.equals("inv_month_number")){
  			dateString = String.valueOf(year) + monthString + dayString;
  		};
+ 		if (type.equals("yyyymmdd")){
+ 			dateString = String.valueOf(year) + monthString + dayString;
+ 		};
 		  
 		return dateString;
    
 	}
 	
 	public Long calcTime (String date){
-		DateFormat df = new SimpleDateFormat ("dd/MM/yyyy");
+		DateFormat df = new SimpleDateFormat ("yyyyMMdd");
 		try {
-			Date d1 = df.parse (convertDateMes (date));
+			Date d1 = df.parse (date);
 			long dt = d1.getTime();
 			return dt;
 		} catch (java.text.ParseException e) {
