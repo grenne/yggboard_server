@@ -66,7 +66,10 @@ public class Avaliacao {
   			avaliacao.put("clientes", hierarquia(hierarquia.get("colaborador").toString(), "clientes", "colaborador", hierarquia.get("colaborador").toString()));
   			avaliacao.put("objetivoId", hierarquia.get("objetivoId").toString());
   			avaliacao.put("habilidades", arrayVazia);
+  			avaliacao.put("habilidadesOut", arrayVazia);
   			avaliacao.put("resultados", arrayVazia);
+  			avaliacao.put("clientesConviteAceito", arrayVazia);
+  			avaliacao.put("clientesConviteRecusado", arrayVazia);
   			avaliacao.put("status", "mapa_aberto");
   
   			ArrayList<JSONObject> avaliacoesNew = new ArrayList<JSONObject>();
@@ -280,7 +283,7 @@ public class Avaliacao {
 		carregaAvaliados(avaliacoesResult, avaliadorId, avaliacaoId, "superiores", "in", "pedente");
 		carregaAvaliados(avaliacoesResult, avaliadorId, avaliacaoId, "subordinados", "in", "pedente");
 		carregaAvaliados(avaliacoesResult, avaliadorId, avaliacaoId, "parceiros", "in", "pedente");
-		carregaAvaliados(avaliacoesResult, avaliadorId, avaliacaoId, "clientesConviteAceitou", "in", "aceitou convite");
+		carregaAvaliados(avaliacoesResult, avaliadorId, avaliacaoId, "clientesConviteAceito", "in", "aceitou convite");
 		
 		return avaliacoesResult;
 		
@@ -351,7 +354,10 @@ public class Avaliacao {
 	public BasicDBObject carregaHabilidadesAvaliacao(String colaboradorId, String avaliadorId, String avaliacaoId, BasicDBObject avaliacao2) {
 
 		BasicDBObject avaliacao = getAvaliacao(avaliacaoId, colaboradorId);
-		ArrayList<String> habilidadesOut = (ArrayList<String>) avaliacao.get("habilidadesOut");
+		ArrayList<String> habilidadesOut = new ArrayList<>();
+		if (avaliacao.get("habilidadesOut") != null) {
+			habilidadesOut = (ArrayList<String>) avaliacao.get("habilidadesOut");
+		};
 		BasicDBObject objetivo = new BasicDBObject();
 		objetivo = commons_db.getCollection(avaliacao.get("objetivoId").toString(), "objetivos", "documento.id"); 
 		BasicDBObject objetivoDoc = new BasicDBObject();
@@ -860,25 +866,42 @@ public class Avaliacao {
 			if (avaliacaoId.equals(avaliacaoObj.get("id").toString())){
 				avaliacao = avaliacaoObj;
 			}else {
-				avaliacoesNew.add(avaliacoes.get(i));
+				avaliacoesNew.add(avaliacaoObj);
 			};
 		};
-		
+
+		ArrayList<String> avaliacaoClientes = new ArrayList<>();
+		if (avaliacao.get("clientes") != null) {
+			avaliacaoClientes = (ArrayList<String>) avaliacao.get("clientes");
+		};
+
+		ArrayList<String> avaliacaoClientesConviteAceito = new ArrayList<>();
+		if (avaliacao.get("clientesConviteAceito") != null) {
+			avaliacaoClientesConviteAceito = (ArrayList<String>) avaliacao.get("clientesConviteAceito");
+		};
+
+		ArrayList<String> avaliacaoclientesConviteRecusado = new ArrayList<>();
+		if (avaliacao.get("clientesConviteRecusado") != null) {
+			avaliacaoclientesConviteRecusado = (ArrayList<String>) avaliacao.get("clientesConviteRecusado");
+		};
+
 		Boolean existeCliente = false;
+		Boolean incluiCliente = true;
 		String assunto = "";
-		if (commons.testaElementoArray(colaboradorObjetoId, (ArrayList<String>) avaliacao.get("clientes"))) {
+		if (commons.testaElementoArray(colaboradorObjetoId, avaliacaoClientes)) {
 			existeCliente = true;
+			incluiCliente = false;
 			assunto = "clientes";
 		};
 
-		if (commons.testaElementoArray(colaboradorObjetoId, (ArrayList<String>) avaliacao.get("clientesConviteAceito"))) {
+		if (commons.testaElementoArray(colaboradorObjetoId, avaliacaoClientesConviteAceito)) {
 			existeCliente = true;
 			assunto = "clientesConviteAceito";
 		};
 
-		if (commons.testaElementoArray(colaboradorObjetoId, (ArrayList<String>) avaliacao.get("clientesConviteRecusados"))) {
+		if (commons.testaElementoArray(colaboradorObjetoId, avaliacaoclientesConviteRecusado)) {
 			existeCliente = true;
-			assunto = "clientesConviteRecusados";
+			assunto = "clientesConviteRecusado";
 		};
 			
 		// *** retira da array origem
@@ -890,25 +913,32 @@ public class Avaliacao {
 			};
 			arrayOut = commons.removeString(arrayOut, colaboradorObjetoId);
 			avaliacao.remove(avaliacao.get(assunto));
-			avaliacao.put(avaliacao.get(assunto).toString(), arrayOut);
+			avaliacao.put(assunto, arrayOut);
 		};
-		
-		switch (status) {
-		case "aceito":
-			assunto = "clientesConviteAceito";
-			break;
-		case "recusado":
-			assunto = "clientesConviteRecusado";
-			break;
-
-		default:
-			break;
-		}
-		
+			
 		// *** coloca na array destino
 		ArrayList<String> arrayIn = new ArrayList<>();
-		if (status != null) {
-  		arrayIn = (ArrayList<String>) avaliacao.get("clientes");
+		if (status == null) {
+			assunto ="clientes";
+		}else {
+  		switch (status) {
+  		case "aceito":
+  			assunto = "clientesConviteAceito";
+  			break;
+  		case "recusado":
+  			assunto = "clientesConviteRecusado";
+  			break;
+  
+  		default:
+  			break;
+  		};
+		};
+		
+		if (avaliacao.get(assunto) != null) {
+			arrayIn = (ArrayList<String>) avaliacao.get(assunto);
+		};
+		
+		if (assunto != "clientes" | incluiCliente) {
   		if (avaliacao.get(assunto) == null) {
   			avaliacao.put(assunto, arrayIn);
   		};
@@ -1163,7 +1193,7 @@ public class Avaliacao {
   			};
   			BasicDBObject resultado = new BasicDBObject();
   			resultado.put("id", habilidades.get(i).get("id").toString());
-  			if (qtde == 0) {
+  			if (qtde != 0) {
   				resultado.put("nota", String.valueOf((notas/qtde)));
   			}else {
   				resultado.put("nota", "na");
