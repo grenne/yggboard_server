@@ -114,12 +114,25 @@ public class Rest_Objetivos_Empresa {
 		if (objetivo != null) {
 			BasicDBObject objetivoDoc = new BasicDBObject();
 			objetivoDoc.putAll((Map) objetivo.get("documento"));
-
 			ArrayList<String> habilidadesArray = (ArrayList<String>) objetivoDoc.get("necessarios");
-			for (int z = 0; z < habilidadesArray.size(); z++) {
-				BasicDBObject habilidade = new BasicDBObject();
-				habilidade = commons_db.getCollection(habilidadesArray.get(z), "habilidades", "documento.id");
-				habilidadesObjetivo.add(habilidade);
+			ArrayList<String> habilidadesFinal = commons.montaObjetivoEmpresa(habilidadesArray, empresaId, objetivoId);
+			if (habilidadesFinal != null) {
+				for (int z = 0; z < habilidadesFinal.size(); z++) {
+					BasicDBObject habilidade = new BasicDBObject();
+					habilidade = commons_db.getCollection(habilidadesArray.get(z), "habilidades", "documento.id");
+					BasicDBObject habilidadeDoc = new BasicDBObject();
+					habilidadeDoc.putAll((Map) habilidade.get("documento"));
+					BasicDBObject habilidadeOut = new BasicDBObject();
+					habilidadeOut.put("nome", habilidadeDoc.get("nome"));
+					habilidadeOut.put("id", habilidadeDoc.get("id").toString());
+					BasicDBObject habilidadeDocOut = new BasicDBObject();
+					habilidadeDocOut.put("documento", habilidadeOut);
+					if (habilidade != null) {
+						if (!commons.testaElementoArrayObject(habilidade, habilidadesObjetivo)){
+							habilidadesObjetivo.add(habilidadeDocOut);
+						};
+					};
+				};
 			};
 
 			ArrayList<String> areaAtuacaoArray = (ArrayList<String>) objetivoDoc.get("areaAtuacao"); 
@@ -131,17 +144,21 @@ public class Rest_Objetivos_Empresa {
 					if (!docObjetivoObj.get("_id").toString().equals(objetivo.get("_id").toString())) {
 						habilidadesArray = new ArrayList<String>();
 						habilidadesArray = (ArrayList<String>) docObjetivoObj.get("necessarios");
-						ArrayList<String> habilidadesFinal = commons.montaObjetivoEmpresa(habilidadesArray, empresaId, objetivoId);
-						if (habilidadesFinal != null) {
-  						for (int z = 0; z < habilidadesFinal.size(); z++) {
-  							BasicDBObject habilidade = new BasicDBObject();
-  							habilidade = commons_db.getCollection(habilidadesArray.get(z), "habilidades", "documento.id");
-  							if (habilidade != null) {
-  								if (!commons.testaElementoArrayObject(habilidade, habilidadesObjetivo)){
-  									commons.addObjeto(habilidades, habilidade);
-  								};
-  							};
-  						};
+						for (int z = 0; z < habilidadesArray.size(); z++) {
+							BasicDBObject habilidade = new BasicDBObject();
+							habilidade = commons_db.getCollection(habilidadesArray.get(z), "habilidades", "documento.id");
+							if (habilidade != null) {
+								BasicDBObject habilidadeDoc = new BasicDBObject();
+								habilidadeDoc.putAll((Map) habilidade.get("documento"));
+								BasicDBObject habilidadeOut = new BasicDBObject();
+								habilidadeOut.put("nome", habilidadeDoc.get("nome"));
+								habilidadeOut.put("id", habilidadeDoc.get("id").toString());
+								BasicDBObject habilidadeDocOut = new BasicDBObject();
+								habilidadeDocOut.put("documento", habilidadeOut);
+								if (!commons.testaElementoArrayObject(habilidade, habilidades)){
+									commons.addObjeto(habilidades, habilidadeDocOut);
+								};
+							};
 						};
 					};
 				};									

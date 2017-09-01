@@ -456,6 +456,7 @@ public class Commons {
 
 		Response response = commons_db.obterCrud("objetivosEmpresa", keysArray);
 		if ((response.getStatus() != 200)){
+			System.out.println("não achou objetivo empresa:" + objetivoId);
 			return habilidadesArray;
 		};
 		
@@ -471,7 +472,7 @@ public class Commons {
 			habilidadesArray.add(habilidadesIn.get(i).toString());
 		};
 		for (int i = 0; i < habilidadesOut.size(); i++) {
-			removeString(habilidadesArray, habilidadesIn.get(i).toString());
+			removeString(habilidadesArray, habilidadesOut.get(i).toString());
 		};
 		return habilidadesArray;
 	}

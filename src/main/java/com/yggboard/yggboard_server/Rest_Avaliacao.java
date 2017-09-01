@@ -90,6 +90,40 @@ public class Rest_Avaliacao {
 		return avaliacao.montaMapa(colaboradorId, colaboradorObjetoId, assunto, empresaId, avaliacaoId);
 	};
 	
+	@Path("/inout/cliente")	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public Boolean MontaMapaCliente(@QueryParam("token") String token, @QueryParam("colaboradorId") String colaboradorId, @QueryParam("colaboradorObjetoId") String colaboradorObjetoId, @QueryParam("assunto") String assunto, @QueryParam("empresaId") String empresaId, @QueryParam("avaliacaoId") String avaliacaoId, @QueryParam("status") String status)  {
+		if ((commons_db.getCollection(token, "usuarios", "documento.token")) == null) {
+			return null;
+		};
+		if (colaboradorId == null){
+			return false;
+		};
+		if (colaboradorObjetoId == null){
+			return false;
+		};
+		
+		return avaliacao.montaMapaCliente(colaboradorId, colaboradorObjetoId, empresaId, avaliacaoId, status);
+	};
+	
+	@Path("/inout/habilidade")	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public Boolean MontaMapaHabilidade(@QueryParam("token") String token, @QueryParam("usuarioId") String usuarioId, @QueryParam("habilidadeId") String habilidadeId, @QueryParam("empresaId") String empresaId, @QueryParam("avaliacaoId") String avaliacaoId)  {
+		if ((commons_db.getCollection(token, "usuarios", "documento.token")) == null) {
+			return null;
+		};
+		if (usuarioId == null){
+			return false;
+		};
+		if (habilidadeId == null){
+			return false;
+		};
+		
+		return avaliacao.montaHabilidades(usuarioId, empresaId, avaliacaoId, habilidadeId);
+	};
+	
 	@Path("/atualiza/nota")	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
@@ -134,6 +168,26 @@ public class Rest_Avaliacao {
 		};
 
 		return avaliacao.carregaAvaliados(avaliadorId, avaliacaoId);
+	};
+	
+	@Path("/resultados")	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public JSONObject Resultados(@QueryParam("token") String token, @QueryParam("usuarioId") String usuarioId, @QueryParam("avaliacaoId") String avaliacaoId)  {
+		if (token == null) {
+			return null;
+		};
+		if ((commons_db.getCollection(token, "usuarios", "documento.token")) == null) {
+			return null;
+		};
+		if (usuarioId == null){
+			return null;
+		};
+		if (avaliacaoId == null){
+			return null;
+		};
+
+		return avaliacao.resultados(usuarioId, avaliacaoId);
 	};
 
 	@Path("/lista")	
