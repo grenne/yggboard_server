@@ -24,7 +24,8 @@ public class Usuario {
   			usuario.put("firstName", usuarioDoc.get("firstName"));
   			usuario.put("lastName", usuarioDoc.get("lastName"));
   			usuario.put("nome", usuarioDoc.get("firstName") + " " + usuarioDoc.get("lastName"));
-  			usuario.put("token", usuarioDoc.get("toj=ken"));
+  			usuario.put("token", usuarioDoc.get("token"));
+  			usuario.put("email", usuarioDoc.get("email"));
   			usuario.put("id", id);
   			return (BasicDBObject) usuario;
 			}
@@ -33,6 +34,7 @@ public class Usuario {
 		usuario.put("lastName", "");
 		usuario.put("nome", "");
 		usuario.put("token", "");
+		usuario.put("email", "");
 		usuario.put("id", id);
 		
 		return usuario;
