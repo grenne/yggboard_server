@@ -18,7 +18,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
 public class Commons_DB {
-	
+		
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Response obterCrud(String collectionName, Object arrayQueryInput) {
 		Commons commons = new Commons();
@@ -74,6 +74,7 @@ public class Commons_DB {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public Response incluirCrud(String collectionName, Object insertInput) {
+		Index index = new Index();
 		Commons commons = new Commons();
 		MongoClient mongo = new MongoClient();
 		MongoDatabase db = mongo.getDatabase(commons.getProperties().get("database").toString());
@@ -84,6 +85,8 @@ public class Commons_DB {
 		collection.insertOne(insert);
 		insert.put("_id", insert.get( "_id" ).toString());
 		mongo.close();
+		
+		index.gravaIndex(collectionName, insertInput, insert.get( "_id" ).toString());
 		return Response.status(200).entity(insert).build();
 	}
 

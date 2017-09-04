@@ -1152,10 +1152,6 @@ public class Avaliacao {
 			return false;
 		};
 
-		if (testaAvaliacaoFechada(avaliacaoId)) {
-			return false;
-		};
-
 		BasicDBObject mapaDoc = new BasicDBObject();
 		mapaDoc.putAll((Map) mapa.get("documento"));
 		
@@ -1459,8 +1455,12 @@ public class Avaliacao {
 		return result;		
 	}
 
+	@SuppressWarnings("unchecked")
 	private boolean testaSuperiorColaborador(String usuarioId, String avaliacaoId) {
 		BasicDBObject avaliacao = getAvaliacao(avaliacaoId, usuarioId);
+		if (avaliacao.get("superiores") == null) {
+			return false;
+		};
 		ArrayList<String> superiores = (ArrayList<String>) avaliacao.get("superiores");
 		if (superiores.size() == 0) {
 			return true;
