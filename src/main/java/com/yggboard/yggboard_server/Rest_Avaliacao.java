@@ -72,6 +72,23 @@ public class Rest_Avaliacao {
 		
 		return avaliacao.colaboradores(empresaId, avaliacaoId, usuarioId, perfil);
 	};
+
+	@Path("/colaborador")	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public BasicDBObject Colaborador(@QueryParam("token") String token, @QueryParam("avaliacaoId") String avaliacaoId, @QueryParam("usuarioId") String usuarioId)  {
+		if ((commons_db.getCollection(token, "usuarios", "documento.token")) == null) {
+			return null;
+		};
+		if (usuarioId == null) {
+			return null;
+		};
+		if (avaliacaoId == null) {
+			return null;
+		};
+		
+		return avaliacao.colaborador(avaliacaoId, usuarioId);
+	};
 	
 	@Path("/inout")	
 	@GET
@@ -228,6 +245,29 @@ public class Rest_Avaliacao {
 		};
 
 		return avaliacao.fechaMapa(empresaId, avaliacaoId, usuarioId);
+	};
+
+	@Path("/convites")	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public JSONObject Convites(@QueryParam("token") String token, @QueryParam("empresaId") String empresaId, @QueryParam("avaliacaoId") String avaliacaoId, @QueryParam("usuarioId") String usuarioId)  {
+		if (token == null) {
+			return null;
+		};
+		if ((commons_db.getCollection(token, "usuarios", "documento.token")) == null) {
+			return null;
+		};
+		if (empresaId == null){
+			return null;
+		};
+		if (avaliacaoId == null){
+			return null;
+		};
+		if (usuarioId == null){
+			return null;
+		};
+
+		return avaliacao.convites(empresaId, avaliacaoId, usuarioId);
 	};
 
 	@Path("/estatistica")	

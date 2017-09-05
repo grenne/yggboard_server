@@ -122,37 +122,12 @@ function testaIncluir() {
 		collection : "usuarios",
 		insert : {
 			documento : {
-				email : "1",
-				nome : "nome",
-				password : "pw"
-
+				email : "grenne@mail.com",
+				firstName : "Grenne",
+				lastName : "Grenne"
 			}
 		}
 	};
-	var objUserPerfil =
-		{
-			token: sessionStorage.token,
-			collection : "~userPerfil",
-			insert : {
-				documento : {
-			        carreirasInteresse : [],
-			        habilidadesInteresse : [],
-			        cursosInteresse : [],
-			        cursosSugeridos : [],
-			        tags : [],
-			        elementos : [],
-			        usuario : "grenne",
-			        carreiras : [],
-			        habilidades : [],
-			        badges : [],
-			        badgesInteresse : [],
-			        badgesConquistados : [],
-			        showBadges : [],
-			        carreirasSugeridas : [],
-			        relacionamentos : []
-				}
-			}
-		};
 	rest_incluir (objJson, restOk, semAcao);
 };
 function testaAtualizar() {

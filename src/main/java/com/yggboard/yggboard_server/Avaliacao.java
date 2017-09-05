@@ -68,8 +68,8 @@ public class Avaliacao {
   			avaliacao.put("habilidades", arrayVazia);
   			avaliacao.put("habilidadesOut", arrayVazia);
   			avaliacao.put("resultados", arrayVazia);
-  			avaliacao.put("clientesConviteAceito", arrayVazia);
-  			avaliacao.put("clientesConviteRecusado", arrayVazia);
+  			avaliacao.put("clientesConvitesAceitos", arrayVazia);
+  			avaliacao.put("clientesConvitesRecusados", arrayVazia);
   			avaliacao.put("status", "mapa_aberto");
   
   			ArrayList<JSONObject> avaliacoesNew = new ArrayList<JSONObject>();
@@ -283,18 +283,18 @@ public class Avaliacao {
 	
 		JSONArray avaliacoesResult = new JSONArray();
 		
-		carregaAvaliados(avaliacoesResult, avaliadorId, avaliacaoId, "auto-avaliacao", "in", "pedente");
-		carregaAvaliados(avaliacoesResult, avaliadorId, avaliacaoId, "superiores", "in", "pedente");
-		carregaAvaliados(avaliacoesResult, avaliadorId, avaliacaoId, "subordinados", "in", "pedente");
-		carregaAvaliados(avaliacoesResult, avaliadorId, avaliacaoId, "parceiros", "in", "pedente");
-		carregaAvaliados(avaliacoesResult, avaliadorId, avaliacaoId, "clientesConviteAceito", "in", "aceitou convite");
+		carregaAvaliadosResult(avaliacoesResult, avaliadorId, avaliacaoId, "auto-avaliacao", "in", "pendente", "mapa_fechado");
+		carregaAvaliadosResult(avaliacoesResult, avaliadorId, avaliacaoId, "superiores", "in", "pendente", "mapa_fechado");
+		carregaAvaliadosResult(avaliacoesResult, avaliadorId, avaliacaoId, "subordinados", "in", "pendente", "mapa_fechado");
+		carregaAvaliadosResult(avaliacoesResult, avaliadorId, avaliacaoId, "parceiros", "in", "pendente", "mapa_fechado");
+		carregaAvaliadosResult(avaliacoesResult, avaliadorId, avaliacaoId, "clientesConvitesAceitos", "in", "aceitou convite", "mapa_fechado");
 		
 		return avaliacoesResult;
 		
 	};
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private void carregaAvaliados(JSONArray avaliacoesResult, String avaliadorId, String avaliacaoId, String tipo, String inout, String status) {
+	private void carregaAvaliadosResult(JSONArray avaliacoesResult, String avaliadorId, String avaliacaoId, String tipo, String inout, String status, String statusMapa) {
 
 		ArrayList<JSONObject> keysArray = new ArrayList<>();
 		JSONObject key = new JSONObject();
@@ -320,7 +320,7 @@ public class Avaliacao {
 			if (tipo.equals("auto-avaliacao")) {
   			if (avaliacao.get("id").equals(avaliacaoId)) {
     			if (avaliacao.get("status") != null) {
-      			if (avaliacao.get("status").equals("mapa_fechado")) {
+      			if (avaliacao.get("status").equals(statusMapa)) {
         			BasicDBObject habilidades = carregaHabilidadesAvaliacao(avaliado.get("usuarioId").toString(), avaliadorId, avaliacaoId, avaliacao); 
         			BasicDBObject avaliacaoResult = new BasicDBObject();
         			avaliacaoResult.put("tipo", tipo);
@@ -337,7 +337,7 @@ public class Avaliacao {
   			ArrayList<String> array = (ArrayList<String>) avaliacao.get(tipo);
   			if (avaliacao.get("id").equals(avaliacaoId) && commons.testaElementoArray(avaliadorId, array)) {
     			if (avaliacao.get("status") != null) {
-      			if (avaliacao.get("status").equals("mapa_fechado")) {
+      			if (avaliacao.get("status").equals(statusMapa)) {
         			BasicDBObject habilidades = carregaHabilidadesAvaliacao(avaliado.get("usuarioId").toString(), avaliadorId, avaliacaoId, avaliacao); 
         			BasicDBObject avaliacaoResult = new BasicDBObject();
         			avaliacaoResult.put("tipo", tipo);
@@ -441,6 +441,79 @@ public class Avaliacao {
 		documento.put("avaliacoes", avaliacoes);
 		return documento;
 	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public JSONObject convites(String empresaId, String avaliacaoId, String usuarioId) {
+		
+		
+		JSONArray avaliacoesResult = new JSONArray();
+		
+		carregaAvaliadosResult(avaliacoesResult, usuarioId, avaliacaoId, "superiores", "in", "pendente", "mapa_aberto");
+
+		JSONArray convitesEnviadosPendentes = new JSONArray();
+		JSONArray convitesEnviadosAceitos = new JSONArray();
+		JSONArray convitesEnviadosRecusados = new JSONArray();			
+		for (int i = 0; i < avaliacoesResult.size(); i++) {
+			BasicDBObject avaliacao = new BasicDBObject();
+			avaliacao.putAll((Map) avaliacoesResult.get(i));
+			BasicDBObject avaliado = new BasicDBObject();
+			avaliado.putAll((Map) avaliacao.get("avaliado"));
+			convitesEnviadosPendentes = carregaConvites(convitesEnviadosPendentes, avaliacaoId, avaliado, "clientes");
+			convitesEnviadosAceitos = carregaConvites(convitesEnviadosAceitos, avaliacaoId, avaliado,  "clientesConvitesAceitos");
+			convitesEnviadosRecusados = carregaConvites(convitesEnviadosRecusados, avaliacaoId, avaliado,  "clientesConvitesRecusados");			
+		};
+
+		BasicDBObject avaliacao = getAvaliacao(avaliacaoId, usuarioId);
+		JSONArray convitesRecebidosPendentes = new JSONArray();
+		JSONArray convitesRecebidosAceitos = new JSONArray();
+		JSONArray convitesRecebidosRecusados = new JSONArray();			
+		convitesRecebidosPendentes = carregaConvites(convitesRecebidosPendentes, avaliacaoId, avaliacao, "clientes");
+		convitesRecebidosAceitos = carregaConvites(convitesRecebidosAceitos, avaliacaoId, avaliacao, "clientesConvitesAceitos");
+		convitesRecebidosRecusados = carregaConvites(convitesRecebidosRecusados, avaliacaoId, avaliacao, "clientesConvitesRecusados");
+		
+		
+		JSONObject convites = new JSONObject();
+		
+		convites.put("convitesEnviadosPendentes", convitesEnviadosPendentes);
+		convites.put("convitesEnviadosAceitos", convitesEnviadosAceitos);
+		convites.put("convitesEnviadosRecusados", convitesEnviadosRecusados);
+		convites.put("convitesRecebidosPendentes", convitesRecebidosPendentes);
+		convites.put("convitesRecebidosAceitos", convitesRecebidosAceitos);
+		convites.put("convitesRecebidosRecusados", convitesRecebidosRecusados);
+		
+		return convites;
+		
+	};
+
+	@SuppressWarnings({ "unchecked" })
+	private JSONArray carregaConvites(JSONArray arrayResult, String avaliacaoId, BasicDBObject avaliacao, String arrayNome) {
+		
+		Usuario usuario = new Usuario();
+		ArrayList<String> convites = (ArrayList<String>) avaliacao.get(arrayNome);
+		for (int i = 0; i < convites.size(); i++) {
+			if (avaliacao.get("id").equals(avaliacaoId)) {
+  			if (avaliacao.get("status") != null) {
+    			if (avaliacao.get("status").equals("mapa_aberto")) {
+      			BasicDBObject convite = new BasicDBObject();
+      			BasicDBObject avaliado = new BasicDBObject();
+      			avaliado.put("nome", avaliacao.get("colaboradorNome"));
+      			avaliado.put("email", avaliacao.get("colaboradorEmail"));
+      			avaliado.put("area", avaliacao.get("colaboradorArea"));
+      			avaliado.put("id", avaliacao.get("colaboradorId"));
+      			convite.put("avaliado", avaliado);
+      			BasicDBObject avaliador = new BasicDBObject();
+      			avaliador.put("nome", usuario.get(convites.get(i)).get("nome"));
+      			avaliador.put("email", usuario.get(convites.get(i)).get("email"));
+      			avaliador.put("id", convites.get(i));
+      			convite.put("avaliador", avaliador);
+      			arrayResult.add(convite);
+    			};
+  			};
+			};
+		};
+		
+		return arrayResult;
+	};
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public JSONObject resultados(String usuarioId, String avaliacaoId) {
@@ -769,6 +842,29 @@ public class Avaliacao {
 		
 		return documentos;
 	};
+
+	@SuppressWarnings({ })
+	public BasicDBObject colaborador(String avaliacaoId, String usuarioId)  {
+
+		if (avaliacaoId == null){
+			return null;
+		};
+
+		BasicDBObject usuarioDoc = new BasicDBObject();
+		BasicDBObject usuario = new BasicDBObject();
+		usuario = commons_db.getCollection(usuarioId, "usuarios", "_id");
+		if (usuario.get("documento") != null) {
+			usuarioDoc = (BasicDBObject) usuario.get("documento");
+			usuarioDoc.put("id", usuarioId);
+			usuarioDoc.remove("password");
+			usuarioDoc.remove("token");
+			if (usuarioDoc.get("documento") != null) {
+  			usuarioDoc.put("objetivo", getAvaliacao(avaliacaoId, usuarioId).get("objetivoNome"));
+			};
+		};
+		
+		return usuarioDoc;
+	};
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public Boolean montaMapa(String colaboradorId, String colaboradorObjetoId, String assunto, String empresaId, String avaliacaoId)  {
@@ -911,14 +1007,14 @@ public class Avaliacao {
 			avaliacaoClientes = (ArrayList<String>) avaliacao.get("clientes");
 		};
 
-		ArrayList<String> avaliacaoClientesConviteAceito = new ArrayList<>();
-		if (avaliacao.get("clientesConviteAceito") != null) {
-			avaliacaoClientesConviteAceito = (ArrayList<String>) avaliacao.get("clientesConviteAceito");
+		ArrayList<String> avaliacaoclientesConvitesAceitos = new ArrayList<>();
+		if (avaliacao.get("clientesConvitesAceitos") != null) {
+			avaliacaoclientesConvitesAceitos = (ArrayList<String>) avaliacao.get("clientesConvitesAceitos");
 		};
 
-		ArrayList<String> avaliacaoclientesConviteRecusado = new ArrayList<>();
-		if (avaliacao.get("clientesConviteRecusado") != null) {
-			avaliacaoclientesConviteRecusado = (ArrayList<String>) avaliacao.get("clientesConviteRecusado");
+		ArrayList<String> avaliacaoclientesConvitesRecusados = new ArrayList<>();
+		if (avaliacao.get("clientesConvitesRecusados") != null) {
+			avaliacaoclientesConvitesRecusados = (ArrayList<String>) avaliacao.get("clientesConvitesRecusados");
 		};
 
 		Boolean existeCliente = false;
@@ -930,14 +1026,14 @@ public class Avaliacao {
 			assunto = "clientes";
 		};
 
-		if (commons.testaElementoArray(colaboradorObjetoId, avaliacaoClientesConviteAceito)) {
+		if (commons.testaElementoArray(colaboradorObjetoId, avaliacaoclientesConvitesAceitos)) {
 			existeCliente = true;
-			assunto = "clientesConviteAceito";
+			assunto = "clientesConvitesAceitos";
 		};
 
-		if (commons.testaElementoArray(colaboradorObjetoId, avaliacaoclientesConviteRecusado)) {
+		if (commons.testaElementoArray(colaboradorObjetoId, avaliacaoclientesConvitesRecusados)) {
 			existeCliente = true;
-			assunto = "clientesConviteRecusado";
+			assunto = "clientesConvitesRecusados";
 		};
 			
 		// *** retira da array origem
@@ -959,10 +1055,10 @@ public class Avaliacao {
 		}else {
   		switch (status) {
   		case "aceito":
-  			assunto = "clientesConviteAceito";
+  			assunto = "clientesConvitesAceitos";
   			break;
   		case "recusado":
-  			assunto = "clientesConviteRecusado";
+  			assunto = "clientesConvitesRecusados";
   			break;
   
   		default:

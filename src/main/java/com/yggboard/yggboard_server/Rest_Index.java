@@ -1373,12 +1373,15 @@ public class Rest_Index {
 						if (assunto.equals("usuarios") && empresaId != null) {
 							if (testaEmpresa(index.get("id").toString(), empresaId)) {
 								documentos.add(jsonDocumento);									
+								if (documentos.size() > qtdeItens){
+									return;
+								};
 							};
 						}else {
 							documentos.add(jsonDocumento);
-						};
-						if (i > qtdeItens){
-							return;
+							if (documentos.size() > qtdeItens){
+								return;
+							};
 						};
 					};
 				};
@@ -1399,6 +1402,7 @@ public class Rest_Index {
 				}
 			}
 		};
+		System.out.println("entrou saiu por false");
 		return false;
 	}
 
