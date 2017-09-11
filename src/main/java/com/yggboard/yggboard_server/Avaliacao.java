@@ -224,6 +224,16 @@ public class Avaliacao {
 		objArray =  new ArrayList<String>();
 		objArray = (ArrayList<String>) avaliacao.get("clientes");
 		carregaMapa (avaliacaoId, clientesArray, objArray,"in");
+		
+		ArrayList<Object> clientesConvitesAceitosArray =  new ArrayList<Object>();
+		objArray =  new ArrayList<String>();
+		objArray = (ArrayList<String>) avaliacao.get("clientesConvitesAceitos");
+		carregaMapa (avaliacaoId, clientesConvitesAceitosArray, objArray,"in");
+		
+		ArrayList<Object> clientesConvitesRecusadosArray =  new ArrayList<Object>();
+		objArray =  new ArrayList<String>();
+		objArray = (ArrayList<String>) avaliacao.get("clientesConvitesRecusados");
+		carregaMapa (avaliacaoId, clientesConvitesRecusadosArray, objArray,"in");
 
 		BasicDBObject documentos = new BasicDBObject();
 		
@@ -231,6 +241,8 @@ public class Avaliacao {
 		documentos.put("parceiros", parceirosArray);
 		documentos.put("subordinados", subordinadosArray);
 		documentos.put("clientes", clientesArray);
+		documentos.put("clientesConvitesAceitos", clientesConvitesAceitosArray);
+		documentos.put("clientesConvitesRecusados", clientesConvitesRecusadosArray);
 		if (avaliacao != null) {
   		documentos.put("habilidades", carregaHabilidades(avaliacao, empresaId, usuarioId).get("habilidades"));
   		documentos.put("avaliacoes", carregaAvaliacoes(avaliacao).get("avaliacoes"));
@@ -282,18 +294,18 @@ public class Avaliacao {
 	
 		JSONArray avaliacoesResult = new JSONArray();
 		
-		carregaAvaliadosResult(avaliacoesResult, avaliadorId, avaliacaoId, "auto-avaliacao", "in", "pendente");
-		carregaAvaliadosResult(avaliacoesResult, avaliadorId, avaliacaoId, "superiores", "in", "pendente");
-		carregaAvaliadosResult(avaliacoesResult, avaliadorId, avaliacaoId, "subordinados", "in", "pendente");
-		carregaAvaliadosResult(avaliacoesResult, avaliadorId, avaliacaoId, "parceiros", "in", "pendente");
-		carregaAvaliadosResult(avaliacoesResult, avaliadorId, avaliacaoId, "clientesConvitesAceitos", "in", "aceitou convite");
+		carregaAvaliadosResult(avaliacoesResult, avaliadorId, avaliacaoId, "auto-avaliacao", "in");
+		carregaAvaliadosResult(avaliacoesResult, avaliadorId, avaliacaoId, "superiores", "in");
+		carregaAvaliadosResult(avaliacoesResult, avaliadorId, avaliacaoId, "subordinados", "in");
+		carregaAvaliadosResult(avaliacoesResult, avaliadorId, avaliacaoId, "parceiros", "in");
+		carregaAvaliadosResult(avaliacoesResult, avaliadorId, avaliacaoId, "clientesConvitesAceitos", "in");
 		
 		return avaliacoesResult;
 		
 	};
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private void carregaAvaliadosResult(JSONArray avaliacoesResult, String avaliadorId, String avaliacaoId, String tipo, String inout, String status) {
+	private void carregaAvaliadosResult(JSONArray avaliacoesResult, String avaliadorId, String avaliacaoId, String tipo, String inout) {
 
 		ArrayList<JSONObject> keysArray = new ArrayList<>();
 		JSONObject key = new JSONObject();
@@ -321,7 +333,7 @@ public class Avaliacao {
     			BasicDBObject habilidades = carregaHabilidadesAvaliacao(avaliado.get("usuarioId").toString(), avaliadorId, avaliacaoId, avaliacao); 
     			BasicDBObject avaliacaoResult = new BasicDBObject();
     			avaliacaoResult.put("tipo", tipo);
-    			avaliacaoResult.put("status", status);
+    			avaliacaoResult.put("status", habilidades.get("status"));
     			avaliacaoResult.put("inout", inout);
     			avaliacao.remove("resultados");
     			avaliacaoResult.put("avaliado", avaliacao);
@@ -334,7 +346,7 @@ public class Avaliacao {
     			BasicDBObject habilidades = carregaHabilidadesAvaliacao(avaliado.get("usuarioId").toString(), avaliadorId, avaliacaoId, avaliacao); 
     			BasicDBObject avaliacaoResult = new BasicDBObject();
     			avaliacaoResult.put("tipo", tipo);
-    			avaliacaoResult.put("status", status);
+    			avaliacaoResult.put("status", habilidades.get("status"));
     			avaliacaoResult.put("inout", inout);
     			avaliacao.remove("resultados");
     			avaliacaoResult.put("avaliado", avaliacao);
@@ -362,6 +374,7 @@ public class Avaliacao {
 
 		JSONArray habilidades = new JSONArray();
 		
+		String status = "concluído";
 		for (int z = 0; z < habilidadesFinal.size(); z++) {
 			if (!commons.testaElementoArray(habilidadesArray.get(z), habilidadesOut)) {
   			BasicDBObject habilidade = commons_db.getCollection(habilidadesArray.get(z), "habilidades", "documento.id");
@@ -377,7 +390,9 @@ public class Avaliacao {
     				habilidadeResult.put("avaliadorId", avaliacaoHabilidade.get("avaliadorId"));
     				habilidadeResult.put("avaliadorNome", avaliacaoHabilidade.get("avaliadorNome"));
     				habilidadeResult.put("nota", avaliacaoHabilidade.get("nota"));
-  				};
+  				}else {
+  					status = "pendente";
+  				}
     			if (habilidadeDoc != null) {
     				commons.addObjeto(habilidades, habilidadeResult);
     			};
@@ -387,6 +402,7 @@ public class Avaliacao {
 		
 		BasicDBObject documento = new BasicDBObject();
 		documento.put("habilidades", habilidades);
+		documento.put("status", status);
 		return documento;
 	}
 
@@ -439,7 +455,7 @@ public class Avaliacao {
 		
 		JSONArray avaliacoesResult = new JSONArray();
 		
-		carregaAvaliadosResult(avaliacoesResult, usuarioId, avaliacaoId, "superiores", "in", "pendente");
+		carregaAvaliadosResult(avaliacoesResult, usuarioId, avaliacaoId, "superiores", "in");
 
 		JSONArray convitesEnviadosPendentes = new JSONArray();
 		JSONArray convitesEnviadosAceitos = new JSONArray();
@@ -456,7 +472,7 @@ public class Avaliacao {
 
 		avaliacoesResult = new JSONArray();
 		
-		carregaAvaliadosResult(avaliacoesResult, usuarioId, avaliacaoId, "clientes", "in", "pendente");
+		carregaAvaliadosResult(avaliacoesResult, usuarioId, avaliacaoId, "clientes", "in");
 
 		JSONArray convitesRecebidosPendentes = new JSONArray();
 		for (int i = 0; i < avaliacoesResult.size(); i++) {
@@ -470,7 +486,7 @@ public class Avaliacao {
 
 		avaliacoesResult = new JSONArray();
 		
-		carregaAvaliadosResult(avaliacoesResult, usuarioId, avaliacaoId, "clientesConvitesAceitos", "in", "pendente");
+		carregaAvaliadosResult(avaliacoesResult, usuarioId, avaliacaoId, "clientesConvitesAceitos", "in");
 
 		JSONArray convitesRecebidosAceitos = new JSONArray();
 		for (int i = 0; i < avaliacoesResult.size(); i++) {
@@ -484,7 +500,7 @@ public class Avaliacao {
 
 		avaliacoesResult = new JSONArray();
 		
-		carregaAvaliadosResult(avaliacoesResult, usuarioId, avaliacaoId, "clientesConvitesRecusados", "in", "pendente");
+		carregaAvaliadosResult(avaliacoesResult, usuarioId, avaliacaoId, "clientesConvitesRecusados", "in");
 
 		JSONArray convitesRecebidosRecusados = new JSONArray();
 		for (int i = 0; i < avaliacoesResult.size(); i++) {
