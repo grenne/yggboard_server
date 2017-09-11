@@ -454,14 +454,47 @@ public class Avaliacao {
 			convitesEnviadosRecusados = carregaConvites(convitesEnviadosRecusados, avaliacaoId, avaliado,  "clientesConvitesRecusados");			
 		};
 
-		BasicDBObject avaliacao = getAvaliacao(avaliacaoId, usuarioId);
-		JSONArray convitesRecebidosPendentes = new JSONArray();
-		JSONArray convitesRecebidosAceitos = new JSONArray();
-		JSONArray convitesRecebidosRecusados = new JSONArray();			
-		convitesRecebidosPendentes = carregaConvites(convitesRecebidosPendentes, avaliacaoId, avaliacao, "clientes");
-		convitesRecebidosAceitos = carregaConvites(convitesRecebidosAceitos, avaliacaoId, avaliacao, "clientesConvitesAceitos");
-		convitesRecebidosRecusados = carregaConvites(convitesRecebidosRecusados, avaliacaoId, avaliacao, "clientesConvitesRecusados");
+		avaliacoesResult = new JSONArray();
 		
+		carregaAvaliadosResult(avaliacoesResult, usuarioId, avaliacaoId, "clientes", "in", "pendente");
+
+		JSONArray convitesRecebidosPendentes = new JSONArray();
+		for (int i = 0; i < avaliacoesResult.size(); i++) {
+			BasicDBObject avaliacao = new BasicDBObject();
+			avaliacao.putAll((Map) avaliacoesResult.get(i));
+			BasicDBObject avaliado = new BasicDBObject();
+			avaliado.putAll((Map) avaliacao.get("avaliado"));
+			BasicDBObject convite = montaConvite(avaliado, usuarioId);
+			convitesRecebidosPendentes.add(convite);
+		};
+
+		avaliacoesResult = new JSONArray();
+		
+		carregaAvaliadosResult(avaliacoesResult, usuarioId, avaliacaoId, "clientesConvitesAceitos", "in", "pendente");
+
+		JSONArray convitesRecebidosAceitos = new JSONArray();
+		for (int i = 0; i < avaliacoesResult.size(); i++) {
+			BasicDBObject avaliacao = new BasicDBObject();
+			avaliacao.putAll((Map) avaliacoesResult.get(i));
+			BasicDBObject avaliado = new BasicDBObject();
+			avaliado.putAll((Map) avaliacao.get("avaliado"));
+			BasicDBObject convite = montaConvite(avaliado, usuarioId);
+			convitesRecebidosAceitos.add(convite);
+		};
+
+		avaliacoesResult = new JSONArray();
+		
+		carregaAvaliadosResult(avaliacoesResult, usuarioId, avaliacaoId, "clientesConvitesRecusados", "in", "pendente");
+
+		JSONArray convitesRecebidosRecusados = new JSONArray();
+		for (int i = 0; i < avaliacoesResult.size(); i++) {
+			BasicDBObject avaliacao = new BasicDBObject();
+			avaliacao.putAll((Map) avaliacoesResult.get(i));
+			BasicDBObject avaliado = new BasicDBObject();
+			avaliado.putAll((Map) avaliacao.get("avaliado"));
+			BasicDBObject convite = montaConvite(avaliado, usuarioId);
+			convitesRecebidosRecusados.add(convite);
+		};
 		
 		JSONObject convites = new JSONObject();
 		
@@ -479,29 +512,36 @@ public class Avaliacao {
 	@SuppressWarnings({ "unchecked" })
 	private JSONArray carregaConvites(JSONArray arrayResult, String avaliacaoId, BasicDBObject avaliacao, String arrayNome) {
 		
-		Usuario usuario = new Usuario();
 		ArrayList<String> convites = (ArrayList<String>) avaliacao.get(arrayNome);
 		for (int i = 0; i < convites.size(); i++) {
 			if (avaliacao.get("id").equals(avaliacaoId)) {
 				if (!testaAvaliacaoFechada(avaliacaoId)){
-    			BasicDBObject convite = new BasicDBObject();
-    			BasicDBObject avaliado = new BasicDBObject();
-    			avaliado.put("nome", avaliacao.get("colaboradorNome"));
-    			avaliado.put("email", avaliacao.get("colaboradorEmail"));
-    			avaliado.put("area", avaliacao.get("colaboradorArea"));
-    			avaliado.put("id", avaliacao.get("colaboradorId"));
-    			convite.put("avaliado", avaliado);
-    			BasicDBObject avaliador = new BasicDBObject();
-    			avaliador.put("nome", usuario.get(convites.get(i)).get("nome"));
-    			avaliador.put("email", usuario.get(convites.get(i)).get("email"));
-    			avaliador.put("id", convites.get(i));
-    			convite.put("avaliador", avaliador);
+					BasicDBObject convite = montaConvite(avaliacao, convites.get(i));
     			arrayResult.add(convite);
   			};
 			};
 		};
 		
 		return arrayResult;
+	};
+
+	private BasicDBObject montaConvite(BasicDBObject avaliacao, String avaliadorId) {
+		
+		Usuario usuario = new Usuario();
+		
+		BasicDBObject convite = new BasicDBObject();
+		BasicDBObject avaliado = new BasicDBObject();
+		avaliado.put("nome", avaliacao.get("colaboradorNome"));
+		avaliado.put("email", avaliacao.get("colaboradorEmail"));
+		avaliado.put("area", avaliacao.get("colaboradorArea"));
+		avaliado.put("id", avaliacao.get("colaboradorId"));
+		convite.put("avaliado", avaliado);
+		BasicDBObject avaliador = new BasicDBObject();
+		avaliador.put("nome", usuario.get(avaliadorId).get("nome"));
+		avaliador.put("email", usuario.get(avaliadorId).get("email"));
+		avaliador.put("id", avaliadorId);
+		convite.put("avaliador", avaliador);
+		return convite;
 	};
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -775,7 +815,7 @@ public class Avaliacao {
   			documentos.add(usuarioDoc);
 			};
 		};
-		
+/*		
 		if (testaSuperiorColaborador(usuarioId, avaliacaoId)) {
 			BasicDBObject usuario = new BasicDBObject();
 			usuario = commons_db.getCollection(usuarioId, "usuarios", "_id");
@@ -786,7 +826,7 @@ public class Avaliacao {
 			usuarioDoc.put("objetivo", getAvaliacao(avaliacaoId, usuarioId).get("objetivoNome"));
 			documentos.add(usuarioDoc);			
 		};
-		
+*/		
 		keysArray = new ArrayList<>();
 		key = new JSONObject();
 		key.put("key", "documento.empresaId");
