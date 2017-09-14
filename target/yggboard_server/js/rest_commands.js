@@ -6,6 +6,7 @@ function rest_obter(objJson, action_ok, action_not_ok, var1, var2, var3) {
 		async = objJson.async
 	};
 
+	objJson.token = sessionStorage.token;
 	$.ajax({
 		type : "POST",
 		url : localStorage.mainUrl + "yggboard_server/rest/crud/obter",
@@ -29,6 +30,7 @@ function rest_incluir (objJson, action_ok, action_not_ok, var1, var2, var3){
 	if (objJson.async != null){
 		async = objJson.async
 	};
+	objJson.token = sessionStorage.token;
 
 	$.ajax({
 		type: "POST",
@@ -54,10 +56,38 @@ function rest_remover (objJson, action_ok, action_not_ok, var1, var2, var3){
 	if (objJson.async != null){
 		async = objJson.async
 	};
-
+	objJson.token = sessionStorage.token;
+	
 	$.ajax({
 		type: "POST",
         url: localStorage.mainUrl + "yggboard_server/rest/crud/remover/all",
+        contentType: "application/json; charset=utf-8",
+        dataType: 'json',
+        data : JSON.stringify(objJson),
+    	async : async
+	})        	
+	.done(function(data) {
+	})
+	.fail(function(data) {
+	})
+	.always(function(data) {
+		if (data.status == 200){
+			action_ok (data, var1, var2, var3);
+		};
+	});
+};
+function rest_remover_select (objJson, action_ok, action_not_ok, var1, var2, var3){
+
+	var async = false;
+	
+	if (objJson.async != null){
+		async = objJson.async
+	};
+	objJson.token = sessionStorage.token;
+	
+	$.ajax({
+		type: "POST",
+        url: localStorage.mainUrl + "yggboard_server/rest/crud/remover",
         contentType: "application/json; charset=utf-8",
         dataType: 'json',
         data : JSON.stringify(objJson),
@@ -143,6 +173,7 @@ function rest_listaReturn (collection, action_ok, action_not_ok, var1, var2, var
 		collection : collection,
 		keys : []
 	};
+	objJson.token = sessionStorage.token;
 
 	$.ajax({
 		type: "POST",

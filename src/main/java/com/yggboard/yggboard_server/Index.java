@@ -77,7 +77,7 @@ public class Index {
 		
 		if (texto.size() > 0 && assunto != "index" && assunto != "eventos") {
   		BasicDBObject documentoInsert = new BasicDBObject();
-  		documentoInsert.put("assunto", "usuarios");
+  		documentoInsert.put("assunto", assunto);
   		documentoInsert.put("entidade", entidade);
   		documentoInsert.put("id", id);
   		documentoInsert.put("descricao", descricao);

@@ -77,25 +77,24 @@
   			};
   		console.log ("indice area conhecimento/objetivos");
   		sessionStorage.setItem("processo", "executando");
-		$("#registros").prepend('<li class="executando output"><strong class="label">Criando indices area conhecimento...</strong></li>');
+//		$("#registros").prepend('<li class="executando output"><strong class="label">Criando indices area conhecimento...</strong></li>');
 		$("#registros").prepend('<li class="output"><strong class="label">Índice área atuação criado</strong></li>');
 		$(".executando").remove();	
-  		rest_atualizaIndiceCollection (objJson, "carrega-indices");
+		sessionStorage.setItem("processo", "encerra-set-interval");
     };
     if (sessionStorage.getItem("processo") == "carrega-indices"){
   		console.log ("criando os indices de pesquisa");
   		sessionStorage.setItem("processo", "executando");
 		$("#registros").prepend('<li class="executando output"><strong class="label">Criando indices de pesquisa...</strong></li>');
-		$("#registros").prepend('<li class="output"><strong class="label">Índice área atuação criado</strong></li>');
 		$(".executando").remove();			
 		carregaIndex();
     };
     if (sessionStorage.getItem("processo") == "encerra-set-interval"){
+		$("#registros").prepend('<li class="output"><strong class="label">Processo encerrado</strong></li>');
   	    for (var i = 1; i < 99999; i++){
   	        window.clearInterval(i);
   	    }
     	console.log ("mata set interval");
-		$("#registros").prepend('<li class="output"><strong class="label">Índices pesquisa criado</strong></li>');
 		$(".executando").remove();	
     };
   	i++;
@@ -160,8 +159,16 @@
        var lines = text.split(/[\r\n]+/g); // tolerate both Windows and Unix linebreaks
        // limpar tabela antes de carregar
        var objJson = 
+	  	{
+  			token: sessionStorage.token,
+			collection : "index",
+			key:"documento.assunto",
+			value:sessionStorage.escolha
+	  	};
+	   rest_remover_select (objJson, semAcao, semAcao);
+       var objJson = 
  	  	{
-   			token: "ea9bfeef31f0222fee6aea629802361f",
+   			token: sessionStorage.token,
 			collection : sessionStorage.escolha
  	  	};
  	   rest_remover (objJson, processaRegistros, semAcao, lines);

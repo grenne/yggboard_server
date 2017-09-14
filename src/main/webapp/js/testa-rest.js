@@ -133,7 +133,7 @@ function testaIncluir() {
 function testaAtualizar() {
  
 	var objJson = {
-		token: "ea9bfeef31f0222fee6aea629802361f",
+		token: sessionStorage.token,
 		collection : "usuarios",
 		keys : [ {
 			key : "_id",
@@ -347,7 +347,7 @@ function atualizaObjetivos() {
 		habilidade = obterObjetivos(habilidade, habilidade.id);
 		console.log("id - " + habilidade.id);
 		var objJson = {
-			token: "1170706277ae0af0486017711353ee73",
+			token: sessionStorage.token,
 			collection : "habilidades",
 			keys : [ {
 				key : "documento.id",

@@ -3,7 +3,7 @@ function carregaIndex (){
 
 	var objJson = 
  	  	{
-   			token: "ea9bfeef31f0222fee6aea629802361f",
+   			token: sessionStorage.token,
 			collection : "index",
 			async : false
  	  	};
@@ -199,7 +199,7 @@ function criaIndice(index, assunto){
 		
 		var objJson = 
 			{
-				token: "ea9bfeef31f0222fee6aea629802361f",
+				token: sessionStorage.token,
 				collection : "index",
 				insert :
 					{

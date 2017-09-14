@@ -21,7 +21,6 @@ com\yggboard\yggboard_server\ProcessosBatch.class
 com\yggboard\yggboard_server\Rest_Badge.class
 com\yggboard\yggboard_server\Perfis.class
 com\yggboard\yggboard_server\TemplateEmail.class
-com\yggboard\yggboard_server\Objetivos.class
 com\yggboard\yggboard_server\Rest_UserPerfil.class
 com\yggboard\yggboard_server\Rest_Usuario.class
 com\yggboard\yggboard_server\Opcoes.class

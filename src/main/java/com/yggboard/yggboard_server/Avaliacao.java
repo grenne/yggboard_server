@@ -772,6 +772,7 @@ public class Avaliacao {
 					BasicDBObject docObj = (BasicDBObject) registro.get("documento");
 					outObj.put("nome", docObj.get("firstName") + " " + docObj.get("lastName"));
 					outObj.put("photo", docObj.get("photo"));
+					outObj.put("email", docObj.get("email"));
 					outObj.put("id", registro.get("_id").toString());
 					outObj.put("inout", inout);
 					BasicDBObject avaliacao = getAvaliacao(avaliacaoId, registro.get("_id").toString());
@@ -863,15 +864,18 @@ public class Avaliacao {
   		mapas = new JSONArray();
   		mapas = (JSONArray) response.getEntity();
   		for (int i = 0; i < mapas.size(); i++) {
-  			BasicDBObject doc = (BasicDBObject) mapas.get(i);
-  			BasicDBObject docUsu = new BasicDBObject();
-  			docUsu = commons_db.getCollection(doc.getString("usuarioId"), "usuarios", "_id");
-  			BasicDBObject docOut = (BasicDBObject) docUsu.get("documento");
-  			docOut.remove("password");
-  			docOut.remove("token");
-  			docOut.put("id", doc.getString("usuarioId"));
-  			docOut.put("objetivo", getAvaliacao(avaliacaoId, doc.getString("usuarioId")).get("objetivoNome"));
-  			documentos.add(docOut);
+  			BasicDBObject mapa = (BasicDBObject) mapas.get(i);
+  			if (getAvaliacao(avaliacaoId, mapa.getString("usuarioId")).get("id").toString().equals(avaliacaoId)) {
+    			BasicDBObject doc = (BasicDBObject) mapas.get(i);
+    			BasicDBObject docUsu = new BasicDBObject();
+    			docUsu = commons_db.getCollection(doc.getString("usuarioId"), "usuarios", "_id");
+    			BasicDBObject docOut = (BasicDBObject) docUsu.get("documento");
+    			docOut.remove("password");
+    			docOut.remove("token");
+    			docOut.put("id", doc.getString("usuarioId"));
+    			docOut.put("objetivo", getAvaliacao(avaliacaoId, doc.getString("usuarioId")).get("objetivoNome"));
+    			documentos.add(docOut);
+  			};
   		};
 		};
 		
@@ -1063,11 +1067,13 @@ public class Avaliacao {
 
 		if (commons.testaElementoArray(colaboradorObjetoId, avaliacaoclientesConvitesAceitos)) {
 			existeCliente = true;
+			incluiCliente = false;
 			assunto = "clientesConvitesAceitos";
 		};
 
 		if (commons.testaElementoArray(colaboradorObjetoId, avaliacaoclientesConvitesRecusados)) {
 			existeCliente = true;
+			incluiCliente = false;
 			assunto = "clientesConvitesRecusados";
 		};
 			
@@ -1384,7 +1390,7 @@ public class Avaliacao {
 		JSONArray avaliacoesResult = new JSONArray();
 
 		String lastAvalId = "";
-		if (empresaDoc.get("lastAval") != null && empresaDoc.get("lastAval") != "") {
+		if (empresaDoc.get("lastAval") != null && empresaDoc.get("lastAval") != "none") {
   		BasicDBObject avaliacaoLast = new BasicDBObject();
   		avaliacaoLast.putAll((Map) commons_db.getCollection(empresaDoc.get("lastAval").toString(), "avaliacoes", "_id"));
   		BasicDBObject avaliacaoLastDoc = new BasicDBObject();
