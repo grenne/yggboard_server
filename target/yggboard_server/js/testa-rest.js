@@ -198,7 +198,7 @@ function testaAtualizaPerfil() {
 	var inout = prompt("Inout");
 	var id = prompt("Id");
 	var objJson = {
-		usuario : "grenneglr@gmail.com",
+		usuario : "157d3855d4430205376417c50ced92b4F",
 		tipo : tipo,
 		id : id,
 		assunto : "cadastro",
@@ -231,7 +231,7 @@ function testaFiltro() {
 
 	var objJson = [];
 	var assunto = "objetivos";
-	var usuario = "grenneglr@gmail.com";
+	var usuario = "157d3855d4430205376417c50ced92b4";
 	var id = "1";
 	var filtro = {
 			usuario : usuario,
@@ -239,9 +239,9 @@ function testaFiltro() {
 			id : id
 	};
 	objJson.push(filtro);
-	assunto = "areaAtuacao";
-	usuario = "grenneglr@gmail.com";
-	id = "1";
+	assunto = "areaConhecimento";
+	usuario = "157d3855d4430205376417c50ced92b4";
+	id = "9";
 	filtro = {
 			usuario : usuario,
 			assunto : assunto,
@@ -383,6 +383,22 @@ function atualizaHabilidadesDuplicadas() {
 			};
 		});
 		userPerfil.habilidades = newHabilidades;
+		
+		var habilidadesInteresse = userPerfil.habilidadesInteresse;
+		var newHabilidadesInteresse = [];		
+		$.each(habilidadesInteresse, function(i, habilidadeInteresse) {
+			var existe = false;
+			$.each(habilidadesBase, function(i, habilidadeBase) {
+				if (habilidadeBase.id == habilidadeInteresse){
+					existe = true;
+				};
+			});
+			if (existe){
+				addArray (habilidadeInteresse, newHabilidadesInteresse)
+			};
+		});
+		userPerfil.habilidadesInteresse = newHabilidadesInteresse;
+		
 		var objJson = {
 			token: sessionStorage.token,
 			collection : "userPerfil",

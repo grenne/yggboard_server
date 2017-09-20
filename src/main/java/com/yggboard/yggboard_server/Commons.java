@@ -145,6 +145,9 @@ public class Commons {
  		if (type.equals("yyyymmdd")){
  			dateString = String.valueOf(year) + monthString + dayString;
  		};
+ 		if (type.equals("yyyy-mm-dd")){
+ 			dateString = String.valueOf(year) + "-" + monthString + "-" + dayString;
+ 		};
 		  
 		return dateString;
    
@@ -342,6 +345,21 @@ public class Commons {
 
 	@SuppressWarnings("unchecked")
 	public JSONArray addString(JSONArray array, String elemento) {
+
+		if (array != null){
+			for (int i = 0; i < array.size(); i++) {
+				if (array.get(i).equals(elemento)){
+					return array;
+				};
+			};
+		}else{
+			return array;
+		};
+		array.add(elemento);
+		return array;
+	};
+	
+	public ArrayList<String> addStringArrayList(ArrayList<String> array, String elemento) {
 
 		if (array != null){
 			for (int i = 0; i < array.size(); i++) {

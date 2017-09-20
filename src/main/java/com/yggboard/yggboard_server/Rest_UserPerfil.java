@@ -173,18 +173,18 @@ public class Rest_UserPerfil {
 			    	Object array[] = arrayList.toArray(); 
 					int w = 0;
 					while (w < array.length) {
-						BasicDBObject cursorHabilidades = commons_db.getCollection(array[w].toString(), "habilidades", "documento.id");
-						if (cursorHabilidades != null){
-							BasicDBObject objHabilidades = (BasicDBObject) cursorHabilidades.get("documento");
+						BasicDBObject habilidade = commons_db.getCollection(array[w].toString(), "habilidades", "documento.id");
+						if (habilidade != null){
+							BasicDBObject habilidadeDoc = (BasicDBObject) habilidade.get("documento");
 							if (item.equals("cursos-necessarias-habilidades") | item.equals("cursos-interesse-habilidades")){
-								ObterCursosNecessarios (objHabilidades.get("id"), documentos, jsonPerfil);
+								ObterCursosNecessarios (habilidadeDoc, documentos, jsonPerfil);
 							}else{
 								JSONObject jsonDocumento = new JSONObject();
-								objHabilidades.put("interesse", commons.testaElementoArray(objHabilidades.get("id").toString(), (ArrayList<String>) jsonPerfil.get("habilidadesInteresse")));
-								objHabilidades.put("possui", commons.testaElementoArray(objHabilidades.get("id").toString(), (ArrayList<String>) jsonPerfil.get("habilidades")));
-							    jsonDocumento.put("documento", objHabilidades);
+								habilidadeDoc.put("interesse", commons.testaElementoArray(habilidadeDoc.get("id").toString(), (ArrayList<String>) jsonPerfil.get("habilidadesInteresse")));
+								habilidadeDoc.put("possui", commons.testaElementoArray(habilidadeDoc.get("id").toString(), (ArrayList<String>) jsonPerfil.get("habilidades")));
+							  jsonDocumento.put("documento", habilidadeDoc);
 								JSONArray cursos = new JSONArray();
-								ObterCursosNecessarios (objHabilidades.get("id"), cursos, jsonPerfil);
+								ObterCursosNecessarios (habilidadeDoc, cursos, jsonPerfil);
 								jsonDocumento.put("cursos", cursos);
 								jsonDocumento.put("habilidadesGeral", commons.totalArray(jsonPerfil.get("habilidades")));
 								jsonDocumento.put("habilidadesInteresseGeral", commons.totalArray(jsonPerfil.get("habilidadesInteresse")));
@@ -521,14 +521,14 @@ public class Rest_UserPerfil {
 			z = 0;
 			JSONArray habilidadesArray = new JSONArray();
 			while (z < arrayListElementosFaltantes.size()) {
-				BasicDBObject doc = commons_db.getCollection(arrayListElementosFaltantes.get(z), "habilidades", "documento.id");
-				if (doc != null){
-					BasicDBObject objCarreira = (BasicDBObject) doc.get("documento");
+				BasicDBObject habilidade = commons_db.getCollection(arrayListElementosFaltantes.get(z), "habilidades", "documento.id");
+				if (habilidade != null){
+					BasicDBObject habilidadeDoc = (BasicDBObject) habilidade.get("documento");
 					JSONObject jsonHabilidades = new JSONObject();
 					jsonHabilidades.put("id", arrayListElementosFaltantes.get(z));
-					jsonHabilidades.put("nome", objCarreira.get("nome"));
+					jsonHabilidades.put("nome", habilidadeDoc.get("nome"));
 					JSONArray cursos = new JSONArray();
-					ObterCursosNecessarios (arrayListElementosFaltantes.get(z), cursos, jsonPerfil);
+					ObterCursosNecessarios (habilidadeDoc, cursos, jsonPerfil);
 					jsonHabilidades.put("cursos", cursos);
 					habilidadesArray.add (jsonHabilidades);
 				};
@@ -578,45 +578,45 @@ public class Rest_UserPerfil {
     	arrayListNecessariosNome = (ArrayList) objCarreiras.get("necessariosNome");
      	ArrayList arrayPreRequisitosGeral = new ArrayList();
      	arrayPreRequisitosGeral = (ArrayList) objCarreiras.get("preRequisitosGeral");
-		int totalHabilidades = arrayListNecessarios.size();
-		if (arrayPreRequisitosGeral != null){
-	    	Object objPreRequisitosGeral[] = arrayPreRequisitosGeral.toArray();
-	    	totalHabilidades = totalHabilidades + carregaPreRequisistosNecessarios(arrayListNecessarios, arrayListNecessariosNome, objPreRequisitosGeral);
-		};
+  		int totalHabilidades = arrayListNecessarios.size();
+  		if (arrayPreRequisitosGeral != null){
+  	    	Object objPreRequisitosGeral[] = arrayPreRequisitosGeral.toArray();
+  	    	totalHabilidades = totalHabilidades + carregaPreRequisistosNecessarios(arrayListNecessarios, arrayListNecessariosNome, objPreRequisitosGeral);
+  		};
 	    jsonDocumento.put("necessarios", arrayListNecessarios); 
 	    jsonDocumento.put("necessariosNome", arrayListNecessariosNome); 
-		ArrayList arrayListElementos = new ArrayList(); 
-		arrayListElementos = (ArrayList) jsonPerfil.get("habilidades");
-		if (arrayListElementos != null){
+	    ArrayList arrayListElementos = new ArrayList(); 
+	    arrayListElementos = (ArrayList) jsonPerfil.get("habilidades");
+	    if (arrayListElementos != null){
 	    	Object[] arrayElementos = arrayListElementos.toArray(); 
-			JSONArray arrayListElementosFaltantes = new JSONArray(); 
+	    	JSONArray arrayListElementosFaltantes = new JSONArray(); 
 		    ObterHabilidadesFaltantes(objCarreirasSource, arrayElementos, arrayListElementosFaltantes, arrayListHabilidadesPossui, arrayListHabilidadesObjetivos, arrayListHabilidadesObjetivosReal);
 		    jsonDocumento.put("totalHabilidades", commons.totalArray(arrayListHabilidadesObjetivosReal));
 		    jsonDocumento.put("totalPossuiHabilidades", commons.totalArray(arrayListHabilidadesPossui));
 		    jsonDocumento.put("totalHabilidadesFaltantes", commons.totalArray(arrayListElementosFaltantes));
 		    jsonDocumento.put("totalHabilidadesObjetivos", commons.totalArray(arrayListHabilidadesObjetivos));
 		    jsonDocumento.put("totalHabilidadesObjetivosReal", commons.totalArray(arrayListHabilidadesObjetivosReal));
-			int z = 0;
-			JSONArray necessariosArray = new JSONArray();
-			while (z < arrayListElementosFaltantes.size()) {
-				BasicDBObject cursorHabilidades = commons_db.getCollection(arrayListElementosFaltantes.get(z).toString(), "habilidades", "documento.id");
-				if (cursorHabilidades != null){
-					BasicDBObject objCarreira = (BasicDBObject) cursorHabilidades.get("documento");
-					JSONObject jsonNecessarios = new JSONObject();
-					jsonNecessarios.put("id", arrayListElementosFaltantes.get(z));
-					jsonNecessarios.put("nome", objCarreira.get("nome"));
-					jsonNecessarios.put("descricao", objCarreira.get("descricao"));
-					jsonNecessarios.put("wiki", objCarreira.get("wiki"));
-					jsonNecessarios.put("amazon", objCarreira.get("amazon"));
-					jsonNecessarios.put("preRequisitos", objCarreira.get("preRequisitos"));
-					jsonNecessarios.put("preRequisitosNome", objCarreira.get("preRequisitosNome"));
-					JSONArray cursos = new JSONArray();
-					ObterCursosNecessarios (arrayListElementosFaltantes.get(z), cursos, jsonPerfil);
-					jsonNecessarios.put("cursos", cursos);
-					necessariosArray.add (jsonNecessarios);
-				};
-				++z;
-			};
+		    int z = 0;
+		    JSONArray necessariosArray = new JSONArray();
+		    while (z < arrayListElementosFaltantes.size()) {
+		    	BasicDBObject habilidades = commons_db.getCollection(arrayListElementosFaltantes.get(z).toString(), "habilidades", "documento.id");
+		    	if (habilidades != null){
+  					BasicDBObject habilidadeDoc = (BasicDBObject) habilidades.get("documento");
+  					JSONObject jsonNecessarios = new JSONObject();
+  					jsonNecessarios.put("id", arrayListElementosFaltantes.get(z));
+  					jsonNecessarios.put("nome", habilidadeDoc.get("nome"));
+  					jsonNecessarios.put("descricao", habilidadeDoc.get("descricao"));
+  					jsonNecessarios.put("wiki", habilidadeDoc.get("wiki"));
+  					jsonNecessarios.put("amazon", habilidadeDoc.get("amazon"));
+  					jsonNecessarios.put("preRequisitos", habilidadeDoc.get("preRequisitos"));
+  					jsonNecessarios.put("preRequisitosNome", habilidadeDoc.get("preRequisitosNome"));
+  					JSONArray cursos = new JSONArray();
+  					ObterCursosNecessarios (habilidadeDoc, cursos, jsonPerfil);
+  					jsonNecessarios.put("cursos", cursos);
+  					necessariosArray.add (jsonNecessarios);
+  				};
+  				++z;
+  			};
 			jsonDocumento.put("arrayNecessarios", necessariosArray);
 		};
 		return jsonDocumento;
@@ -691,9 +691,9 @@ public class Rest_UserPerfil {
 				return Response.status(400).build();
 			};
 			Boolean existente = false;
-			List<String> array = new ArrayList<String>();
+			ArrayList<String> array = new JSONArray();
 			if (objUserPerfil.get(tipo) != null){
-				array = (List<String>) objUserPerfil.get(tipo);
+				array = (ArrayList<String>) objUserPerfil.get(tipo);
 			};
 			BasicDBObject objUserPerfilUpdate = (BasicDBObject) doc.get("documento");
 			if (array != null){
@@ -794,7 +794,7 @@ public class Rest_UserPerfil {
 		return arrayUpdate;
 	};
 	
-	private void atualizaDependencia(String elemento, List<String> array) {
+	private void atualizaDependencia(String elemento, ArrayList<String> array) {
 		Commons commons = new Commons();
 		Commons_DB commons_db = new Commons_DB();	
 		BasicDBObject cursor = commons_db.getCollection(elemento, "habilidades", "documento.id");	
@@ -803,15 +803,7 @@ public class Rest_UserPerfil {
 			@SuppressWarnings("unchecked")
 			List<String> arrayPreRequisitos = (List<String>) objHabilidade.get("preRequisitos");
 			for (int i = 0; i < arrayPreRequisitos.size(); i++) {
-				Boolean existente = false;
-				for (int w = 0; w < array.size(); w++) {
-					if (commons.preRequisito(arrayPreRequisitos.get(i).toString()) == array.get(i).toString()){
-						existente = true;
-					};
-				};
-				if (!existente){
-					array.add(commons.preRequisito(arrayPreRequisitos.get(i).toString()));
-				};					
+				commons.addStringArrayList(array, commons.preRequisito(arrayPreRequisitos.get(i).toString()));
 			};
 		};
 	};
@@ -873,14 +865,14 @@ public class Rest_UserPerfil {
 					};
 				};
 				if (!existeHabilidade){
-					BasicDBObject cursorHabilidades = commons_db.getCollection(arrayHabilidades[w].toString(), "habilidades", "documento.id");
-					if (cursorHabilidades != null){
-						BasicDBObject objHabilidades = (BasicDBObject) cursorHabilidades.get("documento");
+					BasicDBObject habilidade = commons_db.getCollection(arrayHabilidades[w].toString(), "habilidades", "documento.id");
+					if (habilidade != null){
+						BasicDBObject habilidadeDoc = (BasicDBObject) habilidade.get("documento");
 						if (obterCursos){
-							ObterCursosNecessarios (arrayHabilidades[w], documentos, null);
+							ObterCursosNecessarios (habilidadeDoc, documentos, null);
 						}else{
 							JSONObject jsonDocumento = new JSONObject();
-						    jsonDocumento.put("documento", objHabilidades);
+						  jsonDocumento.put("documento", habilidadeDoc);
 							documentos.add(jsonDocumento);
 						}
 					};
@@ -899,7 +891,7 @@ public class Rest_UserPerfil {
 			BasicDBObject objBadge = (BasicDBObject) cursor.get("documento");
 			ArrayList<String> arrayListHabilidades = new ArrayList<String>(); 
 			arrayListHabilidades = (ArrayList<String>) objBadge.get("habilidades");
-	    	Object arrayHabilidades[] = arrayListHabilidades.toArray(); 
+	    Object arrayHabilidades[] = arrayListHabilidades.toArray(); 
 			int w = 0;
 			while (w < arrayHabilidades.length) {
 				Boolean existeHabilidade = false;
@@ -922,14 +914,14 @@ public class Rest_UserPerfil {
 					};
 				};
 				if (!existeHabilidade){
-					BasicDBObject cursorHabilidades = commons_db.getCollection(badge.toString(), "badges", "documento.id");
-					if (cursorHabilidades != null) {
-						BasicDBObject objHabilidades = (BasicDBObject) cursorHabilidades.get("documento");
+					BasicDBObject habilidade = commons_db.getCollection(arrayHabilidades[w].toString(), "habilidades", "documento.id");
+					if (habilidade != null) {
+						BasicDBObject habilidadeDoc = (BasicDBObject) habilidade.get("documento");
 						if (obterCursos){
-							ObterCursosNecessarios (arrayHabilidades[w], documentos, jsonPerfil);
+							ObterCursosNecessarios (habilidadeDoc, documentos, jsonPerfil);
 						}else{
 							JSONObject jsonDocumento = new JSONObject();
-						    jsonDocumento.put("documento", objHabilidades);
+						  jsonDocumento.put("documento", habilidadeDoc);
 							documentos.add(jsonDocumento);
 						};
 					};
@@ -1030,32 +1022,36 @@ public class Rest_UserPerfil {
 	};
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private ArrayList<String> ObterCursosNecessarios (Object habilidade, JSONArray documentos, BasicDBObject jsonPerfil) {
+	private ArrayList<String> ObterCursosNecessarios (BasicDBObject habilidadeDoc, JSONArray documentos, BasicDBObject jsonPerfil) {
 		Commons commons = new Commons();
 		Commons_DB commons_db = new Commons_DB();
-		JSONArray cursor = commons_db.getCollectionListaNoKey("cursos");
-		if (cursor != null){
-			for (int i = 0; i < cursor.size(); i++) {
-				BasicDBObject objCurso = new BasicDBObject();
-				objCurso.putAll((Map) cursor.get(i));
-				Boolean existeCurso = false;
-				if (commons.testaElementoArrayObject(objCurso, documentos)) {
-					existeCurso = true;
-				};
-				if (!existeCurso){
-					List arrayParent = (List) objCurso.get("parents");
-					if (arrayParent.size() == 0){
-						if (jsonPerfil.get("cursosInteresse") != null){
-							objCurso.put("interesse", commons.testaElementoArray(objCurso.get("id").toString(), (ArrayList<String>) jsonPerfil.get("cursosInteresse")));
-						};
-						if (jsonPerfil.get("cursos") != null){
-							objCurso.put("possui", commons.testaElementoArray(objCurso.get("id").toString(), (ArrayList<String>) jsonPerfil.get("cursos")));
-						};
-						if (objCurso.get("habilidades") != null){
-							objCurso.put("habilidadesPerfil", commons.montaArrayPerfil(jsonPerfil.get("habilidades"), objCurso.get("habilidades")));
-						};
-						documentos.add(objCurso);
-					};
+		ArrayList<Object> cursos = (ArrayList<Object>) habilidadeDoc.get("cursos");
+		
+		if (cursos != null){
+			for (int i = 0; i < cursos.size(); i++) {
+				BasicDBObject curso = commons_db.getCollection(cursos.get(i).toString(), "cursos", "documento.id");
+				if (curso != null) {
+					BasicDBObject cursoDoc = new BasicDBObject();
+					cursoDoc.putAll((Map) curso.get("documento"));
+  				Boolean existeCurso = false;
+  				if (commons.testaElementoArrayObject(cursoDoc, documentos)) {
+  					existeCurso = true;
+  				};
+  				if (!existeCurso){
+  					List arrayParent = (List) cursoDoc.get("parents");
+  					if (arrayParent.size() == 0){
+  						if (jsonPerfil.get("cursosInteresse") != null){
+  							cursoDoc.put("interesse", commons.testaElementoArray(cursoDoc.get("id").toString(), (ArrayList<String>) jsonPerfil.get("cursosInteresse")));
+  						};
+  						if (jsonPerfil.get("cursos") != null){
+  							cursoDoc.put("possui", commons.testaElementoArray(cursoDoc.get("id").toString(), (ArrayList<String>) jsonPerfil.get("cursos")));
+  						};
+  						if (cursoDoc.get("habilidades") != null){
+  							cursoDoc.put("habilidadesPerfil", commons.montaArrayPerfil(jsonPerfil.get("habilidades"), cursoDoc.get("habilidades")));
+  						};
+  						documentos.add(cursoDoc);
+  					};
+  				};
 				};
 			};
 			return documentos;

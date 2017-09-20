@@ -581,7 +581,10 @@ public class Avaliacao {
 				subordinado.putAll((Map) subordinados.get(i));
 				subordinadoResult.put("id", subordinado.get("id"));
 				subordinadoResult.put("nome", subordinado.get("nome"));
-				subordinadoResult.put("resultados", carregaResultadosHabilidades(avaliacao));
+				avaliacao = getAvaliacao(avaliacaoId, subordinado.get("id").toString());
+				if (avaliacao != null) {
+					subordinadoResult.put("resultados", carregaResultadosHabilidades(avaliacao));
+				};
 				subordinadosResult.add(subordinadoResult);
 			};			
 		};
@@ -1451,6 +1454,9 @@ public class Avaliacao {
 	};
 	
 	private String getStatusAvaliacao(BasicDBObject avaliacao) {
+		if (avaliacao.get("status").equals("suspensa")){
+			return "suspensa";
+		};
 		if (commons.calcTime(avaliacao.get("dataConclusao").toString().replace("-", "")) < commons.calcTime(commons.todaysDate("yyyymmdd"))) {
 			return "encerrada";
 		}else {

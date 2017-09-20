@@ -77,7 +77,7 @@ public class Rest_Usuario {
 	@Path("/login")	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response Login(@QueryParam("email") String email, @QueryParam("password") String password, @QueryParam("macaddress") String macaddress) {
+	public Response Login(@QueryParam("email") String email, @QueryParam("password") String password, @QueryParam("tokenadm") String tokenadm) {
 	
 		ArrayList<JSONObject> keysArray = new ArrayList<>();
 		JSONObject key = new JSONObject();
@@ -94,17 +94,24 @@ public class Rest_Usuario {
 			objUser.putAll((Map) cursor.get("documento"));
 			if (objUser.get("password") != null){
 				if (objUser.get("password").toString().equals(password)){
+					if (tokenadm != null && objUser.get("lastLogin") != null) {
+						if (objUser.get("lastLogin").toString().replace("-","").equals(commons.todaysDate("yyyymmdd"))){
+							objUser.remove("password");
+							return Response.status(200).entity(objUser).build();
+						};
+					};
 					key.clear();
 					keysArray.clear();
 					key.put("key", "documento.email");
 					key.put("value", email);
 					key.put("tipo", "login");
 					keysArray.add(key);
-					byte[] tokenByte = commons.gerarHash(macaddress + commons.currentTime().toString());
+					byte[] tokenByte = commons.gerarHash(commons.currentTime().toString());
 					String token = commons.stringHexa(tokenByte);
 					ArrayList<JSONObject> fieldsArray = new ArrayList<>();
 					JSONObject field = new JSONObject();
 	
+					
 					field.put("field", "token");
 					field.put("value", token);
 					fieldsArray.add(field);				
@@ -121,6 +128,8 @@ public class Rest_Usuario {
 					objUser.remove("password");
 					objUser.remove("token");
 					objUser.put("token", token);
+					objUser.put("lastLogin", commons.todaysDate("yyyy-mm-dd"));
+
 					objUser.put("_id", cursor.get("_id").toString());
 					// obter dados user perfil
 					BasicDBObject userPerfil = commons_db.getCollection(email, "userPerfil", "documento.usuario");

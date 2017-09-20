@@ -621,7 +621,7 @@ public class Rest_Index {
 				//
 				// ***		carrega objetivos
 				//
-		    	if (arrayListObjetivos != null  && opcoes.carregaHabilidadesObjetivos()){
+		    if (arrayListObjetivos != null  && opcoes.carregaHabilidadesObjetivos()){
 			    	Object arrayObjetivos[] = arrayListObjetivos.toArray();
 					int w = 0;
 					while (w < arrayObjetivos.length) {
@@ -632,7 +632,7 @@ public class Rest_Index {
 						};
 						++w;
 					};
-		    	};
+		    };
 				if (arrayListCursos != null && opcoes.carregaHabilidadesCursos()){
 			    	Object[] arrayCursos = arrayListCursos.toArray();
 					//
