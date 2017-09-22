@@ -41,7 +41,7 @@ public class Rest_UserPerfil {
 	@Path("/obter/itens")	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public JSONArray ObterCarreiras(@QueryParam("usuario") String usuario, @QueryParam("usuarioConsultaId") String usuarioConsultaId, @QueryParam("item") String item, @QueryParam("elemento") String elemento){
+	public JSONArray ObterCarreiras(@QueryParam("usuario") String usuario, @QueryParam("usuarioConsultaId") String usuarioConsultaId, @QueryParam("userPerfilConsultaId") String userPerfilConsultaId, @QueryParam("item") String item, @QueryParam("elemento") String elemento){
 		
 		System.out.println("chamada userperfil:" + item);
 		if (item == null ){
@@ -49,10 +49,14 @@ public class Rest_UserPerfil {
 		};
 		BasicDBObject cursor = new BasicDBObject();
 		
-		if (usuarioConsultaId != null) {
-			cursor = commons_db.getCollection(usuarioConsultaId, "userPerfil", "_id");
+		if (userPerfilConsultaId != null) {
+			cursor = commons_db.getCollection(userPerfilConsultaId, "userPerfil", "_id");
 		}else {
-			cursor = commons_db.getCollection(usuario, "userPerfil", "documento.token");
+			if (usuarioConsultaId != null) {
+				cursor = obterUserPerfil(userPerfilConsultaId);
+			}else {
+  			cursor = commons_db.getCollection(usuario, "userPerfil", "documento.token");
+  		};
 		};
 		
 		if (cursor != null){
@@ -437,9 +441,9 @@ public class Rest_UserPerfil {
 		return null;
 	};
 	@SuppressWarnings("rawtypes")
-	private BasicDBObject obterUserPerfil(String usuarioConsultaId) {
+	private BasicDBObject obterUserPerfil(String userPerfilConsultaId) {
 		
-		BasicDBObject usuario = commons_db.getCollection(usuarioConsultaId, "usuarios", "_id");
+		BasicDBObject usuario = commons_db.getCollection(userPerfilConsultaId, "usuarios", "_id");
 		if (usuario != null) {
 			BasicDBObject usuarioDoc = new BasicDBObject();
 			usuarioDoc.putAll((Map) usuario.get("documento"));
