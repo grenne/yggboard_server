@@ -14,6 +14,7 @@ import org.json.simple.JSONObject;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
+import com.mongodb.MongoClient;
 
 	
 @Singleton
@@ -22,13 +23,14 @@ import com.mongodb.DBObject;
 
 public class Rest_Habilidade {
 
+	MongoClient mongo = new MongoClient();
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Path("/lista")	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public JSONArray ObterHabilidadess() {
 		Commons_DB commons_db = new Commons_DB();
-		JSONArray cursor = commons_db.getCollectionLista("", "habilidades", "");
+		JSONArray cursor = commons_db.getCollectionLista("", "habilidades", "", mongo, false);
 		if (cursor != null){
 			JSONArray documentos = new JSONArray();
 			for (int i = 0; i < cursor.size(); i++) {
@@ -41,8 +43,10 @@ public class Rest_Habilidade {
 				jsonDocumento.put("documento", setUpdate);
 				documentos.add(jsonDocumento);
 			};
+			mongo.close();
 			return documentos;
 		};
+		mongo.close();
 		return null;
 	};
 

@@ -17,6 +17,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.mongodb.BasicDBObject;
+import com.mongodb.MongoClient;
 
 @Singleton
 //@Lock(LockType.READ)
@@ -24,6 +25,8 @@ import com.mongodb.BasicDBObject;
 
 public class Rest_Hierarquia {
 
+	
+	MongoClient mongo = new MongoClient();
 	Rest_Avaliacao avaliacao = new Rest_Avaliacao(); 
 	Commons_DB commons_db = new Commons_DB();
 	Commons commons = new Commons();
@@ -34,18 +37,21 @@ public class Rest_Hierarquia {
 	@Produces(MediaType.APPLICATION_JSON)
 	public JSONArray Areas(@QueryParam("token") String token, @QueryParam("empresaId") String empresaId, @QueryParam("avaliacaoId") String avaliacaoId)  {
 		if (token == null) {
+			mongo.close();
 			return null;
 		};
-		if ((commons_db.getCollection(token, "usuarios", "documento.token")) == null) {
+		if ((commons_db.getCollection(token, "usuarios", "documento.token", mongo, false)) == null) {
+			mongo.close();
 			return null;
 		};
 		if (empresaId == null) {
+			mongo.close();
 			return null;
 		};
 
 		ArrayList<String> areasAvaliacao = new ArrayList<String>();
 		if (avaliacaoId != null) {
-			BasicDBObject avaliacao = commons_db.getCollection(avaliacaoId, "avaliacoes", "_id");
+			BasicDBObject avaliacao = commons_db.getCollection(avaliacaoId, "avaliacoes", "_id", mongo, false);
 			if (avaliacao.get("documento") != null) {
 				BasicDBObject avaliacaoDoc = new BasicDBObject();
 				avaliacaoDoc.putAll((Map) avaliacao.get("documento"));
@@ -56,7 +62,7 @@ public class Rest_Hierarquia {
 		};
 
 		ArrayList<Object> hierarquias = new ArrayList<Object>(); 
-		hierarquias = commons_db.getCollectionLista(empresaId, "hierarquias", "documento.empresaId");
+		hierarquias = commons_db.getCollectionLista(empresaId, "hierarquias", "documento.empresaId", mongo, false);
 
 		JSONArray areas = new JSONArray();
 		for (int i = 0; i < hierarquias.size(); i++) {
@@ -73,6 +79,7 @@ public class Rest_Hierarquia {
 				commons.addObjeto(areas, area);
 			};
 		};
+		mongo.close();
 		return areas;
 	};
 
@@ -82,18 +89,21 @@ public class Rest_Hierarquia {
 	@Produces(MediaType.APPLICATION_JSON)
 	public JSONArray Niveis(@QueryParam("token") String token, @QueryParam("empresaId") String empresaId, @QueryParam("avaliacaoId") String avaliacaoId)  {
 		if (token == null) {
+			mongo.close();
 			return null;
 		};
-		if ((commons_db.getCollection(token, "userPerfil", "documento.token")) == null) {
+		if ((commons_db.getCollection(token, "userPerfil", "documento.token", mongo, false)) == null) {
+			mongo.close();
 			return null;
 		};
 		if (empresaId == null) {
+			mongo.close();
 			return null;
 		};
 
 		ArrayList<String> niveisAvaliacao = new ArrayList<String>();
 		if (avaliacaoId != null) {
-			BasicDBObject avaliacao = commons_db.getCollection(avaliacaoId, "avaliacoes", "_id");
+			BasicDBObject avaliacao = commons_db.getCollection(avaliacaoId, "avaliacoes", "_id", mongo, false);
 			if (avaliacao.get("documento") != null) {
 				BasicDBObject avaliacaoDoc = new BasicDBObject();
 				avaliacaoDoc.putAll((Map) avaliacao.get("documento"));
@@ -104,14 +114,14 @@ public class Rest_Hierarquia {
 		};
 
 		ArrayList<Object> objetivos = new ArrayList<Object>(); 
-		objetivos = commons_db.getCollectionLista(empresaId, "objetivosEmpresa", "documento.empresaId");
+		objetivos = commons_db.getCollectionLista(empresaId, "objetivosEmpresa", "documento.empresaId", mongo, false);
 
 		JSONArray niveis = new JSONArray();
 		for (int i = 0; i < objetivos.size(); i++) {
 			BasicDBObject objetivoEmpresa = new BasicDBObject();
 			objetivoEmpresa.putAll((Map) objetivos.get(i));
 			if (objetivoEmpresa.get("objetivoId") != null) {
-				BasicDBObject objetivo = commons_db.getCollection(objetivoEmpresa.get("objetivoId").toString(), "objetivos", "documento.id");
+				BasicDBObject objetivo = commons_db.getCollection(objetivoEmpresa.get("objetivoId").toString(), "objetivos", "documento.id", mongo, false);
 				if (objetivo.get("documento") != null) {
 					BasicDBObject objetivoDoc = new BasicDBObject();
 					objetivoDoc.putAll((Map) objetivo.get("documento"));
@@ -126,6 +136,7 @@ public class Rest_Hierarquia {
 				};
 			};
 		};
+		mongo.close();
 		return niveis;
 		
 	};
@@ -137,12 +148,15 @@ public class Rest_Hierarquia {
 	public Response Lista(BasicDBObject hierarquiaJson)  {
 
 		if (hierarquiaJson.get("token") == null) {
+			mongo.close();
 			return null;
 		};
-		if ((commons_db.getCollection(hierarquiaJson.get("token").toString(), "usuarios", "documento.token")) == null) {
+		if ((commons_db.getCollection(hierarquiaJson.get("token").toString(), "usuarios", "documento.token", mongo, false)) == null) {
+			mongo.close();
 			return null;
 		};
 		if (hierarquiaJson.get("empresaId") == null) {
+			mongo.close();
 			return null;
 		};
 		
@@ -154,7 +168,7 @@ public class Rest_Hierarquia {
 		key.put("value", empresaId);
 		keysArray.add(key);
 
-		commons_db.removerCrudMany("hierarquias", keysArray);
+		commons_db.removerCrudMany("hierarquias", keysArray, mongo, false);
 		
 		ArrayList<Object> colaboradores = (ArrayList<Object>) hierarquiaJson.get("colaboradores");
 
@@ -162,7 +176,7 @@ public class Rest_Hierarquia {
 			BasicDBObject colaborador = new BasicDBObject();
 			colaborador.putAll((Map) colaboradores.get(i));
 			BasicDBObject usuario = new BasicDBObject();
-			usuario = commons_db.getCollection(colaborador.get("email").toString(), "usuarios", "documento.email");
+			usuario = commons_db.getCollection(colaborador.get("email").toString(), "usuarios", "documento.email", mongo, false);
 			if (usuario == null){
 				usuario = criaUsuario(colaborador, empresaId);
 			}else {
@@ -180,21 +194,22 @@ public class Rest_Hierarquia {
 				fieldsArray.add(field);
 				BasicDBObject documento = new BasicDBObject();
 				documento.put("documento", colaborador);
-				commons_db.atualizarCrud("mapaAvaliacao", fieldsArray, keysArray, documento);
+				commons_db.atualizarCrud("mapaAvaliacao", fieldsArray, keysArray, documento, mongo, false);
 			};
 			BasicDBObject userPerfil = new BasicDBObject();
-			userPerfil = commons_db.getCollection(colaborador.get("email").toString(), "userPerfil", "documento.usuario");
+			userPerfil = commons_db.getCollection(colaborador.get("email").toString(), "userPerfil", "documento.usuario", mongo, false);
 			if (userPerfil == null){
-				userPerfil = criaUserPerfil(colaborador, empresaId);
+				userPerfil = criaUserPerfil(colaborador, empresaId, mongo);
 			};
 		};
 		
 		for (int i = 0; i < colaboradores.size(); i++) {
 			BasicDBObject colaborador = new BasicDBObject();
 			colaborador.putAll((Map) colaboradores.get(i));
-			criaHierarquia(colaborador, empresaId);
+			criaHierarquia(colaborador, empresaId, mongo);
 		};
 
+		mongo.close();
 		return Response.status(200).entity(true).build();	
 	
 	};	
@@ -223,13 +238,14 @@ public class Rest_Hierarquia {
 		usuario.put("documento", usuarioDoc);
 		
 		BasicDBObject result = new BasicDBObject();
-		result.putAll((Map) commons_db.incluirCrud("usuarios", usuario).getEntity());
+		result.putAll((Map) commons_db.incluirCrud("usuarios", usuario, mongo, false).getEntity());
+		mongo.close();
 		return result;
 		
 	};
 	
 	@SuppressWarnings("rawtypes")
-	private BasicDBObject criaUserPerfil(BasicDBObject usuario, String empresaId) {
+	private BasicDBObject criaUserPerfil(BasicDBObject usuario, String empresaId, MongoClient mongo) {
 
 		BasicDBObject userPerfil = new BasicDBObject();
 		BasicDBObject userPefilDoc = new BasicDBObject();
@@ -256,18 +272,18 @@ public class Rest_Hierarquia {
 		userPerfil.put("documento", userPefilDoc);
 		
 		BasicDBObject result = new BasicDBObject();
-		result.putAll((Map) commons_db.incluirCrud("userPerfil", userPerfil).getEntity());
+		result.putAll((Map) commons_db.incluirCrud("userPerfil", userPerfil, mongo, false).getEntity());
 		return result;
 		
 	};
 
 	@SuppressWarnings("rawtypes")
-	private BasicDBObject criaHierarquia(BasicDBObject usuario, String empresaId) {
+	private BasicDBObject criaHierarquia(BasicDBObject usuario, String empresaId, MongoClient mongo) {
 
 		BasicDBObject objetivo = new BasicDBObject();
 		BasicDBObject objetivoDoc = new BasicDBObject();
 		if (usuario.get("objetivo") != null) {
-  		objetivo = commons_db.getCollection(usuario.get("objetivo").toString(), "objetivos", "documento.id");
+  		objetivo = commons_db.getCollection(usuario.get("objetivo").toString(), "objetivos", "documento.id", mongo, false);
   		if (objetivo == null) {
   			return null;
   		};
@@ -281,9 +297,9 @@ public class Rest_Hierarquia {
 		hierarquiaDoc.put("empresaId", empresaId);
 		hierarquiaDoc.put("objetivoId", usuario.get("objetivoId"));
 		hierarquiaDoc.put("area", usuario.get("area"));
-		hierarquiaDoc.put("colaborador", commons_db.getCollection(usuario.get("email").toString(), "usuarios", "documento.email").get("_id").toString());
+		hierarquiaDoc.put("colaborador", commons_db.getCollection(usuario.get("email").toString(), "usuarios", "documento.email", mongo, false).get("_id").toString());
 		if (usuario.get("superior") != null && usuario.get("superior") != "") {
-			hierarquiaDoc.put("superior", commons_db.getCollection(usuario.get("superior").toString(), "usuarios", "documento.email").get("_id").toString());
+			hierarquiaDoc.put("superior", commons_db.getCollection(usuario.get("superior").toString(), "usuarios", "documento.email", mongo, false).get("_id").toString());
 			atualizaGestor(usuario.get("superior").toString());
 		}else {
 			hierarquiaDoc.put("superior","");
@@ -292,7 +308,7 @@ public class Rest_Hierarquia {
 		hierarquia.put("documento", hierarquiaDoc);
 		
 		BasicDBObject result = new BasicDBObject();
-		result.putAll((Map) commons_db.incluirCrud("hierarquias", hierarquia).getEntity());
+		result.putAll((Map) commons_db.incluirCrud("hierarquias", hierarquia, mongo, false).getEntity());
 		return result;
 		
 	}
@@ -313,7 +329,7 @@ public class Rest_Hierarquia {
 		field.put("field", "perfilEmpresa");
 		field.put("value", "gestor");
 		fieldsArray.add(field);
-		commons_db.atualizarCrud("usuarios", fieldsArray, keysArray, null);
+		commons_db.atualizarCrud("usuarios", fieldsArray, keysArray, null, mongo, false);
 			
 	};
 

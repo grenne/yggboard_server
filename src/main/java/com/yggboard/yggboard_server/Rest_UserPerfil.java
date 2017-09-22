@@ -18,6 +18,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.mongodb.BasicDBObject;
+import com.mongodb.MongoClient;
 
 	
 @Singleton
@@ -25,6 +26,8 @@ import com.mongodb.BasicDBObject;
 @Path("/userPerfil")
 
 public class Rest_UserPerfil {
+	
+	MongoClient mongo = new MongoClient();
 	
 	Commons commons = new Commons();
 	Commons_DB commons_db = new Commons_DB();
@@ -34,7 +37,7 @@ public class Rest_UserPerfil {
 	@Produces(MediaType.APPLICATION_JSON)
 	public BasicDBObject ObterUsuario(@QueryParam("usuario") String usuario, @QueryParam("usuarioConsultaId") String usuarioConsultaId){
 		Commons_DB commons_db = new Commons_DB();
-		return commons_db.getCollection(usuario, "userPerfil", "documento.token");
+		return commons_db.getCollection(usuario, "userPerfil", "documento.token", mongo, true);
 	};
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -45,17 +48,18 @@ public class Rest_UserPerfil {
 		
 		System.out.println("chamada userperfil:" + item);
 		if (item == null ){
+			mongo.close();
 			return null;
 		};
 		BasicDBObject cursor = new BasicDBObject();
 		
 		if (userPerfilConsultaId != null) {
-			cursor = commons_db.getCollection(userPerfilConsultaId, "userPerfil", "_id");
+			cursor = commons_db.getCollection(userPerfilConsultaId, "userPerfil", "_id", mongo, false);
 		}else {
 			if (usuarioConsultaId != null) {
 				cursor = obterUserPerfil(userPerfilConsultaId);
 			}else {
-  			cursor = commons_db.getCollection(usuario, "userPerfil", "documento.token");
+  			cursor = commons_db.getCollection(usuario, "userPerfil", "documento.token", mongo, false);
   		};
 		};
 		
@@ -81,7 +85,7 @@ public class Rest_UserPerfil {
 			    	JSONArray arrayListHabilidadesObjetivos = new JSONArray();
 			    	JSONArray arrayListHabilidadesObjetivosReal = new JSONArray();
 					for (int i = 0; i < arrayList.size(); i++) {
-						BasicDBObject cursorCarreiras = commons_db.getCollection((String) arrayList.get(i), "objetivos", "documento.id");
+						BasicDBObject cursorCarreiras = commons_db.getCollection((String) arrayList.get(i), "objetivos", "documento.id", mongo, false);
 						if (cursorCarreiras != null){
 							BasicDBObject objCarreiras = new BasicDBObject();
 							objCarreiras.put("documento", cursorCarreiras.get("documento"));
@@ -92,7 +96,7 @@ public class Rest_UserPerfil {
 				};
 			};
 			if (item.equals("carreiras-elemento")){
-				BasicDBObject cursorCarreiras = commons_db.getCollection(usuario, "objetivos", "documento.id");
+				BasicDBObject cursorCarreiras = commons_db.getCollection(usuario, "objetivos", "documento.id", mongo, false);
 				if (cursorCarreiras != null){
 					BasicDBObject objCarreiras = new BasicDBObject();
 					objCarreiras.put("documento", cursorCarreiras.get("documento"));
@@ -111,7 +115,7 @@ public class Rest_UserPerfil {
 				}else{
 					carregaBadges((ArrayList) jsonPerfil.get("showBadges"), usuario, jsonPerfil, documentos, false);
 				};
-				JSONArray cursorBadges = commons_db.getCollectionListaNoKey("badges");	
+				JSONArray cursorBadges = commons_db.getCollectionListaNoKey("badges", mongo, false);	
 /*				if (cursorBadges != null){
 					for (int i = 0; i < cursorBadges.size(); i++) {
 						BasicDBObject objBadges = new BasicDBObject();
@@ -184,7 +188,7 @@ public class Rest_UserPerfil {
 			    	Object array[] = arrayList.toArray(); 
 					int w = 0;
 					while (w < array.length) {
-						BasicDBObject habilidade = commons_db.getCollection(array[w].toString(), "habilidades", "documento.id");
+						BasicDBObject habilidade = commons_db.getCollection(array[w].toString(), "habilidades", "documento.id", mongo, false);
 						if (habilidade != null){
 							BasicDBObject habilidadeDoc = (BasicDBObject) habilidade.get("documento");
 							if (item.equals("cursos-necessarias-habilidades") | item.equals("cursos-interesse-habilidades")){
@@ -217,7 +221,7 @@ public class Rest_UserPerfil {
 			    	Object array[] = arrayList.toArray(); 
 					int w = 0;
 					while (w < array.length) {
-						BasicDBObject cursorHabilidades = commons_db.getCollection(array[w].toString(), "habilidades", "documento.id");
+						BasicDBObject cursorHabilidades = commons_db.getCollection(array[w].toString(), "habilidades", "documento.id", mongo, false);
 						if (cursorHabilidades != null){
 							BasicDBObject objHabilidades = (BasicDBObject) cursorHabilidades.get("documento");
 							JSONObject jsonDocumento = new JSONObject();
@@ -319,7 +323,7 @@ public class Rest_UserPerfil {
 						}else{
 							key = array[w].toString();
 						};
-						BasicDBObject cursorCursos = commons_db.getCollection(key, "cursos", "documento.id");
+						BasicDBObject cursorCursos = commons_db.getCollection(key, "cursos", "documento.id", mongo, false);
 						if (cursorCursos != null){
 							BasicDBObject objCursos = (BasicDBObject) cursorCursos.get("documento");
 							List arrayParent = (List) objCursos.get("parents");
@@ -436,19 +440,21 @@ public class Rest_UserPerfil {
 				documentos.add(jsonDocumento);
 			};
 			System.out.println("chamada userperfil saida:" + item);
+			mongo.close();
 			return documentos;
 		};
+		mongo.close();
 		return null;
 	};
 	@SuppressWarnings("rawtypes")
 	private BasicDBObject obterUserPerfil(String userPerfilConsultaId) {
 		
-		BasicDBObject usuario = commons_db.getCollection(userPerfilConsultaId, "usuarios", "_id");
+		BasicDBObject usuario = commons_db.getCollection(userPerfilConsultaId, "usuarios", "_id", mongo, false);
 		if (usuario != null) {
 			BasicDBObject usuarioDoc = new BasicDBObject();
 			usuarioDoc.putAll((Map) usuario.get("documento"));
 			if (usuarioDoc != null) {
-				return commons_db.getCollection(usuarioDoc.get("email").toString(), "userPerfil", "documento.usuario");
+				return commons_db.getCollection(usuarioDoc.get("email").toString(), "userPerfil", "documento.usuario", mongo, false);
 			}
 		};
 		return null;
@@ -458,7 +464,7 @@ public class Rest_UserPerfil {
 	private BasicDBObject carregaObjetivos(String id, String usuario, BasicDBObject objDocPerfil, JSONArray arrayListElementosFaltantes, JSONArray arrayListHabilidadesPossui, JSONArray arrayListHabilidadesObjetivos, JSONArray arrayListHabilidadesObjetivosReal) {
 		Commons_DB commons_db = new Commons_DB();
 		Commons commons = new Commons();
-		BasicDBObject doc  = commons_db.getCollection(id, "objetivos", "documento.id");
+		BasicDBObject doc  = commons_db.getCollection(id, "objetivos", "documento.id", mongo, false);
 		BasicDBObject objObjetivo = new BasicDBObject();
 		if (doc != null){
 			objObjetivo.putAll((Map) doc.get("documento"));
@@ -491,7 +497,7 @@ public class Rest_UserPerfil {
 	    	Object array[] = arrayList.toArray(); 
 			int w = 0;
 			while (w < array.length) {
-				BasicDBObject doc = commons_db.getCollection(array[w].toString(), "badges", "documento.id");
+				BasicDBObject doc = commons_db.getCollection(array[w].toString(), "badges", "documento.id", mongo, false);
 				if (doc != null){
 					JSONObject objBadges = new JSONObject();
 					objBadges.putAll((Map) doc.get("documento"));
@@ -546,7 +552,7 @@ public class Rest_UserPerfil {
 			z = 0;
 			JSONArray habilidadesArray = new JSONArray();
 			while (z < arrayListElementosFaltantes.size()) {
-				BasicDBObject habilidade = commons_db.getCollection(arrayListElementosFaltantes.get(z), "habilidades", "documento.id");
+				BasicDBObject habilidade = commons_db.getCollection(arrayListElementosFaltantes.get(z), "habilidades", "documento.id", mongo, false);
 				if (habilidade != null){
 					BasicDBObject habilidadeDoc = (BasicDBObject) habilidade.get("documento");
 					JSONObject jsonHabilidades = new JSONObject();
@@ -624,7 +630,7 @@ public class Rest_UserPerfil {
 		    int z = 0;
 		    JSONArray necessariosArray = new JSONArray();
 		    while (z < arrayListElementosFaltantes.size()) {
-		    	BasicDBObject habilidades = commons_db.getCollection(arrayListElementosFaltantes.get(z).toString(), "habilidades", "documento.id");
+		    	BasicDBObject habilidades = commons_db.getCollection(arrayListElementosFaltantes.get(z).toString(), "habilidades", "documento.id", mongo, false);
 		    	if (habilidades != null){
   					BasicDBObject habilidadeDoc = (BasicDBObject) habilidades.get("documento");
   					JSONObject jsonNecessarios = new JSONObject();
@@ -682,7 +688,7 @@ public class Rest_UserPerfil {
 		System.out.println("atualiza perfil:" + newPerfil.get("tipo") + "- inout:"  + newPerfil.get("inout") + " - id:"  + newPerfil.get("id"));
 		Commons_DB commons_db = new Commons_DB();
 		Commons commons = new Commons();
-		BasicDBObject doc = commons_db.getCollection(newPerfil.get("usuario").toString(), "userPerfil", "documento.token");
+		BasicDBObject doc = commons_db.getCollection(newPerfil.get("usuario").toString(), "userPerfil", "documento.token", mongo, false);
 		if (doc != null){
 			BasicDBObject objUserPerfil = new BasicDBObject();
 			objUserPerfil = (BasicDBObject) doc.get("documento");
@@ -713,6 +719,7 @@ public class Rest_UserPerfil {
 				origemErro = true;
 			}
 			if (origemErro){
+				mongo.close();
 				return Response.status(400).build();
 			};
 			Boolean existente = false;
@@ -777,7 +784,7 @@ public class Rest_UserPerfil {
 			field.put("value", array);
 			fieldsArray.add(field);
 							
-			Response atualizacao = commons_db.atualizarCrud("userPerfil", fieldsArray, keysArray, null);
+			Response atualizacao = commons_db.atualizarCrud("userPerfil", fieldsArray, keysArray, null, mongo, false);
 			
 			if (atualizacao.getStatus() == 200){
 				BasicDBObject evento = new BasicDBObject();
@@ -788,9 +795,10 @@ public class Rest_UserPerfil {
 				evento.put("elemento", tipo);
 				evento.put("idElemento", newPerfil.get("id").toString());
 				atualizacao = commons.insereEvento(evento);
+				mongo.close();
 				return atualizacao;
 			};
-
+			mongo.close();
 			return Response.status(200).entity("ok").build();	
 		};
 		return Response.status(401).entity("invalid token").build();	
@@ -803,7 +811,7 @@ public class Rest_UserPerfil {
 		Commons commons = new Commons();
 		ArrayList<String> arrayUpdate = (ArrayList<String>) objHabilidades;
 
-		BasicDBObject doc = commons_db.getCollection(elemento, collection, "documento.id");
+		BasicDBObject doc = commons_db.getCollection(elemento, collection, "documento.id", mongo, false);
 		if (doc != null){
 			BasicDBObject objDoc = (BasicDBObject) doc.get("documento");
 			ArrayList<String> array = (ArrayList<String>) objDoc.get(arrayCollection);
@@ -822,7 +830,7 @@ public class Rest_UserPerfil {
 	private void atualizaDependencia(String elemento, ArrayList<String> array) {
 		Commons commons = new Commons();
 		Commons_DB commons_db = new Commons_DB();	
-		BasicDBObject cursor = commons_db.getCollection(elemento, "habilidades", "documento.id");	
+		BasicDBObject cursor = commons_db.getCollection(elemento, "habilidades", "documento.id", mongo, false);	
 		if (cursor != null){
 			BasicDBObject objHabilidade = (BasicDBObject) cursor.get("documento");
 			@SuppressWarnings("unchecked")
@@ -839,10 +847,11 @@ public class Rest_UserPerfil {
 	public JSONArray ObterUsersPerfil(@QueryParam("usuario") String usuario) {
 		Commons commons = new Commons();
 		Commons_DB commons_db = new Commons_DB();
-		if ((commons_db.getCollection(usuario, "userPerfil", "documento.token")) == null){
+		if ((commons_db.getCollection(usuario, "userPerfil", "documento.token", mongo, false)) == null){
+			mongo.close();
 			return null;
 		};
-		JSONArray cursor = commons_db.getCollectionListaNoKey("userPerfil");
+		JSONArray cursor = commons_db.getCollectionListaNoKey("userPerfil", mongo, false);
 		if (cursor != null){
 			JSONArray documentos = new JSONArray();
 			for (int i = 0; i < cursor.size(); i++) {
@@ -854,15 +863,17 @@ public class Rest_UserPerfil {
 			    jsonDocumento.put("documento", documento);
 				documentos.add(jsonDocumento);
 			};
+			mongo.close();
 			return documentos;
 		};
+		mongo.close();
 		return null;
 	};
 
 	@SuppressWarnings("unchecked")
 	private ArrayList<String> ObterHabilidadesCursosNecessarias(Object carreira, Object[] arrayElementos, JSONArray documentos, Boolean obterCursos) {
 		Commons_DB commons_db = new Commons_DB();
-		BasicDBObject cursor = commons_db.getCollection(carreira.toString(), "objetivos", "documento.id");
+		BasicDBObject cursor = commons_db.getCollection(carreira.toString(), "objetivos", "documento.id", mongo, false);
 		if (cursor != null){
 			BasicDBObject objCarreira = (BasicDBObject) cursor.get("documento");
 			ArrayList<String> arrayListHabilidades = new ArrayList<String>(); 
@@ -890,7 +901,7 @@ public class Rest_UserPerfil {
 					};
 				};
 				if (!existeHabilidade){
-					BasicDBObject habilidade = commons_db.getCollection(arrayHabilidades[w].toString(), "habilidades", "documento.id");
+					BasicDBObject habilidade = commons_db.getCollection(arrayHabilidades[w].toString(), "habilidades", "documento.id", mongo, false);
 					if (habilidade != null){
 						BasicDBObject habilidadeDoc = (BasicDBObject) habilidade.get("documento");
 						if (obterCursos){
@@ -911,7 +922,7 @@ public class Rest_UserPerfil {
 	@SuppressWarnings("unchecked")
 	private ArrayList<String> ObterHabilidadesCursosNecessariasBadge(Object badge, Object[] arrayElementos, JSONArray documentos, Boolean obterCursos, BasicDBObject jsonPerfil) {
 		Commons_DB commons_db = new Commons_DB();
-		BasicDBObject cursor = commons_db.getCollection(badge.toString(), "badges", "documento.id");
+		BasicDBObject cursor = commons_db.getCollection(badge.toString(), "badges", "documento.id", mongo, false);
 		if (cursor != null) {
 			BasicDBObject objBadge = (BasicDBObject) cursor.get("documento");
 			ArrayList<String> arrayListHabilidades = new ArrayList<String>(); 
@@ -939,7 +950,7 @@ public class Rest_UserPerfil {
 					};
 				};
 				if (!existeHabilidade){
-					BasicDBObject habilidade = commons_db.getCollection(arrayHabilidades[w].toString(), "habilidades", "documento.id");
+					BasicDBObject habilidade = commons_db.getCollection(arrayHabilidades[w].toString(), "habilidades", "documento.id", mongo, false);
 					if (habilidade != null) {
 						BasicDBObject habilidadeDoc = (BasicDBObject) habilidade.get("documento");
 						if (obterCursos){
@@ -1009,7 +1020,7 @@ public class Rest_UserPerfil {
 	@SuppressWarnings("unchecked")
 	private JSONObject ObterTotalHabilidadesBadges (Object id, Object[] arrayElementos, ArrayList<String> arrayListElementosFaltantes) {
 		Commons_DB commons_db = new Commons_DB();
-		BasicDBObject cursor = commons_db.getCollection(id.toString(), "badges", "documento.id");
+		BasicDBObject cursor = commons_db.getCollection(id.toString(), "badges", "documento.id", mongo, false);
 		if (cursor != null){
 			BasicDBObject objBadge = (BasicDBObject) cursor.get("documento");
 			ArrayList<String> arrayListHabilidades = new ArrayList<String>(); 
@@ -1054,7 +1065,7 @@ public class Rest_UserPerfil {
 		
 		if (cursos != null){
 			for (int i = 0; i < cursos.size(); i++) {
-				BasicDBObject curso = commons_db.getCollection(cursos.get(i).toString(), "cursos", "documento.id");
+				BasicDBObject curso = commons_db.getCollection(cursos.get(i).toString(), "cursos", "documento.id", mongo, false);
 				if (curso != null) {
 					BasicDBObject cursoDoc = new BasicDBObject();
 					cursoDoc.putAll((Map) curso.get("documento"));
@@ -1089,6 +1100,7 @@ public class Rest_UserPerfil {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response CursosSugeridos(JSONObject inputCursosSugeridos)  {
 				
+		mongo.close();
 		return AtualizaSugestaoColetiva (inputCursosSugeridos, "cursosSugeridos");
 		
 	};
@@ -1097,6 +1109,7 @@ public class Rest_UserPerfil {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response CarreirasSugeridos(JSONObject inputCarreirasSugeridas)  {
 		
+		mongo.close();
 		return AtualizaSugestaoColetiva (inputCarreirasSugeridas, "carreirasSugeridas");
 		
 	};	
@@ -1111,14 +1124,14 @@ public class Rest_UserPerfil {
 			JSONObject cursosSugestao = new JSONObject();
 			cursosSugestao.putAll((Map) arrayCursosSugestao.get(i));
 			String usuario = cursosSugestao.get("usuario").toString();
-			BasicDBObject cursor = commons_db.getCollection(usuario, "userPerfil", "documento.usuario");
+			BasicDBObject cursor = commons_db.getCollection(usuario, "userPerfil", "documento.usuario", mongo, false);
 			if (cursor != null){
 				BasicDBObject objUserPerfilUpdate = (BasicDBObject) cursor.get("documento");
 				objUserPerfilUpdate.remove(nameArray);
 				objUserPerfilUpdate.put(nameArray, cursosSugestao.get("cursos"));
 				BasicDBObject objUserPerfilDocumento = new BasicDBObject();
 				objUserPerfilDocumento.put("documento", objUserPerfilUpdate);
-				Response atualizacao = commons_db.atualizaDocumento(objUserPerfilDocumento,  "cursos", "documento.token", usuario.toString());
+				Response atualizacao = commons_db.atualizaDocumento(objUserPerfilDocumento,  "cursos", "documento.token", usuario.toString(), mongo, false);
 				if (atualizacao.getStatus() == 200) {
 					// incluir evento
 					BasicDBObject evento = new BasicDBObject();
@@ -1139,7 +1152,7 @@ public class Rest_UserPerfil {
 	private JSONObject getUserPerfil(String id){
 		Commons_DB commons_db = new Commons_DB();
 		Commons commons = new Commons();
-		BasicDBObject doc = commons_db.getCollection(id, "usuarios", "_id");
+		BasicDBObject doc = commons_db.getCollection(id, "usuarios", "_id", mongo, false);
 		JSONObject jsonDocumento = new JSONObject();
     	JSONArray arrayListHabilidades = new JSONArray(); 
     	JSONArray arrayListHabilidadesFaltantes = new JSONArray(); 
@@ -1154,7 +1167,7 @@ public class Rest_UserPerfil {
 			jsonDocumento.put("usuario", objDoc);
 			String email = objDoc.get("email").toString();
 			BasicDBObject objDocPerfil = new BasicDBObject();
-			BasicDBObject docPerfil = commons_db.getCollection(email, "userPerfil", "documento.usuario");
+			BasicDBObject docPerfil = commons_db.getCollection(email, "userPerfil", "documento.usuario", mongo, false);
 			if (docPerfil != null){
 				objDocPerfil = (BasicDBObject) docPerfil.get("documento");
 				jsonDocumento.put("userPerfil", objDocPerfil);

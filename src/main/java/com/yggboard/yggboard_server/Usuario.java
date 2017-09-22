@@ -3,6 +3,7 @@ package com.yggboard.yggboard_server;
 import java.util.Map;
 
 import com.mongodb.BasicDBObject;
+import com.mongodb.MongoClient;
 
 public class Usuario {
 
@@ -10,10 +11,10 @@ public class Usuario {
 	Commons_DB commons_db = new Commons_DB();
 	
 	@SuppressWarnings("rawtypes")
-	public BasicDBObject get(String id) {
+	public BasicDBObject get(String id, MongoClient mongo) {
 		
 		
-		BasicDBObject usuarioGet = commons_db.getCollection(id, "usuarios", "_id");
+		BasicDBObject usuarioGet = commons_db.getCollection(id, "usuarios", "_id", mongo, false);
 		
 		BasicDBObject usuario = new BasicDBObject();
 		

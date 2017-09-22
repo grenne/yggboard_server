@@ -15,6 +15,7 @@ import org.json.simple.JSONObject;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
+import com.mongodb.MongoClient;
 
 	
 @Singleton
@@ -23,6 +24,8 @@ import com.mongodb.DBObject;
 
 public class Rest_Carreira {
 
+	MongoClient mongo = new MongoClient();
+	
 	@SuppressWarnings({ "unchecked" })
 	@Path("/obter")	
 	@GET
@@ -30,13 +33,15 @@ public class Rest_Carreira {
 	public JSONObject ObterCarreira(@QueryParam("carreira") String id) {
 		Commons_DB commons_db = new Commons_DB();
 
-		BasicDBObject cursor = commons_db.getCollection(id, "objetivos", "documento.id");
+		BasicDBObject cursor = commons_db.getCollection(id, "objetivos", "documento.id", mongo, false);
 		if (cursor != null){
 			JSONObject documento = new JSONObject();
 			BasicDBObject obj = (BasicDBObject) cursor.get("documento");
 			documento.put("documento", obj);
+			mongo.close();
 			return documento;
 		};
+		mongo.close();
 		return null;
 	};
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -45,7 +50,7 @@ public class Rest_Carreira {
 	@Produces(MediaType.APPLICATION_JSON)
 	public JSONArray ObterCarreiras() {
 		Commons_DB commons_db = new Commons_DB();
-		JSONArray cursor = commons_db.getCollectionLista("", "objetivos", "");
+		JSONArray cursor = commons_db.getCollectionLista("", "objetivos", "", mongo, false);
 		
 		if (cursor != null){
 			JSONArray documentos = new JSONArray();
@@ -58,9 +63,11 @@ public class Rest_Carreira {
 				setUpdate.putAll((Map) objCarreiras.get("documento"));
 				jsonDocumento.put("documento", setUpdate);
 				documentos.add(jsonDocumento);				
-			}
+			};
+			mongo.close();
 			return documentos;
 		};
+		mongo.close();
 		return null;
 	};
 };

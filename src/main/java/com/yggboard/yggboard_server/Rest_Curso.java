@@ -15,6 +15,7 @@ import org.json.simple.JSONObject;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
+import com.mongodb.MongoClient;
 
 	
 @Singleton
@@ -23,6 +24,8 @@ import com.mongodb.DBObject;
 
 public class Rest_Curso {
 
+	MongoClient mongo = new MongoClient();
+	
 	@SuppressWarnings({ "unchecked" })
 	@Path("/obter")	
 	@GET
@@ -30,13 +33,15 @@ public class Rest_Curso {
 	public JSONObject ObterCurso(@QueryParam("mail") String id)  {
 		Commons_DB commons_db = new Commons_DB();
 
-		BasicDBObject cursor = commons_db.getCollection(id, "objetivos", "documento.id");		
+		BasicDBObject cursor = commons_db.getCollection(id, "objetivos", "documento.id", mongo, false);		
 		if (cursor != null){
 			JSONObject documento = new JSONObject();
 			BasicDBObject obj = (BasicDBObject) cursor.get("documento");
 			documento.put("documento", obj);
+			mongo.close();
 			return documento;
 		};
+		mongo.close();
 		return null;
 	};
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -49,7 +54,7 @@ public class Rest_Curso {
 	    if (idHabilidade != null){
 	    	idHabilidade ="";
 	    };
-	    JSONArray cursor = commons_db.getCollectionLista(idHabilidade, "badges", "documento.habilidades.habilidade");
+	    JSONArray cursor = commons_db.getCollectionLista(idHabilidade, "badges", "documento.habilidades.habilidade", mongo, false);
 		
 		if (cursor != null){
 			JSONArray documentos = new JSONArray();
@@ -63,8 +68,10 @@ public class Rest_Curso {
 				jsonDocumento.put("documento", setUpdate);
 				documentos.add(jsonDocumento);
 			};
+			mongo.close();
 			return documentos;
 		};
+		mongo.close();
 		return null;
 	};
 

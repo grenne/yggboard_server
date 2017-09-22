@@ -9,16 +9,17 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.mongodb.BasicDBObject;
+import com.mongodb.MongoClient;
 
 public class ProcessosBatch {
 	
 	public Commons_DB commons_db = new Commons_DB();
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public void CriaIndices(String collection, BasicDBObject arrays) {
+	public void CriaIndices(String collection, BasicDBObject arrays, MongoClient mongo) {
 		
 		JSONArray cursor = new JSONArray();
-		cursor = commons_db.getCollectionListaNoKey(collection);
+		cursor = commons_db.getCollectionListaNoKey(collection, mongo, false);
 		if (cursor != null){
 			for (int i = 0; i < cursor.size(); i++) {
 				BasicDBObject obj = (BasicDBObject) cursor.get(i);
@@ -27,7 +28,7 @@ public class ProcessosBatch {
 				ArrayList<String> arrayDestino = (ArrayList<String>) arrays.get("arrayDestino");
 				for (int j = 0; j < arrayCollection.size(); j++) {
 					JSONArray cursorArray = new JSONArray();
-					cursorArray =commons_db.getCollectionLista(obj.get("id").toString(), arrayCollection.get(j), "documento." + arrayOrigem.get(j));
+					cursorArray =commons_db.getCollectionLista(obj.get("id").toString(), arrayCollection.get(j), "documento." + arrayOrigem.get(j), mongo, false);
 					JSONArray arrayUpdate = new JSONArray();
 					JSONArray arrayNomeUpdate = new JSONArray();
 					for (int k = 0; k < cursorArray.size(); k++) {
@@ -54,7 +55,7 @@ public class ProcessosBatch {
 					
 					BasicDBObject objUpdate = new BasicDBObject();
 					objUpdate.put("documento", obj);
-					Response atualizacao = commons_db.atualizarCrud(collection, fieldsArray, keysArray, objUpdate);
+					Response atualizacao = commons_db.atualizarCrud(collection, fieldsArray, keysArray, objUpdate, mongo, false);
 					obj.putAll((Map) atualizacao.getEntity());
 					if (atualizacao.getStatus() != 200){
 						System.out.println("Problemas na atualização - " +  collection + " - " + obj.get("id").toString());

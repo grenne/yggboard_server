@@ -18,15 +18,16 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.mongodb.BasicDBObject;
+import com.mongodb.MongoClient;
 
 
 public class Commons {
 
 	Commons_DB commons_db = new Commons_DB();
 	
-	public Response testaToken(String token) {
+	public Response testaToken(String token, MongoClient mongo) {
 		Commons_DB commons_db = new Commons_DB();
-		if (commons_db.getCollection(token, "usuarios", "documento.token") == null){
+		if (commons_db.getCollection(token, "usuarios", "documento.token", mongo, false) == null){
 			return Response.status(401).entity("invalid token").build();	
 		}else {
 			return Response.status(200).entity("token ok").build();
@@ -249,9 +250,9 @@ public class Commons {
 		return strDate.substring(0, 2) + mesAlpha + strDate.substring(4, 8);
 	};
 
-	public Object nomeHabilidade(String id) {
+	public Object nomeHabilidade(String id, MongoClient mongo) {
 		Commons_DB commons_db = new Commons_DB();
-		BasicDBObject doc = commons_db.getCollection(id, "habilidades", "documento.id");
+		BasicDBObject doc = commons_db.getCollection(id, "habilidades", "documento.id", mongo, false);
 		String nome = "";
 		if (doc != null){
 			BasicDBObject objDoc = (BasicDBObject) doc.get("documento");
@@ -383,7 +384,7 @@ public class Commons {
 		}
 	};
 
-	public Response insereEvento(BasicDBObject evento) {
+	public Response insereEvento(BasicDBObject evento, MongoClient mongo) {
 	
 		Commons_DB commons_db = new Commons_DB();
 
@@ -402,7 +403,7 @@ public class Commons {
 		
 		doc.put("documento", insertDoc);
 		
-		return commons_db.incluirCrud("eventos", doc);
+		return commons_db.incluirCrud("eventos", doc, mongo, false);
 	};
 	
 	public byte[] gerarHash(String frase) {
@@ -463,7 +464,7 @@ public class Commons {
 	};
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public ArrayList<String> montaObjetivoEmpresa(ArrayList<String> habilidadesArray, String empresaId, String objetivoId) {
+	public ArrayList<String> montaObjetivoEmpresa(ArrayList<String> habilidadesArray, String empresaId, String objetivoId, MongoClient mongo) {
 
 		ArrayList<JSONObject> keysArray = new ArrayList<>();
 		JSONObject key = new JSONObject();
@@ -475,7 +476,7 @@ public class Commons {
 		key.put("value", objetivoId);
 		keysArray.add(key);
 
-		Response response = commons_db.obterCrud("objetivosEmpresa", keysArray);
+		Response response = commons_db.obterCrud("objetivosEmpresa", keysArray, mongo, false);
 		if ((response.getStatus() != 200)){
 			System.out.println("não achou objetivo empresa:" + objetivoId);
 			return habilidadesArray;

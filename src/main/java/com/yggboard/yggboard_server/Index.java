@@ -3,13 +3,11 @@ package com.yggboard.yggboard_server;
 import java.util.ArrayList;
 import java.util.Map;
 
-import javax.security.auth.callback.TextInputCallback;
-import javax.security.auth.callback.TextOutputCallback;
-
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.mongodb.BasicDBObject;
+import com.mongodb.MongoClient;
 
 public class Index {
 	
@@ -17,7 +15,7 @@ public class Index {
 	Commons_DB commons_db = new Commons_DB();
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public void criaIndice(String collectionName) {
+	public void criaIndice(String collectionName, MongoClient mongo) {
 		
 		ArrayList<JSONObject> keysArray = new ArrayList<>();
 
@@ -26,22 +24,22 @@ public class Index {
 		key.put("value", "index");
 		keysArray.add(key);
 
-		commons_db.removerCrud("index", keysArray);
+		commons_db.removerCrud("index", keysArray, mongo, false);
 		
-		JSONArray lista = commons_db.getCollectionListaNoKey(collectionName);
+		JSONArray lista = commons_db.getCollectionListaNoKey(collectionName, mongo, false);
 		
 		for (int i = 0; i < lista.size(); i++) {
 			BasicDBObject elemento = new BasicDBObject();
 			elemento.putAll((Map) lista.get(i));
 			BasicDBObject elementoDoc = new BasicDBObject();
 			elementoDoc.put("documento", elemento);
-			gravaIndex("usuarios", elementoDoc, elemento.get("_id").toString());
+			gravaIndex("usuarios", elementoDoc, elemento.get("_id").toString(), mongo);
 		};
 				
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public void gravaIndex(String assunto, Object collection, String id) {
+	public void gravaIndex(String assunto, Object collection, String id, MongoClient mongo) {
 
 		BasicDBObject documento = new BasicDBObject();
 		documento.putAll((Map) collection);
@@ -84,7 +82,7 @@ public class Index {
   		documentoInsert.put("texto", texto);
   		BasicDBObject documentoInsertDoc = new BasicDBObject();
   		documentoInsertDoc.put("documento", documentoInsert);
-  		commons_db.incluirCrud("index", documentoInsertDoc);
+  		commons_db.incluirCrud("index", documentoInsertDoc, mongo, false);
 		};
 
 	};

@@ -84,7 +84,7 @@ public class Commons_DB {
 		insert.put("_id", insert.get( "_id" ).toString());
 		mongo.close();
 		
-		index.gravaIndex(collectionName, insertInput, insert.get( "_id" ).toString());
+		index.gravaIndex(collectionName, insertInput, insert.get( "_id" ).toString(), mongo);
 		return Response.status(200).entity(insert).build();
 	}
 
