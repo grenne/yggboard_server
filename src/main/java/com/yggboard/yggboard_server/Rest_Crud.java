@@ -15,6 +15,8 @@ import javax.ws.rs.core.Response;
 import org.json.simple.JSONObject;
 
 import com.mongodb.BasicDBObject;
+import com.mongodb.Mongo;
+import com.mongodb.MongoClient;
 
 
 @Singleton
@@ -22,6 +24,7 @@ import com.mongodb.BasicDBObject;
 @Path("/crud")
 
 public class Rest_Crud {
+
 	
 	@Path("/obter")
 	@POST
@@ -97,7 +100,6 @@ public class Rest_Crud {
 		}
 	};
 
-	
 	@Path("/lista")
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)

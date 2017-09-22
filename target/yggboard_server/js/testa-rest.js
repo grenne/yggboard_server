@@ -367,6 +367,7 @@ function atualizaHabilidadesDuplicadas() {
 
 	userPerfis = rest_listaReturn ("userPerfil");
 	habilidadesBase = rest_listaReturn ("habilidades");
+	badgesBase = rest_listaReturn ("badges");
 
 	$.each(userPerfis, function(i, userPerfil) {
 		var habilidades = userPerfil.habilidades;
@@ -394,11 +395,22 @@ function atualizaHabilidadesDuplicadas() {
 				};
 			});
 			if (existe){
-				addArray (habilidadeInteresse, newHabilidadesInteresse)
+				addArray (habilidadeInteresse, newHabilidadesInteresse);
 			};
 		});
 		userPerfil.habilidadesInteresse = newHabilidadesInteresse;
-		
+
+		var badgesConquista = userPerfil.badgesConquista
+		$.each(badgesConquista, function(i, badgeConquista) {
+			$.each(badgesBase, function(i, badgeBase) {
+				if (badgeBase.id == badgeConquista){
+					$.each(badgeBase.habilidades, function(i, badgeBaseHabilidade) {
+						addArray (badgeBaseHabilidade, userPerfil.habilidadesInteresse);
+					});
+				};
+			});
+		});
+	
 		var objJson = {
 			token: sessionStorage.token,
 			collection : "userPerfil",
@@ -436,10 +448,8 @@ function obterObjetivos(objJson, habilidadeTarget) {
 				});
 				if (!existente) {
 					objJson.objetivos.push(objetivo.nome);
-				}
-				;
-			}
-			;
+				};
+			};
 		});
 	});
 

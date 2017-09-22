@@ -14,7 +14,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.bson.types.ObjectId;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -26,11 +25,14 @@ import com.mongodb.BasicDBObject;
 @Path("/userPerfil")
 
 public class Rest_UserPerfil {
+	
+	Commons commons = new Commons();
+	Commons_DB commons_db = new Commons_DB();
 
 	@Path("/obter")	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public BasicDBObject ObterUsuario(@QueryParam("usuario") String usuario){
+	public BasicDBObject ObterUsuario(@QueryParam("usuario") String usuario, @QueryParam("usuarioConsultaId") String usuarioConsultaId){
 		Commons_DB commons_db = new Commons_DB();
 		return commons_db.getCollection(usuario, "userPerfil", "documento.token");
 	};
@@ -39,15 +41,20 @@ public class Rest_UserPerfil {
 	@Path("/obter/itens")	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public JSONArray ObterCarreiras(@QueryParam("usuario") String usuario, @QueryParam("item") String item, @QueryParam("elemento") String elemento){
+	public JSONArray ObterCarreiras(@QueryParam("usuario") String usuario, @QueryParam("usuarioConsultaId") String usuarioConsultaId, @QueryParam("item") String item, @QueryParam("elemento") String elemento){
 		
 		System.out.println("chamada userperfil:" + item);
 		if (item == null ){
 			return null;
 		};
-		Commons commons = new Commons();
-		Commons_DB commons_db = new Commons_DB();
-		BasicDBObject cursor = commons_db.getCollection(usuario, "userPerfil", "documento.token");
+		BasicDBObject cursor = new BasicDBObject();
+		
+		if (usuarioConsultaId != null) {
+			cursor = commons_db.getCollection(usuarioConsultaId, "userPerfil", "_id");
+		}else {
+			cursor = commons_db.getCollection(usuario, "userPerfil", "documento.token");
+		};
+		
 		if (cursor != null){
 			BasicDBObject obj = (BasicDBObject) cursor.get("documento");
 			JSONArray documentos = new JSONArray();
@@ -429,6 +436,20 @@ public class Rest_UserPerfil {
 		};
 		return null;
 	};
+	@SuppressWarnings("rawtypes")
+	private BasicDBObject obterUserPerfil(String usuarioConsultaId) {
+		
+		BasicDBObject usuario = commons_db.getCollection(usuarioConsultaId, "usuarios", "_id");
+		if (usuario != null) {
+			BasicDBObject usuarioDoc = new BasicDBObject();
+			usuarioDoc.putAll((Map) usuario.get("documento"));
+			if (usuarioDoc != null) {
+				return commons_db.getCollection(usuarioDoc.get("email").toString(), "userPerfil", "documento.usuario");
+			}
+		};
+		return null;
+	};
+
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private BasicDBObject carregaObjetivos(String id, String usuario, BasicDBObject objDocPerfil, JSONArray arrayListElementosFaltantes, JSONArray arrayListHabilidadesPossui, JSONArray arrayListHabilidadesObjetivos, JSONArray arrayListHabilidadesObjetivosReal) {
 		Commons_DB commons_db = new Commons_DB();

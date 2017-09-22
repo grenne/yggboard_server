@@ -1393,7 +1393,7 @@ public class Avaliacao {
 		JSONArray avaliacoesResult = new JSONArray();
 
 		String lastAvalId = "";
-		if (empresaDoc.get("lastAval") != null && empresaDoc.get("lastAval") != "none") {
+		if (empresaDoc.get("lastAval") != null && !empresaDoc.get("lastAval").equals("none")) {
   		BasicDBObject avaliacaoLast = new BasicDBObject();
   		avaliacaoLast.putAll((Map) commons_db.getCollection(empresaDoc.get("lastAval").toString(), "avaliacoes", "_id"));
   		BasicDBObject avaliacaoLastDoc = new BasicDBObject();
