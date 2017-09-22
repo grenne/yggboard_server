@@ -20,9 +20,8 @@ import com.mongodb.client.MongoDatabase;
 public class Commons_DB {
 		
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public Response obterCrud(String collectionName, Object arrayQueryInput) {
+	public Response obterCrud(String collectionName, Object arrayQueryInput, MongoClient mongo, Boolean close) {
 		Commons commons = new Commons();
-		MongoClient mongo = new MongoClient();
 		MongoDatabase db = mongo.getDatabase(commons.getProperties().get("database").toString());
 //		boolean auth = db.authenticate("username", "password".toCharArray());
 		MongoCollection<Document> collection = db.getCollection(collectionName);
@@ -73,10 +72,9 @@ public class Commons_DB {
 	};
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public Response incluirCrud(String collectionName, Object insertInput) {
+	public Response incluirCrud(String collectionName, Object insertInput, MongoClient mongo, Boolean close) {
 		Index index = new Index();
 		Commons commons = new Commons();
-		MongoClient mongo = new MongoClient();
 		MongoDatabase db = mongo.getDatabase(commons.getProperties().get("database").toString());
 //		boolean auth = db.authenticate("username", "password".toCharArray());
 		MongoCollection<Document> collection = db.getCollection(collectionName);
@@ -91,10 +89,9 @@ public class Commons_DB {
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public Response atualizarCrud(String collectionName, Object updateInput, Object keysInput, BasicDBObject documento) {
+	public Response atualizarCrud(String collectionName, Object updateInput, Object keysInput, BasicDBObject documento, MongoClient mongo, Boolean close) {
 		Commons commons = new Commons();
 		@SuppressWarnings("resource")
-		MongoClient mongo = new MongoClient();
 		MongoDatabase db = mongo.getDatabase(commons.getProperties().get("database").toString());
 //		boolean auth = db.authenticate("username", "password".toCharArray());
 		MongoCollection<Document> collection = db.getCollection(collectionName);
@@ -123,7 +120,7 @@ public class Commons_DB {
 		
 		BasicDBObject objDocumento = new BasicDBObject();
 		if (documento == null) {
-			Response response = obterCrud(collectionName, keysObter);
+			Response response = obterCrud(collectionName, keysObter, mongo, false);
 			if ((response.getStatus() == 200)){
 				BasicDBObject cursor = new BasicDBObject();
 				cursor.putAll((Map) response.getEntity());
@@ -183,9 +180,8 @@ public class Commons_DB {
 		return Response.status(200).entity(objDocumento).build();
 	};
 
-	public Response removerAllCrud(String collectionName) {
+	public Response removerAllCrud(String collectionName, MongoClient mongo, Boolean close) {
 		Commons commons = new Commons();
-		MongoClient mongo = new MongoClient();
 		MongoDatabase db = mongo.getDatabase(commons.getProperties().get("database").toString());
 //		boolean auth = db.authenticate("username", "password".toCharArray());
 		MongoCollection<Document> collection = db.getCollection(collectionName);
@@ -195,9 +191,8 @@ public class Commons_DB {
 	};
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public Response removerCrud(String collectionName, Object keysInput) {
+	public Response removerCrud(String collectionName, Object keysInput, MongoClient mongo, Boolean close) {
 		Commons commons = new Commons();
-		MongoClient mongo = new MongoClient();
 		MongoDatabase db = mongo.getDatabase(commons.getProperties().get("database").toString());
 //		boolean auth = db.authenticate("username", "password".toCharArray());
 		MongoCollection<Document> collection = db.getCollection(collectionName);
@@ -218,9 +213,8 @@ public class Commons_DB {
 	};
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public Response removerCrudMany(String collectionName, Object keysInput) {
+	public Response removerCrudMany(String collectionName, Object keysInput, MongoClient mongo, Boolean close) {
 		Commons commons = new Commons();
-		MongoClient mongo = new MongoClient();
 		MongoDatabase db = mongo.getDatabase(commons.getProperties().get("database").toString());
 //		boolean auth = db.authenticate("username", "password".toCharArray());
 		MongoCollection<Document> collection = db.getCollection(collectionName);
@@ -241,9 +235,8 @@ public class Commons_DB {
 	};
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public Response listaCrud(String collectionName, Object arrayQueryInput) {
+	public Response listaCrud(String collectionName, Object arrayQueryInput, MongoClient mongo, Boolean close) {
 		Commons commons = new Commons();
-		MongoClient mongo = new MongoClient();
 		MongoDatabase db = mongo.getDatabase(commons.getProperties().get("database").toString());
 //		boolean auth = db.authenticate("username", "password".toCharArray());
 		MongoCollection<Document> collection = db.getCollection(collectionName);
@@ -275,7 +268,7 @@ public class Commons_DB {
 	};
 
 	@SuppressWarnings({ "unchecked" })
-	public BasicDBObject getCollection(String value, String collectionName, String keyInput) {
+	public BasicDBObject getCollection(String value, String collectionName, String keyInput, MongoClient mongo, Boolean close) {
 		
 		ArrayList<JSONObject> keysArray = new ArrayList<>();
 		JSONObject key = new JSONObject();
@@ -283,7 +276,7 @@ public class Commons_DB {
 		key.put("value", value);
 		keysArray.add(key);
 
-		Response response = obterCrud(collectionName, keysArray);
+		Response response = obterCrud(collectionName, keysArray, mongo, close);
 		if ((response.getStatus() == 200)){
 			return (BasicDBObject) response.getEntity();
 		};
@@ -291,7 +284,7 @@ public class Commons_DB {
 	};
 
 	@SuppressWarnings({ "unchecked" })
-	public JSONArray getCollectionLista(String value, String collectionName, String keyInput) {
+	public JSONArray getCollectionLista(String value, String collectionName, String keyInput, MongoClient mongo, Boolean close) {
 		
 		ArrayList<JSONObject> keysArray = new ArrayList<>();
 		JSONObject key = new JSONObject();
@@ -299,7 +292,7 @@ public class Commons_DB {
 		key.put("value", value);
 		keysArray.add(key);
 		
-		Response response = listaCrud(collectionName, keysArray);
+		Response response = listaCrud(collectionName, keysArray, mongo, close);
 		if ((response.getStatus() == 200)){
 			return (JSONArray) response.getEntity();
 		};
@@ -308,11 +301,11 @@ public class Commons_DB {
 	};
 
 	@SuppressWarnings({ })
-	public JSONArray getCollectionListaNoKey(String collectionName) {
+	public JSONArray getCollectionListaNoKey(String collectionName, MongoClient mongo, Boolean close) {
 		
 		ArrayList<JSONObject> keysArray = new ArrayList<>();
 
-		Response response = listaCrud(collectionName, keysArray);
+		Response response = listaCrud(collectionName, keysArray, mongo, close);
 		if ((response.getStatus() == 200)){
 			return (JSONArray) response.getEntity();
 		};
@@ -320,7 +313,7 @@ public class Commons_DB {
 	}
 
 	@SuppressWarnings({ "unchecked" })
-	public Response atualizaDocumento(BasicDBObject objUpdate, String collection, String keyInput, String id) {
+	public Response atualizaDocumento(BasicDBObject objUpdate, String collection, String keyInput, String id, MongoClient mongo, Boolean close) {
 		
 		ArrayList<JSONObject> keysArray = new ArrayList<>();
 		JSONObject key = new JSONObject();
@@ -334,7 +327,7 @@ public class Commons_DB {
 		field.put("value", objUpdate.get("documento"));
 		fieldsArray.add(field);
 
-		Response atualizacao = atualizarCrud(collection, fieldsArray, keysArray, objUpdate);
+		Response atualizacao = atualizarCrud(collection, fieldsArray, keysArray, objUpdate, mongo, close);
 		
 		return atualizacao;
 	};
