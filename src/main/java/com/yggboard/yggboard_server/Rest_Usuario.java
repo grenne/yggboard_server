@@ -15,6 +15,7 @@ import org.bson.types.ObjectId;
 import org.json.simple.JSONObject;
 
 import com.mongodb.BasicDBObject;
+import com.mongodb.MongoClient;
 
 	
 @Singleton
@@ -23,6 +24,8 @@ import com.mongodb.BasicDBObject;
 
 public class Rest_Usuario {
 
+	MongoClient mongo = new MongoClient();
+	
 	Commons_DB commons_db = new Commons_DB();
 	Commons commons = new Commons();
  	
@@ -45,7 +48,9 @@ public class Rest_Usuario {
 		field.put("value", "confirmado");
 		fieldsArray.add(field);
 		
-		return commons_db.atualizarCrud("usuarios", fieldsArray, keysArray, null);
+		Response result = commons_db.atualizarCrud("usuarios", fieldsArray, keysArray, null, mongo, false);
+		mongo.close();
+		return result;
 
 	};
 
@@ -69,7 +74,9 @@ public class Rest_Usuario {
 		field.put("value", novaSenha);
 		fieldsArray.add(field);
 		
-		return commons_db.atualizarCrud("usuarios", fieldsArray, keysArray, null);
+		Response result = commons_db.atualizarCrud("usuarios", fieldsArray, keysArray, null, mongo, false);
+		mongo.close();
+		return result;
 
 	};
 
@@ -86,7 +93,7 @@ public class Rest_Usuario {
 		key.put("tipo", "login");
 		keysArray.add(key);
 		
-		Response response = commons_db.obterCrud("usuarios", keysArray);
+		Response response = commons_db.obterCrud("usuarios", keysArray, mongo, false);
 		if ((response.getStatus() == 200)){
 			BasicDBObject cursor = new BasicDBObject();
 			cursor.putAll((Map) response.getEntity());
@@ -97,6 +104,7 @@ public class Rest_Usuario {
 					if (tokenadm != null && objUser.get("lastLogin") != null) {
 						if (objUser.get("lastLogin").toString().replace("-","").equals(commons.todaysDate("yyyymmdd"))){
 							objUser.remove("password");
+							mongo.close();
 							return Response.status(200).entity(objUser).build();
 						};
 					};
@@ -115,7 +123,7 @@ public class Rest_Usuario {
 					field.put("field", "token");
 					field.put("value", token);
 					fieldsArray.add(field);				
-					commons_db.atualizarCrud("usuarios", fieldsArray, keysArray, null);
+					commons_db.atualizarCrud("usuarios", fieldsArray, keysArray, null, mongo, false);
 	/*
 	 * 					atualizar perfil
 	 */
@@ -124,7 +132,7 @@ public class Rest_Usuario {
 					key.put("key", "documento.usuario");
 					key.put("value", email);
 					keysArray.add(key);
-					commons_db.atualizarCrud("userPerfil", fieldsArray, keysArray, null);
+					commons_db.atualizarCrud("userPerfil", fieldsArray, keysArray, null, mongo, false);
 					objUser.remove("password");
 					objUser.remove("token");
 					objUser.put("token", token);
@@ -132,7 +140,7 @@ public class Rest_Usuario {
 
 					objUser.put("_id", cursor.get("_id").toString());
 					// obter dados user perfil
-					BasicDBObject userPerfil = commons_db.getCollection(email, "userPerfil", "documento.usuario");
+					BasicDBObject userPerfil = commons_db.getCollection(email, "userPerfil", "documento.usuario", mongo, false);
 					if (userPerfil != null) {
 						objUser.put("idUserPerfil", userPerfil.get("_id").toString());
 					};
@@ -144,12 +152,13 @@ public class Rest_Usuario {
 					evento.put("motivo", "login");
 					evento.put("elemento", "usuarios");
 					evento.put("idElemento", email);
-					commons.insereEvento(evento);
+					commons.insereEvento(evento, mongo);
+					mongo.close();
 					return Response.status(200).entity(objUser).build();
 				};
 			};
 		};
-
+		mongo.close();
 		return Response.status(200).entity(false).build();
 		
 
@@ -160,9 +169,11 @@ public class Rest_Usuario {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Boolean Token(@QueryParam("token") String token) {
 
-		if (commons_db.getCollection(token, "usuarios", "documento.token") == null) {
+		if (commons_db.getCollection(token, "usuarios", "documento.token", mongo, false) == null) {
+			mongo.close();
 			return false;
 		}else {
+			mongo.close();
 			return true;
 		}
 	};

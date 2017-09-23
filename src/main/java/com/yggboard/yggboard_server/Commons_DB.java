@@ -53,7 +53,9 @@ public class Commons_DB {
 			if (login){
 				BasicDBObject doc = new BasicDBObject();
 				doc.putAll((Map) cursor.first());
-				mongo.close();
+				if (close) {
+					mongo.close();
+				};
 				return Response.status(200).entity(doc).build();
 			}else{
 				BasicDBObject doc = new BasicDBObject();
@@ -63,11 +65,15 @@ public class Commons_DB {
 				BasicDBObject docReturn = new BasicDBObject();
 				docReturn.put("documento", doc);
 				docReturn.put("_id", cursor.first().get("_id"));
-				mongo.close();
+				if (close) {
+					mongo.close();
+				};
 				return Response.status(200).entity(docReturn).build();
 			}
 		};
-		mongo.close();
+		if (close) {
+			mongo.close();
+		};
 		return Response.status(400).entity(null).build();
 	};
 
@@ -82,7 +88,9 @@ public class Commons_DB {
 		insert.putAll((Map) insertInput);
 		collection.insertOne(insert);
 		insert.put("_id", insert.get( "_id" ).toString());
-		mongo.close();
+		if (close) {
+			mongo.close();
+		};
 		
 		index.gravaIndex(collectionName, insertInput, insert.get( "_id" ).toString(), mongo);
 		return Response.status(200).entity(insert).build();
@@ -173,10 +181,14 @@ public class Commons_DB {
 			Document objDocumentoUpdate = new Document();
 			objDocumentoUpdate.put("documento", objDocumento);
 			collection.replaceOne(searchQuery,objDocumentoUpdate);
-			mongo.close();
+			if (close) {
+				mongo.close();
+			};
 			return Response.status(200).entity(objDocumento).build();
 		};
-		mongo.close();
+		if (close) {
+			mongo.close();
+		};
 		return Response.status(200).entity(objDocumento).build();
 	};
 
@@ -186,7 +198,9 @@ public class Commons_DB {
 //		boolean auth = db.authenticate("username", "password".toCharArray());
 		MongoCollection<Document> collection = db.getCollection(collectionName);
 		collection.deleteMany(new Document());
-		mongo.close();
+		if (close) {
+			mongo.close();
+		};
 		return Response.status(200).build();
 	};
 
@@ -208,7 +222,9 @@ public class Commons_DB {
 			};
 		};
 		collection.deleteOne(searchQuery);
-		mongo.close();
+		if (close) {
+			mongo.close();
+		};
 		return Response.status(200).build();
 	};
 
@@ -230,7 +246,9 @@ public class Commons_DB {
 			};
 		};
 		collection.deleteMany(searchQuery);
-		mongo.close();
+		if (close) {
+			mongo.close();
+		};
 		return Response.status(200).build();
 	};
 
@@ -263,7 +281,9 @@ public class Commons_DB {
 				documentos.add(doc);
 		    };
 		};
-	    mongo.close();
+		if (close) {
+			mongo.close();
+		};
 		return Response.status(200).entity(documentos).build();
 	};
 

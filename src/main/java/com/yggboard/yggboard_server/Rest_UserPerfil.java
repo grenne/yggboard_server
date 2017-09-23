@@ -57,7 +57,7 @@ public class Rest_UserPerfil {
 			cursor = commons_db.getCollection(userPerfilConsultaId, "userPerfil", "_id", mongo, false);
 		}else {
 			if (usuarioConsultaId != null) {
-				cursor = obterUserPerfil(userPerfilConsultaId);
+				cursor = obterUserPerfil(userPerfilConsultaId, mongo);
 			}else {
   			cursor = commons_db.getCollection(usuario, "userPerfil", "documento.token", mongo, false);
   		};
@@ -90,7 +90,7 @@ public class Rest_UserPerfil {
 							BasicDBObject objCarreiras = new BasicDBObject();
 							objCarreiras.put("documento", cursorCarreiras.get("documento"));
 							objCarreiras.put("_id", cursorCarreiras.get("_id").toString());
-							documentos.add(montaCarreira(objCarreiras, jsonPerfil, arrayListHabilidadesFaltantes, arrayListHabilidadesPossui, arrayListHabilidadesObjetivos, arrayListHabilidadesObjetivosReal));
+							documentos.add(montaCarreira(objCarreiras, jsonPerfil, arrayListHabilidadesFaltantes, arrayListHabilidadesPossui, arrayListHabilidadesObjetivos, arrayListHabilidadesObjetivosReal, mongo));
 						};
 					};
 				};
@@ -105,15 +105,15 @@ public class Rest_UserPerfil {
 			    	JSONArray arrayListHabilidadesPossui = new JSONArray();			    			
 			    	JSONArray arrayListHabilidadesObjetivos = new JSONArray();
 			    	JSONArray arrayListHabilidadesObjetivosReal = new JSONArray();
-					documentos.add(montaCarreira(objCarreiras, jsonPerfil, arrayListHabilidadesPossui, arrayListHabilidadesFaltantes, arrayListHabilidadesObjetivos, arrayListHabilidadesObjetivosReal));
+					documentos.add(montaCarreira(objCarreiras, jsonPerfil, arrayListHabilidadesPossui, arrayListHabilidadesFaltantes, arrayListHabilidadesObjetivos, arrayListHabilidadesObjetivosReal, mongo));
 				};
 			};
 			if (item.equals("badges") | item.equals("show-badges")){
 				if (item.equals("badges")){
-					carregaBadges((ArrayList) jsonPerfil.get("badges"), usuario, jsonPerfil, documentos, false);
-					carregaBadges((ArrayList) jsonPerfil.get("badgesConquista"), usuario, jsonPerfil, documentos, false);
+					carregaBadges((ArrayList) jsonPerfil.get("badges"), usuario, jsonPerfil, documentos, false, mongo);
+					carregaBadges((ArrayList) jsonPerfil.get("badgesConquista"), usuario, jsonPerfil, documentos, false, mongo);
 				}else{
-					carregaBadges((ArrayList) jsonPerfil.get("showBadges"), usuario, jsonPerfil, documentos, false);
+					carregaBadges((ArrayList) jsonPerfil.get("showBadges"), usuario, jsonPerfil, documentos, false, mongo);
 				};
 				JSONArray cursorBadges = commons_db.getCollectionListaNoKey("badges", mongo, false);	
 /*				if (cursorBadges != null){
@@ -169,14 +169,14 @@ public class Rest_UserPerfil {
 				if (arrayList != null){
 			    	Object array[] = arrayList.toArray(); 
 			    	for (int i = 0; i < array.length; i++) {
-			    		arrayListObjetivos.add(carregaObjetivos(array[i].toString(), usuario, jsonPerfil, arrayListHabilidadesFaltantes, arrayListHabilidadesPossui, arrayListHabilidadesObjetivos, arrayListHabilidadesObjetivosReal));
+			    		arrayListObjetivos.add(carregaObjetivos(array[i].toString(), usuario, jsonPerfil, arrayListHabilidadesFaltantes, arrayListHabilidadesPossui, arrayListHabilidadesObjetivos, arrayListHabilidadesObjetivosReal, mongo));
 					};
 				};
 				arrayList = (ArrayList) jsonPerfil.get("carreirasInteresse");
 				if (arrayList != null){
 			    	Object array[] = arrayList.toArray();
 			    	for (int i = 0; i < array.length; i++) {
-			    		arrayListObjetivos.add(carregaObjetivos(array[i].toString(), usuario, jsonPerfil, arrayListHabilidadesFaltantes, arrayListHabilidadesPossui, arrayListHabilidadesObjetivos, arrayListHabilidadesObjetivosReal));
+			    		arrayListObjetivos.add(carregaObjetivos(array[i].toString(), usuario, jsonPerfil, arrayListHabilidadesFaltantes, arrayListHabilidadesPossui, arrayListHabilidadesObjetivos, arrayListHabilidadesObjetivosReal, mongo));
 					};
 				};
 				if (item.equals("habilidades")){
@@ -192,14 +192,14 @@ public class Rest_UserPerfil {
 						if (habilidade != null){
 							BasicDBObject habilidadeDoc = (BasicDBObject) habilidade.get("documento");
 							if (item.equals("cursos-necessarias-habilidades") | item.equals("cursos-interesse-habilidades")){
-								ObterCursosNecessarios (habilidadeDoc, documentos, jsonPerfil);
+								ObterCursosNecessarios (habilidadeDoc, documentos, jsonPerfil, mongo);
 							}else{
 								JSONObject jsonDocumento = new JSONObject();
 								habilidadeDoc.put("interesse", commons.testaElementoArray(habilidadeDoc.get("id").toString(), (ArrayList<String>) jsonPerfil.get("habilidadesInteresse")));
 								habilidadeDoc.put("possui", commons.testaElementoArray(habilidadeDoc.get("id").toString(), (ArrayList<String>) jsonPerfil.get("habilidades")));
 							  jsonDocumento.put("documento", habilidadeDoc);
 								JSONArray cursos = new JSONArray();
-								ObterCursosNecessarios (habilidadeDoc, cursos, jsonPerfil);
+								ObterCursosNecessarios (habilidadeDoc, cursos, jsonPerfil, mongo);
 								jsonDocumento.put("cursos", cursos);
 								jsonDocumento.put("habilidadesGeral", commons.totalArray(jsonPerfil.get("habilidades")));
 								jsonDocumento.put("habilidadesInteresseGeral", commons.totalArray(jsonPerfil.get("habilidadesInteresse")));
@@ -247,14 +247,14 @@ public class Rest_UserPerfil {
 					arrayListElementos = (ArrayList) jsonPerfil.get("habilidades");
 			    	Object arrayElementos[] = arrayListElementos.toArray(); 
 			    	if (!elemento.equals("undefined")){
-			    		ObterHabilidadesCursosNecessarias(elemento, arrayElementos, documentos, false);
+			    		ObterHabilidadesCursosNecessarias(elemento, arrayElementos, documentos, false, mongo);
 			    	}else{
 						int w = 0;
 						while (w < array.length) {
 							if (item.equals("habilidades-necessarias-carreiras") | item.equals("habilidades-interesse-carreiras")){
-								ObterHabilidadesCursosNecessarias(array[w], arrayElementos, documentos, false);
+								ObterHabilidadesCursosNecessarias(array[w], arrayElementos, documentos, false, mongo);
 							}else{
-								ObterHabilidadesCursosNecessarias(array[w], arrayElementos, documentos, true);
+								ObterHabilidadesCursosNecessarias(array[w], arrayElementos, documentos, true, mongo);
 							};
 							++w;
 						};
@@ -276,14 +276,14 @@ public class Rest_UserPerfil {
 					arrayListElementos = (ArrayList) jsonPerfil.get("habilidades");
 			    	Object arrayElementos[] = arrayListElementos.toArray(); 
 			    	if (!elemento.equals("undefined")){
-			    		ObterHabilidadesCursosNecessariasBadge(elemento, arrayElementos, documentos, false, jsonPerfil);
+			    		ObterHabilidadesCursosNecessariasBadge(elemento, arrayElementos, documentos, false, jsonPerfil, mongo);
 			    	}else{
 						int w = 0;
 						while (w < array.length) {
 							if (item.equals("habilidades-necessarias-badges") | item.equals("habilidades-interesse-badges")){
-								ObterHabilidadesCursosNecessariasBadge(array[w], arrayElementos, documentos, false, jsonPerfil);
+								ObterHabilidadesCursosNecessariasBadge(array[w], arrayElementos, documentos, false, jsonPerfil, mongo);
 							}else{
-								ObterHabilidadesCursosNecessariasBadge(array[w], arrayElementos, documentos, true, jsonPerfil);
+								ObterHabilidadesCursosNecessariasBadge(array[w], arrayElementos, documentos, true, jsonPerfil, mongo);
 							};
 							++w;
 						};
@@ -352,7 +352,7 @@ public class Rest_UserPerfil {
 			    	Object array[] = arrayList.toArray(); 
 					int w = 0;
 					while (w < array.length) {
-						documentos.add(getUserPerfil(array[w].toString()).get("usuario"));
+						documentos.add(getUserPerfil(array[w].toString(), mongo).get("usuario"));
 						++w;
 					};
 				};
@@ -364,7 +364,7 @@ public class Rest_UserPerfil {
 			    	Object array[] = arrayList.toArray(); 
 					int w = 0;
 					while (w < array.length) {
-						documentos.add(getUserPerfil(array[w].toString()).get("usuario"));
+						documentos.add(getUserPerfil(array[w].toString(), mongo).get("usuario"));
 						++w;
 					};
 				};
@@ -376,7 +376,7 @@ public class Rest_UserPerfil {
 			    	Object array[] = arrayList.toArray(); 
 					int w = 0;
 					while (w < array.length) {
-						BasicDBObject objDoc = (BasicDBObject) getUserPerfil(array[w].toString()).get("userPerfil");
+						BasicDBObject objDoc = (BasicDBObject) getUserPerfil(array[w].toString(), mongo).get("userPerfil");
 						ArrayList arrayListSeguindo = new ArrayList();
 						if (objDoc != null){
 							arrayListSeguindo = (ArrayList) objDoc.get("seguindo");
@@ -386,7 +386,7 @@ public class Rest_UserPerfil {
 							int z = 0;
 							while (z < arraySeguindo.length) {
 								JSONObject dadosUsuario = new JSONObject();
-								JSONObject userResult = getUserPerfil(arraySeguindo[z].toString());
+								JSONObject userResult = getUserPerfil(arraySeguindo[z].toString(), mongo);
 								dadosUsuario.put("usuario", userResult.get("usuario"));
 								dadosUsuario.put("totalHabilidades", userResult.get("totalHabilidades"));
 								dadosUsuario.put("totalPossuiHabilidades", userResult.get("totalPossuiHabilidades"));
@@ -413,14 +413,14 @@ public class Rest_UserPerfil {
 				if (arrayList != null){
 			    	Object array[] = arrayList.toArray(); 
 			    	for (int i = 0; i < array.length; i++) {
-			    		arrayListObjetivos.add(carregaObjetivos(array[i].toString(), usuario, jsonPerfil, arrayListHabilidadesFaltantes, arrayListHabilidadesPossui, arrayListHabilidadesObjetivos, arrayListHabilidadesObjetivosReal));
+			    		arrayListObjetivos.add(carregaObjetivos(array[i].toString(), usuario, jsonPerfil, arrayListHabilidadesFaltantes, arrayListHabilidadesPossui, arrayListHabilidadesObjetivos, arrayListHabilidadesObjetivosReal, mongo));
 					};
 				};
 				arrayList = (ArrayList) jsonPerfil.get("carreirasInteresse");
 				if (arrayList != null){
 			    	Object array[] = arrayList.toArray();
 			    	for (int i = 0; i < array.length; i++) {
-			    		arrayListObjetivos.add(carregaObjetivos(array[i].toString(), usuario, jsonPerfil, arrayListHabilidadesFaltantes, arrayListHabilidadesPossui, arrayListHabilidadesObjetivos, arrayListHabilidadesObjetivosReal));
+			    		arrayListObjetivos.add(carregaObjetivos(array[i].toString(), usuario, jsonPerfil, arrayListHabilidadesFaltantes, arrayListHabilidadesPossui, arrayListHabilidadesObjetivos, arrayListHabilidadesObjetivosReal, mongo));
 					};
 				};
 				jsonDocumento.put("objetivos", arrayListObjetivos);
@@ -447,7 +447,7 @@ public class Rest_UserPerfil {
 		return null;
 	};
 	@SuppressWarnings("rawtypes")
-	private BasicDBObject obterUserPerfil(String userPerfilConsultaId) {
+	private BasicDBObject obterUserPerfil(String userPerfilConsultaId, MongoClient mongo) {
 		
 		BasicDBObject usuario = commons_db.getCollection(userPerfilConsultaId, "usuarios", "_id", mongo, false);
 		if (usuario != null) {
@@ -461,7 +461,7 @@ public class Rest_UserPerfil {
 	};
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private BasicDBObject carregaObjetivos(String id, String usuario, BasicDBObject objDocPerfil, JSONArray arrayListElementosFaltantes, JSONArray arrayListHabilidadesPossui, JSONArray arrayListHabilidadesObjetivos, JSONArray arrayListHabilidadesObjetivosReal) {
+	private BasicDBObject carregaObjetivos(String id, String usuario, BasicDBObject objDocPerfil, JSONArray arrayListElementosFaltantes, JSONArray arrayListHabilidadesPossui, JSONArray arrayListHabilidadesObjetivos, JSONArray arrayListHabilidadesObjetivosReal, MongoClient mongo) {
 		Commons_DB commons_db = new Commons_DB();
 		Commons commons = new Commons();
 		BasicDBObject doc  = commons_db.getCollection(id, "objetivos", "documento.id", mongo, false);
@@ -472,7 +472,7 @@ public class Rest_UserPerfil {
 	    	JSONArray arrayListHabilidadesPossuiObjetivo = new JSONArray();
 	    	JSONArray arrayListHabilidadesObjetivosObjetivo = new JSONArray();
 	    	JSONArray arrayListHabilidadesObjetivosRealObjetivo = new JSONArray();
-			BasicDBObject objetivo = montaCarreira(doc, objDocPerfil, arrayListHabilidadesFaltantesObjetivo, arrayListHabilidadesPossuiObjetivo, arrayListHabilidadesObjetivosObjetivo, arrayListHabilidadesObjetivosRealObjetivo);
+			BasicDBObject objetivo = montaCarreira(doc, objDocPerfil, arrayListHabilidadesFaltantesObjetivo, arrayListHabilidadesPossuiObjetivo, arrayListHabilidadesObjetivosObjetivo, arrayListHabilidadesObjetivosRealObjetivo, mongo);
 			objObjetivo.put("totalHabilidades", objetivo.get("totalHabilidades"));
 			objObjetivo.put("totalPossuiHabilidades", objetivo.get("totalPossuiHabilidades"));
 			objObjetivo.put("totalHabilidadesFaltantes", objetivo.get("totalHabilidadesFaltantes"));
@@ -482,7 +482,7 @@ public class Rest_UserPerfil {
 			arrayListElementos = (ArrayList) objDocPerfil.get("habilidades");
 			if (arrayListElementos != null){
 		    	Object[] arrayElementos = arrayListElementos.toArray(); 
-		    	ObterHabilidadesFaltantes(doc, arrayElementos, arrayListElementosFaltantes, arrayListHabilidadesPossui, arrayListHabilidadesObjetivos, arrayListHabilidadesObjetivosReal);
+		    	ObterHabilidadesFaltantes(doc, arrayElementos, arrayListElementosFaltantes, arrayListHabilidadesPossui, arrayListHabilidadesObjetivos, arrayListHabilidadesObjetivosReal, mongo);
 		    	objObjetivo.put("interesse", commons.testaElementoArray(objObjetivo.get("id").toString(), (ArrayList<String>) objDocPerfil.get("carreirasInteresse")));
 		    	objObjetivo.put("possui", commons.testaElementoArray(objObjetivo.get("id").toString(), (ArrayList<String>) objDocPerfil.get("carreiras")));
 		    	objObjetivo.put("necessariosPerfil", commons.montaArrayPerfil(objDocPerfil.get("habilidades"), objObjetivo.get("necessarios")));
@@ -491,7 +491,7 @@ public class Rest_UserPerfil {
 		return objObjetivo;
 	}
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private void carregaBadges(ArrayList arrayList, String usuario, BasicDBObject jsonPerfil, JSONArray documentos, boolean atualizaPerfil) {
+	private void carregaBadges(ArrayList arrayList, String usuario, BasicDBObject jsonPerfil, JSONArray documentos, boolean atualizaPerfil, MongoClient mongo) {
 		Commons_DB commons_db = new Commons_DB();
 		if (arrayList != null){
 	    	Object array[] = arrayList.toArray(); 
@@ -501,14 +501,14 @@ public class Rest_UserPerfil {
 				if (doc != null){
 					JSONObject objBadges = new JSONObject();
 					objBadges.putAll((Map) doc.get("documento"));
-					incluirBadge(objBadges, usuario, jsonPerfil, documentos, atualizaPerfil);
+					incluirBadge(objBadges, usuario, jsonPerfil, documentos, atualizaPerfil, mongo);
 				};
 				++w;
 			};
 		};
 	};
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private void incluirBadge(JSONObject jsonBadge, String usuario, BasicDBObject jsonPerfil, JSONArray documentos, Boolean atualizaPerfil) {
+	private void incluirBadge(JSONObject jsonBadge, String usuario, BasicDBObject jsonPerfil, JSONArray documentos, Boolean atualizaPerfil, MongoClient mongo) {
 
 		Commons commons = new Commons();
 		Commons_DB commons_db = new Commons_DB();
@@ -534,7 +534,7 @@ public class Rest_UserPerfil {
 		arrayListElementos = (ArrayList) jsonPerfil.get("habilidades");
     	Object arrayElementos[] = arrayListElementos.toArray(); 
 		ArrayList <String> arrayListElementosFaltantes = new ArrayList();
-	    JSONObject jsonQtdeHabilidades = ObterTotalHabilidadesBadges(jsonBadge.get("id"), arrayElementos, arrayListElementosFaltantes);
+	    JSONObject jsonQtdeHabilidades = ObterTotalHabilidadesBadges(jsonBadge.get("id"), arrayElementos, arrayListElementosFaltantes, mongo);
 	    jsonDocumento.put("totalHabilidades", arrayListElementos.size());
 	    jsonDocumento.put("totalPossuiHabilidades", jsonQtdeHabilidades.get("totalPossuiHabilidades"));
     	ArrayList arrayListHabilidades = new ArrayList(); 
@@ -544,7 +544,7 @@ public class Rest_UserPerfil {
 			JSONArray newHabilidades = new JSONArray();
 			int z = 0;
 			while (z < arrayHabilidades.length) {
-				newHabilidades.add(commons.nomeHabilidade(arrayHabilidades[z].toString()));
+				newHabilidades.add(commons.nomeHabilidade(arrayHabilidades[z].toString(), mongo));
 				++z;
 			};
 			jsonDocumento.remove("habilidades");
@@ -559,7 +559,7 @@ public class Rest_UserPerfil {
 					jsonHabilidades.put("id", arrayListElementosFaltantes.get(z));
 					jsonHabilidades.put("nome", habilidadeDoc.get("nome"));
 					JSONArray cursos = new JSONArray();
-					ObterCursosNecessarios (habilidadeDoc, cursos, jsonPerfil);
+					ObterCursosNecessarios (habilidadeDoc, cursos, jsonPerfil, mongo);
 					jsonHabilidades.put("cursos", cursos);
 					habilidadesArray.add (jsonHabilidades);
 				};
@@ -581,7 +581,7 @@ public class Rest_UserPerfil {
 	};
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private BasicDBObject montaCarreira(BasicDBObject objCarreirasSource, BasicDBObject jsonPerfil, JSONArray arrayListHabilidadesFaltantes, JSONArray arrayListHabilidadesPossui, JSONArray arrayListHabilidadesObjetivos, JSONArray arrayListHabilidadesObjetivosReal) {
+	private BasicDBObject montaCarreira(BasicDBObject objCarreirasSource, BasicDBObject jsonPerfil, JSONArray arrayListHabilidadesFaltantes, JSONArray arrayListHabilidadesPossui, JSONArray arrayListHabilidadesObjetivos, JSONArray arrayListHabilidadesObjetivosReal, MongoClient mongo) {
 
 		Commons commons = new Commons();
 		Commons_DB commons_db = new Commons_DB();
@@ -612,7 +612,7 @@ public class Rest_UserPerfil {
   		int totalHabilidades = arrayListNecessarios.size();
   		if (arrayPreRequisitosGeral != null){
   	    	Object objPreRequisitosGeral[] = arrayPreRequisitosGeral.toArray();
-  	    	totalHabilidades = totalHabilidades + carregaPreRequisistosNecessarios(arrayListNecessarios, arrayListNecessariosNome, objPreRequisitosGeral);
+  	    	totalHabilidades = totalHabilidades + carregaPreRequisistosNecessarios(arrayListNecessarios, arrayListNecessariosNome, objPreRequisitosGeral, mongo);
   		};
 	    jsonDocumento.put("necessarios", arrayListNecessarios); 
 	    jsonDocumento.put("necessariosNome", arrayListNecessariosNome); 
@@ -621,7 +621,7 @@ public class Rest_UserPerfil {
 	    if (arrayListElementos != null){
 	    	Object[] arrayElementos = arrayListElementos.toArray(); 
 	    	JSONArray arrayListElementosFaltantes = new JSONArray(); 
-		    ObterHabilidadesFaltantes(objCarreirasSource, arrayElementos, arrayListElementosFaltantes, arrayListHabilidadesPossui, arrayListHabilidadesObjetivos, arrayListHabilidadesObjetivosReal);
+		    ObterHabilidadesFaltantes(objCarreirasSource, arrayElementos, arrayListElementosFaltantes, arrayListHabilidadesPossui, arrayListHabilidadesObjetivos, arrayListHabilidadesObjetivosReal, mongo);
 		    jsonDocumento.put("totalHabilidades", commons.totalArray(arrayListHabilidadesObjetivosReal));
 		    jsonDocumento.put("totalPossuiHabilidades", commons.totalArray(arrayListHabilidadesPossui));
 		    jsonDocumento.put("totalHabilidadesFaltantes", commons.totalArray(arrayListElementosFaltantes));
@@ -642,7 +642,7 @@ public class Rest_UserPerfil {
   					jsonNecessarios.put("preRequisitos", habilidadeDoc.get("preRequisitos"));
   					jsonNecessarios.put("preRequisitosNome", habilidadeDoc.get("preRequisitosNome"));
   					JSONArray cursos = new JSONArray();
-  					ObterCursosNecessarios (habilidadeDoc, cursos, jsonPerfil);
+  					ObterCursosNecessarios (habilidadeDoc, cursos, jsonPerfil, mongo);
   					jsonNecessarios.put("cursos", cursos);
   					necessariosArray.add (jsonNecessarios);
   				};
@@ -654,7 +654,7 @@ public class Rest_UserPerfil {
 	};
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private int carregaPreRequisistosNecessarios(ArrayList arrayListNecessarios, ArrayList arrayListNecessariosNome, Object[] objPreRequisitosGeral) {
+	private int carregaPreRequisistosNecessarios(ArrayList arrayListNecessarios, ArrayList arrayListNecessariosNome, Object[] objPreRequisitosGeral, MongoClient mongo) {
 		Commons commons = new Commons();
 		int totalPreRequisitos = 0;
 		int z = 0;
@@ -666,7 +666,7 @@ public class Rest_UserPerfil {
 			while (i < array.length) {
 				if (!commons.testaElementoArray(array[i], arrayListNecessarios)){
 					arrayListNecessarios.add(array[i]);
-					arrayListNecessariosNome.add(commons.nomeHabilidade(array[i]));
+					arrayListNecessariosNome.add(commons.nomeHabilidade(array[i], mongo));
 					preRequisitoValido = true;
 				};
 				++i;
@@ -743,17 +743,17 @@ public class Rest_UserPerfil {
 				if (inout.equals("in")){
 					array.add(elemento);
 					if (tipo.equals("habilidades") || tipo.equals("habilidadesInteresse")){
-						atualizaDependencia(elemento, array);
+						atualizaDependencia(elemento, array, mongo);
 					};
 					if (tipo.equals("carreiras")){
 						if (assunto.equals("cadastro")){
-							ArrayList habilidadesUpdate = AtualizaUserPerfilArray(elemento, objUserPerfil.get("habilidadesInteresse"), "objetivos", "necessarios");
+							ArrayList habilidadesUpdate = AtualizaUserPerfilArray(elemento, objUserPerfil.get("habilidadesInteresse"), "objetivos", "necessarios", mongo);
 							JSONObject field = new JSONObject();
 							field.put("field", "habilidadesInteresse");
 							field.put("value", habilidadesUpdate);
 							fieldsArray.add(field);
 						}else{
-							ArrayList habilidadesUpdate = AtualizaUserPerfilArray(elemento, objUserPerfil.get("habilidades"), "objetivos", "habilidades");
+							ArrayList habilidadesUpdate = AtualizaUserPerfilArray(elemento, objUserPerfil.get("habilidades"), "objetivos", "habilidades", mongo);
 							JSONObject field = new JSONObject();
 							field.put("field", "habilidades");
 							field.put("value", habilidadesUpdate);
@@ -762,7 +762,7 @@ public class Rest_UserPerfil {
 					};
 					if (tipo.equals("cursos")){
 						if (assunto.equals("cadastro")){
-							ArrayList habilidadesUpdate = AtualizaUserPerfilArray(elemento, objUserPerfil.get("habilidadesInteresse"), "cursos", "habilidades");
+							ArrayList habilidadesUpdate = AtualizaUserPerfilArray(elemento, objUserPerfil.get("habilidadesInteresse"), "cursos", "habilidades", mongo);
 							JSONObject field = new JSONObject();
 							field.put("field", "habilidadesInteresse");
 							field.put("value", habilidadesUpdate);
@@ -794,7 +794,7 @@ public class Rest_UserPerfil {
 				evento.put("motivo", newPerfil.get("inout").toString());
 				evento.put("elemento", tipo);
 				evento.put("idElemento", newPerfil.get("id").toString());
-				atualizacao = commons.insereEvento(evento);
+				atualizacao = commons.insereEvento(evento, mongo);
 				mongo.close();
 				return atualizacao;
 			};
@@ -805,7 +805,7 @@ public class Rest_UserPerfil {
 	};
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private ArrayList AtualizaUserPerfilArray(String elemento, Object objHabilidades, String collection, String arrayCollection) {
+	private ArrayList AtualizaUserPerfilArray(String elemento, Object objHabilidades, String collection, String arrayCollection, MongoClient mongo) {
 		
 		Commons_DB commons_db = new Commons_DB();
 		Commons commons = new Commons();
@@ -827,7 +827,7 @@ public class Rest_UserPerfil {
 		return arrayUpdate;
 	};
 	
-	private void atualizaDependencia(String elemento, ArrayList<String> array) {
+	private void atualizaDependencia(String elemento, ArrayList<String> array, MongoClient mongo) {
 		Commons commons = new Commons();
 		Commons_DB commons_db = new Commons_DB();	
 		BasicDBObject cursor = commons_db.getCollection(elemento, "habilidades", "documento.id", mongo, false);	
@@ -871,7 +871,7 @@ public class Rest_UserPerfil {
 	};
 
 	@SuppressWarnings("unchecked")
-	private ArrayList<String> ObterHabilidadesCursosNecessarias(Object carreira, Object[] arrayElementos, JSONArray documentos, Boolean obterCursos) {
+	private ArrayList<String> ObterHabilidadesCursosNecessarias(Object carreira, Object[] arrayElementos, JSONArray documentos, Boolean obterCursos, MongoClient mongo) {
 		Commons_DB commons_db = new Commons_DB();
 		BasicDBObject cursor = commons_db.getCollection(carreira.toString(), "objetivos", "documento.id", mongo, false);
 		if (cursor != null){
@@ -905,7 +905,7 @@ public class Rest_UserPerfil {
 					if (habilidade != null){
 						BasicDBObject habilidadeDoc = (BasicDBObject) habilidade.get("documento");
 						if (obterCursos){
-							ObterCursosNecessarios (habilidadeDoc, documentos, null);
+							ObterCursosNecessarios (habilidadeDoc, documentos, null, mongo);
 						}else{
 							JSONObject jsonDocumento = new JSONObject();
 						  jsonDocumento.put("documento", habilidadeDoc);
@@ -920,7 +920,7 @@ public class Rest_UserPerfil {
 	}
 
 	@SuppressWarnings("unchecked")
-	private ArrayList<String> ObterHabilidadesCursosNecessariasBadge(Object badge, Object[] arrayElementos, JSONArray documentos, Boolean obterCursos, BasicDBObject jsonPerfil) {
+	private ArrayList<String> ObterHabilidadesCursosNecessariasBadge(Object badge, Object[] arrayElementos, JSONArray documentos, Boolean obterCursos, BasicDBObject jsonPerfil, MongoClient mongo) {
 		Commons_DB commons_db = new Commons_DB();
 		BasicDBObject cursor = commons_db.getCollection(badge.toString(), "badges", "documento.id", mongo, false);
 		if (cursor != null) {
@@ -954,7 +954,7 @@ public class Rest_UserPerfil {
 					if (habilidade != null) {
 						BasicDBObject habilidadeDoc = (BasicDBObject) habilidade.get("documento");
 						if (obterCursos){
-							ObterCursosNecessarios (habilidadeDoc, documentos, jsonPerfil);
+							ObterCursosNecessarios (habilidadeDoc, documentos, jsonPerfil, mongo);
 						}else{
 							JSONObject jsonDocumento = new JSONObject();
 						  jsonDocumento.put("documento", habilidadeDoc);
@@ -969,7 +969,7 @@ public class Rest_UserPerfil {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private JSONObject ObterHabilidadesFaltantes (BasicDBObject carreira, Object[] arrayElementos, JSONArray arrayListElementosFaltantes, JSONArray arrayListHabilidadesPossui, JSONArray arrayListHabilidadesObjetivos, JSONArray arrayListHabilidadesObjetivosReal) {
+	private JSONObject ObterHabilidadesFaltantes (BasicDBObject carreira, Object[] arrayElementos, JSONArray arrayListElementosFaltantes, JSONArray arrayListHabilidadesPossui, JSONArray arrayListHabilidadesObjetivos, JSONArray arrayListHabilidadesObjetivosReal, MongoClient mongo) {
 		Commons commons = new Commons();
 		BasicDBObject objCarreira = (BasicDBObject) carreira.get("documento");
 		ArrayList<String> arrayListHabilidades = new ArrayList<String>(); 
@@ -1018,7 +1018,7 @@ public class Rest_UserPerfil {
 	};
 	
 	@SuppressWarnings("unchecked")
-	private JSONObject ObterTotalHabilidadesBadges (Object id, Object[] arrayElementos, ArrayList<String> arrayListElementosFaltantes) {
+	private JSONObject ObterTotalHabilidadesBadges (Object id, Object[] arrayElementos, ArrayList<String> arrayListElementosFaltantes, MongoClient mongo) {
 		Commons_DB commons_db = new Commons_DB();
 		BasicDBObject cursor = commons_db.getCollection(id.toString(), "badges", "documento.id", mongo, false);
 		if (cursor != null){
@@ -1058,7 +1058,7 @@ public class Rest_UserPerfil {
 	};
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private ArrayList<String> ObterCursosNecessarios (BasicDBObject habilidadeDoc, JSONArray documentos, BasicDBObject jsonPerfil) {
+	private ArrayList<String> ObterCursosNecessarios (BasicDBObject habilidadeDoc, JSONArray documentos, BasicDBObject jsonPerfil, MongoClient mongo) {
 		Commons commons = new Commons();
 		Commons_DB commons_db = new Commons_DB();
 		ArrayList<Object> cursos = (ArrayList<Object>) habilidadeDoc.get("cursos");
@@ -1101,7 +1101,7 @@ public class Rest_UserPerfil {
 	public Response CursosSugeridos(JSONObject inputCursosSugeridos)  {
 				
 		mongo.close();
-		return AtualizaSugestaoColetiva (inputCursosSugeridos, "cursosSugeridos");
+		return AtualizaSugestaoColetiva (inputCursosSugeridos, "cursosSugeridos", mongo);
 		
 	};
 	@Path("/carreirasSugeridas")
@@ -1110,12 +1110,12 @@ public class Rest_UserPerfil {
 	public Response CarreirasSugeridos(JSONObject inputCarreirasSugeridas)  {
 		
 		mongo.close();
-		return AtualizaSugestaoColetiva (inputCarreirasSugeridas, "carreirasSugeridas");
+		return AtualizaSugestaoColetiva (inputCarreirasSugeridas, "carreirasSugeridas", mongo);
 		
 	};	
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private Response AtualizaSugestaoColetiva(JSONObject inputCursosSugeridos, String nameArray) {
+	private Response AtualizaSugestaoColetiva(JSONObject inputCursosSugeridos, String nameArray, MongoClient mongo) {
 		
 		Commons commons = new Commons();
 		Commons_DB commons_db = new Commons_DB();
@@ -1141,7 +1141,7 @@ public class Rest_UserPerfil {
 					evento.put("motivo", "inclusao");
 					evento.put("elemento", nameArray);
 					evento.put("idElemento", cursosSugestao.get("cursos"));
-					commons.insereEvento(evento);
+					commons.insereEvento(evento, mongo);
 				};
 			};
 		};
@@ -1149,7 +1149,7 @@ public class Rest_UserPerfil {
 	};
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private JSONObject getUserPerfil(String id){
+	private JSONObject getUserPerfil(String id, MongoClient mongo){
 		Commons_DB commons_db = new Commons_DB();
 		Commons commons = new Commons();
 		BasicDBObject doc = commons_db.getCollection(id, "usuarios", "_id", mongo, false);
@@ -1180,7 +1180,7 @@ public class Rest_UserPerfil {
 					ArrayList arrayListObjetivos = new ArrayList(); 
 			    	Object array[] = arrayList.toArray(); 
 			    	for (int i = 0; i < array.length; i++) {
-			    		arrayListObjetivos.add(carregaObjetivos(array[i].toString(), email, objDocPerfil, arrayListHabilidadesFaltantes, arrayListHabilidadesPossui, arrayListHabilidadesObjetivos, arrayListHabilidadesObjetivosReal));
+			    		arrayListObjetivos.add(carregaObjetivos(array[i].toString(), email, objDocPerfil, arrayListHabilidadesFaltantes, arrayListHabilidadesPossui, arrayListHabilidadesObjetivos, arrayListHabilidadesObjetivosReal, mongo));
 					};
 				};
 			};

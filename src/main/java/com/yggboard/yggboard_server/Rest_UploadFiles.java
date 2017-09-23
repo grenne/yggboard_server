@@ -24,6 +24,7 @@ import org.jboss.resteasy.plugins.providers.multipart.InputPart;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 
 import com.mongodb.BasicDBObject;
+import com.mongodb.MongoClient;
 
 	
 @Singleton
@@ -31,6 +32,8 @@ import com.mongodb.BasicDBObject;
 @Path("/upload")
 
 public class Rest_UploadFiles {
+	
+	MongoClient mongo = new MongoClient();
 	/**
 	 * Procura a imagem pelo seu nome e devolve como resposta.
 	 * @author magician
@@ -47,7 +50,7 @@ public class Rest_UploadFiles {
 
 		String tmp = "c:/images/yggboard/";
 		Commons_DB commons_db = new Commons_DB();
-		BasicDBObject cursor = commons_db.getCollection("fotosYggboard", "objetivos", "documento.setupKey");		
+		BasicDBObject cursor = commons_db.getCollection("fotosYggboard", "objetivos", "documento.setupKey", mongo, false);		
 		if (cursor != null){
 			BasicDBObject obj = (BasicDBObject) cursor.get("documento");
 			tmp = obj.getString("setupValue");
@@ -58,6 +61,7 @@ public class Rest_UploadFiles {
             throw new WebApplicationException(404);
         }
         String mt = new MimetypesFileTypeMap().getContentType(target);
+        mongo.close();
         return Response.ok(target, mt).build();
     }
 	
@@ -67,7 +71,7 @@ public class Rest_UploadFiles {
 	public Response uploadFile(MultipartFormDataInput input, @QueryParam("prefix") String prefix) {
 		String tmp = "c:/images/yggboard/";
 		Commons_DB commons_db = new Commons_DB();
-		BasicDBObject cursor = commons_db.getCollection("fotosYggboard", "objetivos", "documento.setupKey");		
+		BasicDBObject cursor = commons_db.getCollection("fotosYggboard", "objetivos", "documento.setupKey", mongo, false);		
 		if (cursor != null){
 			BasicDBObject obj = (BasicDBObject) cursor.get("documento");
 			tmp = obj.getString("setupValue");
@@ -98,8 +102,9 @@ public class Rest_UploadFiles {
 				e.printStackTrace();
 			}
 
-		}
-
+		};
+		
+		mongo.close();
 		return Response.status(200)
 				.entity("uploadFile is called, Uploaded file name : " + fileName).build();
 

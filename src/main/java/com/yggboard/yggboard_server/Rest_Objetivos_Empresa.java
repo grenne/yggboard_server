@@ -15,6 +15,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.mongodb.BasicDBObject;
+import com.mongodb.MongoClient;
 
 @Singleton
 //@Lock(LockType.READ)
@@ -23,6 +24,8 @@ import com.mongodb.BasicDBObject;
 
 public class Rest_Objetivos_Empresa {
 
+	MongoClient mongo = new MongoClient();
+	
 	Commons commons = new Commons();
 	Commons_DB commons_db = new Commons_DB();
 
@@ -31,23 +34,27 @@ public class Rest_Objetivos_Empresa {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public JSONArray Lista(@QueryParam("token") String token, @QueryParam("empresaId") String empresaId)  {
-		if ((commons_db.getCollection(token, "userPerfil", "documento.token")) == null) {
+		if ((commons_db.getCollection(token, "userPerfil", "documento.token", mongo, false)) == null) {
+			mongo.close();
 			return null;
 		};
 		if (empresaId == null){
+			mongo.close();
 			return null;
 		};
-		JSONArray cursor = commons_db.getCollectionLista(empresaId, "objetivosEmpresa", "documento.empresaId");
+		JSONArray cursor = commons_db.getCollectionLista(empresaId, "objetivosEmpresa", "documento.empresaId", mongo, false);
 		JSONArray documentos = new JSONArray();
 		if (cursor != null){
 			for (int i = 0; i < cursor.size(); i++) {
 				BasicDBObject obj = (BasicDBObject) cursor.get(i);
 				BasicDBObject docObj = new BasicDBObject();
-				docObj = commons_db.getCollection(obj.getString("objetivoId"), "objetivos", "documento.id");
+				docObj = commons_db.getCollection(obj.getString("objetivoId"), "objetivos", "documento.id", mongo, false);
 				documentos.add(docObj);				
 			};
+			mongo.close();
 			return documentos;
 		};
+		mongo.close();
 		return null;			
 	};
 
@@ -56,20 +63,24 @@ public class Rest_Objetivos_Empresa {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public JSONArray ListaAreaAtuacao(@QueryParam("token") String token, @QueryParam("empresaId") String empresaId)  {
-		if ((commons_db.getCollection(token, "userPerfil", "documento.token")) == null) {
+		if ((commons_db.getCollection(token, "userPerfil", "documento.token", mongo, false)) == null) {
+			mongo.close();
 			return null;
 		};
 		if (empresaId == null){
+			mongo.close();
 			return null;
 		};
-		JSONArray cursor = commons_db.getCollectionListaNoKey("areaAtuacao");
+		JSONArray cursor = commons_db.getCollectionListaNoKey("areaAtuacao", mongo, false);
 		JSONArray documentos = new JSONArray();
 		if (cursor != null){
 			for (int i = 0; i < cursor.size(); i++) {
 				documentos.add(cursor.get(i));				
 			};
+			mongo.close();
 			return documentos;
 		};
+		mongo.close();
 		return null;			
 	};
 
@@ -78,20 +89,24 @@ public class Rest_Objetivos_Empresa {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public JSONArray ListaAreaConhecimento(@QueryParam("token") String token, @QueryParam("empresaId") String empresaId)  {
-		if ((commons_db.getCollection(token, "userPerfil", "documento.token")) == null) {
+		if ((commons_db.getCollection(token, "userPerfil", "documento.token", mongo, false)) == null) {
+			mongo.close();
 			return null;
 		};
 		if (empresaId == null){
+			mongo.close();
 			return null;
 		};
-		JSONArray cursor = commons_db.getCollectionListaNoKey("areaConhecimento");
+		JSONArray cursor = commons_db.getCollectionListaNoKey("areaConhecimento", mongo, false);
 		JSONArray documentos = new JSONArray();
 		if (cursor != null){
 			for (int i = 0; i < cursor.size(); i++) {
 				documentos.add(cursor.get(i));				
 			};
+			mongo.close();
 			return documentos;
 		};
+		mongo.close();
 		return null;			
 	};
 
@@ -100,26 +115,28 @@ public class Rest_Objetivos_Empresa {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public JSONObject ObjetivoListas(@QueryParam("token") String token, @QueryParam("empresaId") String empresaId,@QueryParam("objetivoId") String objetivoId)  {
-		if ((commons_db.getCollection(token, "userPerfil", "documento.token")) == null) {
+		if ((commons_db.getCollection(token, "userPerfil", "documento.token", mongo, false)) == null) {
+			mongo.close();
 			return null;
 		};
 		if (empresaId == null){
+			mongo.close();
 			return null;
 		};
 		JSONObject documentos = new JSONObject();
 		JSONArray habilidades = new JSONArray();
 		JSONArray habilidadesObjetivo = new JSONArray();
 		BasicDBObject objetivo = new BasicDBObject();
-		objetivo = commons_db.getCollection(objetivoId, "objetivos", "documento.id");
+		objetivo = commons_db.getCollection(objetivoId, "objetivos", "documento.id", mongo, false);
 		if (objetivo != null) {
 			BasicDBObject objetivoDoc = new BasicDBObject();
 			objetivoDoc.putAll((Map) objetivo.get("documento"));
 			ArrayList<String> habilidadesArray = (ArrayList<String>) objetivoDoc.get("necessarios");
-			ArrayList<String> habilidadesFinal = commons.montaObjetivoEmpresa(habilidadesArray, empresaId, objetivoId);
+			ArrayList<String> habilidadesFinal = commons.montaObjetivoEmpresa(habilidadesArray, empresaId, objetivoId, mongo);
 			if (habilidadesFinal != null) {
 				for (int z = 0; z < habilidadesFinal.size(); z++) {
 					BasicDBObject habilidade = new BasicDBObject();
-					habilidade = commons_db.getCollection(habilidadesArray.get(z), "habilidades", "documento.id");
+					habilidade = commons_db.getCollection(habilidadesArray.get(z), "habilidades", "documento.id", mongo, false);
 					BasicDBObject habilidadeDoc = new BasicDBObject();
 					habilidadeDoc.putAll((Map) habilidade.get("documento"));
 					BasicDBObject habilidadeOut = new BasicDBObject();
@@ -137,7 +154,7 @@ public class Rest_Objetivos_Empresa {
 
 			ArrayList<String> areaAtuacaoArray = (ArrayList<String>) objetivoDoc.get("areaAtuacao"); 
 			for (int i = 0; i < areaAtuacaoArray.size(); i++) {
-				JSONArray objetivoArray = commons_db.getCollectionLista(areaAtuacaoArray.get(i).toString(), "objetivos", "documento.areaAtuacao");
+				JSONArray objetivoArray = commons_db.getCollectionLista(areaAtuacaoArray.get(i).toString(), "objetivos", "documento.areaAtuacao", mongo, false);
 				for (int j = 0; j < objetivoArray.size(); j++) {
 					BasicDBObject docObjetivoObj = new BasicDBObject();
 					docObjetivoObj.putAll((Map) objetivoArray.get(j));
@@ -146,7 +163,7 @@ public class Rest_Objetivos_Empresa {
 						habilidadesArray = (ArrayList<String>) docObjetivoObj.get("necessarios");
 						for (int z = 0; z < habilidadesArray.size(); z++) {
 							BasicDBObject habilidade = new BasicDBObject();
-							habilidade = commons_db.getCollection(habilidadesArray.get(z), "habilidades", "documento.id");
+							habilidade = commons_db.getCollection(habilidadesArray.get(z), "habilidades", "documento.id", mongo, false);
 							if (habilidade != null) {
 								BasicDBObject habilidadeDoc = new BasicDBObject();
 								habilidadeDoc.putAll((Map) habilidade.get("documento"));
@@ -165,6 +182,7 @@ public class Rest_Objetivos_Empresa {
 			};
 			documentos.put("habilidades", habilidades);
 			documentos.put("habilidadesObjetivo", habilidadesObjetivo);
+			mongo.close();
 			return documentos;
 		};
 		return null;		
@@ -175,20 +193,22 @@ public class Rest_Objetivos_Empresa {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public JSONObject HabildadesAreaAtuacao(@QueryParam("token") String token, @QueryParam("empresaId") String empresaId, @QueryParam("objetivoId") String objetivoId, @QueryParam("areaAtuacaoId") String areaAtuacaoId)  {
-		if ((commons_db.getCollection(token, "userPerfil", "documento.token")) == null) {
+		if ((commons_db.getCollection(token, "userPerfil", "documento.token", mongo, false)) == null) {
+			mongo.close();
 			return null;
 		};
 		if (empresaId == null){
+			mongo.close();
 			return null;
 		};
 		JSONObject documentos = new JSONObject();
 		JSONArray habilidades = new JSONArray();
 		BasicDBObject docObjetivo = new BasicDBObject();
-		docObjetivo = commons_db.getCollection(objetivoId, "objetivos", "documento.id");
+		docObjetivo = commons_db.getCollection(objetivoId, "objetivos", "documento.id", mongo, false);
 		if (docObjetivo != null) {
 			BasicDBObject doc = new BasicDBObject();
 			doc.putAll((Map) docObjetivo.get("documento"));
-			JSONArray objetivoArray = commons_db.getCollectionLista(areaAtuacaoId, "objetivos", "documento.areaAtuacao");
+			JSONArray objetivoArray = commons_db.getCollectionLista(areaAtuacaoId, "objetivos", "documento.areaAtuacao", mongo, false);
 			for (int j = 0; j < objetivoArray.size(); j++) {
 				BasicDBObject docObjetivoObj = new BasicDBObject();
 				docObjetivoObj.putAll((Map) objetivoArray.get(j));
@@ -196,7 +216,7 @@ public class Rest_Objetivos_Empresa {
 					ArrayList<String> habilidadesArray = (ArrayList<String>) docObjetivoObj.get("necessarios");
 					for (int z = 0; z < habilidadesArray.size(); z++) {
 						BasicDBObject docHabilidade = new BasicDBObject();
-						docHabilidade = commons_db.getCollection(habilidadesArray.get(z), "habilidades", "documento.id");
+						docHabilidade = commons_db.getCollection(habilidadesArray.get(z), "habilidades", "documento.id", mongo, false);
 						if (docHabilidade != null) {
 							commons.addObjeto(habilidades, docHabilidade);
 						};
@@ -204,8 +224,10 @@ public class Rest_Objetivos_Empresa {
 				};
 			};									
 			documentos.put("habilidades", habilidades);
+			mongo.close();
 			return documentos;
 		};
+		mongo.close();
 		return null;		
 	};
 
@@ -214,21 +236,23 @@ public class Rest_Objetivos_Empresa {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public JSONObject HabildadesAreaConhecimento(@QueryParam("token") String token, @QueryParam("empresaId") String empresaId, @QueryParam("objetivoId") String objetivoId, @QueryParam("areaConhecimentoId") String areaConhecimentoId)  {
-		if ((commons_db.getCollection(token, "userPerfil", "documento.token")) == null) {
+		if ((commons_db.getCollection(token, "userPerfil", "documento.token", mongo, false)) == null) {
+			mongo.close();
 			return null;
 		};
 		if (empresaId == null){
+			mongo.close();
 			return null;
 		};
 		JSONObject documentos = new JSONObject();
 		JSONArray habilidades = new JSONArray();
 		BasicDBObject docObjetivo = new BasicDBObject();
-		docObjetivo = commons_db.getCollection(objetivoId, "objetivos", "documento.id");
+		docObjetivo = commons_db.getCollection(objetivoId, "objetivos", "documento.id", mongo, false);
 		if (docObjetivo != null) {
 			BasicDBObject doc = new BasicDBObject();
 			doc.putAll((Map) docObjetivo.get("documento"));
 			ArrayList<String> habilidadesObjetivoArray = (ArrayList<String>) doc.get("necessarios");
-			JSONArray habilidadesArray = commons_db.getCollectionLista(areaConhecimentoId, "habilidades", "documento.areaConhecimento");
+			JSONArray habilidadesArray = commons_db.getCollectionLista(areaConhecimentoId, "habilidades", "documento.areaConhecimento", mongo, false);
 			for (int j = 0; j < habilidadesArray.size(); j++) {
 				BasicDBObject docHabilidadeObj = new BasicDBObject();
 				docHabilidadeObj.putAll((Map) habilidadesArray.get(j));
@@ -237,8 +261,10 @@ public class Rest_Objetivos_Empresa {
 				};
 			};									
 			documentos.put("habilidades", habilidades);
+			mongo.close();
 			return documentos;
 		};
+		mongo.close();
 		return null;		
 	};
 
@@ -247,18 +273,19 @@ public class Rest_Objetivos_Empresa {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public JSONObject HabildadesTodas(@QueryParam("token") String token, @QueryParam("empresaId") String empresaId, @QueryParam("objetivoId") String objetivoId)  {
-		if ((commons_db.getCollection(token, "userPerfil", "documento.token")) == null) {
+		if ((commons_db.getCollection(token, "userPerfil", "documento.token", mongo, false)) == null) {
+			mongo.close();
 			return null;
 		};
 		JSONObject documentos = new JSONObject();
 		JSONArray habilidades = new JSONArray();
 		BasicDBObject docObjetivo = new BasicDBObject();
-		docObjetivo = commons_db.getCollection(objetivoId, "objetivos", "documento.id");
+		docObjetivo = commons_db.getCollection(objetivoId, "objetivos", "documento.id", mongo, false);
 		if (docObjetivo != null) {
 			BasicDBObject doc = new BasicDBObject();
 			doc.putAll((Map) docObjetivo.get("documento"));
 			ArrayList<String> habilidadesObjetivoArray = (ArrayList<String>) doc.get("necessarios");
-			JSONArray habilidadesArray = commons_db.getCollectionListaNoKey("habilidades");
+			JSONArray habilidadesArray = commons_db.getCollectionListaNoKey("habilidades", mongo, false);
 			for (int j = 0; j < habilidadesArray.size(); j++) {
 				BasicDBObject docHabilidadeObj = new BasicDBObject();
 				docHabilidadeObj.putAll((Map) habilidadesArray.get(j));
@@ -267,6 +294,7 @@ public class Rest_Objetivos_Empresa {
 				};
 			};									
 			documentos.put("habilidades", habilidades);
+			mongo.close();
 			return documentos;
 		};
 		return null;		
@@ -277,18 +305,22 @@ public class Rest_Objetivos_Empresa {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Boolean MontaObjetivo(@QueryParam("token") String token, @QueryParam("empresaId") String empresaId, @QueryParam("objetivoId") String objetivoId, @QueryParam("habilidadeId") String habilidadeId)  {
-		if ((commons_db.getCollection(token, "userPerfil", "documento.token")) == null) {
+		if ((commons_db.getCollection(token, "userPerfil", "documento.token", mongo, false)) == null) {
+			mongo.close();
 			return null;
 		};
 		if (empresaId == null){
+			mongo.close();
 			return false;
 		};
 		if (objetivoId == null){
+			mongo.close();
 			return false;
 		};
 		BasicDBObject docObjetivo = new BasicDBObject();
-		docObjetivo = commons_db.getCollection(objetivoId, "objetivos", "documento.id");
+		docObjetivo = commons_db.getCollection(objetivoId, "objetivos", "documento.id", mongo, false);
 		if (docObjetivo == null){
+			mongo.close();
 			return false;
 		};
 
@@ -302,8 +334,9 @@ public class Rest_Objetivos_Empresa {
 		key.put("value", objetivoId);
 		keysArray.add(key);
 
-		Response response = commons_db.obterCrud("objetivosEmpresa", keysArray);
+		Response response = commons_db.obterCrud("objetivosEmpresa", keysArray, mongo, false);
 		if ((response.getStatus() != 200)){
+			mongo.close();
 			return false;
 		};
 		BasicDBObject objetivoEmpresaObj = new BasicDBObject();
@@ -320,7 +353,7 @@ public class Rest_Objetivos_Empresa {
 		Boolean incluirHabilidadeIn = false;
 		Boolean incluirHabilidadeOut = false;
 
-		BasicDBObject objetivoObj = commons_db.getCollection(objetivoId, "objetivos", "documento.id");
+		BasicDBObject objetivoObj = commons_db.getCollection(objetivoId, "objetivos", "documento.id", mongo, false);
 		BasicDBObject objetivoDoc = new BasicDBObject();
 		objetivoDoc.putAll((Map) objetivoObj.get("documento"));
 
@@ -385,7 +418,8 @@ public class Rest_Objetivos_Empresa {
 		BasicDBObject documento = new BasicDBObject();
 		documento.put("documento", objetivoEmpresaDoc);
 
-		commons_db.atualizarCrud("objetivosEmpresa", fieldsArray, keysArray, documento);
+		commons_db.atualizarCrud("objetivosEmpresa", fieldsArray, keysArray, documento, mongo, false);
+		mongo.close();
 		return true;	
 	};
 	

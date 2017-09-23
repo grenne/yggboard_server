@@ -12,6 +12,7 @@ import javax.ws.rs.core.Response;
 import org.json.simple.JSONObject;
 
 import com.mongodb.BasicDBObject;
+import com.mongodb.MongoClient;
 
  
 @Singleton
@@ -19,23 +20,25 @@ import com.mongodb.BasicDBObject;
 @Path("/batch")
 public class Rest_ProcessosBatch {
 	
-	public Commons commons = new Commons();
-	public Commons_DB commons_db = new Commons_DB();
-	public ProcessosBatch processosBatch = new ProcessosBatch();
+	MongoClient mongo = new MongoClient();
+	
+	Commons commons = new Commons();
+	Commons_DB commons_db = new Commons_DB();
+	ProcessosBatch processosBatch = new ProcessosBatch();
 		
 	@SuppressWarnings("rawtypes")
 	@Path("/atualiza/indices/collection")
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response AtualizaIndiceColletion(JSONObject param)  {
-		if (commons.testaToken(param.get("token").toString()).getStatus() != 200) {
+		if (commons.testaToken(param.get("token").toString(), mongo).getStatus() != 200) {
 			return Response.status(401).entity("invalid token").build();	
 		};
 		BasicDBObject objParam = new BasicDBObject();
 		objParam.putAll(param);
 		BasicDBObject objArrays = new BasicDBObject();
 		objArrays.putAll((Map) objParam.get("arrays"));
-		processosBatch.CriaIndices(param.get("collection").toString(), objArrays);
+		processosBatch.CriaIndices(param.get("collection").toString(), objArrays, mongo);
 		return Response.status(200).entity("Processo encerrado").build();	
 	};
 };

@@ -21,12 +21,15 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.mongodb.BasicDBObject;
+import com.mongodb.MongoClient;
 
 @Singleton
 // @Lock(LockType.READ)
 @Path("/index")
 
 public class Rest_Index {
+	
+	MongoClient mongo = new MongoClient();
 	
 	Commons_DB commons_db = new Commons_DB();
 	Commons commons = new Commons();
@@ -40,17 +43,19 @@ public class Rest_Index {
 		System.out.println("chamada index:" + assunto );
 		
 		if (id == null && !assunto.equals("todos")){
+			mongo.close();
 			return null;
 		};
 		Commons commons = new Commons();
 		Listas listas = new Listas();
 		Opcoes opcoes = new Opcoes();
 		Commons_DB commons_db = new Commons_DB();	
-		BasicDBObject doc = commons_db.getCollection(usuario, "userPerfil", "documento.token");	
+		BasicDBObject doc = commons_db.getCollection(usuario, "userPerfil", "documento.token", mongo, false);	
 		BasicDBObject objUserPerfil = new BasicDBObject();
 		if (doc != null){
 			objUserPerfil.putAll((Map) doc.get("documento"));
 		}else{
+			mongo.close();
 			return null;
 		};
 
@@ -68,7 +73,7 @@ public class Rest_Index {
 				opcoes.setCarregaPreRequisitos(true);
 				opcoes.setCarregaCursosPreRequisitos(true);
 				opcoes.setCarregaAreasConhecimentoPreRequisitos(true);
-				processaObjetivos(id, listas, opcoes);
+				processaObjetivos(id, listas, opcoes, mongo);
 				break;
 			case "habilidades":
 				opcoes.setCarregaHabilidadesAreaConhecimento(true);
@@ -76,14 +81,14 @@ public class Rest_Index {
 				opcoes.setCarregaHabilidadesObjetivos(true);
 				opcoes.setCarregaPreRequisitos(true);
 				opcoes.setCarregaObjetivosAreasAtuacao(true);
-				processaHabilidades(id, listas, opcoes);
+				processaHabilidades(id, listas, opcoes, mongo);
 				break;
 			case "curso":
 				opcoes.setCarregaCursosHabilidades(true);
 				opcoes.setCarregaHabilidadesAreaConhecimento(true);
 				opcoes.setCarregaHabilidadesObjetivos(true);
 				opcoes.setCarregaObjetivosAreasAtuacao(true);
-				processaCursos(id, listas, opcoes);
+				processaCursos(id, listas, opcoes, mongo);
 				break;
 			case "areaAtuacao":
 				opcoes.setCarregaAreasAtuacaoObjetivos(true);
@@ -93,7 +98,7 @@ public class Rest_Index {
 				opcoes.setCarregaPreRequisitos(true);
 				opcoes.setCarregaCursosPreRequisitos(true);
 				opcoes.setCarregaAreasConhecimentoPreRequisitos(true);
-				processaAreaAtuacao(id, listas, opcoes);
+				processaAreaAtuacao(id, listas, opcoes, mongo);
 				break;
 			case "areaConhecimento":
 				opcoes.setCarregaAreaConhecimentoHabilidades(true);
@@ -101,19 +106,20 @@ public class Rest_Index {
 				opcoes.setCarregaHabilidadesObjetivos(true);
 				opcoes.setCarregaObjetivosAreasAtuacao(true);
 				opcoes.setCarregaHabilidadesAreaConhecimento(true);
-				processaAreaConhecimento(id, listas, opcoes);
+				processaAreaConhecimento(id, listas, opcoes, mongo);
 				break;
 			default:
 				break;
 			};
 		}else{
-			results = carregaTudo(listas, empresaId);
+			results = carregaTudo(listas, empresaId, mongo);
 			System.out.println("saida carrega tudo:" + assunto );
+			mongo.close();
 			return results;
 		};
 
 		if (empresaId != null) {
-			results.put("objetivos", filtraObjetivosEmpresa(listas.objetivos(), empresaId));
+			results.put("objetivos", filtraObjetivosEmpresa(listas.objetivos(), empresaId, mongo));
 		}else {
 			results.put("objetivos", listas.objetivos());
 		};
@@ -127,6 +133,7 @@ public class Rest_Index {
 
 		System.out.println("saida chamada index:" + assunto );
 
+		mongo.close();
 		return results;
 			
 			// qdo escolhida uma habilidade trazer todos os pré-requisitos, objetivos, cursos, area de atuação da habiidade e área e conhecimento dos objetivos
@@ -141,9 +148,9 @@ public class Rest_Index {
 	};
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private JSONArray filtraObjetivosEmpresa(JSONArray objetivos, String empresaId) {
+	private JSONArray filtraObjetivosEmpresa(JSONArray objetivos, String empresaId, MongoClient mongo) {
 		
-		JSONArray objetivosEmpresa = commons_db.getCollectionLista(empresaId, "objetivosEmpresa", "documento.empresaId");
+		JSONArray objetivosEmpresa = commons_db.getCollectionLista(empresaId, "objetivosEmpresa", "documento.empresaId", mongo, false);
 		
 		if (objetivosEmpresa == null) {
 			return objetivos;
@@ -168,18 +175,18 @@ public class Rest_Index {
 		
 	};
 
-	private BasicDBObject carregaTudo(Listas listas, String empresaId) {
+	private BasicDBObject carregaTudo(Listas listas, String empresaId, MongoClient mongo) {
 		
-		carregaLista(listas.objetivos(), listas, "objetivos");
-		carregaLista(listas.habilidades(), listas, "habilidades");
-		carregaLista(listas.cursos(), listas, "cursos");
-		carregaLista(listas.areasAtuacao(), listas, "areaAtuacao");
-		carregaLista(listas.areasConhecimento(), listas, "areaConhecimento");
+		carregaLista(listas.objetivos(), listas, "objetivos", mongo);
+		carregaLista(listas.habilidades(), listas, "habilidades", mongo);
+		carregaLista(listas.cursos(), listas, "cursos", mongo);
+		carregaLista(listas.areasAtuacao(), listas, "areaAtuacao", mongo);
+		carregaLista(listas.areasConhecimento(), listas, "areaConhecimento", mongo);
 		
 		BasicDBObject results = new BasicDBObject();
 
 		if (empresaId != null) {
-			results.put("objetivos", filtraObjetivosEmpresa(listas.objetivos(), empresaId));
+			results.put("objetivos", filtraObjetivosEmpresa(listas.objetivos(), empresaId, mongo));
 		}else {
 			results.put("objetivos", listas.objetivos());
 		};
@@ -198,7 +205,7 @@ public class Rest_Index {
 	@Path("/obter/filtro")	
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
-	public BasicDBObject ObterItensFiltro(JSONArray objFiltros) throws JsonParseException, JsonMappingException, IOException {
+	public BasicDBObject ObterItensFiltro(JSONArray objFiltros, MongoClient mongo ) throws JsonParseException, JsonMappingException, IOException {
 		
 		Listas listas = new Listas();
 		Opcoes opcoes = new Opcoes();
@@ -207,16 +214,18 @@ public class Rest_Index {
 	
 		JSONObject objItemFiltro_0 = new JSONObject();
 		if (objFiltros == null){
+			mongo.close();
 			return objUserPerfil;
 		};
 
 		objItemFiltro_0.putAll((Map) objFiltros.get(0));
 
-		BasicDBObject doc = commons_db.getCollection(objItemFiltro_0.get("usuario").toString(), "userPerfil", "documento.token");
+		BasicDBObject doc = commons_db.getCollection(objItemFiltro_0.get("usuario").toString(), "userPerfil", "documento.token", mongo, false);
 	
 		if (doc != null){
 			objUserPerfil.putAll((Map) doc.get("documento"));
 		}else{
+			mongo.close();
 			return null;
 		};
 
@@ -238,78 +247,78 @@ public class Rest_Index {
 				if (filtro){
 					opcoes.setAllFalse();
 					opcoes.setFiltro(false);
-					processaObjetivos(objItemFiltro.get("id").toString(), listas, opcoes);
+					processaObjetivos(objItemFiltro.get("id").toString(), listas, opcoes, mongo);
 					opcoes.setAllTrue();
 					opcoes.setFiltro(true);
-					processaObjetivos(objItemFiltro.get("id").toString(), listas, opcoes);
+					processaObjetivos(objItemFiltro.get("id").toString(), listas, opcoes, mongo);
 				}else{
 					opcoes.setObjetivo();
-					processaObjetivos(objItemFiltro.get("id").toString(), listas, opcoes);					
+					processaObjetivos(objItemFiltro.get("id").toString(), listas, opcoes, mongo);					
 				}
 				break;
 			case "objetivo":
 				if (filtro){
 					opcoes.setAllFalse();
 					opcoes.setFiltro(false);
-					processaObjetivos(objItemFiltro.get("id").toString(), listas, opcoes);
+					processaObjetivos(objItemFiltro.get("id").toString(), listas, opcoes, mongo);
 					opcoes.setAllTrue();
 					opcoes.setFiltro(true);
-					processaObjetivos(objItemFiltro.get("id").toString(), listas, opcoes);
+					processaObjetivos(objItemFiltro.get("id").toString(), listas, opcoes, mongo);
 				}else{
 					opcoes.setObjetivo();
-					processaObjetivos(objItemFiltro.get("id").toString(), listas, opcoes);					
+					processaObjetivos(objItemFiltro.get("id").toString(), listas, opcoes, mongo);					
 				}
 				break;
 			case "habilidades":
 				if (filtro){
 					opcoes.setAllFalse();
 					opcoes.setFiltro(false);
-					processaHabilidades(objItemFiltro.get("id").toString(), listas, opcoes);
+					processaHabilidades(objItemFiltro.get("id").toString(), listas, opcoes, mongo);
 					opcoes.setAllTrue();
 					opcoes.setFiltro(true);
-					processaHabilidades(objItemFiltro.get("id").toString(), listas, opcoes);
+					processaHabilidades(objItemFiltro.get("id").toString(), listas, opcoes, mongo);
 				}else{
 					opcoes.setHabilidade();
-					processaHabilidades(objItemFiltro.get("id").toString(), listas, opcoes);					
+					processaHabilidades(objItemFiltro.get("id").toString(), listas, opcoes, mongo);					
 				}
 				break;
 			case "cursos":
 				if (filtro){
 					opcoes.setAllFalse();
 					opcoes.setFiltro(false);
-					processaCursos(objItemFiltro.get("id").toString(), listas, opcoes);
+					processaCursos(objItemFiltro.get("id").toString(), listas, opcoes, mongo);
 					opcoes.setAllTrue();
 					opcoes.setFiltro(true);
-					processaCursos(objItemFiltro.get("id").toString(), listas, opcoes);
+					processaCursos(objItemFiltro.get("id").toString(), listas, opcoes, mongo);
 				}else{
 					opcoes.setCurso();
-					processaCursos(objItemFiltro.get("id").toString(), listas, opcoes);					
+					processaCursos(objItemFiltro.get("id").toString(), listas, opcoes, mongo);					
 				};
 				break;
 			case "areaAtuacao":
 				if (filtro){
 					opcoes.setAllFalse();
 					opcoes.setFiltro(false);
-					processaAreaAtuacao(objItemFiltro.get("id").toString(), listas, opcoes);
+					processaAreaAtuacao(objItemFiltro.get("id").toString(), listas, opcoes, mongo);
 					opcoes.setAllTrue();
 					opcoes.setFiltro(true);					
-					processaAreaAtuacao(objItemFiltro.get("id").toString(), listas, opcoes);
+					processaAreaAtuacao(objItemFiltro.get("id").toString(), listas, opcoes, mongo);
 				}else{
 					opcoes.setAreaAtuacao();
-					processaAreaAtuacao(objItemFiltro.get("id").toString(), listas, opcoes);					
+					processaAreaAtuacao(objItemFiltro.get("id").toString(), listas, opcoes, mongo);					
 				}
 				break;
 			case "areaConhecimento":
 				if (filtro){
 					opcoes.setAllFalse();
 					opcoes.setFiltro(false);
-					processaAreaConhecimento(objItemFiltro.get("id").toString(), listas, opcoes);
+					processaAreaConhecimento(objItemFiltro.get("id").toString(), listas, opcoes, mongo);
 					opcoes.setAllTrue();
 					opcoes.setFiltro(true);					
-					processaAreaConhecimento(objItemFiltro.get("id").toString(), listas, opcoes);
+					processaAreaConhecimento(objItemFiltro.get("id").toString(), listas, opcoes, mongo);
 				}else{
 					opcoes.setAreaConhecimento();
-					processaAreaConhecimento(objItemFiltro.get("id").toString(), listas, opcoes);					
+					processaAreaConhecimento(objItemFiltro.get("id").toString(), listas, opcoes, mongo);					
 				};
 				break;
 			default:
@@ -353,7 +362,7 @@ public class Rest_Index {
 			Object elementos[] = listas.elementosFiltro().toArray();
 			opcoes.setAllTrue();
 			for (int i = 0; i < elementos.length; i++) {
-				if (selecionaFiltro(elementos[i], objFiltros)){
+				if (selecionaFiltro(elementos[i], objFiltros, mongo)){
 					JSONObject selecionado = new JSONObject();
 					selecionado.putAll((Map) elementos[i]);
 					if (filtroHabilidade){
@@ -391,22 +400,22 @@ public class Rest_Index {
 					opcoes.setFiltro(false);
 					switch (selecionado.get("assunto").toString()) {
 					case "objetivos":
-						processaObjetivos(selecionado.get("value").toString(), listas, opcoes);
+						processaObjetivos(selecionado.get("value").toString(), listas, opcoes, mongo);
 						break;
 					case "objetivo":
-						processaObjetivos(selecionado.get("value").toString(), listas, opcoes);
+						processaObjetivos(selecionado.get("value").toString(), listas, opcoes, mongo);
 						break;
 					case "habilidades":
-						processaHabilidades(selecionado.get("value").toString(), listas, opcoes);
+						processaHabilidades(selecionado.get("value").toString(), listas, opcoes, mongo);
 						break;
 					case "cursos":
-						processaCursos(selecionado.get("value").toString(), listas, opcoes);
+						processaCursos(selecionado.get("value").toString(), listas, opcoes, mongo);
 						break;
 					case "areaAtuacao":
-						processaAreaAtuacao(selecionado.get("value").toString(), listas, opcoes);
+						processaAreaAtuacao(selecionado.get("value").toString(), listas, opcoes, mongo);
 						break;
 					case "areaConhecimento":
-						processaAreaConhecimento(selecionado.get("value").toString(), listas, opcoes);
+						processaAreaConhecimento(selecionado.get("value").toString(), listas, opcoes, mongo);
 						break;
 					default:
 						break;
@@ -429,6 +438,7 @@ public class Rest_Index {
 		results.put("areaAtuacao", listas.areasAtuacao());
 		results.put("areaConhecimento", listas.areasConhecimento());
 		
+		mongo.close();
 		return results;
 			
 			// qdo escolhida uma habilidade trazer todos os pré-requisitos, objetivos, cursos, area de atuação da habiidade e área e conhecimento dos objetivos
@@ -443,7 +453,7 @@ public class Rest_Index {
 	};
 
 	@SuppressWarnings({ "unchecked", "rawtypes"})
-	private Boolean selecionaFiltro(Object elemento, JSONArray objFiltros) {
+	private Boolean selecionaFiltro(Object elemento, JSONArray objFiltros, MongoClient mongo) {
 		
 		Boolean filtroSelecionado = false;
 		Boolean selecionado = true;
@@ -494,11 +504,11 @@ public class Rest_Index {
 	};
 
 	@SuppressWarnings({ "unchecked" })
-	private void processaObjetivos(String id, Listas listas, Opcoes opcoes) {
+	private void processaObjetivos(String id, Listas listas, Opcoes opcoes, MongoClient mongo) {
 		Commons commons = new Commons();
 		Commons_DB commons_db = new Commons_DB();
 
-		BasicDBObject cursor = commons_db.getCollection(id, "objetivos", "documento.id");
+		BasicDBObject cursor = commons_db.getCollection(id, "objetivos", "documento.id", mongo, false);
 		
 		if (cursor != null){
 			BasicDBObject objetivo = (BasicDBObject) cursor.get("documento");
@@ -518,7 +528,7 @@ public class Rest_Index {
 					while (z < arrayNecessarios.length) {
 						if (!opcoes.veioHabilidades()){
 							opcoes.setVeioObjetivos();
-							processaHabilidades(arrayNecessarios[z].toString(), listas, opcoes);
+							processaHabilidades(arrayNecessarios[z].toString(), listas, opcoes, mongo);
 							opcoes.setVeioObjetivos();
 						};
 						++z;
@@ -531,7 +541,7 @@ public class Rest_Index {
 					//			
 					int w = 0;
 					while (w < arrayAreaAtuacao.length) {
-						carregaAreaAtuacao(arrayAreaAtuacao[w].toString(), listas, opcoes);
+						carregaAreaAtuacao(arrayAreaAtuacao[w].toString(), listas, opcoes, mongo);
 						++w;
 					};
 				};
@@ -560,7 +570,7 @@ public class Rest_Index {
 						arrayJson.add(arrayNecessarios[i].toString());
 						if (!opcoes.veioHabilidades()){
 							opcoes.setVeioObjetivos();
-							processaHabilidades(arrayNecessarios[i].toString(), listas, opcoes);
+							processaHabilidades(arrayNecessarios[i].toString(), listas, opcoes, mongo);
 							opcoes.setVeioObjetivos();
 						};
 					};
@@ -578,7 +588,7 @@ public class Rest_Index {
 						arrayJson.add(arrayAreaAtuacao[i].toString());
 						if (!opcoes.veioAreaAtuacao()){
 							opcoes.setVeioObjetivos();
-							processaAreaAtuacao(arrayAreaAtuacao[i].toString(), listas, opcoes);
+							processaAreaAtuacao(arrayAreaAtuacao[i].toString(), listas, opcoes, mongo);
 							opcoes.setVeioObjetivos();
 						};
 					};
@@ -593,11 +603,11 @@ public class Rest_Index {
 	};
 
 	@SuppressWarnings({ "unchecked" })
-	private void processaHabilidades(String id, Listas listas, Opcoes opcoes) {
+	private void processaHabilidades(String id, Listas listas, Opcoes opcoes, MongoClient mongo) {
 		Commons commons = new Commons();
 		Commons_DB commons_db = new Commons_DB();
 
-		BasicDBObject cursor = commons_db.getCollection(id, "habilidades", "documento.id");
+		BasicDBObject cursor = commons_db.getCollection(id, "habilidades", "documento.id", mongo, false);
 		
 		if (cursor != null){
 			BasicDBObject habilidade = (BasicDBObject) cursor.get("documento");
@@ -627,7 +637,7 @@ public class Rest_Index {
 					while (w < arrayObjetivos.length) {
 						if (!opcoes.veioObjetivos()){
 							opcoes.setVeioHabilidades();
-							processaObjetivos(arrayObjetivos[w].toString(), listas, opcoes);
+							processaObjetivos(arrayObjetivos[w].toString(), listas, opcoes, mongo);
 							opcoes.setVeioHabilidades();
 						};
 						++w;
@@ -640,7 +650,7 @@ public class Rest_Index {
 					//
 					int i = 0;
 					while (i < arrayCursos.length) {
-						carregaCurso(arrayCursos[i].toString(), listas, opcoes);
+						carregaCurso(arrayCursos[i].toString(), listas, opcoes, mongo);
 						++i;
 					};
 		    	};
@@ -651,14 +661,14 @@ public class Rest_Index {
 					Object arrayAreaConhecimento[] = arrayListAreaConhecimento.toArray();
 					int w = 0;
 					while (w < arrayAreaConhecimento.length) {
-						carregaAreaConhecimento(arrayAreaConhecimento[w].toString(), listas, opcoes);
+						carregaAreaConhecimento(arrayAreaConhecimento[w].toString(), listas, opcoes, mongo);
 						++w;
 					};
 				};
 					//
 					// ***		carrega habilidade
 					//			
-				carregaHabilidade(id, listas, opcoes);
+				carregaHabilidade(id, listas, opcoes, mongo);
 
 			}else{
 				//
@@ -672,7 +682,7 @@ public class Rest_Index {
 						arrayJson.add(arrayCursos[i].toString());
 						if (!opcoes.veioCursos()){
 							opcoes.setVeioHabilidades();
-							processaCursos(arrayCursos[i].toString(), listas, opcoes);
+							processaCursos(arrayCursos[i].toString(), listas, opcoes, mongo);
 							opcoes.setVeioHabilidades();
 						};
 					};
@@ -690,7 +700,7 @@ public class Rest_Index {
 						arrayJson.add(arrayObjetivos[i]);
 						if (!opcoes.veioObjetivos()){
 							opcoes.setVeioHabilidades();
-							processaObjetivos(arrayObjetivos[i].toString(), listas, opcoes);
+							processaObjetivos(arrayObjetivos[i].toString(), listas, opcoes, mongo);
 							opcoes.setVeioHabilidades();
 						};
 					};
@@ -708,7 +718,7 @@ public class Rest_Index {
 						arrayJson.add(arrayAreaConhecimento[i].toString());
 						if (!opcoes.veioAreaConhecimento()){
 							opcoes.setVeioHabilidades();
-							processaAreaConhecimento(arrayAreaConhecimento[i].toString(), listas, opcoes);
+							processaAreaConhecimento(arrayAreaConhecimento[i].toString(), listas, opcoes, mongo);
 							opcoes.setVeioHabilidades();
 						};
 					};
@@ -728,7 +738,7 @@ public class Rest_Index {
 		    		Object arrayPreRequisitos[] = arrayList.toArray();
 					int z = 0;
 					while (z < arrayPreRequisitos.length) {
-						carregaPreRequisitosFiltro(commons.preRequisito(arrayPreRequisitos[z].toString()), listas, opcoes);
+						carregaPreRequisitosFiltro(commons.preRequisito(arrayPreRequisitos[z].toString()), listas, opcoes, mongo);
 						++z;
 					};
 		    	};
@@ -738,11 +748,11 @@ public class Rest_Index {
 	};
 
 	@SuppressWarnings({ "unchecked", "rawtypes"})
-	private void processaCursos(String id, Listas listas, Opcoes opcoes) {
+	private void processaCursos(String id, Listas listas, Opcoes opcoes, MongoClient mongo) {
 		Commons commons = new Commons();
 		Commons_DB commons_db = new Commons_DB();
 
-		BasicDBObject cursor = commons_db.getCollection(id, "cursos", "documento.id");
+		BasicDBObject cursor = commons_db.getCollection(id, "cursos", "documento.id", mongo, false);
 		
 		if (cursor != null){
 			BasicDBObject curso = (BasicDBObject) cursor.get("documento");
@@ -758,7 +768,7 @@ public class Rest_Index {
 					while (z < arrayHabilidades.length) {
 						if (!opcoes.veioHabilidades()){
 							opcoes.setVeioCursos();
-							processaHabilidades(arrayHabilidades[z].toString(), listas, opcoes);
+							processaHabilidades(arrayHabilidades[z].toString(), listas, opcoes, mongo);
 							opcoes.setVeioCursos();
 						};
 						++z;
@@ -785,7 +795,7 @@ public class Rest_Index {
 						arrayJson.add(arrayHabilidades[i].toString());
 						if (!opcoes.veioHabilidades()){
 							opcoes.setVeioCursos();
-							processaHabilidades(arrayHabilidades[i].toString(), listas, opcoes);
+							processaHabilidades(arrayHabilidades[i].toString(), listas, opcoes, mongo);
 							opcoes.setVeioCursos();
 						};
 					};
@@ -804,10 +814,10 @@ public class Rest_Index {
 	};
 
 	@SuppressWarnings({ "unchecked" })
-	private void processaAreaConhecimento(String id, Listas listas, Opcoes opcoes) {
+	private void processaAreaConhecimento(String id, Listas listas, Opcoes opcoes, MongoClient mongo) {
 		Commons_DB commons_db = new Commons_DB();
 
-		BasicDBObject cursor = commons_db.getCollection(id, "areaConhecimento", "documento.id");
+		BasicDBObject cursor = commons_db.getCollection(id, "areaConhecimento", "documento.id", mongo, false);
 		
 		if (cursor != null){
 			BasicDBObject areaConhecimento = (BasicDBObject) cursor.get("documento");
@@ -823,7 +833,7 @@ public class Rest_Index {
 					while (z < arrayHabilidades.length) {
 						if (!opcoes.veioHabilidades()){
 							opcoes.setVeioAreaConhecimento();
-							processaHabilidades(arrayHabilidades[z].toString(), listas, opcoes);
+							processaHabilidades(arrayHabilidades[z].toString(), listas, opcoes, mongo);
 							opcoes.setVeioAreaConhecimento();
 						};
 						++z;
@@ -841,7 +851,7 @@ public class Rest_Index {
 						arrayJson.add(arrayHabilidades[i]);
 						if (!opcoes.veioHabilidades()){
 							opcoes.setVeioAreaConhecimento();
-							processaHabilidades(arrayHabilidades[i].toString(), listas, opcoes);
+							processaHabilidades(arrayHabilidades[i].toString(), listas, opcoes, mongo);
 							opcoes.setVeioAreaConhecimento();
 						};
 					};
@@ -859,10 +869,10 @@ public class Rest_Index {
 		};
 	};
 	@SuppressWarnings({ "unchecked" })
-	private void processaAreaAtuacao(String id, Listas listas, Opcoes opcoes) {		
+	private void processaAreaAtuacao(String id, Listas listas, Opcoes opcoes, MongoClient mongo) {		
 		Commons_DB commons_db = new Commons_DB();
 
-		BasicDBObject cursor = commons_db.getCollection(id, "areaAtuacao", "documento.id");
+		BasicDBObject cursor = commons_db.getCollection(id, "areaAtuacao", "documento.id", mongo, false);
 		
 		if (cursor != null){
 			BasicDBObject areaAtuacao = (BasicDBObject) cursor.get("documento");
@@ -881,7 +891,7 @@ public class Rest_Index {
 					while (z < arrayObjetivos.length) {
 						if (!opcoes.veioObjetivos()){
 							opcoes.setVeioAreaAtuacao();
-							processaObjetivos(arrayObjetivos[z].toString(), listas, opcoes);
+							processaObjetivos(arrayObjetivos[z].toString(), listas, opcoes, mongo);
 							opcoes.setVeioAreaAtuacao();
 						};
 						++z;
@@ -899,7 +909,7 @@ public class Rest_Index {
 						arrayJson.add(arrayObjetivos[i].toString());
 						if (!opcoes.veioObjetivos()){
 							opcoes.setVeioAreaAtuacao();
-							processaObjetivos(arrayObjetivos[i].toString(), listas, opcoes);
+							processaObjetivos(arrayObjetivos[i].toString(), listas, opcoes, mongo);
 							opcoes.setVeioAreaAtuacao();
 						};
 					};
@@ -918,11 +928,11 @@ public class Rest_Index {
 	};
 
 	@SuppressWarnings({ "unchecked"})
-	private void carregaHabilidade(String id, Listas listas, Opcoes opcoes) {
+	private void carregaHabilidade(String id, Listas listas, Opcoes opcoes, MongoClient mongo) {
 		Commons commons = new Commons();
 		Commons_DB commons_db = new Commons_DB();
 
-		BasicDBObject cursor = commons_db.getCollection(id, "habilidades", "documento.id");
+		BasicDBObject cursor = commons_db.getCollection(id, "habilidades", "documento.id", mongo, false);
 		
 		if (cursor != null){
 			BasicDBObject habilidade = (BasicDBObject) cursor.get("documento");
@@ -939,7 +949,7 @@ public class Rest_Index {
 				habilidade.put("possui", commons.testaElementoArray(id, (ArrayList<String>) listas.userPerfil().get("habilidades")));
 			};
 			Boolean carregouHabilidade = false;
-			if (addObjeto(listas.habilidadesCarregadas(), idObj)){
+			if (addObjeto(listas.habilidadesCarregadas(), idObj, mongo)){
 				listas.addHabilidades(habilidade);					
 				carregouHabilidade = true;
 			};
@@ -957,8 +967,8 @@ public class Rest_Index {
 						String preRequisito = commons.preRequisito(arrayPreRequisitos[z].toString());
 						BasicDBObject idObjPreReq = new BasicDBObject();
 						idObjPreReq.put("id", preRequisito);
-						if (addObjeto(listas.habilidadesCarregadas(), idObjPreReq)){
-							carregaPreRequisitos((String) preRequisito, "1", listas, opcoes);
+						if (addObjeto(listas.habilidadesCarregadas(), idObjPreReq, mongo)){
+							carregaPreRequisitos((String) preRequisito, "1", listas, opcoes, mongo);
 						};
 						++z;
 					};
@@ -968,11 +978,11 @@ public class Rest_Index {
 	};
 
 	@SuppressWarnings({ "unchecked"})
-	private void carregaPreRequisitos(String id, String nivel, Listas listas, Opcoes opcoes) {
+	private void carregaPreRequisitos(String id, String nivel, Listas listas, Opcoes opcoes, MongoClient mongo) {
 		Commons commons = new Commons();
 		Commons_DB commons_db = new Commons_DB();
 
-		BasicDBObject cursor = commons_db.getCollection(id, "habilidades", "documento.id");
+		BasicDBObject cursor = commons_db.getCollection(id, "habilidades", "documento.id", mongo, false);
 		
 		if (cursor != null){
 			BasicDBObject habilidade = (BasicDBObject) cursor.get("documento");
@@ -986,7 +996,7 @@ public class Rest_Index {
 			if (listas.userPerfil().get("habilidades") != null){
 				habilidade.put("possui", commons.testaElementoArray(id, (ArrayList<String>) listas.userPerfil().get("habilidades")));
 			};
-			if (addObjeto(listas.habilidadesCarregadas(), idObj)){
+			if (addObjeto(listas.habilidadesCarregadas(), idObj, mongo)){
 				listas.addHabilidades(habilidade);
 				carregouHabilidade = true;
 			};
@@ -1000,7 +1010,7 @@ public class Rest_Index {
 		    	Object arrayCursos[] = arrayListCursos.toArray();
 				int z = 0;
 				while (z < arrayCursos.length) {
-					carregaCurso(arrayCursos[z].toString(), listas, opcoes);
+					carregaCurso(arrayCursos[z].toString(), listas, opcoes, mongo);
 					++z;
 				};
 	    	};
@@ -1013,7 +1023,7 @@ public class Rest_Index {
 		    	Object arrayObjetivo[] = arrayListObjetivo.toArray();
 				int w = 0;
 				while (w < arrayObjetivo.length) {
-					carregaObjetivo(arrayObjetivo[w].toString(), listas, opcoes);
+					carregaObjetivo(arrayObjetivo[w].toString(), listas, opcoes, mongo);
 					++w;
 				};
 	    	};
@@ -1026,7 +1036,7 @@ public class Rest_Index {
 				Object arrayAreaConhecimento[] = arrayListAreaConhecimento.toArray();
 				int w = 0;
 				while (w < arrayAreaConhecimento.length) {
-					carregaAreaConhecimento(arrayAreaConhecimento[w].toString(), listas, opcoes);
+					carregaAreaConhecimento(arrayAreaConhecimento[w].toString(), listas, opcoes, mongo);
 					++w;
 				};
 			};
@@ -1043,11 +1053,11 @@ public class Rest_Index {
 						String preRequisito =commons.preRequisito(arrayPreRequisitos[z].toString());
 						BasicDBObject idObjPreReq = new BasicDBObject();
 						idObjPreReq.put("id", preRequisito);
-						if (addObjeto(listas.habilidadesCarregadas(), idObjPreReq)){
+						if (addObjeto(listas.habilidadesCarregadas(), idObjPreReq, mongo)){
 							int nivelInt = Integer.valueOf(nivel);
 							nivelInt++;
 							String nivelString = String.valueOf(nivelInt);
-							carregaPreRequisitos(preRequisito.toString(), nivelString, listas, opcoes);
+							carregaPreRequisitos(preRequisito.toString(), nivelString, listas, opcoes, mongo);
 						};
 						++z;
 			    	};
@@ -1057,10 +1067,10 @@ public class Rest_Index {
 	};
 	
 	@SuppressWarnings({ "unchecked"})
-	private void carregaPreRequisitosFiltro(String id, Listas listas, Opcoes opcoes) {
+	private void carregaPreRequisitosFiltro(String id, Listas listas, Opcoes opcoes, MongoClient mongo) {
 		Commons_DB commons_db = new Commons_DB();
 
-		BasicDBObject cursor = commons_db.getCollection(id, "habilidades", "documento.id");
+		BasicDBObject cursor = commons_db.getCollection(id, "habilidades", "documento.id", mongo, false);
 		
 		if (cursor != null){
 			BasicDBObject habilidade = (BasicDBObject) cursor.get("documento");
@@ -1128,15 +1138,15 @@ public class Rest_Index {
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private void carregaCurso(String id, Listas listas, Opcoes opcoes) {
+	private void carregaCurso(String id, Listas listas, Opcoes opcoes, MongoClient mongo) {
 		Commons commons = new Commons();
 		Commons_DB commons_db = new Commons_DB();
 
-		BasicDBObject cursor = commons_db.getCollection(id, "cursos", "documento.id");
+		BasicDBObject cursor = commons_db.getCollection(id, "cursos", "documento.id", mongo, false);
 		
 		if (cursor != null){
 			BasicDBObject curso = (BasicDBObject) cursor.get("documento");
-			if (addObjeto(listas.cursos(), curso)){
+			if (addObjeto(listas.cursos(), curso, mongo)){
 				List arrayParent = (List) curso.get("parents");
 				if (listas.userPerfil().get("cursosInteresse") != null){
 					curso.put("interesse", commons.testaElementoArray(id, (ArrayList<String>) listas.userPerfil().get("cursosInteresse")));
@@ -1155,18 +1165,18 @@ public class Rest_Index {
 		
 	};
 	
-	private void carregaAreaAtuacao(String id, Listas listas, Opcoes opcoes) {
+	private void carregaAreaAtuacao(String id, Listas listas, Opcoes opcoes, MongoClient mongo) {
 		Commons_DB commons_db = new Commons_DB();
-		BasicDBObject cursor = commons_db.getCollection(id, "areaAtuacao", "documento.id");		
+		BasicDBObject cursor = commons_db.getCollection(id, "areaAtuacao", "documento.id", mongo, false);		
 		if (cursor != null){
 			BasicDBObject areaAtuacao = (BasicDBObject) cursor.get("documento");
 			listas.addAreasAtuacao(areaAtuacao);
 		};					
 	};
 	
-	private void carregaAreaConhecimento(String id, Listas listas, Opcoes opcoes) {
+	private void carregaAreaConhecimento(String id, Listas listas, Opcoes opcoes, MongoClient mongo) {
 		Commons_DB commons_db = new Commons_DB();
-		BasicDBObject cursor = commons_db.getCollection(id, "areaConhecimento", "documento.id");
+		BasicDBObject cursor = commons_db.getCollection(id, "areaConhecimento", "documento.id", mongo, false);
 		if (cursor != null){
 			BasicDBObject areaConhecimento = (BasicDBObject) cursor.get("documento");
 			listas.addAreasConhecimento(areaConhecimento);
@@ -1174,10 +1184,10 @@ public class Rest_Index {
 	};
 
 	@SuppressWarnings({ "unchecked"})
-	private void carregaObjetivo(String id, Listas listas, Opcoes opcoes) {
+	private void carregaObjetivo(String id, Listas listas, Opcoes opcoes, MongoClient mongo) {
 		Commons commons = new Commons();
 		Commons_DB commons_db = new Commons_DB();
-		BasicDBObject cursor = commons_db.getCollection(id, "objetivos", "documento.id");
+		BasicDBObject cursor = commons_db.getCollection(id, "objetivos", "documento.id", mongo, false);
 		if (cursor != null){
 			BasicDBObject objetivo = (BasicDBObject) cursor.get("documento");
 			//
@@ -1197,10 +1207,10 @@ public class Rest_Index {
 	};
 
 	@SuppressWarnings({ "unchecked", "rawtypes"})
-	private void carregaLista(JSONArray arrayObj, Listas listas, String collection) {
+	private void carregaLista(JSONArray arrayObj, Listas listas, String collection, MongoClient mongo) {
 		Commons commons = new Commons();
 		Commons_DB commons_db = new Commons_DB();
-		JSONArray cursor = commons_db.getCollectionListaNoKey(collection);	
+		JSONArray cursor = commons_db.getCollectionListaNoKey(collection, mongo, false);	
 		if (cursor != null){
 			for (int i = 0; i < cursor.size(); i++) {
 				BasicDBObject obj = (BasicDBObject) cursor.get(i);
@@ -1208,7 +1218,7 @@ public class Rest_Index {
 				//
 				// ***		carrega lista
 				//			
-				if (addObjeto(arrayObj, obj)){
+				if (addObjeto(arrayObj, obj, mongo)){
 					Boolean carrega = false;
 					switch (collection) {
 					case "cursos":
@@ -1263,7 +1273,7 @@ public class Rest_Index {
 		};
 	};
 
-	private boolean addObjeto(JSONArray array, BasicDBObject elemento) {
+	private boolean addObjeto(JSONArray array, BasicDBObject elemento, MongoClient mongo) {
 
 		if (array != null){
 			for (int i = 0; i < array.size(); i++) {
@@ -1288,11 +1298,12 @@ public class Rest_Index {
 		Opcoes opcoes = new Opcoes();
 		Commons_DB commons_db = new Commons_DB();
 		
-		BasicDBObject doc = commons_db.getCollection(usuario, "usuarios", "documento.token");
+		BasicDBObject doc = commons_db.getCollection(usuario, "usuarios", "documento.token", mongo, false);
 		BasicDBObject objUserPerfil = new BasicDBObject();
 		if (doc != null){
 			objUserPerfil.putAll((Map) doc.get("documento"));
 		}else{
+			mongo.close();
 			return null;
 		};
 
@@ -1300,11 +1311,11 @@ public class Rest_Index {
 		
 		if (planejamentoLista != null){			
   		if (planejamentoLista.equals("true")){			
-  			carregaIndex("objetivos", listas.objetivos(), characters, true, listas, opcoes, 0, empresaId);
-  			carregaIndex("habilidades", listas.habilidades(), characters, true, listas, opcoes, 0, empresaId);
-  			carregaIndex("cursos", listas.cursos(), characters, true, listas, opcoes, 0, empresaId);
-  			carregaIndex("areaAtuacao", listas.areasAtuacao(), characters, true, listas, opcoes, 0, empresaId);
-  			carregaIndex("areaConhecimento", listas.areasConhecimento(), characters, true, listas, opcoes, 0, empresaId);
+  			carregaIndex("objetivos", listas.objetivos(), characters, true, listas, opcoes, 0, empresaId, mongo);
+  			carregaIndex("habilidades", listas.habilidades(), characters, true, listas, opcoes, 0, empresaId, mongo);
+  			carregaIndex("cursos", listas.cursos(), characters, true, listas, opcoes, 0, empresaId, mongo);
+  			carregaIndex("areaAtuacao", listas.areasAtuacao(), characters, true, listas, opcoes, 0, empresaId, mongo);
+  			carregaIndex("areaConhecimento", listas.areasConhecimento(), characters, true, listas, opcoes, 0, empresaId, mongo);
   			results.put("objetivos", listas.objetivos());
   			results.put("habilidades", listas.habilidades());
   			results.put("cursos", listas.cursos());
@@ -1313,26 +1324,27 @@ public class Rest_Index {
   		}else{
   			if (planejamentoLista.equals("false")){			
   				JSONArray documentos = new JSONArray();
-  				carregaIndex("objetivos", documentos, characters, false, listas, opcoes, 4, empresaId);
-  				carregaIndex("habilidades", documentos, characters, false, listas, opcoes, 4, empresaId);
-  				carregaIndex("cursos", documentos, characters, false, listas, opcoes, 4, empresaId);
-  				carregaIndex("areaAtuacao", documentos, characters, false, listas, opcoes, 4, empresaId);
-  				carregaIndex("areaConhecimento", documentos, characters, false, listas, opcoes, 4, empresaId);
+  				carregaIndex("objetivos", documentos, characters, false, listas, opcoes, 4, empresaId, mongo);
+  				carregaIndex("habilidades", documentos, characters, false, listas, opcoes, 4, empresaId, mongo);
+  				carregaIndex("cursos", documentos, characters, false, listas, opcoes, 4, empresaId, mongo);
+  				carregaIndex("areaAtuacao", documentos, characters, false, listas, opcoes, 4, empresaId, mongo);
+  				carregaIndex("areaConhecimento", documentos, characters, false, listas, opcoes, 4, empresaId, mongo);
   				results.put("pesquisa", documentos);				
   			}else{
   				JSONArray documentos = new JSONArray();
-  				carregaIndex(planejamentoLista, documentos, characters, false, listas, opcoes, 10, empresaId);
+  				carregaIndex(planejamentoLista, documentos, characters, false, listas, opcoes, 10, empresaId, mongo);
   				results.put("pesquisa", documentos);				
   			};
   		};
 		};
+		mongo.close();
 		return results;			
 	};
 
 	@SuppressWarnings({ "unchecked", "rawtypes"})
-	private void carregaIndex(String assunto, JSONArray documentos, String characters, Boolean lista, Listas listas, Opcoes opcoes, int qtdeItens, String empresaId) {
+	private void carregaIndex(String assunto, JSONArray documentos, String characters, Boolean lista, Listas listas, Opcoes opcoes, int qtdeItens, String empresaId, MongoClient mongo) {
 		Commons_DB commons_db = new Commons_DB();
-		JSONArray cursor = commons_db.getCollectionLista(assunto, "index", "documento.assunto");		
+		JSONArray cursor = commons_db.getCollectionLista(assunto, "index", "documento.assunto", mongo, false);		
 		if (cursor != null){
 			for (int i = 0; i < cursor.size(); i++) {
 				BasicDBObject index = new BasicDBObject();
@@ -1340,26 +1352,26 @@ public class Rest_Index {
 				JSONObject jsonDocumento = new JSONObject();
 				String [] wordsSource = limpaChar (characters).split(" ");
 				List<?> wordsCompare = (List<?>) index.get("texto");
-				if (wordsoK (wordsSource, wordsCompare)){
+				if (wordsoK (wordsSource, wordsCompare, mongo)){
 					if (lista){
 						switch (assunto) {
 						case "objetivos":
-							processaObjetivos(index.get("id").toString(), listas, opcoes);
+							processaObjetivos(index.get("id").toString(), listas, opcoes, mongo);
 							break;
 						case "objetivo":
-							processaObjetivos(index.get("id").toString(), listas, opcoes);
+							processaObjetivos(index.get("id").toString(), listas, opcoes, mongo);
 							break;
 						case "habilidades":
-							processaHabilidades(index.get("id").toString(), listas, opcoes);
+							processaHabilidades(index.get("id").toString(), listas, opcoes, mongo);
 						break;
 						case "curso":
-							processaCursos(index.get("id").toString(), listas, opcoes);
+							processaCursos(index.get("id").toString(), listas, opcoes, mongo);
 						break;
 						case "areaAtuacao":
-							processaAreaAtuacao(index.get("id").toString(), listas, opcoes);
+							processaAreaAtuacao(index.get("id").toString(), listas, opcoes, mongo);
 						break;
 						case "areaConhecimento":
-							processaAreaConhecimento(index.get("id").toString(), listas, opcoes);
+							processaAreaConhecimento(index.get("id").toString(), listas, opcoes, mongo);
 						break;
 
 						default:
@@ -1371,7 +1383,7 @@ public class Rest_Index {
 						jsonDocumento.put("id", index.get("id").toString());
 						jsonDocumento.put("descricao", index.get("descricao"));
 						if (assunto.equals("usuarios") && empresaId != null) {
-							if (testaEmpresa(index.get("id").toString(), empresaId)) {
+							if (testaEmpresa(index.get("id").toString(), empresaId, mongo)) {
 								documentos.add(jsonDocumento);									
 								if (documentos.size() > qtdeItens){
 									return;
@@ -1390,9 +1402,9 @@ public class Rest_Index {
 	};
 	
 	@SuppressWarnings("rawtypes")
-	private boolean testaEmpresa(String usuarioId, String empresaId) {
+	private boolean testaEmpresa(String usuarioId, String empresaId, MongoClient mongo) {
 		
-		BasicDBObject usuario = commons_db.getCollection(usuarioId, "usuarios", "_id");
+		BasicDBObject usuario = commons_db.getCollection(usuarioId, "usuarios", "_id", mongo, false);
 		if (usuario != null) {
 			BasicDBObject usuarioDoc = new BasicDBObject();
 			usuarioDoc.putAll((Map) usuario.get("documento"));
@@ -1406,7 +1418,7 @@ public class Rest_Index {
 		return false;
 	}
 
-	private boolean wordsoK(String[] wordsSource, List<?> wordsCompare) {
+	private boolean wordsoK(String[] wordsSource, List<?> wordsCompare, MongoClient mongo) {
 		int i = 0;
 		int palavraIgual = 0;
 		while (i < wordsSource.length) {
