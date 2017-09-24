@@ -801,6 +801,7 @@ public class Rest_UserPerfil {
 			mongo.close();
 			return Response.status(200).entity("ok").build();	
 		};
+		mongo.close();
 		return Response.status(401).entity("invalid token").build();	
 	};
 

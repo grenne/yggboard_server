@@ -36,7 +36,8 @@ public class Rest_Avaliacao {
 			mongo.close();
 			return null;
 		};
-		if ((commons_db.getCollection(token, "usuarios", "documento.token", mongo, true)) == null) {
+		if ((commons_db.getCollection(token, "usuarios", "documento.token", mongo, false)) == null) {
+			mongo.close();
 			return null;
 		};
 		
@@ -52,7 +53,8 @@ public class Rest_Avaliacao {
 			mongo.close();
 			return null;
 		};
-		if ((commons_db.getCollection(token, "usuarios", "documento.token", mongo, true)) == null) {
+		if ((commons_db.getCollection(token, "usuarios", "documento.token", mongo, false)) == null) {
+			mongo.close();
 			return null;
 		};
 		if (empresaId == null) {
@@ -69,7 +71,8 @@ public class Rest_Avaliacao {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public JSONArray Colaboradores(@QueryParam("token") String token, @QueryParam("empresaId") String empresaId, @QueryParam("avaliacaoId") String avaliacaoId, @QueryParam("usuarioId") String usuarioId, @QueryParam("perfil") String perfil)  {
-		if ((commons_db.getCollection(token, "usuarios", "documento.token", mongo, true)) == null) {
+		if ((commons_db.getCollection(token, "usuarios", "documento.token", mongo, false)) == null) {
+			mongo.close();
 			return null;
 		};
 		if (empresaId == null) {
@@ -90,7 +93,8 @@ public class Rest_Avaliacao {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public BasicDBObject Colaborador(@QueryParam("token") String token, @QueryParam("avaliacaoId") String avaliacaoId, @QueryParam("usuarioId") String usuarioId)  {
-		if ((commons_db.getCollection(token, "usuarios", "documento.token", mongo, true)) == null) {
+		if ((commons_db.getCollection(token, "usuarios", "documento.token", mongo, false)) == null) {
+			mongo.close();
 			return null;
 		};
 		if (usuarioId == null) {
@@ -111,7 +115,8 @@ public class Rest_Avaliacao {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Boolean MontaMapa(@QueryParam("token") String token, @QueryParam("colaboradorId") String colaboradorId, @QueryParam("colaboradorObjetoId") String colaboradorObjetoId, @QueryParam("assunto") String assunto, @QueryParam("empresaId") String empresaId, @QueryParam("avaliacaoId") String avaliacaoId)  {
-		if ((commons_db.getCollection(token, "usuarios", "documento.token", mongo, true)) == null) {
+		if ((commons_db.getCollection(token, "usuarios", "documento.token", mongo, false)) == null) {
+			mongo.close();
 			return null;
 		};
 		if (colaboradorId == null){
@@ -132,7 +137,8 @@ public class Rest_Avaliacao {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Boolean MontaMapaCliente(@QueryParam("token") String token, @QueryParam("colaboradorId") String colaboradorId, @QueryParam("colaboradorObjetoId") String colaboradorObjetoId, @QueryParam("empresaId") String empresaId, @QueryParam("avaliacaoId") String avaliacaoId, @QueryParam("status") String status)  {
-		if ((commons_db.getCollection(token, "usuarios", "documento.token", mongo, true)) == null) {
+		if ((commons_db.getCollection(token, "usuarios", "documento.token", mongo, false)) == null) {
+			mongo.close();
 			return null;
 		};
 		if (colaboradorId == null){
@@ -153,7 +159,8 @@ public class Rest_Avaliacao {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Boolean MontaMapaHabilidade(@QueryParam("token") String token, @QueryParam("usuarioId") String usuarioId, @QueryParam("habilidadeId") String habilidadeId, @QueryParam("empresaId") String empresaId, @QueryParam("avaliacaoId") String avaliacaoId)  {
-		if ((commons_db.getCollection(token, "usuarios", "documento.token", mongo, true)) == null) {
+		if ((commons_db.getCollection(token, "usuarios", "documento.token", mongo, false)) == null) {
+			mongo.close();
 			return null;
 		};
 		if (usuarioId == null){
@@ -178,7 +185,8 @@ public class Rest_Avaliacao {
 			mongo.close();
 			return false;
 		};
-		if ((commons_db.getCollection(token, "usuarios", "documento.token", mongo, true)) == null) {
+		if ((commons_db.getCollection(token, "usuarios", "documento.token", mongo, false)) == null) {
+			mongo.close();
 			return false;
 		};
 		if (colaboradorId == null){
@@ -211,7 +219,8 @@ public class Rest_Avaliacao {
 			mongo.close();
 			return null;
 		};
-		if ((commons_db.getCollection(token, "usuarios", "documento.token", mongo, true)) == null) {
+		if ((commons_db.getCollection(token, "usuarios", "documento.token", mongo, false)) == null) {
+			mongo.close();
 			return null;
 		};
 		if (avaliadorId == null){
@@ -236,7 +245,8 @@ public class Rest_Avaliacao {
 			mongo.close();
 			return null;
 		};
-		if ((commons_db.getCollection(token, "usuarios", "documento.token", mongo, true)) == null) {
+		if ((commons_db.getCollection(token, "usuarios", "documento.token", mongo, false)) == null) {
+			mongo.close();
 			return null;
 		};
 		if (usuarioId == null){
@@ -261,7 +271,8 @@ public class Rest_Avaliacao {
 			mongo.close();
 			return null;
 		};
-		if ((commons_db.getCollection(token, "usuarios", "documento.token", mongo, true)) == null) {
+		if ((commons_db.getCollection(token, "usuarios", "documento.token", mongo, false)) == null) {
+			mongo.close();
 			return null;
 		};
 		if (empresaId == null){
@@ -282,7 +293,8 @@ public class Rest_Avaliacao {
 			mongo.close();
 			return null;
 		};
-		if ((commons_db.getCollection(token, "usuarios", "documento.token", mongo, true)) == null) {
+		if ((commons_db.getCollection(token, "usuarios", "documento.token", mongo, false)) == null) {
+			mongo.close();
 			return null;
 		};
 		if (empresaId == null){
@@ -311,7 +323,8 @@ public class Rest_Avaliacao {
 			mongo.close();
 			return null;
 		};
-		if ((commons_db.getCollection(token, "usuarios", "documento.token", mongo, true)) == null) {
+		if ((commons_db.getCollection(token, "usuarios", "documento.token", mongo, false)) == null) {
+			mongo.close();
 			return null;
 		};
 		if (empresaId == null){
@@ -340,7 +353,8 @@ public class Rest_Avaliacao {
 			mongo.close();
 			return null;
 		};
-		if ((commons_db.getCollection(token, "usuarios", "documento.token", mongo, true)) == null) {
+		if ((commons_db.getCollection(token, "usuarios", "documento.token", mongo, false)) == null) {
+			mongo.close();
 			return null;
 		};
 		if (empresaId == null){

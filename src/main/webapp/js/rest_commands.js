@@ -177,7 +177,7 @@ function rest_listaReturn (collection, action_ok, action_not_ok, var1, var2, var
 
 	$.ajax({
 		type: "POST",
-        url: localStorage.mainUrl + "yggboard_server/rest/crud/lista/noconnection",
+        url: localStorage.mainUrl + "yggboard_server/rest/crud/lista",
         contentType: "application/json; charset=utf-8",
         dataType: 'json',
         data : JSON.stringify(objJson),

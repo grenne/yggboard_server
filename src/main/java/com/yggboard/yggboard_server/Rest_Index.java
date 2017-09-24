@@ -205,7 +205,7 @@ public class Rest_Index {
 	@Path("/obter/filtro")	
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
-	public BasicDBObject ObterItensFiltro(JSONArray objFiltros, MongoClient mongo ) throws JsonParseException, JsonMappingException, IOException {
+	public BasicDBObject ObterItensFiltro(JSONArray objFiltros) throws JsonParseException, JsonMappingException, IOException {
 		
 		Listas listas = new Listas();
 		Opcoes opcoes = new Opcoes();

@@ -198,7 +198,7 @@ function testaAtualizaPerfil() {
 	var inout = prompt("Inout");
 	var id = prompt("Id");
 	var objJson = {
-		usuario : "157d3855d4430205376417c50ced92b4F",
+		usuario : "939c381184bac73457e3eca584fb1838",
 		tipo : tipo,
 		id : id,
 		assunto : "cadastro",
@@ -231,7 +231,7 @@ function testaFiltro() {
 
 	var objJson = [];
 	var assunto = "objetivos";
-	var usuario = "157d3855d4430205376417c50ced92b4";
+	var usuario = "939c381184bac73457e3eca584fb1838";
 	var id = "1";
 	var filtro = {
 			usuario : usuario,
@@ -240,7 +240,7 @@ function testaFiltro() {
 	};
 	objJson.push(filtro);
 	assunto = "areaConhecimento";
-	usuario = "157d3855d4430205376417c50ced92b4";
+	usuario = "939c381184bac73457e3eca584fb1838";
 	id = "9";
 	filtro = {
 			usuario : usuario,
