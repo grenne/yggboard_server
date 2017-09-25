@@ -447,7 +447,7 @@ public class Rest_UserPerfil {
 		return null;
 	};
 	@SuppressWarnings("rawtypes")
-	private BasicDBObject obterUserPerfil(String userPerfilConsultaId, MongoClient mongo) {
+	public BasicDBObject obterUserPerfil(String userPerfilConsultaId, MongoClient mongo) {
 		
 		BasicDBObject usuario = commons_db.getCollection(userPerfilConsultaId, "usuarios", "_id", mongo, false);
 		if (usuario != null) {
@@ -858,10 +858,8 @@ public class Rest_UserPerfil {
 			for (int i = 0; i < cursor.size(); i++) {
 				BasicDBObject objUserPerfil = new BasicDBObject();
 				objUserPerfil.putAll((Map) cursor.get(i));
-				BasicDBObject documento = new BasicDBObject();
-				documento.putAll((Map) objUserPerfil.get("documento"));
 				JSONObject jsonDocumento = new JSONObject();
-			    jsonDocumento.put("documento", documento);
+			    jsonDocumento.put("documento", objUserPerfil);
 				documentos.add(jsonDocumento);
 			};
 			mongo.close();

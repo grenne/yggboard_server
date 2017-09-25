@@ -1,6 +1,5 @@
 package com.yggboard.yggboard_server;
 
-import java.util.Iterator;
 import java.util.Map;
 
 import javax.inject.Singleton;
@@ -14,7 +13,6 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 
 	
@@ -48,14 +46,10 @@ public class Rest_Curso {
 	@Path("/lista")	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public JSONArray ObterCursos(@QueryParam("habilidade") String idHabilidade) {
+	public JSONArray ObterCursos() {
 		Commons_DB commons_db = new Commons_DB();
 		
-	    if (idHabilidade != null){
-	    	idHabilidade ="";
-	    };
-	    JSONArray cursor = commons_db.getCollectionLista(idHabilidade, "badges", "documento.habilidades.habilidade", mongo, false);
-		
+    JSONArray cursor = commons_db.getCollectionListaNoKey("cursos", mongo, false);
 		if (cursor != null){
 			JSONArray documentos = new JSONArray();
 			for (int i = 0; i < cursor.size(); i++) {
@@ -63,9 +57,7 @@ public class Rest_Curso {
 				objCurso.putAll((Map) cursor.get(i));
 				JSONObject jsonDocumento = new JSONObject();
 				jsonDocumento.put("_id", objCurso.getString("_id"));
-				BasicDBObject setUpdate = new BasicDBObject();
-				setUpdate.putAll((Map) objCurso.get("documento"));
-				jsonDocumento.put("documento", setUpdate);
+				jsonDocumento.put("documento", objCurso);
 				documentos.add(jsonDocumento);
 			};
 			mongo.close();

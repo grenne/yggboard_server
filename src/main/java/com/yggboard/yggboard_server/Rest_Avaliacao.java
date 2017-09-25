@@ -30,7 +30,7 @@ public class Rest_Avaliacao {
 	@Path("/cria/mapa")	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public JSONObject criaMapa(@QueryParam("token") String token, @QueryParam("empresaId") String empresaId, @QueryParam("avaliacaoId") String avaliacaoId)  {
+	public JSONObject CriaMapa(@QueryParam("token") String token, @QueryParam("empresaId") String empresaId, @QueryParam("avaliacaoId") String avaliacaoId)  {
 	
 		if (token == null) {
 			mongo.close();

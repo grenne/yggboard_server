@@ -1,6 +1,5 @@
 package com.yggboard.yggboard_server;
 
-import java.util.Iterator;
 import java.util.Map;
 
 import javax.inject.Singleton;
@@ -14,7 +13,6 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 
 	
@@ -50,8 +48,7 @@ public class Rest_Carreira {
 	@Produces(MediaType.APPLICATION_JSON)
 	public JSONArray ObterCarreiras() {
 		Commons_DB commons_db = new Commons_DB();
-		JSONArray cursor = commons_db.getCollectionLista("", "objetivos", "", mongo, false);
-		
+		JSONArray cursor = commons_db.getCollectionListaNoKey("objetivos", mongo, false);		
 		if (cursor != null){
 			JSONArray documentos = new JSONArray();
 			for (int i = 0; i < cursor.size(); i++) {
@@ -59,9 +56,7 @@ public class Rest_Carreira {
 				objCarreiras.putAll((Map) cursor.get(i));
 				JSONObject jsonDocumento = new JSONObject();
 				jsonDocumento.put("_id", objCarreiras.getString("_id"));
-				BasicDBObject setUpdate = new BasicDBObject();
-				setUpdate.putAll((Map) objCarreiras.get("documento"));
-				jsonDocumento.put("documento", setUpdate);
+				jsonDocumento.put("documento", objCarreiras);
 				documentos.add(jsonDocumento);				
 			};
 			mongo.close();

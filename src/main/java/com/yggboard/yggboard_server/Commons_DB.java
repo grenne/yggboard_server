@@ -74,7 +74,7 @@ public class Commons_DB {
 		if (close) {
 			mongo.close();
 		};
-		return Response.status(400).entity(null).build();
+		return Response.status(204).entity(false).build();
 	};
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -297,7 +297,7 @@ public class Commons_DB {
 		keysArray.add(key);
 
 		Response response = obterCrud(collectionName, keysArray, mongo, close);
-		if ((response.getStatus() == 200)){
+		if ((response.getStatus() == 200 && response.getEntity() != "false")){
 			return (BasicDBObject) response.getEntity();
 		};
 		return null;

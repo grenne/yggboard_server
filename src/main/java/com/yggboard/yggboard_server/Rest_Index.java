@@ -1344,6 +1344,7 @@ public class Rest_Index {
 	@SuppressWarnings({ "unchecked", "rawtypes"})
 	private void carregaIndex(String assunto, JSONArray documentos, String characters, Boolean lista, Listas listas, Opcoes opcoes, int qtdeItens, String empresaId, MongoClient mongo) {
 		Commons_DB commons_db = new Commons_DB();
+		Rest_UserPerfil restuserPerfil = new Rest_UserPerfil();  
 		JSONArray cursor = commons_db.getCollectionLista(assunto, "index", "documento.assunto", mongo, false);		
 		if (cursor != null){
 			for (int i = 0; i < cursor.size(); i++) {
@@ -1383,6 +1384,7 @@ public class Rest_Index {
 						jsonDocumento.put("id", index.get("id").toString());
 						jsonDocumento.put("descricao", index.get("descricao"));
 						if (assunto.equals("usuarios") && empresaId != null) {
+							jsonDocumento.put("userPerfilId", restuserPerfil.obterUserPerfil(index.get("id").toString(), mongo).get("_id").toString());
 							if (testaEmpresa(index.get("id").toString(), empresaId, mongo)) {
 								documentos.add(jsonDocumento);									
 								if (documentos.size() > qtdeItens){
@@ -1390,6 +1392,7 @@ public class Rest_Index {
 								};
 							};
 						}else {
+							jsonDocumento.put("userPerfilId", restuserPerfil.obterUserPerfil(index.get("id").toString(), mongo).get("_id").toString());
 							documentos.add(jsonDocumento);
 							if (documentos.size() > qtdeItens){
 								return;
@@ -1400,6 +1403,7 @@ public class Rest_Index {
 			};		
 		};
 	};
+
 	
 	@SuppressWarnings("rawtypes")
 	private boolean testaEmpresa(String usuarioId, String empresaId, MongoClient mongo) {

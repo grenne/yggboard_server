@@ -117,11 +117,13 @@ public class Rest_Usuario {
 					byte[] tokenByte = commons.gerarHash(commons.currentTime().toString());
 					String token = commons.stringHexa(tokenByte);
 					ArrayList<JSONObject> fieldsArray = new ArrayList<>();
-					JSONObject field = new JSONObject();
-	
-					
+					JSONObject field = new JSONObject();					
 					field.put("field", "token");
 					field.put("value", token);
+					fieldsArray.add(field);				
+					field = new JSONObject();					
+					field.put("field", "lastLogin");
+					field.put("value", commons.todaysDate("yyyy-mm-dd"));
 					fieldsArray.add(field);				
 					commons_db.atualizarCrud("usuarios", fieldsArray, keysArray, null, mongo, false);
 	/*
@@ -136,7 +138,6 @@ public class Rest_Usuario {
 					objUser.remove("password");
 					objUser.remove("token");
 					objUser.put("token", token);
-					objUser.put("lastLogin", commons.todaysDate("yyyy-mm-dd"));
 
 					objUser.put("_id", cursor.get("_id").toString());
 					// obter dados user perfil

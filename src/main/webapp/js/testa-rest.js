@@ -132,25 +132,8 @@ function testaIncluir() {
 };
 function testaAtualizar() {
  
-	var objJson = {
-		token: sessionStorage.token,
-		collection : "usuarios",
-		keys : [ {
-			key : "_id",
-			value : "591d11c89431d262bafddce2"
-		} ],
-		update : 
-			[ 
-				{
-					field : "city",
-					value : "aaaa"
-				}, 
-				{
-					field : "phone",
-					value : "aaaa"
-				}				
-			]
-	};
+	var objJson = 
+			{"token":"939c381184bac73457e3eca584fb1838","collection":"usuarios","keys":[{"key":"documento.email","value":"grenneglr@gmail.com"}],"update":[{"field":"password","value":"turi"}]};
 	$.ajax({
 		type : "POST",
 		url : localStorage.mainUrl + "yggboard_server/rest/crud/atualizar",

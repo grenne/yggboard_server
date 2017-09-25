@@ -58,32 +58,25 @@ public class Rest_Badge {
 				JSONParser parser = new JSONParser(); 
 				BasicDBObject objBadges = new BasicDBObject();
 				objBadges.putAll((Map) cursor.get(i));
-				String documento = objBadges.getString("documento");
-				try {
-					JSONObject jsonObject; 
-					jsonObject = (JSONObject) parser.parse(documento);
-					JSONObject jsonDocumento = new JSONObject();
-					jsonDocumento.put("_id", objBadges.getString("_id"));
-					jsonDocumento.put("documento", jsonObject);
-			    	ArrayList arrayListHabilidades = new ArrayList(); 
-			    	arrayListHabilidades = (ArrayList) jsonObject.get("habilidades");
-			    	Object arrayHabilidades[] = arrayListHabilidades.toArray(); 
-					int w = 0;
-					JSONArray habilidadesArray = new JSONArray();
-					while (w < arrayHabilidades.length) {
-						BasicDBObject cursorHabilidade = commons_db.getCollection(arrayHabilidades[w].toString(), "objetivos", "documento.id", mongo, false);
-						if (cursorHabilidade != null){
-							BasicDBObject jsonHabilidades = new BasicDBObject();
-							jsonHabilidades.put("documento", cursorHabilidade.get("documento"));
-							habilidadesArray.add (jsonHabilidades);
-						};
-						++w;
+				JSONObject jsonDocumento = new JSONObject();
+				jsonDocumento.put("_id", objBadges.getString("_id"));
+				jsonDocumento.put("documento", objBadges);
+	    	ArrayList arrayListHabilidades = new ArrayList(); 
+	    	arrayListHabilidades = (ArrayList) objBadges.get("habilidades");
+	    	Object arrayHabilidades[] = arrayListHabilidades.toArray(); 
+				int w = 0;
+				JSONArray habilidadesArray = new JSONArray();
+				while (w < arrayHabilidades.length) {
+					BasicDBObject cursorHabilidade = commons_db.getCollection(arrayHabilidades[w].toString(), "objetivos", "documento.id", mongo, false);
+					if (cursorHabilidade != null){
+						BasicDBObject jsonHabilidades = new BasicDBObject();
+						jsonHabilidades.put("documento", cursorHabilidade.get("documento"));
+						habilidadesArray.add (jsonHabilidades);
 					};
-					jsonDocumento.put("arrayHabilidades", habilidadesArray);
-					documentos.add(jsonDocumento);
-				} catch (ParseException e) {
-					e.printStackTrace();
-				}				
+					++w;
+				};
+				jsonDocumento.put("arrayHabilidades", habilidadesArray);
+				documentos.add(jsonDocumento);
 			};
 			
 			mongo.close();

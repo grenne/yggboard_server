@@ -120,7 +120,7 @@ public class Avaliacao {
 		
 		result.put("avaliacaoNome", avaliacaoDoc.get("nome"));
 		result.put("dataConclusao", avaliacaoDoc.get("dataConclusao"));
-		result.put("dataMapa", commons.calcNewDate(avaliacaoDoc.get("dataConclusao").toString(), Integer.valueOf(avaliacaoDoc.get("diasMapa").toString())));
+		result.put("dataMapa", avaliacaoDoc.get("dataEnvio").toString());
 		result.put("gestores", gestores);
 		return result;
 		
