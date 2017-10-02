@@ -56,7 +56,7 @@ public class Index {
 		};
 		String descricao = "";
 		if (documentoDoc.get("descricao") != null) {
-			entidade = documentoDoc.get("descricao").toString();
+			descricao = documentoDoc.get("descricao").toString();
 		};
 
 		JSONArray texto = new JSONArray();

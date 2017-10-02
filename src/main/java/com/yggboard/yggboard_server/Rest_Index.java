@@ -1383,16 +1383,25 @@ public class Rest_Index {
 						jsonDocumento.put("entidade", index.get("entidade"));
 						jsonDocumento.put("id", index.get("id").toString());
 						jsonDocumento.put("descricao", index.get("descricao"));
-						if (assunto.equals("usuarios") && empresaId != null) {
-							jsonDocumento.put("userPerfilId", restuserPerfil.obterUserPerfil(index.get("id").toString(), mongo).get("_id").toString());
-							if (testaEmpresa(index.get("id").toString(), empresaId, mongo)) {
-								documentos.add(jsonDocumento);									
+						if (assunto.equals("usuarios")) {
+							BasicDBObject userPerfil = restuserPerfil.obterUserPerfil(index.get("id").toString(), mongo);
+							if (userPerfil != null) {
+								jsonDocumento.put("userPerfilId", userPerfil.get("_id").toString());
+							};
+							if (empresaId != null) {
+								if (testaEmpresa(index.get("id").toString(), empresaId, mongo)) {
+									documentos.add(jsonDocumento);									
+									if (documentos.size() > qtdeItens){
+										return;
+									};
+								};
+							}else {
+								documentos.add(jsonDocumento);
 								if (documentos.size() > qtdeItens){
 									return;
 								};
 							};
 						}else {
-							jsonDocumento.put("userPerfilId", restuserPerfil.obterUserPerfil(index.get("id").toString(), mongo).get("_id").toString());
 							documentos.add(jsonDocumento);
 							if (documentos.size() > qtdeItens){
 								return;

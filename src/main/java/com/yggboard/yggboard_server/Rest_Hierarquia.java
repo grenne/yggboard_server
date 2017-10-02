@@ -178,7 +178,7 @@ public class Rest_Hierarquia {
 			BasicDBObject usuario = new BasicDBObject();
 			usuario = commons_db.getCollection(colaborador.get("email").toString(), "usuarios", "documento.email", mongo, false);
 			if (usuario == null){
-				usuario = criaUsuario(colaborador, empresaId);
+				usuario = criaUsuario(colaborador, empresaId, mongo, false);
 			}else {
 				keysArray = new ArrayList<>();
 				key = new JSONObject();
@@ -194,7 +194,7 @@ public class Rest_Hierarquia {
 				fieldsArray.add(field);
 				BasicDBObject documento = new BasicDBObject();
 				documento.put("documento", colaborador);
-				commons_db.atualizarCrud("mapaAvaliacao", fieldsArray, keysArray, documento, mongo, false);
+				commons_db.atualizarCrud("usuarios", fieldsArray, keysArray, null, mongo, false);
 			};
 			BasicDBObject userPerfil = new BasicDBObject();
 			userPerfil = commons_db.getCollection(colaborador.get("email").toString(), "userPerfil", "documento.usuario", mongo, false);
@@ -215,7 +215,7 @@ public class Rest_Hierarquia {
 	};	
 
 	@SuppressWarnings("rawtypes")
-	private BasicDBObject criaUsuario(BasicDBObject usuarioIn, String empresaId) {
+	private BasicDBObject criaUsuario(BasicDBObject usuarioIn, String empresaId, MongoClient mongo, boolean close) {
 
 		BasicDBObject usuario = new BasicDBObject();
 		BasicDBObject usuarioDoc = new BasicDBObject();
@@ -239,7 +239,6 @@ public class Rest_Hierarquia {
 		
 		BasicDBObject result = new BasicDBObject();
 		result.putAll((Map) commons_db.incluirCrud("usuarios", usuario, mongo, false).getEntity());
-		mongo.close();
 		return result;
 		
 	};

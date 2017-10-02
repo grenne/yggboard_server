@@ -769,7 +769,6 @@ public class Rest_UserPerfil {
 							fieldsArray.add(field);
 						};
 					};
-	
 				};
 			};
 

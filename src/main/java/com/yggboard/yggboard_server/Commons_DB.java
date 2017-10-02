@@ -64,7 +64,7 @@ public class Commons_DB {
 //				doc.remove("token");
 				BasicDBObject docReturn = new BasicDBObject();
 				docReturn.put("documento", doc);
-				docReturn.put("_id", cursor.first().get("_id"));
+				docReturn.put("_id", cursor.first().get("_id").toString());
 				if (close) {
 					mongo.close();
 				};
@@ -134,7 +134,11 @@ public class Commons_DB {
 				cursor.putAll((Map) response.getEntity());
 				if (cursor != null){
 					objDocumento.putAll((Map) cursor.get("documento"));
+				}else {
+					return Response.status(200).entity("false").build();
 				};
+			}else {
+				return Response.status(200).entity("false").build();
 			};
 		}else {
 			objDocumento.putAll((Map) documento.get("documento"));

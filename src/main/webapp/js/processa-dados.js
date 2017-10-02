@@ -31,6 +31,9 @@ function processaCursos (data){
 	if (fields[9] == "" | fields[9] == null){
 		fields[9] = "0.00";
 	};
+	if (fields[16] != null){
+		fields[16].replace ('"', "'")
+	};
 	var objJson = 
 		{
 			token: sessionStorage.token,
@@ -57,7 +60,7 @@ function processaCursos (data){
 					frequencia:fields[13],
 					certificacao:fields[14],
 					formato:fields[15],
-					descricao:fields[16].replace ('"', "'"),
+					descricao:fields[16],
 					badges:[],
 					parents:[],
 					tags:[],

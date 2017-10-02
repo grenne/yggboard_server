@@ -459,6 +459,7 @@ public class Avaliacao {
 		carregaAvaliadosResult(avaliacoesResult, usuarioId, avaliacaoId, "superiores", "in", mongo);
 
 		JSONArray convitesEnviadosPendentes = new JSONArray();
+		JSONArray convitesEnviadosExpirados = new JSONArray();
 		JSONArray convitesEnviadosAceitos = new JSONArray();
 		JSONArray convitesEnviadosRecusados = new JSONArray();			
 		for (int i = 0; i < avaliacoesResult.size(); i++) {
@@ -466,7 +467,11 @@ public class Avaliacao {
 			avaliacao.putAll((Map) avaliacoesResult.get(i));
 			BasicDBObject avaliado = new BasicDBObject();
 			avaliado.putAll((Map) avaliacao.get("avaliado"));
-			convitesEnviadosPendentes = carregaConvites(convitesEnviadosPendentes, avaliacaoId, avaliado, "clientes", mongo);
+			if (avaliacaoEncerrada(avaliacaoId, mongo)) {
+				convitesEnviadosExpirados = carregaConvites(convitesEnviadosPendentes, avaliacaoId, avaliado, "clientes", mongo);
+			}else {	
+				convitesEnviadosPendentes = carregaConvites(convitesEnviadosPendentes, avaliacaoId, avaliado, "clientes", mongo);
+			};
 			convitesEnviadosAceitos = carregaConvites(convitesEnviadosAceitos, avaliacaoId, avaliado,  "clientesConvitesAceitos", mongo);
 			convitesEnviadosRecusados = carregaConvites(convitesEnviadosRecusados, avaliacaoId, avaliado,  "clientesConvitesRecusados", mongo);			
 		};
@@ -476,13 +481,18 @@ public class Avaliacao {
 		carregaAvaliadosResult(avaliacoesResult, usuarioId, avaliacaoId, "clientes", "in", mongo);
 
 		JSONArray convitesRecebidosPendentes = new JSONArray();
+		JSONArray convitesRecebidosExpirados = new JSONArray();
 		for (int i = 0; i < avaliacoesResult.size(); i++) {
 			BasicDBObject avaliacao = new BasicDBObject();
 			avaliacao.putAll((Map) avaliacoesResult.get(i));
 			BasicDBObject avaliado = new BasicDBObject();
 			avaliado.putAll((Map) avaliacao.get("avaliado"));
 			BasicDBObject convite = montaConvite(avaliado, usuarioId, mongo);
-			convitesRecebidosPendentes.add(convite);
+			if (avaliacaoEncerrada(avaliacaoId, mongo)) {
+				convitesRecebidosExpirados.add(convite);
+			}else {
+				convitesRecebidosPendentes.add(convite);
+			};
 		};
 
 		avaliacoesResult = new JSONArray();
@@ -516,15 +526,32 @@ public class Avaliacao {
 		JSONObject convites = new JSONObject();
 		
 		convites.put("convitesEnviadosPendentes", convitesEnviadosPendentes);
+		convites.put("convitesEnviadosExpirados", convitesEnviadosExpirados);
 		convites.put("convitesEnviadosAceitos", convitesEnviadosAceitos);
 		convites.put("convitesEnviadosRecusados", convitesEnviadosRecusados);
 		convites.put("convitesRecebidosPendentes", convitesRecebidosPendentes);
+		convites.put("convitesRecebidosExpirados", convitesRecebidosExpirados);
 		convites.put("convitesRecebidosAceitos", convitesRecebidosAceitos);
 		convites.put("convitesRecebidosRecusados", convitesRecebidosRecusados);
 		
 		return convites;
 		
 	};
+
+	@SuppressWarnings("rawtypes")
+	private boolean avaliacaoEncerrada(String avaliacaoId, MongoClient mongo) {
+		BasicDBObject avaliacao = commons_db.getCollection(avaliacaoId, "avaliacoes", "_id", mongo, false);
+		if (avaliacao != null) {
+			BasicDBObject avaliacaoDoc = new BasicDBObject();
+			avaliacaoDoc.putAll((Map) avaliacao.get("documento"));
+			if (avaliacaoDoc.get("dataConclusao") != null) {
+				if (commons.calcTime(avaliacaoDoc.get("dataConclusao").toString().replace("-", "")) < commons.calcTime(commons.todaysDate("yyyymmdd"))) {
+					return true;
+				};
+			};
+		};
+		return false;
+	}
 
 	@SuppressWarnings({ "unchecked" })
 	private JSONArray carregaConvites(JSONArray arrayResult, String avaliacaoId, BasicDBObject avaliacao, String arrayNome, MongoClient mongo) {
