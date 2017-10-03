@@ -110,13 +110,81 @@ public class Rest_UserPerfil {
 			};
 			if (item.equals("badges") | item.equals("show-badges")){
 				if (item.equals("badges")){
+					carregaBadges((ArrayList) jsonPerfil.get("badges"), usuario, jsonPerfil, documentos, false);
+					carregaBadges((ArrayList) jsonPerfil.get("badgesConquista"), usuario, jsonPerfil, documentos, false);
+				}else{
+					carregaBadges((ArrayList) jsonPerfil.get("showBadges"), usuario, jsonPerfil, documentos, false);
+				};
+				Mongo mongoBadge;
+				try {
+					mongoBadge = new Mongo();
+					DB dbBadge = (DB) mongoBadge.getDB("yggboard");		
+					DBCollection collectionBadge = dbBadge.getCollection("badges");
+					BasicDBObject searchQueryBadge = new BasicDBObject();
+					DBCursor cursorBadge = collectionBadge.find(searchQueryBadge);
+					while (((Iterator<DBObject>) cursorBadge).hasNext()) {
+						BasicDBObject objBadges = (BasicDBObject) ((Iterator<DBObject>) cursorBadge).next();
+						String documento = objBadges.getString("documento");
+						try {
+							JSONObject jsonBadge; 
+							jsonBadge = (JSONObject) parser.parse(documento);
+							if (jsonBadge.get("tipo") !=null  && jsonBadge.get("id").toString() != null){
+								if (jsonPerfil.get("badgesConquista") == null){
+									JSONArray objBadgeConquista = new JSONArray();
+									jsonPerfil.put("badgesConquista", objBadgeConquista);
+								};
+								if (!commons.testaElementoArray(jsonBadge.get("id").toString(), (ArrayList<String>) jsonPerfil.get("badgesConquista"))){
+									if (jsonBadge.get("tipo").equals("inicial")){
+										incluirBadge(jsonBadge,  usuario, jsonPerfil, documentos, true);
+									};
+									if (jsonBadge.get("tipo").equals("numero")){
+										ArrayList arrayListElementos = new ArrayList(); 
+										arrayListElementos = (ArrayList) jsonPerfil.get("habilidades");
+										if (Integer.valueOf((String) jsonBadge.get("quantidade")) < arrayListElementos.size() ){
+											incluirBadge(jsonBadge, usuario, jsonPerfil, documentos, true);
+										};
+									};
+									if (jsonBadge.get("tipo").equals("numero interesse")){
+										ArrayList arrayListElementos = new ArrayList(); 
+										arrayListElementos = (ArrayList) jsonPerfil.get("habilidadesInteresse");
+										if (Integer.valueOf((String) jsonBadge.get("quantidade")) < arrayListElementos.size() ){
+											incluirBadge(jsonBadge, usuario, jsonPerfil, documentos, true);
+										};
+									};
+									if (jsonBadge.get("tipo").equals("numero objetivo")){
+										ArrayList arrayListElementos = new ArrayList(); 
+										arrayListElementos = (ArrayList) jsonPerfil.get("carreirasInteresse");
+										if (Integer.valueOf((String) jsonBadge.get("quantidade")) < arrayListElementos.size() ){
+											incluirBadge(jsonBadge, usuario, jsonPerfil, documentos, true);
+										};
+									};
+									if (jsonBadge.get("tipo").equals("habilidades")){
+										ArrayList arrayListElementos = new ArrayList(); 
+										arrayListElementos = (ArrayList) jsonPerfil.get("habilidades");
+										ArrayList arrayListElementosBadge = new ArrayList(); 
+										arrayListElementosBadge = (ArrayList) jsonBadge.get("habilidadesNecessarias");
+										if (commons.testaArray(arrayListElementosBadge, arrayListElementos)){
+											incluirBadge(jsonBadge, usuario, jsonPerfil, documentos, true);
+										};
+									};
+								};
+							};
+						} catch (ParseException e) {
+							e.printStackTrace();
+						}
+					};
+					mongoBadge.close();
+					return documentos;
+			};
+			if (item.equals("badges") | item.equals("show-badges")){
+				if (item.equals("badges")){
 					carregaBadges((ArrayList) jsonPerfil.get("badges"), usuario, jsonPerfil, documentos, false, mongo);
 					carregaBadges((ArrayList) jsonPerfil.get("badgesConquista"), usuario, jsonPerfil, documentos, false, mongo);
 				}else{
 					carregaBadges((ArrayList) jsonPerfil.get("showBadges"), usuario, jsonPerfil, documentos, false, mongo);
 				};
 				JSONArray cursorBadges = commons_db.getCollectionListaNoKey("badges", mongo, false);	
-/*				if (cursorBadges != null){
+				if (cursorBadges != null){
 					for (int i = 0; i < cursorBadges.size(); i++) {
 						BasicDBObject objBadges = new BasicDBObject();
 						objBadges.putAll((Map) cursorBadges.get(i));
@@ -129,33 +197,42 @@ public class Rest_UserPerfil {
 							};
 							if (!commons.testaElementoArray(jsonBadge.get("id").toString(), (ArrayList<String>) jsonPerfil.get("badgesConquista"))){
 								if (jsonBadge.get("tipo").equals("inicial")){
-									incluirBadge(jsonBadge,  usuario, jsonPerfil, documentos, true);
+									incluirBadge(jsonBadge,  usuario, jsonPerfil, documentos, true, mongo);
 								};
 								if (jsonBadge.get("tipo").equals("numero")){
 									ArrayList arrayListElementos = new ArrayList(); 
 									arrayListElementos = (ArrayList) jsonPerfil.get("habilidades");
 									if (Integer.valueOf((String) jsonBadge.get("quantidade")) < arrayListElementos.size() ){
-										incluirBadge(jsonBadge, usuario, jsonPerfil, documentos, true);
+										incluirBadge(jsonBadge, usuario, jsonPerfil, documentos, true, mongo);
 									};
 								};
 								if (jsonBadge.get("tipo").equals("numero interesse")){
 									ArrayList arrayListElementos = new ArrayList(); 
 									arrayListElementos = (ArrayList) jsonPerfil.get("habilidadesInteresse");
 									if (Integer.valueOf((String) jsonBadge.get("quantidade")) < arrayListElementos.size() ){
-										incluirBadge(jsonBadge, usuario, jsonPerfil, documentos, true);
+										incluirBadge(jsonBadge, usuario, jsonPerfil, documentos, true, mongo);
 									};
 								};
 								if (jsonBadge.get("tipo").equals("numero objetivo")){
 									ArrayList arrayListElementos = new ArrayList(); 
 									arrayListElementos = (ArrayList) jsonPerfil.get("carreirasInteresse");
 									if (Integer.valueOf((String) jsonBadge.get("quantidade")) < arrayListElementos.size() ){
-										incluirBadge(jsonBadge, usuario, jsonPerfil, documentos, true);
+										incluirBadge(jsonBadge, usuario, jsonPerfil, documentos, true, mongo);
+									};
+								};
+								if (jsonBadge.get("tipo").equals("habilidades")){
+									ArrayList arrayListElementos = new ArrayList(); 
+									arrayListElementos = (ArrayList) jsonPerfil.get("habilidades");
+									ArrayList arrayListElementosBadge = new ArrayList(); 
+									arrayListElementosBadge = (ArrayList) jsonBadge.get("habilidadesNecessarias");
+									if (commons.testaArray(arrayListElementosBadge, arrayListElementos)){
+										incluirBadge(jsonBadge, usuario, jsonPerfil, documentos, true, mongo);
 									};
 								};
 							};
 						};
 					};
-				};*/
+				};
 			};
 			if (item.equals("habilidades") | item.equals("habilidades-interesse") |
 				item.equals("cursos-necessarias-habilidades") | item.equals("cursos-interesse-habilidades")){

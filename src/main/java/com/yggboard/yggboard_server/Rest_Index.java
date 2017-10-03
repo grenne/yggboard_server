@@ -1343,6 +1343,7 @@ public class Rest_Index {
 
 	@SuppressWarnings({ "unchecked", "rawtypes"})
 	private void carregaIndex(String assunto, JSONArray documentos, String characters, Boolean lista, Listas listas, Opcoes opcoes, int qtdeItens, String empresaId, MongoClient mongo) {
+		System.out.println("CARREGA : " + assunto);
 		Commons_DB commons_db = new Commons_DB();
 		Rest_UserPerfil restuserPerfil = new Rest_UserPerfil();  
 		JSONArray cursor = commons_db.getCollectionLista(assunto, "index", "documento.assunto", mongo, false);		
@@ -1357,22 +1358,22 @@ public class Rest_Index {
 					if (lista){
 						switch (assunto) {
 						case "objetivos":
-							processaObjetivos(index.get("id").toString(), listas, opcoes, mongo);
+							processaObjetivos(getOriginalId(index.get("assunto").toString(),index.get("id").toString(), mongo), listas, opcoes, mongo);
 							break;
 						case "objetivo":
-							processaObjetivos(index.get("id").toString(), listas, opcoes, mongo);
+							processaObjetivos(getOriginalId(index.get("assunto").toString(),index.get("id").toString(), mongo), listas, opcoes, mongo);
 							break;
 						case "habilidades":
-							processaHabilidades(index.get("id").toString(), listas, opcoes, mongo);
+							processaHabilidades(getOriginalId(index.get("assunto").toString(),index.get("id").toString(), mongo), listas, opcoes, mongo);
 						break;
 						case "curso":
-							processaCursos(index.get("id").toString(), listas, opcoes, mongo);
+							processaCursos(getOriginalId(index.get("assunto").toString(),index.get("id").toString(), mongo), listas, opcoes, mongo);
 						break;
 						case "areaAtuacao":
-							processaAreaAtuacao(index.get("id").toString(), listas, opcoes, mongo);
+							processaAreaAtuacao(getOriginalId(index.get("assunto").toString(),index.get("id").toString(), mongo), listas, opcoes, mongo);
 						break;
 						case "areaConhecimento":
-							processaAreaConhecimento(index.get("id").toString(), listas, opcoes, mongo);
+							processaAreaConhecimento(getOriginalId(index.get("assunto").toString(),index.get("id").toString(), mongo), listas, opcoes, mongo);
 						break;
 
 						default:
@@ -1381,7 +1382,7 @@ public class Rest_Index {
 					}else{
 						jsonDocumento.put("assunto", index.get("assunto"));
 						jsonDocumento.put("entidade", index.get("entidade"));
-						jsonDocumento.put("id", index.get("id").toString());
+						jsonDocumento.put("id", getOriginalId(index.get("assunto").toString(),index.get("id").toString(), mongo));
 						jsonDocumento.put("descricao", index.get("descricao"));
 						if (assunto.equals("usuarios")) {
 							BasicDBObject userPerfil = restuserPerfil.obterUserPerfil(index.get("id").toString(), mongo);
@@ -1414,6 +1415,17 @@ public class Rest_Index {
 	};
 
 	
+	@SuppressWarnings("rawtypes")
+	private String getOriginalId(String assunto, String id, MongoClient mongo) {
+		if (!assunto.equals("usuarios")) {
+  		BasicDBObject collection = commons_db.getCollection(id, assunto, "_id", mongo, false);
+  		BasicDBObject collectionDoc = new BasicDBObject();
+  		collectionDoc.putAll((Map) collection.get("documento"));
+  		return collectionDoc.get("id").toString();
+		};
+		return id;
+	}
+
 	@SuppressWarnings("rawtypes")
 	private boolean testaEmpresa(String usuarioId, String empresaId, MongoClient mongo) {
 		
