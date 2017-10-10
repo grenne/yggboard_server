@@ -25,7 +25,8 @@ public class ApplicationConfig extends Application {
            		Rest_UploadFiles.class,
            		Rest_Objetivos_Empresa.class,
            		Rest_Avaliacao.class,
-           		Rest_Hierarquia.class
+           		Rest_Hierarquia.class,
+           		Rest_Eventos.class
            	        		));
     }
 

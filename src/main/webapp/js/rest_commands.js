@@ -22,6 +22,35 @@ function rest_obter(objJson, action_ok, action_not_ok, var1, var2, var3) {
 	}).always(function(data) {
 	});
 };
+function rest_obterChave(key, value, collection) {
+	var result = "";
+	var objJson = {
+			token: sessionStorage.token,
+			collection : collection,
+			keys : [ {
+				key : key,
+				value : value
+			} ]
+		};
+
+	$.ajax({
+		type: "POST",
+		url : localStorage.mainUrl + "yggboard_server/rest/crud/obter",
+        contentType: "application/json; charset=utf-8",
+        dataType: 'json',
+        data : JSON.stringify(objJson),
+		async : false
+	})        	
+	.done(function( data ) {
+		result = data;
+	})
+	.fail(function(data) {
+		result = null;
+	})
+	.always(function(data) {
+	});
+	return result;
+};
 
 function rest_incluir (objJson, action_ok, action_not_ok, var1, var2, var3){
 	

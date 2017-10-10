@@ -307,6 +307,19 @@ public class Commons_DB {
 		return null;
 	};
 
+	@SuppressWarnings({ "rawtypes" })
+	public BasicDBObject getCollectionDoc(String value, String collectionName, String keyInput, MongoClient mongo, Boolean close) {
+		
+		BasicDBObject collection = getCollection(value, collectionName, keyInput, mongo, close);
+		if (collection == null) {
+			return null;
+		};
+		BasicDBObject collectionDoc = new BasicDBObject();
+		collectionDoc.putAll((Map) collection.get("documento"));
+		
+		return collectionDoc;
+	};
+
 	@SuppressWarnings({ "unchecked" })
 	public JSONArray getCollectionLista(String value, String collectionName, String keyInput, MongoClient mongo, Boolean close) {
 		

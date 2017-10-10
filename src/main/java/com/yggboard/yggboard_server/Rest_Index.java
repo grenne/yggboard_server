@@ -1311,11 +1311,11 @@ public class Rest_Index {
 		
 		if (planejamentoLista != null){			
   		if (planejamentoLista.equals("true")){			
-  			carregaIndex("objetivos", listas.objetivos(), characters, true, listas, opcoes, 0, empresaId, mongo);
-  			carregaIndex("habilidades", listas.habilidades(), characters, true, listas, opcoes, 0, empresaId, mongo);
-  			carregaIndex("cursos", listas.cursos(), characters, true, listas, opcoes, 0, empresaId, mongo);
-  			carregaIndex("areaAtuacao", listas.areasAtuacao(), characters, true, listas, opcoes, 0, empresaId, mongo);
-  			carregaIndex("areaConhecimento", listas.areasConhecimento(), characters, true, listas, opcoes, 0, empresaId, mongo);
+  			carregaIndex("objetivos", listas.objetivos(), characters, true, listas, opcoes, 5, empresaId, mongo);
+  			carregaIndex("habilidades", listas.habilidades(), characters, true, listas, opcoes, 5, empresaId, mongo);
+  			carregaIndex("cursos", listas.cursos(), characters, true, listas, opcoes, 5, empresaId, mongo);
+  			carregaIndex("areaAtuacao", listas.areasAtuacao(), characters, true, listas, opcoes, 5, empresaId, mongo);
+  			carregaIndex("areaConhecimento", listas.areasConhecimento(), characters, true, listas, opcoes, 5, empresaId, mongo);
   			results.put("objetivos", listas.objetivos());
   			results.put("habilidades", listas.habilidades());
   			results.put("cursos", listas.cursos());
@@ -1365,6 +1365,9 @@ public class Rest_Index {
 							break;
 						case "habilidades":
 							processaHabilidades(getOriginalId(index.get("assunto").toString(),index.get("id").toString(), mongo), listas, opcoes, mongo);
+						break;
+						case "cursos":
+							processaCursos(getOriginalId(index.get("assunto").toString(),index.get("id").toString(), mongo), listas, opcoes, mongo);
 						break;
 						case "curso":
 							processaCursos(getOriginalId(index.get("assunto").toString(),index.get("id").toString(), mongo), listas, opcoes, mongo);

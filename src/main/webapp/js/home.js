@@ -55,6 +55,9 @@ $( ".teste" ).click(function() {
 	case "atualizaAreaConhecimentoHabilidades":
 		atualizaAreaConhecimentoHabilidades();
 		break;
+	case "atualizaEventos":
+		atualizaEventos();
+		break;
 	case "testaFiltro":
 		testaFiltro();
 		break;

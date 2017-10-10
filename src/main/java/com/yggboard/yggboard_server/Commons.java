@@ -282,6 +282,23 @@ public class Commons {
 		return false;
 	};
 
+	@SuppressWarnings("rawtypes")
+	public boolean testaArray(ArrayList arrayOrigem, ArrayList arrayElementos) {
+		for (int w = 0; w < arrayOrigem.size(); w++) {
+			Boolean naoAchou = true;
+			for (int i = 0; i < arrayElementos.size(); i++) {
+				if (arrayOrigem.get(w).toString().equals(arrayElementos.get(i))){
+					naoAchou = false;		
+					i = arrayElementos.size() + 1;
+				};
+			};
+			if (naoAchou) {
+				return false;
+			};
+		};
+		return true;
+	};
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public JSONArray montaArrayPerfil(Object perfil, Object elementos) {
 		JSONArray array = new JSONArray();
@@ -391,19 +408,53 @@ public class Commons {
 		BasicDBObject insertDoc = new BasicDBObject();
 		
 		insertDoc.put("idUsuario", evento.get("idUsuario"));
+		insertDoc.put("idSeguindo", "");
 		insertDoc.put("evento", evento.get("evento"));
 		insertDoc.put("idEvento", evento.get("idEvento"));
 		insertDoc.put("motivo", evento.get("motivo"));
 		insertDoc.put("elemento", evento.get("elemento"));
 		insertDoc.put("idElemento", evento.get("idElemento"));
-		insertDoc.put("data", todaysDate("inv_month_number"));
+		insertDoc.put("data", todaysDate("yyyy-mm-dd"));
 		insertDoc.put("status", "nao lido");
 
 		BasicDBObject doc = new BasicDBObject();
 		
 		doc.put("documento", insertDoc);
 		
-		return commons_db.incluirCrud("eventos", doc, mongo, false);
+		Response response = commons_db.incluirCrud("eventos", doc, mongo, false);
+		
+		if (evento.get("elemento").equals("carreiras") || evento.get("elemento").equals("badgesConquista")) {
+			insereFeed(evento, mongo);
+		};
+		
+		return response;
+		
+	};
+
+	@SuppressWarnings("rawtypes")
+	public void insereFeed(BasicDBObject evento, MongoClient mongo) {
+	
+		Commons_DB commons_db = new Commons_DB();
+
+		JSONArray seguidores = commons_db.getCollectionLista(evento.get("idUsuario").toString(), "userPerfil", "documento.seguindo", mongo, false);
+		for (int i = 0; i < seguidores.size(); i++) {
+			BasicDBObject seguidor = new BasicDBObject();
+			seguidor.putAll((Map) seguidores.get(i));
+			BasicDBObject insertDoc = new BasicDBObject();
+			insertDoc.put("idUsuario", seguidor.get("_id").toString());
+			insertDoc.put("idSeguindo", evento.get("idUsuario"));
+			insertDoc.put("evento", evento.get("evento"));
+			insertDoc.put("idEvento", evento.get("idEvento"));
+			insertDoc.put("motivo", evento.get("motivo"));
+			insertDoc.put("elemento", evento.get("elemento"));
+			insertDoc.put("idElemento", evento.get("idElemento"));
+			insertDoc.put("data", todaysDate("yyyy-mm-dd"));
+			insertDoc.put("status", "nao lido");
+			BasicDBObject doc = new BasicDBObject();
+			doc.put("documento", insertDoc);
+			commons_db.incluirCrud("eventos", doc, mongo, false);
+		};
+		
 	};
 	
 	public byte[] gerarHash(String frase) {
@@ -504,6 +555,26 @@ public class Commons {
 		
 		ArrayList<String> array = (ArrayList<String>) object;	
 		return array.size();
+	}
+
+	public Object frase(String motivo, String elemento, String numero, String id, MongoClient mongo) {
+
+//		BasicDBObject setup = commons_db.getCollection(motivo + elemento + numero, "setup", "documento.setupKey", mongo, false);
+		String frase = "";
+		if (elemento.equals("badgesConquista")) {
+			if (numero.equals("1")){
+				frase = "Ganhou o Badge " + commons_db.getCollectionDoc(id, "badges", "documento.id", mongo, false).get("nome");
+			};
+			if (numero.equals("2")){
+				frase = commons_db.getCollectionDoc(id, "badges", "documento.id", mongo, false).get("comoGanhar").toString();
+			};			
+		};
+		if (elemento.equals("carreiras")) {
+			if (numero.equals("1")){
+				frase = "Conquistou o Objetivo  " + commons_db.getCollectionDoc(id, "objetivos", "documento.id", mongo, false).get("nome");
+			};
+		};
+		return frase;
 	};
 	
 };

@@ -465,6 +465,65 @@ function atualizaBadges() {
 	console.log("terminou badges");
 };
 
+function atualizaEventos() {
+
+	eventos = rest_listaReturn ("eventos");
+
+	$.each(eventos, function(i, evento) {
+		usuario = rest_obterChave("documento.email", evento.idEvento, "usuarios");
+		console.log("id - " + evento.idUsuario);
+		var objJson = {
+				token: sessionStorage.token,
+				collection : "eventos",
+				keys : [ 
+					{
+					key : "documento.idUsuario",
+					value : evento.idUsuario
+					} 
+					],
+				update : [ 
+//					{
+//					field : "data",
+//					value : converteData(evento.data)
+//					}, 
+					{
+					field : "idSeguindo",
+					value : evento.idUsuario
+					} 
+					]
+			};
+		if (usuario){
+			var objJson = {
+				token: sessionStorage.token,
+				collection : "eventos",
+				keys : [ 
+					{
+					key : "_id",
+					value : evento._id
+					} 
+					],
+				update : [ 
+					{
+					field : "idUsuario",
+					value : usuario._id
+				
+					}, 
+//					{
+//					field : "data",
+//					value : converteData(evento.data)
+//					}, 
+					{
+					field : "idSeguindo",
+					value : usuario._id
+					} 
+					]
+			};
+		};			
+		rest_atualizar(objJson, restOk, semAcao);
+	});
+	console.log("terminou eventos");
+};
+
 function obterBadges(objJson, habilidadeTarget) {
 
 	badges = JSON.parse(localStorage.getItem("badges"));
@@ -545,4 +604,7 @@ function obterDependencias(objJson, habilidadeTarget, tipo, nivel) {
 	});
 
 	return objJson;
+};
+function converteData(str){
+	return str.slice(0, 4) + "-" + str.slice(4, 6) + "-" + str.slice(6, 8);
 };

@@ -72,6 +72,13 @@ public class Index {
 		for (int i = 0; i < words.length; i++) {
 			texto.add(words[i]);
 		};
+
+		if (documentoDoc.get("escola") != null) {			
+			words = documentoDoc.get("escola").toString().split(" ");
+			for (int i = 0; i < words.length; i++) {
+				texto.add(words[i]);
+			};
+		};
 		
 		if (texto.size() > 0 && assunto != "index" && assunto != "eventos") {
   		BasicDBObject documentoInsert = new BasicDBObject();
