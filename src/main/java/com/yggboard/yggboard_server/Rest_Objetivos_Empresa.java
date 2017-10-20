@@ -114,7 +114,7 @@ public class Rest_Objetivos_Empresa {
 	@Path("/objetivo/listas")	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public JSONObject ObjetivoListas(@QueryParam("token") String token, @QueryParam("empresaId") String empresaId,@QueryParam("objetivoId") String objetivoId)  {
+	public JSONObject ObjetivoListas(@QueryParam("token") String token, @QueryParam("empresaId") String empresaId, @QueryParam("objetivoId") String objetivoId, @QueryParam("usuarioId") String usuarioId, @QueryParam("opcao") String opcao)  {
 		if ((commons_db.getCollection(token, "userPerfil", "documento.token", mongo, false)) == null) {
 			mongo.close();
 			return null;
@@ -152,36 +152,74 @@ public class Rest_Objetivos_Empresa {
 				};
 			};
 
-			ArrayList<String> areaAtuacaoArray = (ArrayList<String>) objetivoDoc.get("areaAtuacao"); 
-			for (int i = 0; i < areaAtuacaoArray.size(); i++) {
-				JSONArray objetivoArray = commons_db.getCollectionLista(areaAtuacaoArray.get(i).toString(), "objetivos", "documento.areaAtuacao", mongo, false);
-				for (int j = 0; j < objetivoArray.size(); j++) {
-					BasicDBObject docObjetivoObj = new BasicDBObject();
-					docObjetivoObj.putAll((Map) objetivoArray.get(j));
-					if (!docObjetivoObj.get("_id").toString().equals(objetivo.get("_id").toString())) {
-						habilidadesArray = new ArrayList<String>();
-						habilidadesArray = (ArrayList<String>) docObjetivoObj.get("necessarios");
-						for (int z = 0; z < habilidadesArray.size(); z++) {
-							BasicDBObject habilidade = new BasicDBObject();
-							habilidade = commons_db.getCollection(habilidadesArray.get(z), "habilidades", "documento.id", mongo, false);
-							if (habilidade != null) {
-								BasicDBObject habilidadeDoc = new BasicDBObject();
-								habilidadeDoc.putAll((Map) habilidade.get("documento"));
-								BasicDBObject habilidadeOut = new BasicDBObject();
-								habilidadeOut.put("nome", habilidadeDoc.get("nome"));
-								habilidadeOut.put("id", habilidadeDoc.get("id").toString());
-								BasicDBObject habilidadeDocOut = new BasicDBObject();
-								habilidadeDocOut.put("documento", habilidadeOut);
-								if (!commons.testaElementoArrayObject(habilidade, habilidades)){
-									commons.addObjeto(habilidades, habilidadeDocOut);
-								};
-							};
-						};
-					};
-				};									
+			Boolean carregaHabilidades = true;
+			if (opcao != null) {
+				if (opcao.equals("objetivo")) {
+					carregaHabilidades = false;
+				};
 			};
+			if (carregaHabilidades) {
+  			ArrayList<String> areaAtuacaoArray = (ArrayList<String>) objetivoDoc.get("areaAtuacao"); 
+  			for (int i = 0; i < areaAtuacaoArray.size(); i++) {
+  				JSONArray objetivoArray = commons_db.getCollectionLista(areaAtuacaoArray.get(i).toString(), "objetivos", "documento.areaAtuacao", mongo, false);
+  				for (int j = 0; j < objetivoArray.size(); j++) {
+  					BasicDBObject docObjetivoObj = new BasicDBObject();
+  					docObjetivoObj.putAll((Map) objetivoArray.get(j));
+  					if (!docObjetivoObj.get("_id").toString().equals(objetivo.get("_id").toString())) {
+  						habilidadesArray = new ArrayList<String>();
+  						habilidadesArray = (ArrayList<String>) docObjetivoObj.get("necessarios");
+  						for (int z = 0; z < habilidadesArray.size(); z++) {
+  							BasicDBObject habilidade = new BasicDBObject();
+  							habilidade = commons_db.getCollection(habilidadesArray.get(z), "habilidades", "documento.id", mongo, false);
+  							if (habilidade != null) {
+  								BasicDBObject habilidadeDoc = new BasicDBObject();
+  								habilidadeDoc.putAll((Map) habilidade.get("documento"));
+  								BasicDBObject habilidadeOut = new BasicDBObject();
+  								habilidadeOut.put("nome", habilidadeDoc.get("nome"));
+  								habilidadeOut.put("id", habilidadeDoc.get("id").toString());
+  								BasicDBObject habilidadeDocOut = new BasicDBObject();
+  								habilidadeDocOut.put("documento", habilidadeOut);
+  								if (!commons.testaElementoArrayObject(habilidade, habilidades)){
+  									commons.addObjeto(habilidades, habilidadeDocOut);
+  								};
+  							};
+  						};
+  					};
+  				};									
+  			};
+			};
+			
 			documentos.put("habilidades", habilidades);
 			documentos.put("habilidadesObjetivo", habilidadesObjetivo);
+			
+			ArrayList<Object> cursosSelecionados = new ArrayList<>();
+			if (usuarioId != null) {
+	  		BasicDBObject usuario = new BasicDBObject();
+	  		usuario = commons_db.getCollection(usuarioId, "usuarios", "_id", mongo, false);
+	  		BasicDBObject usuarioDoc = new BasicDBObject();
+	  		usuarioDoc.putAll((Map) usuario.get("documento"));  
+	  		if (usuarioDoc.get("cursosSelecionados") != null){
+	    		cursosSelecionados = (ArrayList<Object>) usuarioDoc.get("cursosSelecionados");
+	  		};
+			};
+
+			JSONArray resultsCursos = new JSONArray();
+			for (int z = 0; z < cursosSelecionados.size(); z++) {
+  			JSONObject cursoCompare = new JSONObject();
+  			cursoCompare.putAll((Map) cursosSelecionados.get(z));
+  			String cursoIdCompare = cursoCompare.get("id").toString();
+				BasicDBObject cursoSelecionadoObj = commons_db.getCollectionDoc(cursoIdCompare, "cursos", "documento.id", mongo, false);
+				BasicDBObject resultCurso = new BasicDBObject();
+ 				resultCurso.put("nome", cursoSelecionadoObj.get("nome"));
+ 				resultCurso.put("id", cursoSelecionadoObj.get("id"));
+ 				resultCurso.put("escola", cursoSelecionadoObj.get("escola"));
+ 				resultCurso.put("status", cursoCompare.get("status"));
+ 				ArrayList<String> cursoHabilidades =  (ArrayList<String>) cursoSelecionadoObj.get("habilidades");
+   			resultCurso.put("qtdeHabilidades", Integer.toString(cursoHabilidades.size()));
+   			resultsCursos.add(resultCurso);
+			};
+			documentos.put("cursosSelecionados", resultsCursos);
+
 			mongo.close();
 			return documentos;
 		};

@@ -73,8 +73,8 @@ $( ".teste" ).click(function() {
 	case "index":
 		copiaIndex();
 		break;
-	case "index-cria":
-		carregaIndex();
+	case "recriaIndiceUsuario":
+		recriaIndiceUsuario();
 		break;
 	case "mostraPrerequisitos":
 		mostraPrerequisitos();

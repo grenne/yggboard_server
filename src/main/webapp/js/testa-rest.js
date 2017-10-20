@@ -214,7 +214,7 @@ function testaFiltro() {
 
 	var objJson = [];
 	var assunto = "objetivos";
-	var usuario = "939c381184bac73457e3eca584fb1838";
+	var usuario = "c8a1328c94795c7e33cd1effc385e780";
 	var id = "1";
 	var filtro = {
 			usuario : usuario,
@@ -222,15 +222,15 @@ function testaFiltro() {
 			id : id
 	};
 	objJson.push(filtro);
-	assunto = "areaConhecimento";
-	usuario = "939c381184bac73457e3eca584fb1838";
-	id = "9";
-	filtro = {
-			usuario : usuario,
-			assunto : assunto,
-			id : id
-	};
-	objJson.push(filtro);
+//	assunto = "areaConhecimento";
+//	usuario = "939c381184bac73457e3eca584fb1838";
+//	id = "9";
+//	filtro = {
+//			usuario : usuario,
+//			assunto : assunto,
+//			id : id
+//	};
+//	objJson.push(filtro);
 
 /*
 	while (assunto !=  "fim") {
@@ -264,7 +264,7 @@ function testaFiltro() {
 				console.log ("objetivo:"  + item.id + " nome:" + item.nome);
 			});
 			$.each(data.cursos, function(i, item) {
-				console.log ("curso:"  + item.id + " nome:" + item.nome);
+				console.log ("curso:"  + item.id + " nome:" + item.nome + " coeficiente:" + item.coeficiente +" habilidades:" + item.qtdeHabilidades  );
 			});
 			$.each(data.areaAtuacao, function(i, item) {
 				console.log ("area atuação:" + item.id + " nome:" + item.nome);

@@ -1,6 +1,14 @@
 package com.yggboard.yggboard_server;
 
+import java.util.ArrayList;
 import java.util.Map;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+
+import org.json.simple.JSONObject;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
@@ -73,4 +81,109 @@ public class Usuario {
 		return usuario;
 	
 	};
+	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public Boolean inoutCursosSelecionados(String cursoId, String usuarioId, MongoClient mongo)  {
+		BasicDBObject usuario = new BasicDBObject();
+		usuario = commons_db.getCollection(usuarioId, "usuarios", "_id", mongo, false);
+
+		Boolean existeCurso = false;
+
+		BasicDBObject usuarioDoc = new BasicDBObject();
+		usuarioDoc.putAll((Map) usuario.get("documento"));
+
+		ArrayList<Object> cursosSelecionadosNew = new ArrayList<>();
+		if (usuarioDoc.get("cursosSelecionados") != null) {
+			ArrayList<Object> cursosSelecionados = (ArrayList<Object>) usuarioDoc.get("cursosSelecionados");
+  		for (int i = 0; i < cursosSelecionados.size(); i++) {
+  			JSONObject curso = new JSONObject();
+  			curso.putAll((Map) cursosSelecionados.get(i));
+  			String cursoIdCompare = curso.get("id").toString();
+  			if (cursoIdCompare.equals(cursoId)) {
+  				existeCurso = true;	
+  			}else {
+  				cursosSelecionadosNew.add(cursosSelecionados.get(i));
+  			};
+  		};
+		};
+		
+		if (!existeCurso) {
+			JSONObject curso = new JSONObject();
+			curso.put("status", "pendente");
+			curso.put("id", cursoId);
+			cursosSelecionadosNew.add(curso);
+		};
+		
+		usuarioDoc.put("cursosSelecionados", cursosSelecionadosNew);
+		
+		usuario.put("documento", usuarioDoc);
+
+		ArrayList<JSONObject> keysArray = new ArrayList<>();
+		JSONObject key = new JSONObject();
+		key.put("key", "_id");
+		key.put("value", usuarioId);
+		keysArray.add(key);
+		
+		ArrayList<JSONObject> fieldsArray = new ArrayList<>();
+		JSONObject field = new JSONObject();
+		field.put("field", "documento");
+		field.put("value", usuarioDoc);
+		fieldsArray.add(field);
+
+		BasicDBObject documento = new BasicDBObject();
+		documento.put("documento", usuarioDoc);
+
+		commons_db.atualizarCrud("usuarios", fieldsArray, keysArray, usuario, mongo, false);
+		return true;	
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public Boolean statusCursosSelecionados(String cursoId, String status, String usuarioId, MongoClient mongo) {
+		BasicDBObject usuario = new BasicDBObject();
+		usuario = commons_db.getCollection(usuarioId, "usuarios", "_id", mongo, false);
+
+		BasicDBObject usuarioDoc = new BasicDBObject();
+		usuarioDoc.putAll((Map) usuario.get("documento"));
+
+		ArrayList<Object> cursosSelecionadosNew = new ArrayList<>();
+		if (usuarioDoc.get("cursosSelecionados") != null){
+  		ArrayList<Object> cursosSelecionados = (ArrayList<Object>) usuarioDoc.get("cursosSelecionados");
+  		for (int i = 0; i < cursosSelecionados.size(); i++) {
+  			JSONObject cursoCompare = new JSONObject();
+  			cursoCompare.putAll((Map) cursosSelecionados.get(i));
+  			String cursoIdCompare = cursoCompare.get("id").toString();
+  			if (cursoIdCompare.equals(cursoId)) {
+  				JSONObject curso = new JSONObject();
+  				curso.put("status", status);
+  				curso.put("id", cursoId);
+  				cursosSelecionadosNew.add(curso);
+  			}else {
+  				cursosSelecionadosNew.add(cursosSelecionados.get(i));
+  			};
+  		};
+		};
+		
+		usuarioDoc.put("cursosSelecionados", cursosSelecionadosNew);
+		
+		usuario.put("documento", usuarioDoc);
+
+		ArrayList<JSONObject> keysArray = new ArrayList<>();
+		JSONObject key = new JSONObject();
+		key.put("key", "_id");
+		key.put("value", usuarioId);
+		keysArray.add(key);
+		
+		ArrayList<JSONObject> fieldsArray = new ArrayList<>();
+		JSONObject field = new JSONObject();
+		field.put("field", "documento");
+		field.put("value", usuarioDoc);
+		fieldsArray.add(field);
+
+		BasicDBObject documento = new BasicDBObject();
+		documento.put("documento", usuarioDoc);
+
+		commons_db.atualizarCrud("usuarios", fieldsArray, keysArray, usuario, mongo, false);
+		return true;	
+	};
+	
 };

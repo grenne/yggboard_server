@@ -30,6 +30,7 @@ public class Rest_Hierarquia {
 	Rest_Avaliacao avaliacao = new Rest_Avaliacao(); 
 	Commons_DB commons_db = new Commons_DB();
 	Commons commons = new Commons();
+	Hierarquia hierarquia = new Hierarquia();
 
 	@SuppressWarnings({"unchecked", "rawtypes" })
 	@Path("/areas")	
@@ -139,6 +140,24 @@ public class Rest_Hierarquia {
 		mongo.close();
 		return niveis;
 		
+	};
+
+	@Path("/colaboradores")	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public JSONArray Colaboradores(@QueryParam("token") String token, @QueryParam("empresaId") String empresaId, @QueryParam("usuarioId") String usuarioId, @QueryParam("perfil") String perfil)  {
+		if ((commons_db.getCollection(token, "usuarios", "documento.token", mongo, false)) == null) {
+			mongo.close();
+			return null;
+		};
+		if (empresaId == null) {
+			mongo.close();
+			return null;
+		};
+		
+		JSONArray result = hierarquia.colaboradores(empresaId, usuarioId, perfil, mongo);
+		mongo.close();
+		return result;
 	};
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })

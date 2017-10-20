@@ -12,6 +12,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.bson.types.ObjectId;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.mongodb.BasicDBObject;
@@ -28,6 +29,7 @@ public class Rest_Usuario {
 	
 	Commons_DB commons_db = new Commons_DB();
 	Commons commons = new Commons();
+	Usuario usuario = new Usuario();
  	
 	@SuppressWarnings({ "unchecked" })
 	@Path("/confirma")	
@@ -163,6 +165,52 @@ public class Rest_Usuario {
 		return Response.status(200).entity(false).build();
 		
 
+	};
+	
+	@Path("/inout/curso/selecionados")	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public Boolean MontaCursosSelecionados(@QueryParam("token") String token, @QueryParam("cursoId") String cursoId, @QueryParam("usuarioId") String usuarioId)  {
+		if ((commons_db.getCollection(token, "userPerfil", "documento.token", mongo, false)) == null) {
+			mongo.close();
+			return null;
+		};
+		if (cursoId == null){
+			mongo.close();
+			return false;
+		};
+		if (usuarioId == null){
+			mongo.close();
+			return false;
+		};
+		Boolean result = usuario.inoutCursosSelecionados(cursoId, usuarioId, mongo);
+		mongo.close();
+		return result;
+	};
+	
+	@Path("/status/curso/selecionado")	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public Boolean MontaCursosSelecionados(@QueryParam("token") String token, @QueryParam("cursoId") String cursoId, @QueryParam("status") String status, @QueryParam("usuarioId") String usuarioId)  {
+		if ((commons_db.getCollection(token, "userPerfil", "documento.token", mongo, false)) == null) {
+			mongo.close();
+			return null;
+		};
+		if (cursoId == null){
+			mongo.close();
+			return false;
+		};
+		if (usuarioId == null){
+			mongo.close();
+			return false;
+		};
+		if (status == null){
+			mongo.close();
+			return false;
+		};
+		Boolean result =  usuario.statusCursosSelecionados(cursoId, status, usuarioId, mongo);
+		mongo.close();
+		return result;
 	};
 
 	@Path("/token")	

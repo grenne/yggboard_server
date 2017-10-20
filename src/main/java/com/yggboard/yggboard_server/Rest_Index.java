@@ -432,6 +432,7 @@ public class Rest_Index {
 
 		BasicDBObject results = new BasicDBObject();
 		
+		classificaCursos(listas);
 		results.put("objetivos", listas.objetivos());
 		results.put("habilidades", listas.habilidades());
 		results.put("cursos", listas.cursos());
@@ -450,6 +451,38 @@ public class Rest_Index {
 			// qdo escolhida uma area de atuação trazer todos objetivos, as habilidades, cursos das habilidades, area de atuação só a selecionada e área e conhecimento das habilidades
 			//
 			// qdo escolhida uma area de conhecimento trazer todas habilidades, objetivos das habilidades, cursos das habilidades, area de conhecimento só a selecionada e área de atuação de todos os objetivos
+	};
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private void classificaCursos(Listas listas) {
+		
+		Object cursos[] = listas.cursos().toArray();
+		Object habilidades[] = listas.habilidades().toArray();
+		listas.cursos().clear();
+		
+		for (int i = 0; i < cursos.length; i++) {
+			BasicDBObject curso = new BasicDBObject();
+			curso.putAll((Map) cursos[i]);
+			ArrayList<String> habilidadesCurso = (ArrayList<String>) curso.get("habilidades");
+			double habilidadeCursos = 0;
+			for (int j = 0; j < habilidadesCurso.size(); j++) {
+				for (int j2 = 0; j2 < habilidades.length; j2++) {
+					BasicDBObject habilidade = new BasicDBObject();
+					habilidade.putAll((Map) habilidades[j2]);
+					if (habilidade.get("id").equals(habilidadesCurso.get(j))) {
+						habilidadeCursos++;
+					};
+				};
+			};
+			double cursoHabilidades = habilidadesCurso.size();
+			double coeficiente = habilidadeCursos / cursoHabilidades;
+			curso.put("qtdeHabilidades", Double.toString(cursoHabilidades));
+			curso.put("coeficiente", Double.toString(coeficiente));
+			listas.cursos().add(curso);
+		};
+		
+		
+		
 	};
 
 	@SuppressWarnings({ "unchecked", "rawtypes"})

@@ -316,6 +316,7 @@ public class Commons_DB {
 		};
 		BasicDBObject collectionDoc = new BasicDBObject();
 		collectionDoc.putAll((Map) collection.get("documento"));
+		collectionDoc.put("_id", collection.get("_id").toString());
 		
 		return collectionDoc;
 	};

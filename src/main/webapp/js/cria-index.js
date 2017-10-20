@@ -41,6 +41,23 @@ function carregaIndex (){
 	sessionStorage.setItem("processo", "encerra-set-interval");
 
 };
+function recriaIndiceUsuario (){
+
+    // limpar tabela antes de carregar
+    var objJson = 
+	  	{
+			token: sessionStorage.token,
+			collection : "index",
+			key:"documento.assunto",
+			value:"usuarios"
+	  	};
+	rest_remover_select (objJson, semAcao, semAcao);
+	index = rest_listaReturn ("usuarios");
+	for (var i = 0; i < index.length; i++) {
+		criaIndice(index[i], "usuarios")
+	};
+
+};
 
 function criaIndices(assunto, rotina, processo, proximoAssunto){
 
