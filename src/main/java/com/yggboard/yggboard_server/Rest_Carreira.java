@@ -25,6 +25,25 @@ public class Rest_Carreira {
 	MongoClient mongo = new MongoClient();
 	
 	@SuppressWarnings({ "unchecked" })
+	@Path("/okta")	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public JSONObject okta(@QueryParam("carreira") String id) {
+		Commons_DB commons_db = new Commons_DB();
+
+		BasicDBObject cursor = commons_db.getCollection(id, "objetivos", "documento.id", mongo, false);
+		if (cursor != null){
+			JSONObject documento = new JSONObject();
+			BasicDBObject obj = (BasicDBObject) cursor.get("documento");
+			documento.put("documento", obj);
+			mongo.close();
+			return documento;
+		};
+		mongo.close();
+		return null;
+	};
+	
+	@SuppressWarnings({ "unchecked" })
 	@Path("/obter")	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
