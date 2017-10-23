@@ -1430,18 +1430,24 @@ public class Avaliacao {
 		
 		BasicDBObject mapaAvaliacaoDoc = new BasicDBObject();
 		mapaAvaliacaoDoc.putAll((Map) mapaAvaliacao.get("documento"));
+
+		ArrayList<Object> avaliacoes = (ArrayList<Object>) mapaAvaliacaoDoc.get("avaliacoes");
 		
-		ArrayList<Object> resultados = (ArrayList<Object>) mapaAvaliacaoDoc.get("resultados");
-		
-		
-		for (int i = 0; i < resultados.size(); i++) {
-			JSONObject resultado = new JSONObject();
-			resultado.putAll((Map) resultados.get(i));
-			if (resultado.get("id").equals(habilidadeId)) {
-				return resultado.get("nota").toString();
+		for (int i = 0; i < avaliacoes.size(); i++) {
+			JSONObject avaliacao = new JSONObject();
+			avaliacao.putAll((Map) avaliacoes.get(i));
+			if (avaliacao.get("id").equals(avaliacaoId)) {
+				ArrayList<Object> resultados = (ArrayList<Object>) avaliacao.get("resultados");
+				for (int j = 0; j < resultados.size(); j++) {
+					JSONObject resultado = new JSONObject();
+					resultado.putAll((Map) resultados.get(j));
+					if (resultado.get("id").equals(habilidadeId)) {
+						return resultado.get("nota").toString();
+					};
+				};				
 			};
 		};
-		
+				
 		return "NA";
 
 	};

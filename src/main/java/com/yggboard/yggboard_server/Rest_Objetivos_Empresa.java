@@ -148,6 +148,11 @@ public class Rest_Objetivos_Empresa {
 					BasicDBObject habilidadeOut = new BasicDBObject();
 					habilidadeOut.put("nome", habilidadeDoc.get("nome"));
 					habilidadeOut.put("id", habilidadeDoc.get("id").toString());
+					if (lastAvalId != null) {
+						habilidadeOut.put("nota", avaliacao.getResultadoHabilidade(lastAvalId, usuarioId, habilidadeDoc.get("id").toString(), mongo));
+					}else {
+						habilidadeOut.put("nota", "NA");		
+					};
 					BasicDBObject habilidadeDocOut = new BasicDBObject();
 					habilidadeDocOut.put("documento", habilidadeOut);
 					if (habilidade != null) {
@@ -186,11 +191,6 @@ public class Rest_Objetivos_Empresa {
   								BasicDBObject habilidadeDocOut = new BasicDBObject();
   								habilidadeDocOut.put("documento", habilidadeOut);
   								if (!commons.testaElementoArrayObject(habilidade, habilidades)){
-  									if (lastAvalId != null) {
-  										habilidadeDocOut.put("documento", avaliacao.getResultadoHabilidade(lastAvalId, usuarioId, habilidadeDoc.get("id").toString(), mongo));
-  									}else {
-  										habilidadeDocOut.put("documento", "NA");		
-  									};
   									commons.addObjeto(habilidades, habilidadeDocOut);
   								};
   							};
