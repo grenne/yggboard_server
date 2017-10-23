@@ -118,6 +118,8 @@ public class Rest_Index {
 			return results;
 		};
 
+		classificaCursos(listas);
+
 		if (empresaId != null) {
 			results.put("objetivos", filtraObjetivosEmpresa(listas.objetivos(), empresaId, mongo));
 		}else {

@@ -115,6 +115,8 @@ public class Rest_Objetivos_Empresa {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public JSONObject ObjetivoListas(@QueryParam("token") String token, @QueryParam("empresaId") String empresaId, @QueryParam("objetivoId") String objetivoId, @QueryParam("usuarioId") String usuarioId, @QueryParam("opcao") String opcao)  {
+	
+		
 		if ((commons_db.getCollection(token, "userPerfil", "documento.token", mongo, false)) == null) {
 			mongo.close();
 			return null;
@@ -123,6 +125,10 @@ public class Rest_Objetivos_Empresa {
 			mongo.close();
 			return null;
 		};
+
+		Avaliacao avaliacao = new Avaliacao();
+		String lastAvalId = commons_db.getCollectionDoc(empresaId, "empresas", "_id", mongo, false).getString("lastAval");
+		
 		JSONObject documentos = new JSONObject();
 		JSONArray habilidades = new JSONArray();
 		JSONArray habilidadesObjetivo = new JSONArray();
@@ -180,6 +186,11 @@ public class Rest_Objetivos_Empresa {
   								BasicDBObject habilidadeDocOut = new BasicDBObject();
   								habilidadeDocOut.put("documento", habilidadeOut);
   								if (!commons.testaElementoArrayObject(habilidade, habilidades)){
+  									if (lastAvalId != null) {
+  										habilidadeDocOut.put("documento", avaliacao.getResultadoHabilidade(lastAvalId, usuarioId, habilidadeDoc.get("id").toString(), mongo));
+  									}else {
+  										habilidadeDocOut.put("documento", "NA");		
+  									};
   									commons.addObjeto(habilidades, habilidadeDocOut);
   								};
   							};
@@ -214,6 +225,15 @@ public class Rest_Objetivos_Empresa {
  				resultCurso.put("id", cursoSelecionadoObj.get("id"));
  				resultCurso.put("escola", cursoSelecionadoObj.get("escola"));
  				resultCurso.put("status", cursoCompare.get("status"));
+ 				resultCurso.put("logo", cursoSelecionadoObj.get("logo"));
+  			resultCurso.put("duracao", cursoSelecionadoObj.get("duracao"));
+  			resultCurso.put("cargaHoraria", cursoSelecionadoObj.get("cargaHoraria"));
+  			resultCurso.put("formato", cursoSelecionadoObj.get("formato"));
+  			resultCurso.put("nivel", cursoSelecionadoObj.get("nivel"));
+  			resultCurso.put("periodicidade", cursoSelecionadoObj.get("periodicidade"));
+  			resultCurso.put("descricao", cursoSelecionadoObj.get("descricao"));
+  			resultCurso.put("custo", cursoSelecionadoObj.get("custo"));
+  			resultCurso.put("link", cursoSelecionadoObj.get("link"));
  				ArrayList<String> cursoHabilidades =  (ArrayList<String>) cursoSelecionadoObj.get("habilidades");
    			resultCurso.put("qtdeHabilidades", Integer.toString(cursoHabilidades.size()));
    			resultsCursos.add(resultCurso);

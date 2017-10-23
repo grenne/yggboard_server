@@ -109,7 +109,7 @@ public class Usuario {
 		
 		if (!existeCurso) {
 			JSONObject curso = new JSONObject();
-			curso.put("status", "pendente");
+			curso.put("status", "apendente");
 			curso.put("id", cursoId);
 			cursosSelecionadosNew.add(curso);
 		};

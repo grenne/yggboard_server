@@ -99,6 +99,15 @@ public class Rest_Habilidade {
       			result.put("nome", curso.get("nome"));
       			result.put("id", curso.get("id"));
       			result.put("escola", curso.get("escola"));
+      			result.put("logo", curso.get("logo"));
+      			result.put("duracao", curso.get("duracao"));
+      			result.put("cargaHoraria", curso.get("cargaHoraria"));
+      			result.put("formato", curso.get("formato"));
+      			result.put("nivel", curso.get("nivel"));
+      			result.put("periodicidade", curso.get("periodicidade"));
+      			result.put("descricao", curso.get("descricao"));
+      			result.put("custo", curso.get("custo"));
+      			result.put("link", curso.get("link"));
       			ArrayList<String> cursoHabilidades =  (ArrayList<String>) curso.get("habilidades");
       			result.put("qtdeHabilidades", Integer.toString(cursoHabilidades.size()));
       			results.add(result);

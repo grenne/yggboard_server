@@ -211,6 +211,15 @@ public class Rest_Hierarquia {
 				field.put("field", "photo");
 				field.put("value", colaborador.get("email") + ".jpg");
 				fieldsArray.add(field);
+				fieldsArray = new ArrayList<>();
+				field = new JSONObject();
+				field.put("field", "empresaId");
+				field.put("value", colaborador.get("empresaId"));
+				fieldsArray.add(field);
+				field = new JSONObject();
+				field.put("field", "perfilEmpresa");
+				field.put("value", "colaborador");
+				fieldsArray.add(field);
 				BasicDBObject documento = new BasicDBObject();
 				documento.put("documento", colaborador);
 				commons_db.atualizarCrud("usuarios", fieldsArray, keysArray, null, mongo, false);
@@ -262,7 +271,7 @@ public class Rest_Hierarquia {
 		
 	};
 	
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private BasicDBObject criaUserPerfil(BasicDBObject usuario, String empresaId, MongoClient mongo) {
 
 		BasicDBObject userPerfil = new BasicDBObject();
@@ -291,6 +300,26 @@ public class Rest_Hierarquia {
 		
 		BasicDBObject result = new BasicDBObject();
 		result.putAll((Map) commons_db.incluirCrud("userPerfil", userPerfil, mongo, false).getEntity());
+
+		ArrayList<JSONObject> keysArray = new ArrayList<>();
+		JSONObject key = new JSONObject();
+
+		if (result.get("_id") != null) {
+  		keysArray = new ArrayList<>();
+  		key = new JSONObject();
+  		key.put("key", "documento.email");
+  		key.put("value", usuario.get("email").toString());
+  		keysArray.add(key);				
+  		ArrayList<JSONObject> fieldsArray = new ArrayList<>();
+  		JSONObject field = new JSONObject();				
+  		fieldsArray = new ArrayList<>();
+  		field = new JSONObject();
+  		field.put("field", "userPerfil_id");
+  		field.put("value", result.get("_id").toString());
+  		fieldsArray.add(field);
+  		commons_db.atualizarCrud("usuarios", fieldsArray, keysArray, null, mongo, false);
+		};
+
 		return result;
 		
 	};

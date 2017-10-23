@@ -1411,6 +1411,41 @@ public class Avaliacao {
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public String getResultadoHabilidade(String avaliacaoId, String usuarioId, String habilidadeId, MongoClient mongo)  {
+	
+		ArrayList<JSONObject> keysArray = new ArrayList<>();
+		JSONObject key = new JSONObject();
+		key.put("key", "documento.usuarioId");
+		key.put("value", usuarioId);
+		keysArray.add(key);
+		key = new JSONObject();
+		key.put("key", "documento.avaliacoes.id");
+		key.put("value", avaliacaoId);
+		keysArray.add(key);
+
+		Response response = commons_db.obterCrud("mapaAvaliacao", keysArray, mongo, false);
+		
+		BasicDBObject mapaAvaliacao = new BasicDBObject();
+		mapaAvaliacao.putAll((Map) response.getEntity());
+		
+		BasicDBObject mapaAvaliacaoDoc = new BasicDBObject();
+		mapaAvaliacaoDoc.putAll((Map) mapaAvaliacao.get("documento"));
+		
+		ArrayList<Object> resultados = (ArrayList<Object>) mapaAvaliacaoDoc.get("resultados");
+		
+		
+		for (int i = 0; i < resultados.size(); i++) {
+			JSONObject resultado = new JSONObject();
+			resultado.putAll((Map) resultados.get(i));
+			if (resultado.get("id").equals(habilidadeId)) {
+				return resultado.get("nota").toString();
+			};
+		};
+		
+		return "NA";
+
+	};
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public ArrayList<Object> lista(String empresaId, String usuarioId, MongoClient mongo)  {
 	
 		BasicDBObject empresa = new BasicDBObject();
