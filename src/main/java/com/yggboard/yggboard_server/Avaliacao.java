@@ -1426,7 +1426,11 @@ public class Avaliacao {
 		Response response = commons_db.obterCrud("mapaAvaliacao", keysArray, mongo, false);
 		
 		BasicDBObject mapaAvaliacao = new BasicDBObject();
-		mapaAvaliacao.putAll((Map) response.getEntity());
+		if (response.getEntity().equals(false)) {
+			return "NA";
+		}else {
+			mapaAvaliacao.putAll((Map) response.getEntity());
+		};
 		
 		BasicDBObject mapaAvaliacaoDoc = new BasicDBObject();
 		mapaAvaliacaoDoc.putAll((Map) mapaAvaliacao.get("documento"));

@@ -28,18 +28,10 @@ public class Rest_Carreira {
 	@Path("/okta")	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public JSONObject okta(@QueryParam("carreira") String id) {
-		Commons_DB commons_db = new Commons_DB();
+	public JSONObject okta(@QueryParam("token") String token) {
 
-		BasicDBObject cursor = commons_db.getCollection(id, "objetivos", "documento.id", mongo, false);
-		if (cursor != null){
-			JSONObject documento = new JSONObject();
-			BasicDBObject obj = (BasicDBObject) cursor.get("documento");
-			documento.put("documento", obj);
-			mongo.close();
-			return documento;
-		};
-		mongo.close();
+		
+		System.out.println("token:" + token);
 		return null;
 	};
 	

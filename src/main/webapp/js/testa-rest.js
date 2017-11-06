@@ -213,9 +213,9 @@ function testaAtualizaPerfil() {
 function testaFiltro() {
 
 	var objJson = [];
-	var assunto = "objetivos";
-	var usuario = "c8a1328c94795c7e33cd1effc385e780";
-	var id = "1";
+	var assunto = prompt("Assunto");
+	var usuario = prompt("Usuario");
+	var id = prompt("Id");
 	var filtro = {
 			usuario : usuario,
 			assunto : assunto,

@@ -96,7 +96,7 @@ public class Rest_UserPerfil {
 				};
 			};
 			if (item.equals("carreiras-elemento")){
-				BasicDBObject cursorCarreiras = commons_db.getCollection(usuario, "objetivos", "documento.id", mongo, false);
+				BasicDBObject cursorCarreiras = commons_db.getCollection(elemento, "objetivos", "documento.id", mongo, false);
 				if (cursorCarreiras != null){
 					BasicDBObject objCarreiras = new BasicDBObject();
 					objCarreiras.put("documento", cursorCarreiras.get("documento"));

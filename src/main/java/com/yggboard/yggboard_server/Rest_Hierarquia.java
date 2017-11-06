@@ -214,7 +214,7 @@ public class Rest_Hierarquia {
 				fieldsArray = new ArrayList<>();
 				field = new JSONObject();
 				field.put("field", "empresaId");
-				field.put("value", colaborador.get("empresaId"));
+				field.put("value", empresaId);
 				fieldsArray.add(field);
 				field = new JSONObject();
 				field.put("field", "perfilEmpresa");
