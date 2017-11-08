@@ -270,18 +270,20 @@ public class Avaliacao {
 		for (int z = 0; z < habilidadesFinal.size(); z++) {
 			BasicDBObject habilidade = commons_db.getCollection(habilidadesArray.get(z), "habilidades", "documento.id", mongo, false);
 			BasicDBObject habilidadeDoc = new BasicDBObject();
-			habilidadeDoc.putAll((Map) habilidade.get("documento"));
-			if (habilidadeDoc != null) {
-				BasicDBObject habilidadeResult = new BasicDBObject();
-				habilidadeResult.put("habilidadeId", habilidadeDoc.get("id"));
-				habilidadeResult.put("habilidadeNome", habilidadeDoc.get("nome"));
-				if (commons.testaElementoArray(habilidadeDoc.get("id").toString(), habilidadesOut)) {
-					habilidadeResult.put("habilidadeInout", "");
-				}else {
-					habilidadeResult.put("habilidadeInout", "checked");
-				};
+			if (habilidade != null) {
+  			habilidadeDoc.putAll((Map) habilidade.get("documento"));
   			if (habilidadeDoc != null) {
-  				commons.addObjeto(habilidades, habilidadeResult);
+  				BasicDBObject habilidadeResult = new BasicDBObject();
+  				habilidadeResult.put("habilidadeId", habilidadeDoc.get("id"));
+  				habilidadeResult.put("habilidadeNome", habilidadeDoc.get("nome"));
+  				if (commons.testaElementoArray(habilidadeDoc.get("id").toString(), habilidadesOut)) {
+  					habilidadeResult.put("habilidadeInout", "");
+  				}else {
+  					habilidadeResult.put("habilidadeInout", "checked");
+  				};
+    			if (habilidadeDoc != null) {
+    				commons.addObjeto(habilidades, habilidadeResult);
+    			};
   			};
 			};
 		};

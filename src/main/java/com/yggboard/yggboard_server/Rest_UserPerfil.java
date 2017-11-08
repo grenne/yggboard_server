@@ -155,6 +155,7 @@ public class Rest_UserPerfil {
 									arrayListElementos = (ArrayList) jsonPerfil.get("habilidades");
 									ArrayList arrayListElementosBadge = new ArrayList(); 
 									arrayListElementosBadge = (ArrayList) badge.get("habilidadesNecessarias");
+									
 									if (commons.testaArray(arrayListElementosBadge, arrayListElementos)){
 										incluirBadge(badge, usuario, jsonPerfil, documentos, true, mongo);
 									};

@@ -49,7 +49,9 @@ public class Rest_Objetivos_Empresa {
 				BasicDBObject obj = (BasicDBObject) cursor.get(i);
 				BasicDBObject docObj = new BasicDBObject();
 				docObj = commons_db.getCollection(obj.getString("objetivoId"), "objetivos", "documento.id", mongo, false);
-				documentos.add(docObj);				
+				if (docObj != null) {
+					documentos.add(docObj);
+				};
 			};
 			mongo.close();
 			return documentos;
@@ -143,22 +145,24 @@ public class Rest_Objetivos_Empresa {
 				for (int z = 0; z < habilidadesFinal.size(); z++) {
 					BasicDBObject habilidade = new BasicDBObject();
 					habilidade = commons_db.getCollection(habilidadesArray.get(z), "habilidades", "documento.id", mongo, false);
-					BasicDBObject habilidadeDoc = new BasicDBObject();
-					habilidadeDoc.putAll((Map) habilidade.get("documento"));
-					BasicDBObject habilidadeOut = new BasicDBObject();
-					habilidadeOut.put("nome", habilidadeDoc.get("nome"));
-					habilidadeOut.put("id", habilidadeDoc.get("id").toString());
-					if (lastAvalId != null) {
-						habilidadeOut.put("nota", avaliacao.getResultadoHabilidade(lastAvalId, usuarioId, habilidadeDoc.get("id").toString(), mongo));
-					}else {
-						habilidadeOut.put("nota", "NA");		
-					};
-					BasicDBObject habilidadeDocOut = new BasicDBObject();
-					habilidadeDocOut.put("documento", habilidadeOut);
 					if (habilidade != null) {
-						if (!commons.testaElementoArrayObject(habilidade, habilidadesObjetivo)){
-							habilidadesObjetivo.add(habilidadeDocOut);
-						};
+  					BasicDBObject habilidadeDoc = new BasicDBObject();
+  					habilidadeDoc.putAll((Map) habilidade.get("documento"));
+  					BasicDBObject habilidadeOut = new BasicDBObject();
+  					habilidadeOut.put("nome", habilidadeDoc.get("nome"));
+  					habilidadeOut.put("id", habilidadeDoc.get("id").toString());
+  					if (lastAvalId != null) {
+  						habilidadeOut.put("nota", avaliacao.getResultadoHabilidade(lastAvalId, usuarioId, habilidadeDoc.get("id").toString(), mongo));
+  					}else {
+  						habilidadeOut.put("nota", "NA");		
+  					};
+  					BasicDBObject habilidadeDocOut = new BasicDBObject();
+  					habilidadeDocOut.put("documento", habilidadeOut);
+  					if (habilidade != null) {
+  						if (!commons.testaElementoArrayObject(habilidade, habilidadesObjetivo)){
+  							habilidadesObjetivo.add(habilidadeDocOut);
+  						};
+  					};
 					};
 				};
 			};

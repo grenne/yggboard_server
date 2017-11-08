@@ -100,6 +100,7 @@ public class Rest_Usuario {
 			BasicDBObject cursor = new BasicDBObject();
 			cursor.putAll((Map) response.getEntity());
 			BasicDBObject objUser = new BasicDBObject();
+			String usuarioId = cursor.get("_id").toString();
 			objUser.putAll((Map) cursor.get("documento"));
 			if (objUser.get("password") != null){
 				if (objUser.get("password").toString().equals(password)){
@@ -146,6 +147,13 @@ public class Rest_Usuario {
 					BasicDBObject userPerfil = commons_db.getCollection(email, "userPerfil", "documento.usuario", mongo, false);
 					if (userPerfil != null) {
 						objUser.put("idUserPerfil", userPerfil.get("_id").toString());
+					};
+					// obter dados da hierarquia
+					BasicDBObject hierarquia = commons_db.getCollectionDoc(usuarioId, "hierarquias", "documento.colaborador", mongo, false);
+					if (hierarquia != null && hierarquia.get("objetivoId") != null) {
+						objUser.put("objetivoId", hierarquia.get("objetivoId").toString());
+					}else {
+						objUser.put("objetivoId", null);
 					};
 					// incluir evento
 					BasicDBObject evento = new BasicDBObject();
