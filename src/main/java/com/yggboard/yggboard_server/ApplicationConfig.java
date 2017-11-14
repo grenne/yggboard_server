@@ -26,7 +26,8 @@ public class ApplicationConfig extends Application {
            		Rest_Objetivos_Empresa.class,
            		Rest_Avaliacao.class,
            		Rest_Hierarquia.class,
-           		Rest_Eventos.class
+           		Rest_Eventos.class,
+           		Rest_Objetos.class
            	        		));
     }
 

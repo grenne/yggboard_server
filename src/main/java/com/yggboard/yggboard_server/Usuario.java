@@ -8,6 +8,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.mongodb.BasicDBObject;
@@ -81,7 +82,7 @@ public class Usuario {
 		return usuario;
 	
 	};
-	
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Boolean inoutCursosSelecionados(String cursoId, String usuarioId, MongoClient mongo)  {
 		BasicDBObject usuario = new BasicDBObject();
@@ -184,6 +185,180 @@ public class Usuario {
 
 		commons_db.atualizarCrud("usuarios", fieldsArray, keysArray, usuario, mongo, false);
 		return true;	
+	}
+
+	public BasicDBObject getUserPerfil(String usuarioPar, MongoClient mongo) {
+		
+		BasicDBObject usuario = commons_db.getCollectionDoc(usuarioPar, "usuarios", "_id", mongo, false);
+		if (usuario.get("email") != null) {
+			return commons_db.getCollectionDoc(usuario.get("email").toString(), "userPerfil", "documento.usuario", mongo, false);
+		}else {
+			return null;
+		}
+		
+	}
+
+	@SuppressWarnings("unchecked")
+	public JSONArray getObjetivos(String usuarioPar, String usuarioParametro, String tipo, String full, MongoClient mongo) {
+		
+		BasicDBObject userPerfil = getUserPerfil(usuarioPar, mongo);
+		if (userPerfil == null) {
+			return null;
+		}
+		
+		JSONArray result = new JSONArray();
+		
+		ArrayList<String> array = (ArrayList<String>) userPerfil.get(tipo);
+		
+		for (int i = 0; i < array.size(); i++) {
+			BasicDBObject objetivo = commons_db.getCollectionDoc(array.get(i).toString(), "objetivos", "documento.id", mongo, false);
+			BasicDBObject item = new BasicDBObject();
+			if (full.equals("0")) {
+				item.put("_id", objetivo.get("_id"));
+				item.put("id", objetivo.get("id"));
+				item.put("nome", objetivo.get("nome"));
+			}else {
+				item.put("documento", objetivo);						
+			}
+			result.add(item);
+		};
+		return result;
 	};
+
+	@SuppressWarnings("unchecked")
+	public Object getHabilidades(String usuarioPar, String usuarioParametro, String tipo, String full, MongoClient mongo) {
+		
+		BasicDBObject userPerfil = getUserPerfil(usuarioPar, mongo);
+		if (userPerfil == null) {
+			return null;
+		}
+		
+		JSONArray result = new JSONArray();
+		
+		ArrayList<String> array = (ArrayList<String>) userPerfil.get(tipo);
+		
+		for (int i = 0; i < array.size(); i++) {
+			BasicDBObject objetivo = commons_db.getCollectionDoc(array.get(i).toString(), "habilidades", "documento.id", mongo, false);
+			BasicDBObject item = new BasicDBObject();
+			if (full.equals("0")) {
+				item.put("_id", objetivo.get("_id"));
+				item.put("id", objetivo.get("id"));
+				item.put("nome", objetivo.get("nome"));
+			}else {
+				item.put("documento", objetivo);						
+			}
+			result.add(item);
+		};
+		return result;
+	}
+
+	@SuppressWarnings("unchecked")
+	public Object getCursos(String usuarioPar, String usuarioParametro, String tipo, String full, MongoClient mongo) {
+		
+		BasicDBObject userPerfil = getUserPerfil(usuarioPar, mongo);
+		if (userPerfil == null) {
+			return null;
+		}
+		
+		JSONArray result = new JSONArray();
+		
+		ArrayList<String> array = (ArrayList<String>) userPerfil.get(tipo);
+		
+		for (int i = 0; i < array.size(); i++) {
+			BasicDBObject objetivo = commons_db.getCollectionDoc(array.get(i).toString(), "cursos", "documento.id", mongo, false);
+			BasicDBObject item = new BasicDBObject();
+			if (full.equals("0")) {
+				item.put("_id", objetivo.get("_id"));
+				item.put("id", objetivo.get("id"));
+				item.put("nome", objetivo.get("nome"));
+			}else {
+				item.put("documento", objetivo);						
+			}
+			result.add(item);
+		};
+		return result;
+	}
+
+	@SuppressWarnings("unchecked")
+	public Object getBadges(String usuarioPar, String usuarioParametro, String tipo, String full, MongoClient mongo) {
+		
+		BasicDBObject userPerfil = getUserPerfil(usuarioPar, mongo);
+		if (userPerfil == null) {
+			return null;
+		}
+		
+		JSONArray result = new JSONArray();
+		
+		ArrayList<String> array = (ArrayList<String>) userPerfil.get(tipo);
+		
+		for (int i = 0; i < array.size(); i++) {
+			BasicDBObject objetivo = commons_db.getCollectionDoc(array.get(i).toString(), "badges", "documento.id", mongo, false);
+			BasicDBObject item = new BasicDBObject();
+			if (full.equals("0")) {
+				item.put("_id", objetivo.get("_id"));
+				item.put("id", objetivo.get("id"));
+				item.put("nome", objetivo.get("nome"));
+			}else {
+				item.put("documento", objetivo);						
+			}
+			result.add(item);
+		};
+		return result;
+	}
+
+	@SuppressWarnings("unchecked")
+	public Object getAreaAtuacao(String usuarioPar, String usuarioParametro, String tipo, String full, MongoClient mongo) {
+		
+		BasicDBObject userPerfil = getUserPerfil(usuarioPar, mongo);
+		if (userPerfil == null) {
+			return null;
+		}
+		
+		JSONArray result = new JSONArray();
+		
+		ArrayList<String> array = (ArrayList<String>) userPerfil.get(tipo);
+		
+		for (int i = 0; i < array.size(); i++) {
+			BasicDBObject objetivo = commons_db.getCollectionDoc(array.get(i).toString(), "badges", "documento.id", mongo, false);
+			BasicDBObject item = new BasicDBObject();
+			if (full.equals("0")) {
+				item.put("_id", objetivo.get("_id"));
+				item.put("id", objetivo.get("id"));
+				item.put("nome", objetivo.get("nome"));
+			}else {
+				item.put("documento", objetivo);						
+			}
+			result.add(item);
+		};
+		return result;
+	}
+
+	public JSONArray getAll(String usuarioParametro, MongoClient mongo) {
+		
+		JSONArray result = commons_db.getCollectionListaNoKey("usuarios", mongo, false);
+		
+		return result;
+	
+	};
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public JSONArray getIdNome(String usuarioParametro, MongoClient mongo) {
+		
+		JSONArray resultAll = commons_db.getCollectionListaNoKey("usuarios", mongo, false);
+		
+		JSONArray result = new JSONArray();
+		
+		for (int i = 0; i < resultAll.size(); i++) {
+			BasicDBObject item = new BasicDBObject();
+			BasicDBObject obj = new BasicDBObject();
+			obj.putAll((Map) resultAll.get(i));
+			item.put("_id", obj.get("_id"));
+			item.put("nome", obj.get("firstName").toString() + obj.get("lastName").toString());
+			result.add(item);
+		};
+		
+		return result;
+	
+	}
 	
 };
