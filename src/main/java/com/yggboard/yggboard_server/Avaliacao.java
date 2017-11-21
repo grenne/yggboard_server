@@ -380,26 +380,28 @@ public class Avaliacao {
 		String status = "concluído";
 		for (int z = 0; z < habilidadesFinal.size(); z++) {
 			if (!commons.testaElementoArray(habilidadesArray.get(z), habilidadesOut)) {
-  			BasicDBObject habilidade = commons_db.getCollection(habilidadesArray.get(z), "habilidades", "documento.id", mongo, false);
-  			BasicDBObject habilidadeDoc = new BasicDBObject();
-  			habilidadeDoc.putAll((Map) habilidade.get("documento"));
-  			if (habilidadeDoc != null) {
-  				BasicDBObject habilidadeResult = new BasicDBObject();
-  				habilidadeResult.put("habilidadeId", habilidadeDoc.get("id"));
-  				habilidadeResult.put("habilidadeNome", habilidadeDoc.get("nome"));
-  				habilidadeResult.put("habilidadeDescricao", habilidadeDoc.get("descricao"));
-  				BasicDBObject avaliacaoHabilidade = getAvaliacaoHabilidade(avaliacao, habilidadeDoc.get("id").toString(), avaliadorId, mongo);
-  				if (avaliacaoHabilidade != null) {
-    				habilidadeResult.put("avaliadorId", avaliacaoHabilidade.get("avaliadorId"));
-    				habilidadeResult.put("avaliadorNome", avaliacaoHabilidade.get("avaliadorNome"));
-    				habilidadeResult.put("nota", avaliacaoHabilidade.get("nota"));
-  				}else {
-  					status = "pendente";
-  				}
-    			if (habilidadeDoc != null) {
-    				commons.addObjeto(habilidades, habilidadeResult);
-    			};
-  			};
+	  			BasicDBObject habilidade = commons_db.getCollection(habilidadesArray.get(z), "habilidades", "documento.id", mongo, false);
+	  			if (habilidade != null) {
+		  			BasicDBObject habilidadeDoc = new BasicDBObject();
+		  			habilidadeDoc.putAll((Map) habilidade.get("documento"));
+		  			if (habilidadeDoc != null) {
+		  				BasicDBObject habilidadeResult = new BasicDBObject();
+		  				habilidadeResult.put("habilidadeId", habilidadeDoc.get("id"));
+		  				habilidadeResult.put("habilidadeNome", habilidadeDoc.get("nome"));
+		  				habilidadeResult.put("habilidadeDescricao", habilidadeDoc.get("descricao"));
+		  				BasicDBObject avaliacaoHabilidade = getAvaliacaoHabilidade(avaliacao, habilidadeDoc.get("id").toString(), avaliadorId, mongo);
+		  				if (avaliacaoHabilidade != null) {
+		    				habilidadeResult.put("avaliadorId", avaliacaoHabilidade.get("avaliadorId"));
+		    				habilidadeResult.put("avaliadorNome", avaliacaoHabilidade.get("avaliadorNome"));
+		    				habilidadeResult.put("nota", avaliacaoHabilidade.get("nota"));
+		  				}else {
+		  					status = "pendente";
+		  				}
+		    			if (habilidadeDoc != null) {
+		    				commons.addObjeto(habilidades, habilidadeResult);
+		    			};
+		  			};
+	  			};
 			};
 		};
 		

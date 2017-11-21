@@ -96,16 +96,16 @@ public class Usuario {
 		ArrayList<Object> cursosSelecionadosNew = new ArrayList<>();
 		if (usuarioDoc.get("cursosSelecionados") != null) {
 			ArrayList<Object> cursosSelecionados = (ArrayList<Object>) usuarioDoc.get("cursosSelecionados");
-  		for (int i = 0; i < cursosSelecionados.size(); i++) {
-  			JSONObject curso = new JSONObject();
-  			curso.putAll((Map) cursosSelecionados.get(i));
-  			String cursoIdCompare = curso.get("id").toString();
-  			if (cursoIdCompare.equals(cursoId)) {
-  				existeCurso = true;	
-  			}else {
-  				cursosSelecionadosNew.add(cursosSelecionados.get(i));
-  			};
-  		};
+	  		for (int i = 0; i < cursosSelecionados.size(); i++) {
+	  			JSONObject curso = new JSONObject();
+	  			curso.putAll((Map) cursosSelecionados.get(i));
+	  			String cursoIdCompare = curso.get("id").toString();
+	  			if (cursoIdCompare.equals(cursoId)) {
+	  				existeCurso = true;	
+	  			}else {
+	  				cursosSelecionadosNew.add(cursosSelecionados.get(i));
+	  			};
+	  		};
 		};
 		
 		if (!existeCurso) {
@@ -238,14 +238,14 @@ public class Usuario {
 		ArrayList<String> array = (ArrayList<String>) userPerfil.get(tipo);
 		
 		for (int i = 0; i < array.size(); i++) {
-			BasicDBObject objetivo = commons_db.getCollectionDoc(array.get(i).toString(), "habilidades", "documento.id", mongo, false);
+			BasicDBObject habilidade = commons_db.getCollectionDoc(array.get(i).toString(), "habilidades", "documento.id", mongo, false);
 			BasicDBObject item = new BasicDBObject();
 			if (full.equals("0")) {
-				item.put("_id", objetivo.get("_id"));
-				item.put("id", objetivo.get("id"));
-				item.put("nome", objetivo.get("nome"));
+				item.put("_id", habilidade.get("_id"));
+				item.put("id", habilidade.get("id"));
+				item.put("nome", habilidade.get("nome"));
 			}else {
-				item.put("documento", objetivo);						
+				item.put("documento", habilidade);						
 			}
 			result.add(item);
 		};

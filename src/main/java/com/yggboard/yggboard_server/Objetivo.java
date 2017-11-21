@@ -101,17 +101,63 @@ public class Objetivo {
 		return result;
 	
 	}
-	public Object getUsuarios(String usuarioPar, String usuarioParametro, String string, String full, MongoClient mongo) {
+	public Object getUsuarios(String id, String usuarioParametro, String string, String full, MongoClient mongo) {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	public Object getHabilidades(String usuarioPar, String usuarioParametro, String string, String full, MongoClient mongo) {
-		// TODO Auto-generated method stub
-		return null;
+	@SuppressWarnings("unchecked")
+	public Object getHabilidades(String id, String usuarioParametro, String tipo, String full, MongoClient mongo) {
+		BasicDBObject objetivo = commons_db.getCollectionDoc(id, "objetivos", "documento.id", mongo, false);
+
+		if (objetivo == null) {
+			System.out.println("objetivo invalido");
+			return null;
+		};
+		
+		JSONArray result = new JSONArray();
+		
+		ArrayList<String> array = (ArrayList<String>) objetivo.get(tipo);
+		
+		for (int i = 0; i < array.size(); i++) {
+			System.out.println("habilidade" + array.get(i).toString());
+			BasicDBObject habilidade = commons_db.getCollectionDoc(array.get(i).toString(), "habilidades", "documento.id", mongo, false);
+			BasicDBObject item = new BasicDBObject();
+			if (full.equals("0")) {
+				item.put("_id", habilidade.get("_id"));
+				item.put("id", habilidade.get("id"));
+				item.put("nome", habilidade.get("nome"));
+			}else {
+				item.put("documento", habilidade);						
+			}
+			result.add(item);
+		};
+		return result;
 	}
-	public Object getAreaAtuacao(String usuarioPar, String usuarioParametro, String string, String full, MongoClient mongo) {
-		// TODO Auto-generated method stub
-		return null;
+	@SuppressWarnings("unchecked")
+	public Object getAreaAtuacao(String id, String usuarioParametro, String tipo, String full, MongoClient mongo) {
+		BasicDBObject objetivo = commons_db.getCollectionDoc(id, "objetivos", "documento.id", mongo, false);
+
+		if (objetivo == null) {
+			return null;
+		}
+		
+		JSONArray result = new JSONArray();
+		
+		ArrayList<String> array = (ArrayList<String>) objetivo.get(tipo);
+		
+		for (int i = 0; i < array.size(); i++) {
+			BasicDBObject areaAtuacao = commons_db.getCollectionDoc(array.get(i).toString(), "areaAtuacao", "documento.id", mongo, false);
+			BasicDBObject item = new BasicDBObject();
+			if (full.equals("0")) {
+				item.put("_id", areaAtuacao.get("_id"));
+				item.put("id", areaAtuacao.get("id"));
+				item.put("nome", areaAtuacao.get("nome"));
+			}else {
+				item.put("documento", areaAtuacao);						
+			}
+			result.add(item);
+		};
+		return result;
 	};
 	
 };
