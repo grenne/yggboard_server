@@ -1,5 +1,6 @@
 package com.yggboard.yggboard_server;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -212,15 +213,37 @@ public class Usuario {
 		
 		for (int i = 0; i < array.size(); i++) {
 			BasicDBObject objetivo = commons_db.getCollectionDoc(array.get(i).toString(), "objetivos", "documento.id", mongo, false);
-			BasicDBObject item = new BasicDBObject();
-			if (full.equals("0")) {
-				item.put("_id", objetivo.get("_id"));
-				item.put("id", objetivo.get("id"));
-				item.put("nome", objetivo.get("nome"));
-			}else {
-				item.put("documento", objetivo);						
-			}
-			result.add(item);
+			if (objetivo != null) {
+				BasicDBObject item = new BasicDBObject();
+				if (full.equals("0")) {
+					item.put("_id", objetivo.get("_id"));
+					item.put("id", objetivo.get("id"));
+					item.put("nome", objetivo.get("nome"));
+				}else {
+					item.put("documento", objetivo);						
+				}
+				item.put("possui", "false");
+				item.put("interesse", "false");
+				if (userPerfil != null) {
+					if (userPerfil.get("carreiras") != null) {
+		  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("carreiras");
+		  				item.put("possui", commons.testaElementoArray(objetivo.get("id").toString(), itens));
+					};
+					if (userPerfil.get("carreirasInteresse") != null) {
+		  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("carreirasInteresse");
+		  				item.put("interesse", commons.testaElementoArray(objetivo.get("id").toString(), itens));
+					};
+					//  **** calcula percentual de habilidades que o usuario possui dentro do objetivo
+					ArrayList<String> necessarios = (ArrayList<String>) objetivo.get("necessarios");
+					ArrayList<String> habilidadesPossui = (ArrayList<String>) userPerfil.get("habilidades");
+					int qtdeHabilidadesPossui = commons.testaArrayElementosIguais(necessarios, habilidadesPossui);
+					int qtdeNecessarios = necessarios.size();
+					double percentual = ((double)qtdeHabilidadesPossui / (double)qtdeNecessarios) * 100;
+					DecimalFormat formatador = new DecimalFormat("0.00");
+					item.put("percentual", formatador.format(percentual).toString());
+				};
+				result.add(item);
+			};
 		};
 		return result;
 	};
@@ -239,15 +262,29 @@ public class Usuario {
 		
 		for (int i = 0; i < array.size(); i++) {
 			BasicDBObject habilidade = commons_db.getCollectionDoc(array.get(i).toString(), "habilidades", "documento.id", mongo, false);
-			BasicDBObject item = new BasicDBObject();
-			if (full.equals("0")) {
-				item.put("_id", habilidade.get("_id"));
-				item.put("id", habilidade.get("id"));
-				item.put("nome", habilidade.get("nome"));
-			}else {
-				item.put("documento", habilidade);						
-			}
-			result.add(item);
+			if (habilidade != null) {
+				BasicDBObject item = new BasicDBObject();
+				if (full.equals("0")) {
+					item.put("_id", habilidade.get("_id"));
+					item.put("id", habilidade.get("id"));
+					item.put("nome", habilidade.get("nome"));
+				}else {
+					item.put("documento", habilidade);						
+				}
+				item.put("possui", "false");
+				item.put("interesse", "false");
+				if (userPerfil != null) {
+					if (userPerfil.get("habilidades") != null) {
+		  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("habilidades");
+		  				item.put("possui", commons.testaElementoArray(habilidade.get("id").toString(), itens));
+					};
+					if (userPerfil.get("habilidadesInteresse") != null) {
+		  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("habilidadesInteresse");
+		  				item.put("interesse", commons.testaElementoArray(habilidade.get("id").toString(), itens));
+					};
+				};
+				result.add(item);
+			};
 		};
 		return result;
 	}
@@ -265,15 +302,27 @@ public class Usuario {
 		ArrayList<String> array = (ArrayList<String>) userPerfil.get(tipo);
 		
 		for (int i = 0; i < array.size(); i++) {
-			BasicDBObject objetivo = commons_db.getCollectionDoc(array.get(i).toString(), "cursos", "documento.id", mongo, false);
+			BasicDBObject cursos = commons_db.getCollectionDoc(array.get(i).toString(), "cursos", "documento.id", mongo, false);
 			BasicDBObject item = new BasicDBObject();
 			if (full.equals("0")) {
-				item.put("_id", objetivo.get("_id"));
-				item.put("id", objetivo.get("id"));
-				item.put("nome", objetivo.get("nome"));
+				item.put("_id", cursos.get("_id"));
+				item.put("id", cursos.get("id"));
+				item.put("nome", cursos.get("nome"));
 			}else {
-				item.put("documento", objetivo);						
+				item.put("documento", cursos);						
 			}
+			item.put("possui", "false");
+			item.put("interesse", "false");
+			if (userPerfil != null) {
+				if (userPerfil.get("cursos") != null) {
+	  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("cursos");
+	  				item.put("possui", commons.testaElementoArray(cursos.get("id").toString(), itens));
+				};
+				if (userPerfil.get("cursosInteresse") != null) {
+	  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("cursosInteresse");
+	  				item.put("interesse", commons.testaElementoArray(cursos.get("id").toString(), itens));
+				};
+			};
 			result.add(item);
 		};
 		return result;
@@ -292,15 +341,27 @@ public class Usuario {
 		ArrayList<String> array = (ArrayList<String>) userPerfil.get(tipo);
 		
 		for (int i = 0; i < array.size(); i++) {
-			BasicDBObject objetivo = commons_db.getCollectionDoc(array.get(i).toString(), "badges", "documento.id", mongo, false);
+			BasicDBObject badge = commons_db.getCollectionDoc(array.get(i).toString(), "badges", "documento.id", mongo, false);
 			BasicDBObject item = new BasicDBObject();
 			if (full.equals("0")) {
-				item.put("_id", objetivo.get("_id"));
-				item.put("id", objetivo.get("id"));
-				item.put("nome", objetivo.get("nome"));
+				item.put("_id", badge.get("_id"));
+				item.put("id", badge.get("id"));
+				item.put("nome", badge.get("nome"));
 			}else {
-				item.put("documento", objetivo);						
+				item.put("documento", badge);						
 			}
+			item.put("possui", "false");
+			item.put("interesse", "false");
+			if (userPerfil != null) {
+				if (userPerfil.get("badges") != null) {
+	  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("badges");
+	  				item.put("possui", commons.testaElementoArray(item.getString("id"), itens));
+				};
+				if (userPerfil.get("badgesInteresse") != null) {
+	  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("badgesInteresse");
+	  				item.put("interesse", commons.testaElementoArray(item.getString("id"), itens));
+				};
+			};
 			result.add(item);
 		};
 		return result;

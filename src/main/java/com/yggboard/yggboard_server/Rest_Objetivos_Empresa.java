@@ -151,7 +151,7 @@ public class Rest_Objetivos_Empresa {
   					BasicDBObject habilidadeOut = new BasicDBObject();
   					habilidadeOut.put("nome", habilidadeDoc.get("nome"));
   					habilidadeOut.put("id", habilidadeDoc.get("id").toString());
-  					if (lastAvalId != null) {
+  					if (lastAvalId != null && lastAvalId != "none") {
   						habilidadeOut.put("nota", avaliacao.getResultadoHabilidade(lastAvalId, usuarioId, habilidadeDoc.get("id").toString(), mongo));
   					}else {
   						habilidadeOut.put("nota", "NA");		

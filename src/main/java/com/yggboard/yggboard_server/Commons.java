@@ -299,6 +299,20 @@ public class Commons {
 		return true;
 	};
 
+	@SuppressWarnings("rawtypes")
+	public int testaArrayElementosIguais(ArrayList arrayOrigem, ArrayList arrayElementos) {
+		
+		int elementosIguais = 0;
+		for (int w = 0; w < arrayOrigem.size(); w++) {
+			for (int i = 0; i < arrayElementos.size(); i++) {
+				if (arrayOrigem.get(w).toString().equals(arrayElementos.get(i))){
+					elementosIguais = elementosIguais + 1;
+				};
+			};
+		};
+		return elementosIguais;
+	};
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public JSONArray montaArrayPerfil(Object perfil, Object elementos) {
 		JSONArray array = new JSONArray();

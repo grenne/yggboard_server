@@ -1,5 +1,6 @@
 package com.yggboard.yggboard_server;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -115,6 +116,71 @@ public class Curso {
 		
 		return result;
 	
-	};
+	}
+	
+	public BasicDBObject getId(String id, MongoClient mongo) {
+		
+		BasicDBObject result = commons_db.getCollectionDoc(id, "cursos", "documento.id", mongo, false);
+		
+		return result;
+	
+	}
+	public Object getBadges(String objetivoPar, String usuarioParametro, String string, String full,
+			MongoClient mongo) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public Object getHabilidades(String id, String usuarioParametro, String tipo, String full, MongoClient mongo) {
+
+		BasicDBObject curso = commons_db.getCollectionDoc(id, "cursos", "documento.id", mongo, false);
+
+		if (curso == null) {
+			System.out.println("objetivo invalido");
+			return null;
+		};
+		
+		BasicDBObject userPerfil = new BasicDBObject();
+
+		userPerfil = null;
+
+		if (usuarioParametro != null) {
+			userPerfil = usuario.getUserPerfil(usuarioParametro, mongo);
+		};
+		
+		JSONArray result = new JSONArray();
+		
+		ArrayList<String> array = (ArrayList<String>) curso.get(tipo);
+		
+		for (int i = 0; i < array.size(); i++) {
+			System.out.println("habilidade" + array.get(i).toString());
+			BasicDBObject cursoObj = commons_db.getCollectionDoc(array.get(i).toString(), "habilidades", "documento.id", mongo, false);
+			if (cursoObj != null) {
+				BasicDBObject item = new BasicDBObject();
+				if (full.equals("0")) {
+					item.put("_id", cursoObj.get("_id"));
+					item.put("id", cursoObj.get("id"));
+					item.put("nome", cursoObj.get("nome"));
+				}else {
+					item.put("documento", cursoObj);						
+				};
+				item.put("possui", "false");
+				item.put("interesse", "false");
+				if (userPerfil != null) {
+					if (userPerfil.get("habilidades") != null) {
+		  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("habilidades");
+		  				item.put("possui", commons.testaElementoArray(cursoObj.get("id").toString(), itens));
+					};
+					if (userPerfil.get("habilidadesInteresse") != null) {
+		  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("habilidadesInteresse");
+		  				item.put("interesse", commons.testaElementoArray(cursoObj.get("id").toString(), itens));
+					};
+				};
+				result.add(item);
+			};
+		};
+		return result;
+	}
 	
 };

@@ -26,6 +26,8 @@ public class Habilidade {
 		
 		BasicDBObject userPerfil = new BasicDBObject();
 
+		userPerfil = null;
+
 		if (usuarioParametro != null) {
 			userPerfil = usuario.getUserPerfil(usuarioParametro, mongo);
 		};
@@ -40,11 +42,11 @@ public class Habilidade {
 			if (userPerfil != null) {
 				if (userPerfil.get("habilidades") != null) {
   				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("habilidades");
-  				item.put("possui", commons.testaElementoArray(item.getString("id"), itens));
+  				item.put("possui", commons.testaElementoArray(item.get("id").toString(), itens));
 				};
 				if (userPerfil.get("habilidadesInteresse") != null) {
   				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("habilidadesInteresse");
-  				item.put("interesse", commons.testaElementoArray(item.getString("id"), itens));
+  				item.put("interesse", commons.testaElementoArray(item.get("id").toString(), itens));
 				};
 			};
 			result.add(item);
@@ -58,6 +60,8 @@ public class Habilidade {
 	public JSONArray getIdNome(String usuarioParametro, MongoClient mongo) {
 		
 		BasicDBObject userPerfil = new BasicDBObject();
+
+		userPerfil = null;
 
 		if (usuarioParametro != null) {
 			userPerfil = usuario.getUserPerfil(usuarioParametro, mongo);
@@ -79,11 +83,11 @@ public class Habilidade {
 			if (userPerfil != null) {
 				if (userPerfil.get("habilidades") != null) {
   				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("habilidades");
-  				item.put("possui", commons.testaElementoArray(item.getString("id"), itens));
+  				item.put("possui", commons.testaElementoArray(obj.get("_id").toString(), itens));
 				};
 				if (userPerfil.get("habilidadesInteresse") != null) {
   				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("habilidadesInteresse");
-  				item.put("interesse", commons.testaElementoArray(item.getString("id"), itens));
+  				item.put("interesse", commons.testaElementoArray(obj.get("_id").toString(), itens));
 				};
 			};
 			result.add(item);
@@ -91,6 +95,120 @@ public class Habilidade {
 		
 		return result;
 	
+	}
+	public Object getUsuarios(String objetivoPar, String usuarioParametro, String string, String full, MongoClient mongo) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@SuppressWarnings("unchecked")
+	public Object getCursos(String id, String usuarioParametro, String tipo, String full, MongoClient mongo) {
+		BasicDBObject habilidade = commons_db.getCollectionDoc(id, "habilidades", "documento.id", mongo, false);
+
+		if (habilidade == null) {
+			System.out.println("habilidade invalida");
+			return null;
+		};
+		
+		BasicDBObject userPerfil = new BasicDBObject();
+
+		userPerfil = null;
+
+		if (usuarioParametro != null) {
+			userPerfil = usuario.getUserPerfil(usuarioParametro, mongo);
+		};
+		
+		JSONArray result = new JSONArray();
+		
+		ArrayList<String> array = (ArrayList<String>) habilidade.get(tipo);
+		
+		for (int i = 0; i < array.size(); i++) {
+			BasicDBObject curso = commons_db.getCollectionDoc(array.get(i).toString(), "cursos", "documento.id", mongo, false);
+			if (curso != null) {
+  				ArrayList<String> parents = (ArrayList<String>) curso.get("parents");
+  				if (parents.size() == 0) {
+					BasicDBObject item = new BasicDBObject();
+					if (full.equals("0")) {
+						item.put("_id", curso.get("_id"));
+						item.put("id", curso.get("id"));
+						item.put("nome", curso.get("nome"));
+					}else {
+						item.put("documento", curso);						
+					};
+					item.put("possui", "false");
+					item.put("interesse", "false");
+					if (userPerfil != null) {
+						if (userPerfil.get("cursos") != null) {
+			  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("cursos");
+			  				item.put("possui", commons.testaElementoArray(curso.get("_id").toString(), itens));
+						};
+						if (userPerfil.get("cursosInteresse") != null) {
+			  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("cursosInteresse");
+			  				item.put("interesse", commons.testaElementoArray(curso.get("_id").toString(), itens));
+						};
+					};
+					result.add(item);
+  				};
+			};
+		};
+		return result;
+	}
+	@SuppressWarnings("unchecked")
+	public Object getAreaConhecimento(String id, String usuarioParametro, String tipo, String full, MongoClient mongo) {
+		BasicDBObject habilidade = commons_db.getCollectionDoc(id, "habilidades", "documento.id", mongo, false);
+
+		if (habilidade == null) {
+			System.out.println("habilidade invalida");
+			return null;
+		};
+		
+		JSONArray result = new JSONArray();
+		
+		ArrayList<String> array = (ArrayList<String>) habilidade.get(tipo);
+		
+		for (int i = 0; i < array.size(); i++) {
+			BasicDBObject curso = commons_db.getCollectionDoc(array.get(i).toString(), "areaConhecimento", "documento.id", mongo, false);
+			if (curso != null) {
+				BasicDBObject item = new BasicDBObject();
+				if (full.equals("0")) {
+					item.put("_id", curso.get("_id"));
+					item.put("id", curso.get("id"));
+					item.put("nome", curso.get("nome"));
+				}else {
+					item.put("documento", curso);						
+				};
+				result.add(item);
+			};
+		};
+		return result;
+	}
+	@SuppressWarnings("unchecked")
+	public Object getObjetivos(String id, String usuarioParametro, String tipo, String full, MongoClient mongo) {
+		BasicDBObject habilidade = commons_db.getCollectionDoc(id, "habilidades", "documento.id", mongo, false);
+
+		if (habilidade == null) {
+			System.out.println("habilidade invalida");
+			return null;
+		};
+		
+		JSONArray result = new JSONArray();
+		
+		ArrayList<String> array = (ArrayList<String>) habilidade.get(tipo);
+		
+		for (int i = 0; i < array.size(); i++) {
+			BasicDBObject curso = commons_db.getCollectionDoc(array.get(i).toString(), "areaConhecimento", "documento.id", mongo, false);
+			if (curso != null) {
+				BasicDBObject item = new BasicDBObject();
+				if (full.equals("0")) {
+					item.put("_id", curso.get("_id"));
+					item.put("id", curso.get("id"));
+					item.put("nome", curso.get("nome"));
+				}else {
+					item.put("documento", curso);						
+				};
+				result.add(item);
+			};
+		};
+		return result;
 	};
 	
 };
