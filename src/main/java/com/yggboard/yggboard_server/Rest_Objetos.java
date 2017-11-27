@@ -294,7 +294,7 @@ public class Rest_Objetos {
 	
 	if (habilidadePar != null) {
 		if (full.equals("2")){
-			finalResult.put("objetivo", objetivo.getId(objetivoPar, mongo));
+			finalResult.put("habilidade", habilidade.getId(habilidadePar, usuarioParametro, mongo));
 		}else {
 		for (int i = 0; i < arrayItens.length; i++) {
 			switch (arrayItens[i]) {
@@ -336,7 +336,7 @@ public class Rest_Objetos {
 	
 	if (objetivoPar != null) {
 		if (full.equals("2")){
-			finalResult.put("objetivo", objetivo.getId(objetivoPar, mongo));
+			finalResult.put("objetivo", objetivo.getId(objetivoPar, usuarioParametro, mongo));
 		}else {
 			for (int i = 0; i < arrayItens.length; i++) {
 				switch (arrayItens[i]) {
@@ -396,14 +396,14 @@ public class Rest_Objetos {
 	
 	if (cursoPar != null) {
 		if (full.equals("2")){
-			finalResult.put("curso", curso.getId(cursoPar, mongo));
+			finalResult.put("curso", curso.getId(cursoPar, usuarioParametro, mongo));
 		}else {
 			for (int i = 0; i < arrayItens.length; i++) {
 				switch (arrayItens[i]) {
 					case "Badges":
-						finalResult.put("badgesCurso", curso.getBadges(objetivoPar, usuarioParametro, "carreiras",full, mongo));							
+						finalResult.put("badgesCurso", curso.getBadges(cursoPar, usuarioParametro, "carreiras",full, mongo));							
 					case "Habilidades":
-						finalResult.put("badgesHabilidades", curso.getHabilidades(objetivoPar, usuarioParametro, "necessarios", full, mongo));							
+						finalResult.put("badgesHabilidades", curso.getHabilidades(cursoPar, usuarioParametro, "necessarios", full, mongo));							
 					default:
 						break;
 					};

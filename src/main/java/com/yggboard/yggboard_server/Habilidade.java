@@ -21,6 +21,60 @@ public class Habilidade {
 		return result;
 	
 	};
+	
+	@SuppressWarnings("unchecked")
+	public BasicDBObject getId(String id, String usuarioParametro, MongoClient mongo) {
+		
+		BasicDBObject result = commons_db.getCollectionDoc(id, "habilidades", "documento.id", mongo, false);
+		
+		BasicDBObject userPerfil = new BasicDBObject();
+
+		if (usuarioParametro != null) {
+			userPerfil = usuario.getUserPerfil(usuarioParametro, mongo);
+		};
+
+		ArrayList<String> array = (ArrayList<String>) result.get("cursos");
+		JSONArray arrayPossui = new JSONArray();
+		JSONArray arrayInteresse = new JSONArray();
+		for (int i = 0; i < array.size(); i++) {
+			if (userPerfil != null) {
+				if (userPerfil.get("cursos") != null) {
+	  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("cursos");
+	  				arrayPossui.add(commons.testaElementoArray(array.get(i), itens));
+				};
+				if (userPerfil.get("cursosInteresse") != null) {
+	  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("cursosInteresse");
+	  				arrayInteresse.add(commons.testaElementoArray(array.get(i), itens));
+				};
+			};
+		};
+		
+		result.put("possuiCurso", arrayPossui);
+		result.put("interesseCurso", arrayInteresse);
+
+		array = (ArrayList<String>) result.get("objetivos");
+		arrayPossui = new JSONArray();
+		arrayInteresse = new JSONArray();
+		for (int i = 0; i < array.size(); i++) {
+			if (userPerfil != null) {
+				if (userPerfil.get("carreiras") != null) {
+	  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("carreiras");
+	  				arrayPossui.add(commons.testaElementoArray(array.get(i), itens));
+				};
+				if (userPerfil.get("carreirasInteresse") != null) {
+	  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("carreirasInteresse");
+	  				arrayInteresse.add(commons.testaElementoArray(array.get(i), itens));
+				};
+			};
+		};
+		
+		result.put("possuiObjetivo", arrayPossui);
+		result.put("interesseObjetivo", arrayInteresse);
+
+		return result;
+	
+	};
+
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public JSONArray getAll(String usuarioParametro, MongoClient mongo) {
 		

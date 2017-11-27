@@ -21,6 +21,15 @@ public class Badge {
 		return result;
 	
 	};
+	
+	public BasicDBObject getId(String id, MongoClient mongo) {
+		
+		BasicDBObject result = commons_db.getCollectionDoc(id, "badges", "documento.id", mongo, false);
+		
+		return result;
+	
+	}
+
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public JSONArray getAll(String usuarioParametro, MongoClient mongo) {
 		

@@ -24,9 +24,35 @@ public class Objetivo {
 	
 	};
 	
-	public BasicDBObject getId(String id, MongoClient mongo) {
+	@SuppressWarnings("unchecked")
+	public BasicDBObject getId(String id, String usuarioParametro, MongoClient mongo) {
+		
+		BasicDBObject userPerfil = new BasicDBObject();
+
+		if (usuarioParametro != null) {
+			userPerfil = usuario.getUserPerfil(usuarioParametro, mongo);
+		};
 		
 		BasicDBObject result = commons_db.getCollectionDoc(id, "objetivos", "documento.id", mongo, false);
+		
+		ArrayList<String> array = (ArrayList<String>) result.get("necessarios");
+		JSONArray arrayPossui = new JSONArray();
+		JSONArray arrayInteresse = new JSONArray();
+		for (int i = 0; i < array.size(); i++) {
+			if (userPerfil != null) {
+				if (userPerfil.get("habilidades") != null) {
+	  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("habilidades");
+	  				arrayPossui.add(commons.testaElementoArray(array.get(i), itens));
+				};
+				if (userPerfil.get("habilidadesInteresse") != null) {
+	  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("habilidadesInteresse");
+	  				arrayInteresse.add(commons.testaElementoArray(array.get(i), itens));
+				};
+			};
+		};
+		
+		result.put("possuiHabilidade", arrayPossui);
+		result.put("interesseHabilidade", arrayInteresse);
 		
 		return result;
 	
