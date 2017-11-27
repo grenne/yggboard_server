@@ -169,13 +169,13 @@ public class Rest_Objetos {
   					for (int j = 0; j < arrayAssuntos.length; j++) {
   						switch (arrayAssuntos[j]) {
   						case "possui":
-  							finalResult.put("usuarioObjetivosPossui", usuario.getObjetivos(usuarioPar, usuarioParametro, "carreiras",full, mongo));							
+  							finalResult.put("usuarioObjetivosPossui", usuario.getObjetivos(usuarioPar, usuarioPar, "carreiras",full, mongo));							
   							break;
   						case "interesse":
-  							finalResult.put("usuarioObjetivosInteresse", usuario.getObjetivos(usuarioPar, usuarioParametro, "carreirasInteresse",full, mongo));							
+  							finalResult.put("usuarioObjetivosInteresse", usuario.getObjetivos(usuarioPar, usuarioPar, "carreirasInteresse",full, mongo));							
   							break;
   						case "sugeridos":
-  							finalResult.put("usuarioObjetivosSugeridos", usuario.getObjetivos(usuarioPar, usuarioParametro, "carreirasSugeridas",full,  mongo));							
+  							finalResult.put("usuarioObjetivosSugeridos", usuario.getObjetivos(usuarioPar, usuarioPar, "carreirasSugeridas",full,  mongo));							
   							break;
   						default:
   							System.out.println("Assunto invalido:" + arrayAssuntos[j]);
@@ -185,6 +185,7 @@ public class Rest_Objetos {
 	 				};
 					break;
 				case "Habilidades":
+					BasicDBObject result = usuario.getHabilidades(usuarioPar, usuarioPar, "habilidades", full, mongo);
 	 				if (arrayAssuntos == null) {
 	 					System.out.println("informar assuntos");
 	 					mongo.close();
@@ -193,10 +194,25 @@ public class Rest_Objetos {
   					for (int j = 0; j < arrayAssuntos.length; j++) {
   						switch (arrayAssuntos[j]) {
   						case "possui":
-  							finalResult.put("usuarioHabilidades", usuario.getHabilidades(usuarioPar, usuarioParametro, "habilidades", full, mongo));							
+  							result = usuario.getHabilidades(usuarioPar, usuarioPar, "habilidades", full, mongo);
+  							finalResult.put("usuarioHabilidades", result.get("habilidades"));							
+  							finalResult.put("qtdPossui", result.get("qtdPossui"));							
+  							finalResult.put("qtdInteresse", result.get("qtdInteresse"));							
+  							finalResult.put("qtdNecessarias", result.get("qtdNecessarias"));							
   							break;
   						case "interesse":
-  							finalResult.put("usuarioHabilidadesInteresse", usuario.getHabilidades(usuarioPar, usuarioParametro, "habilidadesInteresse",full,  mongo));							
+  							result = usuario.getHabilidades(usuarioPar, usuarioPar, "habilidadesInteresse", full, mongo);
+  							finalResult.put("usuarioHabilidadesInteresse", result.get("habilidades"));							
+  							finalResult.put("qtdPossui", result.get("qtdPossui"));							
+  							finalResult.put("qtdInteresse", result.get("qtdInteresse"));							
+  							finalResult.put("qtdNecessarias", result.get("qtdNecessarias"));							
+  							break;
+  						case "necessarias":
+  							result = usuario.getHabilidadesNecessarias(usuarioPar, full,  mongo);
+  							finalResult.put("usuarioHabilidadesNecessarias", result.get("habilidades"));							
+  							finalResult.put("qtdPossui", result.get("qtdPossui"));							
+  							finalResult.put("qtdInteresse", result.get("qtdInteresse"));							
+  							finalResult.put("qtdNecessarias", result.get("qtdNecessarias"));							
   							break;
   						default:
   							System.out.println("Assunto invalido:" + arrayAssuntos[j]);
@@ -214,19 +230,19 @@ public class Rest_Objetos {
   					for (int j = 0; j < arrayAssuntos.length; j++) {
   						switch (arrayAssuntos[j]) {
   						case "possui":
-  							finalResult.put("usuarioCursosPossui", usuario.getCursos(usuarioPar, usuarioParametro, "cursos", full,  mongo));							
+  							finalResult.put("usuarioCursosPossui", usuario.getCursos(usuarioPar, usuarioPar, "cursos", full,  mongo));							
   							break;
   						case "interesse":
-  							finalResult.put("usuarioCursosInteresse", usuario.getCursos(usuarioPar, usuarioParametro, "cursosInteresse", full, mongo));							
+  							finalResult.put("usuarioCursosInteresse", usuario.getCursos(usuarioPar, usuarioPar, "cursosInteresse", full, mongo));							
   							break;
   						case "sugeridos":
-  							finalResult.put("usuarioCursosSugeridos", usuario.getCursos(usuarioPar, usuarioParametro, "cursosSugeridos",full, mongo));							
+  							finalResult.put("usuarioCursosSugeridos", usuario.getCursos(usuarioPar, usuarioPar, "cursosSugeridos",full, mongo));							
   							break;
   						case "inscritos":
-  							finalResult.put("usuarioCursosInscrito", usuario.getCursos(usuarioPar, usuarioParametro, "cursosInscritos",full,  mongo));							
+  							finalResult.put("usuarioCursosInscrito", usuario.getCursos(usuarioPar, usuarioPar, "cursosInscritos",full,  mongo));							
   							break;
   						case "em andamento":
-  							finalResult.put("usuarioCursosEmAndamento", usuario.getCursos(usuarioPar, usuarioParametro, "cursosAndamento", full, mongo));							
+  							finalResult.put("usuarioCursosEmAndamento", usuario.getCursos(usuarioPar, usuarioPar, "cursosAndamento", full, mongo));							
   							break;
   						default:
   							System.out.println("Assunto invalido:" + arrayAssuntos[j]);
@@ -244,16 +260,16 @@ public class Rest_Objetos {
   					for (int j = 0; j < arrayAssuntos.length; j++) {
   						switch (arrayAssuntos[j]) {
   						case "possui":
-  							finalResult.put("usuarioBadgesPossui", usuario.getBadges(usuarioPar, usuarioParametro, "badges",full,  mongo));							
+  							finalResult.put("usuarioBadgesPossui", usuario.getBadges(usuarioPar, usuarioPar, "badges",full,  mongo));							
   							break;
   						case "interesse":
-  							finalResult.put("usuarioBadgesInteresse", usuario.getBadges(usuarioPar, usuarioParametro, "badgesInteresse",full,  mongo));							
+  							finalResult.put("usuarioBadgesInteresse", usuario.getBadges(usuarioPar, usuarioPar, "badgesInteresse",full,  mongo));							
   							break;
   						case "conquista":
-  							finalResult.put("usuarioBadgesConquista", usuario.getBadges(usuarioPar, usuarioParametro, "badgesConquista",full,  mongo));							
+  							finalResult.put("usuarioBadgesConquista", usuario.getBadges(usuarioPar, usuarioPar, "badgesConquista",full,  mongo));							
   							break;
   						case "show":
-  							finalResult.put("usuarioBadgesShow", usuario.getBadges(usuarioPar, usuarioParametro, "showBadges", full, mongo));							
+  							finalResult.put("usuarioBadgesShow", usuario.getBadges(usuarioPar, usuarioPar, "showBadges", full, mongo));							
   							break;
   						default:
   							System.out.println("Assunto invalido:" + arrayAssuntos[j]);
@@ -271,10 +287,10 @@ public class Rest_Objetos {
   					for (int j = 0; j < arrayAssuntos.length; j++) {
   						switch (arrayAssuntos[j]) {
   						case "possui":
-  							finalResult.put("usuarioAreasAtuacaoPossui", usuario.getAreaAtuacao(usuarioPar, usuarioParametro,"areasAtuacao", full, mongo));							
+  							finalResult.put("usuarioAreasAtuacaoPossui", usuario.getAreaAtuacao(usuarioPar, usuarioPar,"areasAtuacao", full, mongo));							
   							break;
   						case "interesse":
-  							finalResult.put("usuarioAreasAtuacaoInteresse", usuario.getAreaAtuacao(usuarioPar, usuarioParametro, "areasAtuacaoInteresse", full, mongo));							
+  							finalResult.put("usuarioAreasAtuacaoInteresse", usuario.getAreaAtuacao(usuarioPar, usuarioPar, "areasAtuacaoInteresse", full, mongo));							
   							break;
   						default:
   							System.out.println("Assunto invalido:" + arrayAssuntos[j]);

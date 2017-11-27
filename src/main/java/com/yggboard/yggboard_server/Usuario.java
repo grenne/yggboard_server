@@ -4,11 +4,6 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Map;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -191,12 +186,16 @@ public class Usuario {
 	public BasicDBObject getUserPerfil(String usuarioPar, MongoClient mongo) {
 		
 		BasicDBObject usuario = commons_db.getCollectionDoc(usuarioPar, "usuarios", "_id", mongo, false);
-		if (usuario.get("email") != null) {
-			return commons_db.getCollectionDoc(usuario.get("email").toString(), "userPerfil", "documento.usuario", mongo, false);
+		
+		if (usuario != null) {
+			if (usuario.get("email") != null) {
+				return commons_db.getCollectionDoc(usuario.get("email").toString(), "userPerfil", "documento.usuario", mongo, false);
+			}else {
+				return null;
+			}
 		}else {
 			return null;
 		}
-		
 	}
 
 	@SuppressWarnings("unchecked")
@@ -249,13 +248,14 @@ public class Usuario {
 	};
 
 	@SuppressWarnings("unchecked")
-	public Object getHabilidades(String usuarioPar, String usuarioParametro, String tipo, String full, MongoClient mongo) {
+	public BasicDBObject getHabilidades(String usuarioPar, String usuarioParametro, String tipo, String full, MongoClient mongo) {
 		
 		BasicDBObject userPerfil = getUserPerfil(usuarioPar, mongo);
 		if (userPerfil == null) {
 			return null;
 		}
 		
+		BasicDBObject resultFinal = new BasicDBObject();
 		JSONArray result = new JSONArray();
 		
 		ArrayList<String> array = (ArrayList<String>) userPerfil.get(tipo);
@@ -286,7 +286,66 @@ public class Usuario {
 				result.add(item);
 			};
 		};
-		return result;
+
+		ArrayList<String> itens = new ArrayList<>();
+		itens = (ArrayList<String>) userPerfil.get("habilidades");
+		resultFinal.put("qtdPossui", itens.size());
+		itens = (ArrayList<String>) userPerfil.get("habilidadesInteresse");
+		resultFinal.put("qtdInteresse", itens.size());
+		resultFinal.put("qtdNecessarias", getHabilidadesNecessarias(usuarioPar, full, mongo).get("qtdNecessarias"));
+		resultFinal.put("habilidades", result);
+		return resultFinal;
+	}
+
+	@SuppressWarnings("unchecked")
+	public BasicDBObject getHabilidadesNecessarias(String usuarioPar, String full,	MongoClient mongo) {
+
+		BasicDBObject resultFinal = new BasicDBObject();
+		
+		JSONArray result = new JSONArray();
+		
+		BasicDBObject userPerfil = getUserPerfil(usuarioPar, mongo);
+		
+		ArrayList<String> habilidadesPossui = (ArrayList<String>) userPerfil.get("habilidades");
+		ArrayList<String> habilidadesNecessarias = new ArrayList<>();
+		if (userPerfil.get("carreirasInteresse") != null) {
+			ArrayList<String> array = (ArrayList<String>) userPerfil.get("carreirasInteresse");
+			for (int i = 0; i < array.size(); i++) {
+				BasicDBObject objetivo = commons_db.getCollectionDoc(array.get(i), "objetivos", "documento.id", mongo, false);
+				if (objetivo != null) {
+					ArrayList<String> necessarios = (ArrayList<String>) objetivo.get("necessarios");
+					for (int j = 0; j < necessarios.size(); j++) {
+						if (!commons.testaElementoArray(necessarios.get(j), habilidadesNecessarias)) {
+							if (!commons.testaElementoArray(necessarios.get(j), habilidadesPossui)) {
+								BasicDBObject habilidade = commons_db.getCollectionDoc(necessarios.get(j), "habilidades", "documento.id", mongo, false);
+								if (habilidade != null) {
+									BasicDBObject item = new BasicDBObject();
+									if (full.equals("0")) {
+										item.put("_id", habilidade.get("_id"));
+										item.put("id", habilidade.get("id"));
+										item.put("nome", habilidade.get("nome"));
+									}else {
+										item.put("documento", habilidade);						
+									};
+									result.add(item);	
+									habilidadesNecessarias.add(necessarios.get(i));
+								};
+							};
+						};
+					};
+				};
+			};
+		};
+
+
+		ArrayList<String> itens = new ArrayList<>();
+		itens = (ArrayList<String>) userPerfil.get("habilidades");
+		resultFinal.put("qtdPossui", itens.size());
+		itens = (ArrayList<String>) userPerfil.get("habilidadesInteresse");
+		resultFinal.put("qtdInteresse", itens.size());
+		resultFinal.put("qtdNecessarias", result.size());
+		resultFinal.put("habilidades", result);
+		return resultFinal;
 	}
 
 	@SuppressWarnings("unchecked")
