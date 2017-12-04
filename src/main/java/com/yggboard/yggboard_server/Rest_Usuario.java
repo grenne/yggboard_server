@@ -12,7 +12,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.bson.types.ObjectId;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.mongodb.BasicDBObject;
@@ -60,10 +59,12 @@ public class Rest_Usuario {
 	@Path("/reseta")	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response ResetaSenha(@QueryParam("email") String email) {
+	public BasicDBObject ResetaSenha(@QueryParam("email") String email) {
 	
 		Long time = commons.currentTime();
 		String novaSenha = "ygg" + time;
+		byte[] tokenByte = commons.gerarHash(novaSenha);
+		String pwmd5 = commons.stringHexa(tokenByte);
 
 		ArrayList<JSONObject> keysArray = new ArrayList<>();
 		JSONObject key = new JSONObject();
@@ -73,12 +74,15 @@ public class Rest_Usuario {
 		ArrayList<JSONObject> fieldsArray = new ArrayList<>();
 		JSONObject field = new JSONObject();
 		field.put("field", "password");
-		field.put("value", novaSenha);
+		field.put("value", pwmd5);
 		fieldsArray.add(field);
 		
 		Response result = commons_db.atualizarCrud("usuarios", fieldsArray, keysArray, null, mongo, false);
+		BasicDBObject resultFinal = new BasicDBObject();
+		resultFinal.put("result", result);
+		resultFinal.put("newPass", novaSenha);
 		mongo.close();
-		return result;
+		return resultFinal;
 
 	};
 

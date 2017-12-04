@@ -33,7 +33,7 @@ public class Rest_Badge {
 	@Produces(MediaType.APPLICATION_JSON)
 	public JSONObject ObterBadge(@QueryParam("id") String id)  {
 		Commons_DB commons_db = new Commons_DB();
-		BasicDBObject cursor = commons_db.getCollection(id, "objetivos", "documento.id", mongo, false);
+		BasicDBObject cursor = commons_db.getCollection(id, "badges", "documento.id", mongo, false);
 		if (cursor != null){
 			JSONObject documento = new JSONObject();
 			BasicDBObject obj = (BasicDBObject) cursor.get("documento");

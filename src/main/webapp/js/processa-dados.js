@@ -65,7 +65,8 @@ function processaCursos (data){
 					parents:[],
 					tags:[],
 					logo:fields[20],
-					classificacao:fields[21]
+					classificacao:fields[21],
+					areaConhecimento:[],
 					}
 				}
 		};
@@ -100,6 +101,12 @@ function processaCursos (data){
 			objJson.insert.documento.tags.push(array[i]);
 		}
 	};
+	if (fields[23]){
+		var array = fields[23].split(",");
+			for (var i = 0; i < array.length; i++) {
+				objJson.insert.documento.tags.push(array[i]);
+			}
+		};
 	
 	if (fields[0]){
 		rest_incluir (objJson, restOk, semAcao);

@@ -240,6 +240,7 @@ public class Usuario {
 					double percentual = ((double)qtdeHabilidadesPossui / (double)qtdeNecessarios) * 100;
 					DecimalFormat formatador = new DecimalFormat("0.00");
 					item.put("percentual", formatador.format(percentual).toString());
+					item.put("percentual", formatador.format(percentual).toString());
 				};
 				result.add(item);
 			};
@@ -292,7 +293,9 @@ public class Usuario {
 		resultFinal.put("qtdPossui", itens.size());
 		itens = (ArrayList<String>) userPerfil.get("habilidadesInteresse");
 		resultFinal.put("qtdInteresse", itens.size());
-		resultFinal.put("qtdNecessarias", getHabilidadesNecessarias(usuarioPar, full, mongo).get("qtdNecessarias"));
+		BasicDBObject resultNecessarias = getHabilidadesNecessarias(usuarioPar, full, mongo);
+		resultFinal.put("qtdNecessarias", resultNecessarias.get("qtdNecessarias"));
+		resultFinal.put("qtdObjetivos", resultNecessarias.get("qtdNecessarias"));							
 		resultFinal.put("habilidades", result);
 		return resultFinal;
 	}
@@ -303,6 +306,7 @@ public class Usuario {
 		BasicDBObject resultFinal = new BasicDBObject();
 		
 		JSONArray result = new JSONArray();
+		JSONArray resultObjetivos = new JSONArray();
 		
 		BasicDBObject userPerfil = getUserPerfil(usuarioPar, mongo);
 		
@@ -327,10 +331,26 @@ public class Usuario {
 									}else {
 										item.put("documento", habilidade);						
 									};
-									result.add(item);	
-									habilidadesNecessarias.add(necessarios.get(i));
+									item.put("possui", "false");
+									item.put("interesse", "false");
+									if (userPerfil != null) {
+										if (userPerfil.get("habilidades") != null) {
+							  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("habilidades");
+							  				item.put("possui", commons.testaElementoArray(habilidade.get("id").toString(), itens));
+										};
+										if (userPerfil.get("habilidadesInteresse") != null) {
+							  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("habilidadesInteresse");
+							  				item.put("interesse", commons.testaElementoArray(habilidade.get("id").toString(), itens));
+										};
+									};
+									result.add(item);
+									resultObjetivos.add("1");
+									habilidadesNecessarias.add(necessarios.get(j));
 								};
 							};
+						}else {
+							int z = commons.indexElemento(habilidadesNecessarias, necessarios.get(j).toString());
+							resultObjetivos.set(z, String.valueOf(Integer.valueOf(resultObjetivos.get(z).toString()) + 1));							
 						};
 					};
 				};
@@ -344,6 +364,7 @@ public class Usuario {
 		itens = (ArrayList<String>) userPerfil.get("habilidadesInteresse");
 		resultFinal.put("qtdInteresse", itens.size());
 		resultFinal.put("qtdNecessarias", result.size());
+		resultFinal.put("qtdObjetivos", resultObjetivos);
 		resultFinal.put("habilidades", result);
 		return resultFinal;
 	}
@@ -411,14 +432,19 @@ public class Usuario {
 			}
 			item.put("possui", "false");
 			item.put("interesse", "false");
+			item.put("show", "false");
 			if (userPerfil != null) {
 				if (userPerfil.get("badges") != null) {
 	  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("badges");
-	  				item.put("possui", commons.testaElementoArray(item.getString("id"), itens));
+	  				item.put("possui", commons.testaElementoArray(badge.get("id").toString(), itens));
 				};
 				if (userPerfil.get("badgesInteresse") != null) {
 	  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("badgesInteresse");
-	  				item.put("interesse", commons.testaElementoArray(item.getString("id"), itens));
+	  				item.put("interesse", commons.testaElementoArray(badge.get("id").toString(), itens));
+				};
+				if (userPerfil.get("showBadges") != null) {
+	  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("showBadges");
+	  				item.put("show", commons.testaElementoArray(badge.get("id").toString(), itens));
 				};
 			};
 			result.add(item);

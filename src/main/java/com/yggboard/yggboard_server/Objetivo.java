@@ -155,7 +155,7 @@ public class Objetivo {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public Object getHabilidades(String id, String usuarioParametro, String tipo, String full, MongoClient mongo) {
+	public BasicDBObject getHabilidades(String id, String usuarioParametro, String tipo, String full, MongoClient mongo) {
 		BasicDBObject objetivo = commons_db.getCollectionDoc(id, "objetivos", "documento.id", mongo, false);
 
 		if (objetivo == null) {
@@ -171,6 +171,7 @@ public class Objetivo {
 			userPerfil = usuario.getUserPerfil(usuarioParametro, mongo);
 		};
 		
+		BasicDBObject finalResult = new BasicDBObject();
 		JSONArray result = new JSONArray();
 		
 		ArrayList<String> array = (ArrayList<String>) objetivo.get(tipo);
@@ -198,21 +199,24 @@ public class Objetivo {
 		  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("habilidadesInteresse");
 		  				item.put("interesse", commons.testaElementoArray(habilidadeObj.get("id").toString(), itens));
 					};
-					//  **** calcula percentual de habilidades que o usuario possui dentro do objetivo
-					ArrayList<String> necessarios = (ArrayList<String>) objetivo.get("necessarios");
-					ArrayList<String> habilidadesPossui = (ArrayList<String>) userPerfil.get("habilidades");
-					int qtdeHabilidadesPossui = commons.testaArrayElementosIguais(necessarios, habilidadesPossui);
-					int qtdeNecessarios = necessarios.size();
-					double percentual = ((double)qtdeHabilidadesPossui / (double)qtdeNecessarios) * 100;
-					DecimalFormat formatador = new DecimalFormat("0.00");
-					item.put("percentual", formatador.format(percentual).toString());
 				};
 				Object cursos = habilidade.getCursos(array.get(i).toString(), usuarioParametro, "cursos", "0", mongo);
 				item.put("habilidadesCursos", cursos);
 				result.add(item);
 			};
 		};
-		return result;
+		//  **** calcula percentual de habilidades que o usuario possui dentro do objetivo
+		ArrayList<String> necessarios = (ArrayList<String>) objetivo.get("necessarios");
+		ArrayList<String> habilidadesPossui = (ArrayList<String>) userPerfil.get("habilidades");
+		int qtdeHabilidadesPossui = commons.testaArrayElementosIguais(necessarios, habilidadesPossui);
+		int qtdeNecessarios = necessarios.size();
+		double percentual = ((double)qtdeHabilidadesPossui / (double)qtdeNecessarios) * 100;
+		double delta = (100 / (double)qtdeNecessarios);
+		DecimalFormat formatador = new DecimalFormat("0.00");
+		finalResult.put("percentual", formatador.format(percentual).toString());
+		finalResult.put("delta", formatador.format(delta).toString());
+		finalResult.put("objetivoHabilidades", result);
+		return finalResult;
 	}
 	@SuppressWarnings("unchecked")
 	public Object getAreaAtuacao(String id, String usuarioParametro, String tipo, String full, MongoClient mongo) {

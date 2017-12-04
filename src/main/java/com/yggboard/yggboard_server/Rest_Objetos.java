@@ -185,7 +185,7 @@ public class Rest_Objetos {
 	 				};
 					break;
 				case "Habilidades":
-					BasicDBObject result = usuario.getHabilidades(usuarioPar, usuarioPar, "habilidades", full, mongo);
+					BasicDBObject result = new BasicDBObject();
 	 				if (arrayAssuntos == null) {
 	 					System.out.println("informar assuntos");
 	 					mongo.close();
@@ -199,6 +199,7 @@ public class Rest_Objetos {
   							finalResult.put("qtdPossui", result.get("qtdPossui"));							
   							finalResult.put("qtdInteresse", result.get("qtdInteresse"));							
   							finalResult.put("qtdNecessarias", result.get("qtdNecessarias"));							
+  							finalResult.put("qtdObjetivos", result.get("qtdObjetivos"));							
   							break;
   						case "interesse":
   							result = usuario.getHabilidades(usuarioPar, usuarioPar, "habilidadesInteresse", full, mongo);
@@ -206,6 +207,7 @@ public class Rest_Objetos {
   							finalResult.put("qtdPossui", result.get("qtdPossui"));							
   							finalResult.put("qtdInteresse", result.get("qtdInteresse"));							
   							finalResult.put("qtdNecessarias", result.get("qtdNecessarias"));							
+  							finalResult.put("qtdObjetivos", result.get("qtdObjetivos"));							
   							break;
   						case "necessarias":
   							result = usuario.getHabilidadesNecessarias(usuarioPar, full,  mongo);
@@ -213,6 +215,14 @@ public class Rest_Objetos {
   							finalResult.put("qtdPossui", result.get("qtdPossui"));							
   							finalResult.put("qtdInteresse", result.get("qtdInteresse"));							
   							finalResult.put("qtdNecessarias", result.get("qtdNecessarias"));							
+  							finalResult.put("qtdObjetivos", result.get("qtdObjetivos"));							
+  							break;
+  						case "quantidades":
+  							result = usuario.getHabilidadesNecessarias(usuarioPar, full,  mongo);
+  							finalResult.put("qtdPossui", result.get("qtdPossui"));							
+  							finalResult.put("qtdInteresse", result.get("qtdInteresse"));							
+  							finalResult.put("qtdNecessarias", result.get("qtdNecessarias"));							
+  							finalResult.put("qtdObjetivos", result.get("qtdObjetivos"));							
   							break;
   						default:
   							System.out.println("Assunto invalido:" + arrayAssuntos[j]);
@@ -389,7 +399,10 @@ public class Rest_Objetos {
 						for (int j = 0; j < arrayAssuntos.length; j++) {
 							switch (arrayAssuntos[j]) {
 							case "necessarias":
-								finalResult.put("objetivoHabilidades", objetivo.getHabilidades(objetivoPar, usuarioParametro, "necessarios", full, mongo));							
+								BasicDBObject result = objetivo.getHabilidades(objetivoPar, usuarioParametro, "necessarios", full, mongo);
+								finalResult.put("objetivoHabilidades", result.get("objetivoHabilidades"));
+								finalResult.put("delta", result.get("delta"));
+								finalResult.put("percentual", result.get("percentual"));
 								break;
 							case "recomendadas":
 								finalResult.put("ObjetivoHabilidadesRecomendadas", objetivo.getHabilidades(objetivoPar, usuarioParametro, "recomendados",full,  mongo));							

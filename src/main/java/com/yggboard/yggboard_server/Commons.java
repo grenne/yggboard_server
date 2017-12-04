@@ -2,6 +2,7 @@ package com.yggboard.yggboard_server;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.DateFormat;
@@ -375,6 +376,19 @@ public class Commons {
 		return array;
 	};
 
+
+	public int indexElemento(ArrayList<String> array, String elemento) {
+		if (array != null){
+			for (int i = 0; i < array.size(); i++) {
+				if (array.get(i).equals(elemento)){
+					return i;  
+				};
+			};
+		}else{
+			return 0;
+		};
+		return 0;
+	}
 	@SuppressWarnings("unchecked")
 	public JSONArray addString(JSONArray array, String elemento) {
 
@@ -589,6 +603,6 @@ public class Commons {
 			};
 		};
 		return frase;
-	};
-	
+	}
+
 };
