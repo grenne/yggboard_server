@@ -6,18 +6,16 @@ import org.apache.commons.mail.HtmlEmail;
 
 public class SendEmailHtml {
 	
-	public void sendEmailHtml(String hostName, String userName, String password, String from, String to, String subject, String html ){
+	public void sendEmailHtml(String to, String subject, String html){
 	    
 		HtmlEmail email = new HtmlEmail();
 		
-//		String newEmail = "<div><h3 style='color: #1c70db;'>NOW $159</h3></div>";
-
 		try {
-			email.setHostName(hostName);
+			email.setHostName("smtp.gmail.com");
 			email.setSmtpPort(587);
-			email.setAuthenticator(new DefaultAuthenticator("postmasterygg@yggboard.com", "ygglicious13"));
+			email.setAuthenticator(new DefaultAuthenticator("no-reply@yggboard.com", "ygglicious1q2w3e"));
 			email.setStartTLSEnabled(true);
-			email.setFrom(from);
+			email.setFrom("no-reply@yggboard.com");
 			email.setSubject(subject);
 			email.setHtmlMsg(html);
 			email.addTo(to);

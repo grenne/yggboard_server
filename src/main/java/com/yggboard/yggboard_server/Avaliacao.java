@@ -16,11 +16,12 @@ public class Avaliacao {
 
 	Commons_DB commons_db = new Commons_DB();
 	Commons commons = new Commons();
+	SendEmailHtml sendEmailHtml = new SendEmailHtml();
+	TemplateEmail templateEmail = new TemplateEmail(); 
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public JSONObject criaMapaAvaliacao(String empresaId, String avaliacaoId, MongoClient mongo) {
-
-		
+	
 		ArrayList<JSONObject> keysArray = new ArrayList<>();
 		JSONObject key = new JSONObject();
 		key.put("key", "documento.avaliacoes.id");
@@ -557,6 +558,107 @@ public class Avaliacao {
 		return false;
 	}
 
+	@SuppressWarnings("rawtypes")
+	public boolean emailsFechamento(MongoClient mongo) {
+		
+		JSONArray avaliacoes = commons_db.getCollectionListaNoKey("avaliacoes", mongo, false);
+		
+		for (int i = 0; i < avaliacoes.size(); i++) {
+			BasicDBObject avaliacao = new BasicDBObject();
+			avaliacao.putAll((Map) avaliacoes.get(i));
+			if (avaliacao.get("dataEnvio") != null) {
+				if (commons.calcTime(avaliacao.get("dataEnvio").toString().replace("-", "")).equals(commons.calcTime(commons.todaysDate("yyyymmdd")))) {
+					testaMapaAvaliacao(avaliacao.get("_id").toString(), true, "inicio-avaliacao", avaliacao, mongo);
+				};
+				if (commons.calcTime(avaliacao.get("dataConclusao").toString().replace("-", "")).equals(commons.calcTime(commons.todaysDate("yyyymmdd")))) {
+					testaMapaAvaliacao(avaliacao.get("_id").toString(), false, "conclusao-avaliacao", avaliacao, mongo);
+				};
+			};
+		}
+		return true;
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private void testaMapaAvaliacao(String idAvaliacao, Boolean gestores, String tipo, BasicDBObject avaliacao, MongoClient mongo) {
+		
+		JSONArray mapasAvaliacao = commons_db.getCollectionLista(idAvaliacao, "mapaAvaliacao", "documento.avaliacoes.id", mongo, false);
+		
+		for (int i = 0; i < mapasAvaliacao.size(); i++) {
+			BasicDBObject mapaAvaliacao = new BasicDBObject();
+			mapaAvaliacao.putAll((Map) mapasAvaliacao.get(i));
+			ArrayList<Object> avaliacoes = (ArrayList<Object>) mapaAvaliacao.get("avaliacoes");
+			if (avaliacoes != null) {
+				for (int j = 0; j < avaliacoes.size(); j++) {
+					BasicDBObject avaliacaoMapa = new BasicDBObject();
+					avaliacaoMapa.putAll((Map) avaliacoes.get(j));
+					if (idAvaliacao.equals(avaliacao.get("_id"))){
+						Boolean enviarEmail = false;
+						if (gestores) {
+							ArrayList<Object> subordinados = (ArrayList<Object>) avaliacaoMapa.get("subordinados");
+							if (subordinados.size() != 0) {
+								enviarEmail = true;
+							}
+						}else {
+							enviarEmail = true;
+						};
+						if (enviarEmail) {
+							enviarEmailAvaliacao(mapaAvaliacao.get("usuarioId").toString(), avaliacao, tipo, mongo);
+						};
+					};
+				}
+			};
+		};
+	
+		
+	};
+
+	private void enviarEmailAvaliacao(String usuarioId, BasicDBObject avaliacao, String tipo, MongoClient mongo) {
+		
+		BasicDBObject usuario = commons_db.getCollectionDoc(usuarioId, "usuarios", "_id", mongo, false);
+		
+		if (usuario == null){
+			return;
+		};
+
+		switch (tipo) {
+		case "inicio-avaliacao":
+			emailInicioAvaliacao ("Yggboard - Inicie suas avaliações, conclua até " + avaliacao.get("dataConclusao"), usuario, avaliacao);
+			break;
+		case "conclusao-avaliacao":
+			emailConclusaoAvaliacao ("Yggboard - Veja os resultados da avaliação " + avaliacao.get("nome"), usuario, avaliacao );
+			break;
+		default:
+			break;
+		};
+	};
+
+	private void emailInicioAvaliacao(String subject, BasicDBObject usuario, BasicDBObject avaliacao) {
+
+		String conteudo = "<h1>Olá, <b>" + usuario.get("firstName") + " " + usuario.get("lastName") + "<b></h1>";
+				conteudo = conteudo + "<p>Foi iniciado o período de avaliação da <b>\"" + avaliacao.get("nome") + "<b> em Yggboard.</p>";
+				conteudo = conteudo + "<p>Por favor complete as avaliações dos colaboaradoes listados em seu painel de avaliações até o dia " + avaliacao.get("dataConclusao") + ".</p>";
+				conteudo = conteudo + "<p>Para avaliar simplesmente atribua o conceito de domínio de habilidade que mais se aproxima da realidade.</p>";
+				conteudo = conteudo + "<p>Acesse as avaliações clicando na link abaixo.</p><br>";
+				conteudo = conteudo + "<p><a href=\"" + commons.getProperties().get("host").toString() + "dashboard/?page=empresa#avaliacao\\\" target=\\\"_blank\\\" title=\\\"Mapa de avaliações\\\">Acesse aqui</a></p><br>";
+				
+				
+		sendEmailHtml.sendEmailHtml(usuario.get("email").toString(), subject, templateEmail.emailYggboard(conteudo));
+			
+	};
+
+	private void emailConclusaoAvaliacao(String subject, BasicDBObject  usuario, BasicDBObject avaliacao) {
+
+		String conteudo = "<h1>Olá, <b>" + usuario.get("fisrtName") + " " + usuario.get("lastName") + "<b></h1>";
+				conteudo = conteudo + "<p>Foi encerrado o ciclo da avaliação <b>\"" + avaliacao.get("nome") + "<b>.</p>";
+				conteudo = conteudo + "<p>Para checar seus resultados por favor clique no link abaico.</p>";
+				conteudo = conteudo + "<p>Obrigado por participar de mais im ciclo avaliação de habilidades em Yggboard.</p><br>";
+				conteudo = conteudo + "<p><a href=\"" + commons.getProperties().get("host").toString() + "dashboard/?page=empresa#avaliacao\\\" target=\\\"_blank\\\" title=\\\"Mapa de avaliações\\\">Acesse aqui</a></p><br>";
+				
+				
+		sendEmailHtml.sendEmailHtml(usuario.get("email").toString(), subject, templateEmail.emailYggboard(conteudo));
+		
+	};
+
 	@SuppressWarnings({ "unchecked" })
 	private JSONArray carregaConvites(JSONArray arrayResult, String avaliacaoId, BasicDBObject avaliacao, String arrayNome, MongoClient mongo) {
 		
@@ -622,6 +724,51 @@ public class Avaliacao {
 		};
 
 		result.put("subordinados", subordinadosResult);
+
+		return result;		
+	};
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public JSONObject ultimosResultados(String usuarioId, MongoClient mongo) {
+
+		JSONObject result = new JSONObject();
+		
+		ArrayList<Object> mapaAvaliacoes = commons_db.getCollectionLista(usuarioId,"mapaAvaliacao", "documento.usuarioId", mongo, false);
+		ArrayList<Object> resultadosResult = new ArrayList<>();
+		String dataConclusao = "0000-00-00"; 
+		
+		for (int i = 0; i < mapaAvaliacoes.size(); i++) {
+			BasicDBObject mapaAvaliacao = new BasicDBObject();
+			mapaAvaliacao.putAll((Map) mapaAvaliacoes.get(i));
+			ArrayList<Object> avaliacoesResult = (ArrayList<Object>) mapaAvaliacao.get("avaliacoes");
+			for (int j = 0; j < avaliacoesResult.size(); j++) {
+				BasicDBObject avaliacaoResult = new BasicDBObject();
+				avaliacaoResult.putAll((Map) avaliacoesResult.get(j));
+				ArrayList<Object> resultados = (ArrayList<Object>) avaliacaoResult.get("resultados");
+				if (resultados.size() != 0) {
+					BasicDBObject avaliacao = commons_db.getCollectionDoc(avaliacaoResult.get("id").toString(), "avaliacoes", "_id", mongo, false);
+					if (avaliacao != null) {
+						if (Integer.valueOf(avaliacao.get("dataConclusao").toString().replace("-", "")) > Integer.valueOf(dataConclusao.replace("-", ""))) {
+							resultadosResult = resultados;
+						};
+					};
+				};
+			};
+		};
+
+		ArrayList<Object> resultadosFinalResult = new ArrayList<>();
+		
+		for (int i = 0; i < resultadosResult.size(); i++) {
+			BasicDBObject resultado = new BasicDBObject();
+			resultado.putAll((Map) resultadosResult.get(i));
+			BasicDBObject habilidade = commons_db.getCollectionDoc(resultado.get("id").toString(), "habilidades", "documento.id", mongo, false);
+			if (habilidade != null) {
+				resultado.put("nome", habilidade.get("nome"));
+				resultadosFinalResult.add(resultado);
+			};
+		};
+
+		result.put("resultados", resultadosFinalResult);
 
 		return result;		
 	};

@@ -38,16 +38,14 @@ public class Rest_Email {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public String sendEmailHtml(
-			@QueryParam("hostName") String hostName, 
-			@QueryParam("userName") String userName,
-			@QueryParam("password") String password,
-			@QueryParam("from") String from,
 			@QueryParam("to") String to,
 			@QueryParam("subject") String subject,
-			@QueryParam("html") String html
+			@QueryParam("conteudo") String conteudo
 			) throws EmailException {
+		conteudo = "<h1>Olá,</h1><br /><p>primeira linha <b>bold</b></p><p>segunda linha</p>";
 		SendEmailHtml sendEmailHtml = new SendEmailHtml();
-		sendEmailHtml.sendEmailHtml(hostName, userName, password, from, to, subject, html);
+		TemplateEmail templateEmail = new TemplateEmail(); 
+		sendEmailHtml.sendEmailHtml(to, subject, templateEmail.emailYggboard(conteudo));
 		return "success";
 	};
 };

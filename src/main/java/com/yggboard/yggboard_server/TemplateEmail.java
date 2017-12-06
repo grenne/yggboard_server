@@ -2,88 +2,107 @@ package com.yggboard.yggboard_server;
 
 public class TemplateEmail {
 
-	public String emailHtml(String familyName, String emailFamily, String studentName, String emailStudent, String subject, String emailBody){
-		String email =
-		"		<html>" +
-		"		<body>" +
-		"		    <table width=\"650px\" cellspacing=\"0\" cellpadding=\"0\" border=\"0.2\" color:\"blue\">" +
-		"		        <tr>" +
-		"		            <td class=\"navbar navbar-inverse\" align=\"center\">" +
-		"		                <!-- This setup makes the nav background stretch the whole width of the screen. -->" +
-		"		                <table width=\"650px\" cellspacing=\"0\" cellpadding=\"3\" class=\"container\">" +
-		"		                    <tr class=\"navbar navbar-inverse\">" +
-		"		                        <td colspan=\"4\">" +
-		"									<img src=\"http://52.27.128.28:8080/casamundo/img/logo/casatoronto.png\"></img>" + 
-		"								</td>" +
-		"		                        <td>" +
-		"									<ul>" +
-		"										<li>" +
-		"											<span>+1(416)897-7141</span>" +
-		"										</li>" +
-		"										<li>" +
-		"											<a href=\"mailto:josematheus@casa-toronto.com\">josematheus@casa-toronto.com</a>" +
-		"										</li>" +
-		"										<li>" +
-		"											<a href=\"www.casa-toronto.com\">www.casa-toronto.com</a>" +
-		"										</li>" +
-		"										<li>" +
-		"											<span >153 Beecroft Rd, suite 1512</span>" +
-		"										</li>" +
-		"										<li>" +
-		"											<span >Toronto, ON Canada M2N 7C5</span>" +
-		"										</li>" +
-		"									</ul>" +
-		"								</td>" +
-		"		                    </tr>" +
-		"		                </table>" +
-		"		            </td>" +
-		"		        </tr>" +
-		"		        <tr>" +
-		"		            <td bgcolor=\"white\" align=\"left\">" +
-		"	    	            <table width=\"900px\" cellspacing=\"0\" cellpadding=\"3\" align=\"center\">" +
-		"	                    <tr>" +
-		"	                        <td align=\"left\">" +
-		"										<p >" +
-		"											<span style=\"font-style: italic;font-size: 20px;\" >Family <small id=\"familyName\" style=\"font-style: italic;font-size: 20px;\">" + familyName + "</small></span>" +
-		"										</p>" +
-		"										<p >" +
-		"											<span style=\"font-style: italic;font-size: 20px;\" >Email <small id=\"emailFamily\" style=\"font-style: italic;font-size: 20px;\">" + emailFamily + "</small></span>" +
-		"										</p>" +
-		"	                        </td>" +
-		"	                    </tr>" +
-		"		                </table>" +
-		"		            </td>" +
-		"		        </tr>" +
-		"		        <tr>" +
-		"		            <td bgcolor=\"white\" align=\"left\">" +
-		"	    	            <table width=\"900px\" cellspacing=\"0\" cellpadding=\"3\" align=\"center\">" +
-		"	                    <tr>" +
-		"	                        <td align=\"left\">" +
-		"										<p >" +
-		"											<span style=\"font-style: italic;font-size: 20px;\" >Student <small id=\"studentName\" style=\"font-style: italic;font-size: 20px;\">" + studentName + "</small></span>" +
-		"										</p>" +
-		"										<p >" +
-		"											<span style=\"font-style: italic;font-size: 20px;\" >Email <small id=\"emailStudent\" style=\"font-style: italic;font-size: 20px;\">" + emailStudent + "</small></span>" +
-		"										</p>" +
-		"	                        </td>" +
-		"	                    </tr>" +
-		"		                </table>" +
-		"		            </td>" +
-		"		        </tr>" +
-		"               <tr>" +
-		"	   	            <table width=\"900px\" cellspacing=\"0\" cellpadding=\"3\" align=\"center\">" +
-		"                    <tr>" +
-		"						<td align=\"left\">" +
-		"							<small style=\"font-size: 15px; font-style: italic;\" ></small><small style=\"color: blue; font-size: 15px;\" >" + emailBody + "</small>" +
-		"	                    </td>" +
-		"	           		</tr>" +
-		"	       			</table>" +
-		"	        </tr>" +
-		"	    </table>" +
-		"	</body>" +
-		"	</html>";
+	public String emailYggboard(String conteudo){
+		
+		String email = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">";
+		email = email + "<html xmlns=\"http://www.w3.org/1999/xhtml\">";
+		email = email + "<head>";
+		email = email + "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />";
+		email = email + "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"/>";
+		email = email + "<title>YggBoard</title>";
+		email = email + "<style type=\"text/css\">";
+		email = email + "body{font-family: Arial, \"Helvetica Neue\", Helvetica, sans-serif;}";
+		email = email + ".ExternalClass {width:100%;} /* Força o Hotmail a exibir o email com a largura total */";
+		email = email + ".ExternalClass, .ExternalClass td {line-height: 100%;} /* Força o Hotmail a exibir o espaçamento normal entre linhas */";
+		email = email + "table {border-collapse: collapse; mso-table-lspace:0pt; mso-table-rspace:0pt; } /* Remove o espaçamento entorno das tabelas no Outlook 07, 10 */";
+		email = email + "table td {border-collapse: collapse; vertical-align:top;} /* Corrige o padding no Outlook 07, 10 */";
+		email = email + "td {margin: 0; padding: 0; font-size: 0px; line-height: 0px;} /* Zera os espaçamentos */";
+		email = email + "td p{font-size: 15px;margin-left: 15px;margin-right: 15px;margin-top: 10px;margin-bottom: 10px;line-height: 20px;}";
+		email = email + "td h1{margin-left: 15px;margin-right: 15px; margin-top: 10px;margin-bottom: 10px;font-size: 25px;line-height: 25px;}";
+		email = email + "img {display: block; max-width: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;}";
+		email = email + "@media only screen and (max-width: 600px) {";
+		email = email + "img[class=\"hide\"] {display:block!important;}";
+		email = email + "}";
+		email = email + "@media only screen and (max-width: 600px) {";
+		email = email + "table[class=\"content-wrap\"] {width: 94%!important;}";
+		email = email + "}";
+		email = email + "</style>";
+		email = email + "</head>";
+		email = email + "<body>";
+		email = email + "<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\">";
+		email = email + "<tr>";
+		email = email + "<td width=\"100%\">";
+		email = email + "<table width=\"600\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" align=\"center\" class=\"content-wrap\">";
+		email = email + "<tr>";
+		email = email + "<td width=\"100%\" height=\"130\">";
+		email = email + "<img src=\"https://www.yggboard.com/emkt/emkt_01.jpg\" alt=\"\" />";
+		email = email + "</td>";
+		email = email + "</tr>";
+		email = email + "</table>";
+		email = email + "</td>";
+		email = email + "</tr>";
+		email = email + "</table>";
+		email = email + "<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\">";
+		email = email + "<tr>";
+		email = email + "<td width=\"100%\">";
+		email = email + "<table width=\"600\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" align=\"center\" class=\"content-wrap\">";
+		email = email + "<tr>";
+		email = email + "<td width=\"50\" bgcolor=\"#dbe1d3\"></td>";
+		email = email + "<td width=\"500\" height=\"96\">";
+		email = email + "<img src=\"https://www.yggboard.com/emkt/emkt_02.jpg\" alt=\"\" />";
+		email = email + "</td>";
+		email = email + "<td width=\"50\" bgcolor=\"#dbe1d3\"></td>";
+		email = email + "</tr>";
+		email = email + "</table>";
+		email = email + "</td>";
+		email = email + "</tr>";
+		email = email + "</table>";
+		email = email + "<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\">";
+		email = email + "<tr>";
+		email = email + "<td width=\"100%\">";
+		email = email + "<table width=\"600\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" align=\"center\" class=\"content-wrap\">";
+		email = email + "<tr>";
+		email = email + "<td width=\"50\" bgcolor=\"#dbe1d3\"></td>";
+		email = email + "<td width=\"500\">";
+		email = email + "<table width=\"500\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" align=\"center\" class=\"content-wrap\">";
+		email = email + "<tr>";
+		email = email + "<td width=\"100%\">";
+		email = email + conteudo;
+		email = email + "</td>";
+		email = email + "</tr>";
+		email = email + "</table>";
+		email = email + "<table width=\"500\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" align=\"center\" class=\"content-wrap\">";
+		email = email + "<tr>";
+		email = email + "<td width=\"100%\" height=\"40\">";
+		email = email + "<p align=\"right\">Atenciosamente,<br /> YggBoard.</p>";
+		email = email + "</td>";
+		email = email + "</tr>";
+		email = email + "</table>";
+		email = email + "</td>";
+		email = email + "<td width=\"50\" bgcolor=\"#dbe1d3\"></td>";
+		email = email + "</tr>";
+		email = email + "</table>";
+		email = email + "</td>";
+		email = email + "</tr>";
+		email = email + "</table>";
+		email = email + "<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\">";
+		email = email + "<tr>";
+		email = email + "<td width=\"100%\">";
+		email = email + "<table width=\"600\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" align=\"center\" class=\"content-wrap\">";
+		email = email + "<tr>";
+		email = email + "<td width=\"100%\" height=\"64\" bgcolor=\"#dbe1d3\">";
+		email = email + "<p style=\"margin-left:50px;\">Dúvidas? <a href=\"mailto:postmasterygg@yggboard.com\" target=\"_blank\" style=\"color:#416b96;\" title=\"Fale conosco\">fale conosco</a></p>";
+		email = email + "</td>";
+		email = email + "</tr>";
+		email = email + "</table>";
+		email = email + "</td>";
+		email = email + "</tr>";
+		email = email + "</table>";
+		email = email + "</body>";
+		email = email + "</html>";
 					
 		return email;
 		
 	};
-}
+	
+};

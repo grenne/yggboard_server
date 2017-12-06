@@ -262,6 +262,28 @@ public class Rest_Avaliacao {
 		mongo.close();
 		return result;
 	};
+	
+	@Path("/ultimos/resultados")	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public JSONObject UltimosResultados(@QueryParam("token") String token, @QueryParam("usuarioId") String usuarioId)  {
+		if (token == null) {
+			mongo.close();
+			return null;
+		};
+		if ((commons_db.getCollection(token, "usuarios", "documento.token", mongo, false)) == null) {
+			mongo.close();
+			return null;
+		};
+		if (usuarioId == null){
+			mongo.close();
+			return null;
+		};
+
+		JSONObject result = avaliacao.ultimosResultados(usuarioId, mongo);
+		mongo.close();
+		return result;
+	};
 
 	@Path("/lista")	
 	@GET
@@ -369,6 +391,24 @@ public class Rest_Avaliacao {
 		JSONObject result = avaliacao.estatisticaMapa(empresaId, avaliacaoId, mongo);
 		mongo.close();
 		return result;
+	};
+
+	@Path("/emails")	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public Boolean Emails(@QueryParam("token") String token)  {
+		if (token == null) {
+			mongo.close();
+			return null;
+		};
+		if ((commons_db.getCollection(token, "usuarios", "documento.token", mongo, false)) == null) {
+			mongo.close();
+			return null;
+		};
+
+		avaliacao.emailsFechamento(mongo);
+		mongo.close();
+		return true;
 	};
 	
 };

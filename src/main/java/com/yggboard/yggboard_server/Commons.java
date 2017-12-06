@@ -2,7 +2,6 @@ package com.yggboard.yggboard_server;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.DateFormat;
@@ -527,6 +526,7 @@ public class Commons {
 		    properties.put("database", prop.getProperty("database"));
 		    properties.put("dbuser", prop.getProperty("dbuser"));
 		    properties.put("dbpassword", prop.getProperty("dbpassword"));
+		    properties.put("host", prop.getProperty("host"));
 		    return properties;
 		} catch (IOException ex) {
 		    ex.printStackTrace();
