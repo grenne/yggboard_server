@@ -87,8 +87,16 @@ public class UserPerfil {
 		ArrayList preRequisitosNome = (ArrayList) habilidade.get("preRequisitosNome");
 		
 		for (int i = 0; i < preRequisitos.size(); i++) {
-			if (!commons.testaElementoArray(preRequisitos.get(i).toString(), habilidadesUser)) {
-				BasicDBObject preRequisito = new BasicDBObject();
+			Boolean temHabilidade = false;
+			BasicDBObject preRequisito = new BasicDBObject();
+			String preRequisitosString = preRequisitos.get(i).toString().split(":")[0].toString().replace("|", "&");
+			String [] preRequisitosArray = preRequisitosString.split("&");
+			for (int j = 0; j < preRequisitosArray.length; j++) {
+				if (commons.testaElementoArray(preRequisitosArray[j].toString(), habilidadesUser)) {
+					temHabilidade = true;
+				};	
+			};
+			if (!temHabilidade) {
 				preRequisito.put("id", preRequisitos.get(i));
 				preRequisito.put("nome", preRequisitosNome.get(i));
 				result.add(preRequisito);
