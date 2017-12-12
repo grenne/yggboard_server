@@ -94,4 +94,8 @@ public class Index {
 
 	};
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public void obterTexto(String assunto, Object collection, String id, MongoClient mongo) {
+	
+	};
 }

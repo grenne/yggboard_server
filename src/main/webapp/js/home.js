@@ -73,6 +73,9 @@ $( ".teste" ).click(function() {
 	case "index":
 		copiaIndex();
 		break;
+	case "carregaIndex":
+		carregaIndex();
+		break;
 	case "recriaIndiceUsuario":
 		recriaIndiceUsuario();
 		break;

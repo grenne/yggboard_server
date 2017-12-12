@@ -200,10 +200,10 @@ function criaIndice(index, assunto){
 			if (index.id){
 				id = index.id;
 			}
-			if (index.descricao) {
-				texto  = texto + "," + carregaTextoIndex (index.descricao);
-				descricao = index.descricao;
-			};
+//			if (index.descricao) {
+//				texto  = texto + "," + carregaTextoIndex (index.descricao);
+//				descricao = index.descricao;
+//			};
 			if (index.tags){
 				$.each(index.tags, function (i, tag) {
 					texto  = texto + "," + carregaTextoIndex (tag);

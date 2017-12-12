@@ -1346,8 +1346,8 @@ public class Rest_Index {
 		
 		if (planejamentoLista != null){			
   		if (planejamentoLista.equals("true")){			
-  			carregaIndex("objetivos", listas.objetivos(), characters, true, listas, opcoes, 5, empresaId, mongo);
   			carregaIndex("habilidades", listas.habilidades(), characters, true, listas, opcoes, 5, empresaId, mongo);
+  			carregaIndex("objetivos", listas.objetivos(), characters, true, listas, opcoes, 5, empresaId, mongo);
   			carregaIndex("cursos", listas.cursos(), characters, true, listas, opcoes, 5, empresaId, mongo);
   			carregaIndex("areaAtuacao", listas.areasAtuacao(), characters, true, listas, opcoes, 5, empresaId, mongo);
   			carregaIndex("areaConhecimento", listas.areasConhecimento(), characters, true, listas, opcoes, 5, empresaId, mongo);
@@ -1359,8 +1359,8 @@ public class Rest_Index {
   		}else{
   			if (planejamentoLista.equals("false")){			
   				JSONArray documentos = new JSONArray();
-  				carregaIndex("objetivos", documentos, characters, false, listas, opcoes, 4, empresaId, mongo);
   				carregaIndex("habilidades", documentos, characters, false, listas, opcoes, 4, empresaId, mongo);
+  				carregaIndex("objetivos", documentos, characters, false, listas, opcoes, 4, empresaId, mongo);
   				carregaIndex("cursos", documentos, characters, false, listas, opcoes, 4, empresaId, mongo);
   				carregaIndex("areaAtuacao", documentos, characters, false, listas, opcoes, 4, empresaId, mongo);
   				carregaIndex("areaConhecimento", documentos, characters, false, listas, opcoes, 4, empresaId, mongo);
@@ -1378,6 +1378,7 @@ public class Rest_Index {
 
 	@SuppressWarnings({ "unchecked", "rawtypes"})
 	private void carregaIndex(String assunto, JSONArray documentos, String characters, Boolean lista, Listas listas, Opcoes opcoes, int qtdeItens, String empresaId, MongoClient mongo) {
+
 		System.out.println("CARREGA : " + assunto);
 		Commons_DB commons_db = new Commons_DB();
 		Rest_UserPerfil restuserPerfil = new Rest_UserPerfil();  
