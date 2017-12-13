@@ -150,6 +150,7 @@ public class Rest_Objetivos_Empresa {
   					habilidadeDoc.putAll((Map) habilidade.get("documento"));
   					BasicDBObject habilidadeOut = new BasicDBObject();
   					habilidadeOut.put("nome", habilidadeDoc.get("nome"));
+  					habilidadeOut.put("descricao", habilidadeDoc.get("descricao"));
   					habilidadeOut.put("id", habilidadeDoc.get("id").toString());
   					if (lastAvalId != null && lastAvalId != "none") {
   						habilidadeOut.put("nota", avaliacao.getResultadoHabilidade(lastAvalId, usuarioId, habilidadeDoc.get("id").toString(), mongo));
@@ -191,6 +192,7 @@ public class Rest_Objetivos_Empresa {
   								habilidadeDoc.putAll((Map) habilidade.get("documento"));
   								BasicDBObject habilidadeOut = new BasicDBObject();
   								habilidadeOut.put("nome", habilidadeDoc.get("nome"));
+  								habilidadeOut.put("descricao", habilidadeDoc.get("descricao"));
   								habilidadeOut.put("id", habilidadeDoc.get("id").toString());
   								BasicDBObject habilidadeDocOut = new BasicDBObject();
   								habilidadeDocOut.put("documento", habilidadeOut);

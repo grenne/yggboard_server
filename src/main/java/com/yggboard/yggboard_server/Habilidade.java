@@ -33,6 +33,12 @@ public class Habilidade {
 			userPerfil = usuario.getUserPerfil(usuarioParametro, mongo);
 		};
 
+		ArrayList<String> possuiHabilidades = (ArrayList<String>) userPerfil.get("habilidades");
+		ArrayList<String> interesseHabilidades = (ArrayList<String>) userPerfil.get("habilidadesInteresse");
+
+		result.put("possuiHabilidade", commons.testaElementoArray(id, possuiHabilidades));
+		result.put("interesseHabiliade",commons.testaElementoArray(id, interesseHabilidades));
+
 		ArrayList<String> array = (ArrayList<String>) result.get("cursos");
 		JSONArray arrayPossui = new JSONArray();
 		JSONArray arrayInteresse = new JSONArray();

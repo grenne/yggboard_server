@@ -277,6 +277,7 @@ public class Avaliacao {
   				BasicDBObject habilidadeResult = new BasicDBObject();
   				habilidadeResult.put("habilidadeId", habilidadeDoc.get("id"));
   				habilidadeResult.put("habilidadeNome", habilidadeDoc.get("nome"));
+  				habilidadeResult.put("habilidadeDescricao", habilidadeDoc.get("descricao"));
   				if (commons.testaElementoArray(habilidadeDoc.get("id").toString(), habilidadesOut)) {
   					habilidadeResult.put("habilidadeInout", "");
   				}else {
@@ -333,30 +334,30 @@ public class Avaliacao {
 			avaliado.putAll((Map) avaliados.get(i));
 			BasicDBObject avaliacao = getAvaliacao(avaliacaoId, avaliado.get("usuarioId").toString(), mongo);
 			if (tipo.equals("auto-avaliacao")) {
-  			if (avaliacao.get("id").equals(avaliacaoId)) {
-    			BasicDBObject habilidades = carregaHabilidadesAvaliacao(avaliado.get("usuarioId").toString(), avaliadorId, avaliacaoId, avaliacao, mongo); 
-    			BasicDBObject avaliacaoResult = new BasicDBObject();
-    			avaliacaoResult.put("tipo", tipo);
-    			avaliacaoResult.put("status", habilidades.get("status"));
-    			avaliacaoResult.put("inout", inout);
-    			avaliacao.remove("resultados");
-    			avaliacaoResult.put("avaliado", avaliacao);
-    			avaliacaoResult.put("habilidades", habilidades.get("habilidades"));
-    			avaliacoesResult.add(avaliacaoResult);
-  			};				
+	  			if (avaliacao.get("id").equals(avaliacaoId)) {
+	    			BasicDBObject habilidades = carregaHabilidadesAvaliacao(avaliado.get("usuarioId").toString(), avaliadorId, avaliacaoId, avaliacao, mongo); 
+	    			BasicDBObject avaliacaoResult = new BasicDBObject();
+	    			avaliacaoResult.put("tipo", tipo);
+	    			avaliacaoResult.put("status", habilidades.get("status"));
+	    			avaliacaoResult.put("inout", inout);
+	    			avaliacao.remove("resultados");
+	    			avaliacaoResult.put("avaliado", avaliacao);
+	    			avaliacaoResult.put("habilidades", habilidades.get("habilidades"));
+	    			avaliacoesResult.add(avaliacaoResult);
+	  			};				
 			}else{
-  			ArrayList<String> array = (ArrayList<String>) avaliacao.get(tipo);
-  			if (avaliacao.get("id").equals(avaliacaoId) && commons.testaElementoArray(avaliadorId, array)) {
-    			BasicDBObject habilidades = carregaHabilidadesAvaliacao(avaliado.get("usuarioId").toString(), avaliadorId, avaliacaoId, avaliacao, mongo); 
-    			BasicDBObject avaliacaoResult = new BasicDBObject();
-    			avaliacaoResult.put("tipo", tipo);
-    			avaliacaoResult.put("status", habilidades.get("status"));
-    			avaliacaoResult.put("inout", inout);
-    			avaliacao.remove("resultados");
-    			avaliacaoResult.put("avaliado", avaliacao);
-    			avaliacaoResult.put("habilidades", habilidades.get("habilidades"));
-    			avaliacoesResult.add(avaliacaoResult);
-  			};
+	  			ArrayList<String> array = (ArrayList<String>) avaliacao.get(tipo);
+	  			if (avaliacao.get("id").equals(avaliacaoId) && commons.testaElementoArray(avaliadorId, array)) {
+	    			BasicDBObject habilidades = carregaHabilidadesAvaliacao(avaliado.get("usuarioId").toString(), avaliadorId, avaliacaoId, avaliacao, mongo); 
+	    			BasicDBObject avaliacaoResult = new BasicDBObject();
+	    			avaliacaoResult.put("tipo", tipo);
+	    			avaliacaoResult.put("status", habilidades.get("status"));
+	    			avaliacaoResult.put("inout", inout);
+	    			avaliacao.remove("resultados");
+	    			avaliacaoResult.put("avaliado", avaliacao);
+	    			avaliacaoResult.put("habilidades", habilidades.get("habilidades"));
+	    			avaliacoesResult.add(avaliacaoResult);
+	  			};
 			};
 		};
 	};
@@ -473,7 +474,7 @@ public class Avaliacao {
 			BasicDBObject avaliado = new BasicDBObject();
 			avaliado.putAll((Map) avaliacao.get("avaliado"));
 			if (avaliacaoEncerrada(avaliacaoId, mongo)) {
-				convitesEnviadosExpirados = carregaConvites(convitesEnviadosPendentes, avaliacaoId, avaliado, "clientes", mongo);
+				convitesEnviadosExpirados = carregaConvites(convitesEnviadosExpirados, avaliacaoId, avaliado, "clientes", mongo);
 			}else {	
 				convitesEnviadosPendentes = carregaConvites(convitesEnviadosPendentes, avaliacaoId, avaliado, "clientes", mongo);
 			};
