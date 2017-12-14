@@ -31,6 +31,8 @@ public class Rest_Hierarquia {
 	Commons_DB commons_db = new Commons_DB();
 	Commons commons = new Commons();
 	Hierarquia hierarquia = new Hierarquia();
+	SendEmailHtml sendEmailHtml = new SendEmailHtml();
+	TemplateEmail templateEmail = new TemplateEmail(); 
 
 	@SuppressWarnings({"unchecked", "rawtypes" })
 	@Path("/areas")	
@@ -264,6 +266,8 @@ public class Rest_Hierarquia {
 		usuarioDoc.put("empresaId", empresaId);
 		usuarioDoc.put("photo", usuarioIn.get("email") + ".jpg");
 		usuario.put("documento", usuarioDoc);
+
+		emailBemVindo ("Bem vindo a Yggboard", usuarioDoc);
 		
 		BasicDBObject result = new BasicDBObject();
 		result.putAll((Map) commons_db.incluirCrud("usuarios", usuario, mongo, false).getEntity());
@@ -275,28 +279,28 @@ public class Rest_Hierarquia {
 	private BasicDBObject criaUserPerfil(BasicDBObject usuario, String empresaId, MongoClient mongo) {
 
 		BasicDBObject userPerfil = new BasicDBObject();
-		BasicDBObject userPefilDoc = new BasicDBObject();
+		BasicDBObject userPerfilDoc = new BasicDBObject();
 		
 		ArrayList<String> arrayVazia = new ArrayList<String>();
 		
-		userPefilDoc.put("usuario", usuario.get("email"));
-		userPefilDoc.put("seguindo", arrayVazia);
-		userPefilDoc.put("carreirasSugeridas", arrayVazia);
-		userPefilDoc.put("cursos", arrayVazia);
-		userPefilDoc.put("cursosInteresse", arrayVazia);
-		userPefilDoc.put("cursosInscrito", arrayVazia);
-		userPefilDoc.put("badgesInsteresse", arrayVazia);
-		userPefilDoc.put("habilidadesInteresse", arrayVazia);
-		userPefilDoc.put("cursosSugeridos", arrayVazia);
-		userPefilDoc.put("tags", arrayVazia);
-		userPefilDoc.put("badges", arrayVazia);
-		userPefilDoc.put("showBadges", arrayVazia);
-		userPefilDoc.put("ordemObjetivos", arrayVazia);
-		userPefilDoc.put("elementos", arrayVazia);
-		userPefilDoc.put("carreiras", arrayVazia);
-		userPefilDoc.put("badgesConquista", arrayVazia);
-		userPefilDoc.put("cursosAndamento", arrayVazia);
-		userPerfil.put("documento", userPefilDoc);
+		userPerfilDoc.put("usuario", usuario.get("email"));
+		userPerfilDoc.put("seguindo", arrayVazia);
+		userPerfilDoc.put("carreirasSugeridas", arrayVazia);
+		userPerfilDoc.put("cursos", arrayVazia);
+		userPerfilDoc.put("cursosInteresse", arrayVazia);
+		userPerfilDoc.put("cursosInscrito", arrayVazia);
+		userPerfilDoc.put("badgesInsteresse", arrayVazia);
+		userPerfilDoc.put("habilidadesInteresse", arrayVazia);
+		userPerfilDoc.put("cursosSugeridos", arrayVazia);
+		userPerfilDoc.put("tags", arrayVazia);
+		userPerfilDoc.put("badges", arrayVazia);
+		userPerfilDoc.put("showBadges", arrayVazia);
+		userPerfilDoc.put("ordemObjetivos", arrayVazia);
+		userPerfilDoc.put("elementos", arrayVazia);
+		userPerfilDoc.put("carreiras", arrayVazia);
+		userPerfilDoc.put("badgesConquista", arrayVazia);
+		userPerfilDoc.put("cursosAndamento", arrayVazia);
+		userPerfil.put("documento", userPerfilDoc);
 		
 		BasicDBObject result = new BasicDBObject();
 		result.putAll((Map) commons_db.incluirCrud("userPerfil", userPerfil, mongo, false).getEntity());
@@ -322,6 +326,23 @@ public class Rest_Hierarquia {
 
 		return result;
 		
+	};
+
+	private void emailBemVindo(String subject, BasicDBObject usuario) {
+
+		String conteudo = "<h1>Bem vindo a YggBoard!</h1>";
+				conteudo = conteudo + "<p>Sua empresa decidiu participar da revolução e a partir de agora você fará parte da mais poderosa plataforma de gestão de habilidades.</p>";
+				conteudo = conteudo + "<p>Com YggBoard sua empresa consegue criar uma trilha de desenvolvimento com aquelas habilidades e os cursos específicos para você, alavancando sua carreira.</p>";
+				conteudo = conteudo + "<p>Através deste e-mail você consegue já acessar a plataforma com as seguintes informações de login:</p>";
+				conteudo = conteudo + "<p><b>E-mail:</b>" + usuario.get("email").toString() + "</p>";
+				conteudo = conteudo + "<p><b>Senha:</b>" + usuario.get("password").toString() + "<br />(recomendamos a você atualizar esta senha assim que possível)</p>";
+				conteudo = conteudo + "<p>Nossa sugestão é que você construa seu perfil de habilidades da melhor maneira possível. Assim, não apenas a sua empresa poderá te conhecer melhor mas também nós conseguiremos te ajudar da melhor maneira possível.</p>";
+				conteudo = conteudo + "<p>Fique também à vontade para entrar em contato e tirar qualquer dúvida que tenha sobre a plataforma e seu funcionamento.</p>";
+				conteudo = conteudo + "<p>Obrigado pela atenção e conte conosco para apoiar seu desenvolvimento.</p>";
+				
+				
+		sendEmailHtml.sendEmailHtml(usuario.get("email").toString(), subject, templateEmail.emailYggboard(conteudo));
+			
 	};
 
 	@SuppressWarnings("rawtypes")

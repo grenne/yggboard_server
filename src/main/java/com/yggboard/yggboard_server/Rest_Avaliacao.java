@@ -399,11 +399,11 @@ public class Rest_Avaliacao {
 	public Boolean Emails(@QueryParam("token") String token)  {
 		if (token == null) {
 			mongo.close();
-			return null;
+			return false;
 		};
 		if ((commons_db.getCollection(token, "usuarios", "documento.token", mongo, false)) == null) {
 			mongo.close();
-			return null;
+			return false;
 		};
 
 		avaliacao.emailsFechamento(mongo);
