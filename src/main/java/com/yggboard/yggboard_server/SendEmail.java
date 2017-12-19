@@ -14,7 +14,7 @@ public class SendEmail {
 		try {
 			email.setHostName(hostName);
 			email.setSmtpPort(587);
-			email.setAuthenticator(new DefaultAuthenticator(userName, "ygglicius13"));
+			email.setAuthenticator(new DefaultAuthenticator(userName, "ygglicious1q2w3e"));
 			email.setStartTLSEnabled(true);
 			email.setFrom(from);
 			email.setSubject(subject);

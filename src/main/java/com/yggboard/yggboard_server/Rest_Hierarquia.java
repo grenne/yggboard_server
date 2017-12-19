@@ -166,7 +166,7 @@ public class Rest_Hierarquia {
 	@Path("/importar")
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response Lista(BasicDBObject hierarquiaJson)  {
+	public Response importaHierarquia(BasicDBObject hierarquiaJson)  {
 
 		if (hierarquiaJson.get("token") == null) {
 			mongo.close();
@@ -193,6 +193,7 @@ public class Rest_Hierarquia {
 		
 		ArrayList<Object> colaboradores = (ArrayList<Object>) hierarquiaJson.get("colaboradores");
 
+		String perfilEmpresa = "rh";
 		for (int i = 0; i < colaboradores.size(); i++) {
 			BasicDBObject colaborador = new BasicDBObject();
 			colaborador.putAll((Map) colaboradores.get(i));
@@ -220,7 +221,7 @@ public class Rest_Hierarquia {
 				fieldsArray.add(field);
 				field = new JSONObject();
 				field.put("field", "perfilEmpresa");
-				field.put("value", "colaborador");
+				field.put("value", perfilEmpresa);
 				fieldsArray.add(field);
 				BasicDBObject documento = new BasicDBObject();
 				documento.put("documento", colaborador);
@@ -231,6 +232,7 @@ public class Rest_Hierarquia {
 			if (userPerfil == null){
 				userPerfil = criaUserPerfil(colaborador, empresaId, mongo);
 			};
+			perfilEmpresa = "colaborador";
 		};
 		
 		for (int i = 0; i < colaboradores.size(); i++) {
@@ -249,6 +251,10 @@ public class Rest_Hierarquia {
 
 		BasicDBObject usuario = new BasicDBObject();
 		BasicDBObject usuarioDoc = new BasicDBObject();
+
+		String novaSenha = "mudar@123";
+		byte[] tokenByte = commons.gerarHash(novaSenha);
+		String pwmd5 = commons.stringHexa(tokenByte);
 		
 		usuarioDoc.put("firstName", usuarioIn.get("firstName"));
 		usuarioDoc.put("lastName", usuarioIn.get("lastName"));
@@ -261,13 +267,15 @@ public class Rest_Hierarquia {
 		usuarioDoc.put("email", usuarioIn.get("email"));
 		usuarioDoc.put("perfil", "user");
 		usuarioDoc.put("perfilEmpresa", "colaborador");
-		usuarioDoc.put("password", usuarioIn.get("login"));
+		usuarioDoc.put("password", pwmd5);
 		usuarioDoc.put("status", usuarioIn.get("confirmado"));
 		usuarioDoc.put("empresaId", empresaId);
 		usuarioDoc.put("photo", usuarioIn.get("email") + ".jpg");
 		usuario.put("documento", usuarioDoc);
 
-		emailBemVindo ("Bem vindo a Yggboard", usuarioDoc);
+		if (commons.getProperties().get("database").toString().equals("yggboard")){
+			emailBemVindo ("Bem vindo a Yggboard", usuarioDoc, "mudar@123");
+		};
 		
 		BasicDBObject result = new BasicDBObject();
 		result.putAll((Map) commons_db.incluirCrud("usuarios", usuario, mongo, false).getEntity());
@@ -328,14 +336,15 @@ public class Rest_Hierarquia {
 		
 	};
 
-	private void emailBemVindo(String subject, BasicDBObject usuario) {
+	private void emailBemVindo(String subject, BasicDBObject usuario, String senha) {
 
 		String conteudo = "<h1>Bem vindo a YggBoard!</h1>";
 				conteudo = conteudo + "<p>Sua empresa decidiu participar da revolução e a partir de agora você fará parte da mais poderosa plataforma de gestão de habilidades.</p>";
 				conteudo = conteudo + "<p>Com YggBoard sua empresa consegue criar uma trilha de desenvolvimento com aquelas habilidades e os cursos específicos para você, alavancando sua carreira.</p>";
 				conteudo = conteudo + "<p>Através deste e-mail você consegue já acessar a plataforma com as seguintes informações de login:</p>";
-				conteudo = conteudo + "<p><b>E-mail:</b>" + usuario.get("email").toString() + "</p>";
-				conteudo = conteudo + "<p><b>Senha:</b>" + usuario.get("password").toString() + "<br />(recomendamos a você atualizar esta senha assim que possível)</p>";
+				conteudo = conteudo + "<p><b>E-mail: </b>" + usuario.get("email").toString() + "</p>";
+				conteudo = conteudo + "<p><b>Senha: </b>" + senha + "<br />(recomendamos a você atualizar esta senha assim que possível)</p>";
+				conteudo = conteudo + "<div style=\"margin-left:15px;\"><!--[if mso]><v:roundrect xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:w=\"urn:schemas-microsoft-com:office:word\" href=\"" +  commons.getProperties().get("host").toString() +  "\" style=\"height:35px;v-text-anchor:middle;width:200px;\" arcsize=\"12%\" stroke=\"f\" fill=\"t\"><v:fill type=\"tile\" src=\"https://www.yggboard.com/emkt/btn.jpg\" color=\"#79bd58\" /><w:anchorlock/><center style=\"color:#ffffff;font-family:sans-serif;font-size:13px;font-weight:bold;\">Acessar Plataforma</center></v:roundrect><![endif]--><a href=\""  +  commons.getProperties().get("host").toString() +  "\" target=\"_blank\" style=\"background-color:#79bd58;background-image:url(https://www.yggboard.com/emkt/btn.jpg);border-radius:4px;color:#ffffff;display:inline-block;font-family:sans-serif;font-size:13px;font-weight:bold;line-height:35px;text-align:center;text-decoration:none;width:200px;-webkit-text-size-adjust:none;mso-hide:all;\">Acessar plataforma</a></div>";
 				conteudo = conteudo + "<p>Nossa sugestão é que você construa seu perfil de habilidades da melhor maneira possível. Assim, não apenas a sua empresa poderá te conhecer melhor mas também nós conseguiremos te ajudar da melhor maneira possível.</p>";
 				conteudo = conteudo + "<p>Fique também à vontade para entrar em contato e tirar qualquer dúvida que tenha sobre a plataforma e seu funcionamento.</p>";
 				conteudo = conteudo + "<p>Obrigado pela atenção e conte conosco para apoiar seu desenvolvimento.</p>";

@@ -1,6 +1,7 @@
 
 	function executaLogin(email, senha) {
-		var data = rest_login(email, senha);
+		var senhaMd5 = $.md5(senha);
+		var data = rest_login(email, senhaMd5);
 		if (data){
 			sessionStorage.usuarioEmail = data.email;
 			sessionStorage.usuarioFirstName = data.firstName;

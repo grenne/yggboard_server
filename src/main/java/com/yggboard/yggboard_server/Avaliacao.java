@@ -3,6 +3,10 @@ package com.yggboard.yggboard_server;
 import java.util.ArrayList;
 import java.util.Map;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.json.simple.JSONArray;
@@ -653,9 +657,8 @@ public class Avaliacao {
 				conteudo = conteudo + "<p>Foi encerrado o ciclo da avaliação <b>\"" + avaliacao.get("nome") + "<b>.</p>";
 				conteudo = conteudo + "<p>Para checar seus resultados por favor clique no link abaico.</p>";
 				conteudo = conteudo + "<p>Obrigado por participar de mais im ciclo avaliação de habilidades em Yggboard.</p><br>";
-				conteudo = conteudo + "<p><a href=\"" + commons.getProperties().get("host").toString() + "dashboard/?page=empresa#avaliacao\\\" target=\\\"_blank\\\" title=\\\"Mapa de avaliações\\\">Acesse aqui</a></p><br>";
-				
-				
+				conteudo = conteudo + "<div style=\"margin-left:15px;\"><!--[if mso]><v:roundrect xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:w=\"urn:schemas-microsoft-com:office:word\" href=\"" +  commons.getProperties().get("host").toString() +  "dashboard/?page=empresa#avaliacao\" style=\"height:35px;v-text-anchor:middle;width:200px;\" arcsize=\"12%\" stroke=\"f\" fill=\"t\"><v:fill type=\"tile\" src=\"https://www.yggboard.com/emkt/btn.jpg\" color=\"#79bd58\" /><w:anchorlock/><center style=\"color:#ffffff;font-family:sans-serif;font-size:13px;font-weight:bold;\">Acessar avaliação</center></v:roundrect><![endif]--><a href=\"" +  commons.getProperties().get("host").toString() +  "dashboard/?page=empresa#avaliacao\" target=\"_blank\" style=\"background-color:#79bd58;background-image:url(https://www.yggboard.com/emkt/btn.jpg);border-radius:4px;color:#ffffff;display:inline-block;font-family:sans-serif;font-size:13px;font-weight:bold;line-height:35px;text-align:center;text-decoration:none;width:200px;-webkit-text-size-adjust:none;mso-hide:all;\">Acessar avaliação</a></div>";
+								
 		sendEmailHtml.sendEmailHtml(usuario.get("email").toString(), subject, templateEmail.emailYggboard(conteudo));
 		
 	};
@@ -1910,4 +1913,71 @@ public class Avaliacao {
 		estatistica.put("avaliacoesNaoIniciadas", avaliacoesNaoIniciadas);
 		return estatistica;
 	};
+	
+	public Response importaAvaliacao(BasicDBObject avaliacoesJson, MongoClient mongo )  {
+/*		
+		String empresaId = (String) avaliacoesJson.get("empresaId");
+		
+		ArrayList<JSONObject> keysArray = new ArrayList<>();
+		JSONObject key = new JSONObject();
+		key.put("key", "documento.empresaId");
+		key.put("value", empresaId);
+		keysArray.add(key);
+		
+		ArrayList<Object> avaliacoes = (ArrayList<Object>) avaliacoesJson.get("colaboradores");
+
+		String perfilEmpresa = "rh";
+		for (int i = 0; i < avaliacoes.size(); i++) {
+			BasicDBObject avaliacaoSource = new BasicDBObject();
+			avaliacaoSource.putAll((Map) avaliacoes.get(i));
+			BasicDBObject avaliacao = new BasicDBObject();		
+			avaliacao = commons_db.getCollection(avaliacao.get("avaliacao").toString(), "usuarios", "documento.email", mongo, false);
+			if (avaliacao == null){
+				avaliacao = criaAvaliacao(avaliacaoSource, empresaId, mongo, false);
+			}else {
+				keysArray = new ArrayList<>();
+				key = new JSONObject();
+				key.put("key", "documento.email");
+				key.put("value", colaborador.get("email").toString());
+				keysArray.add(key);				
+				ArrayList<JSONObject> fieldsArray = new ArrayList<>();
+				JSONObject field = new JSONObject();				
+				fieldsArray = new ArrayList<>();
+				field = new JSONObject();
+				field.put("field", "photo");
+				field.put("value", colaborador.get("email") + ".jpg");
+				fieldsArray.add(field);
+				fieldsArray = new ArrayList<>();
+				field = new JSONObject();
+				field.put("field", "empresaId");
+				field.put("value", empresaId);
+				fieldsArray.add(field);
+				field = new JSONObject();
+				field.put("field", "perfilEmpresa");
+				field.put("value", perfilEmpresa);
+				fieldsArray.add(field);
+				BasicDBObject documento = new BasicDBObject();
+				documento.put("documento", colaborador);
+				commons_db.atualizarCrud("usuarios", fieldsArray, keysArray, null, mongo, false);
+			};
+			BasicDBObject userPerfil = new BasicDBObject();
+			userPerfil = commons_db.getCollection(colaborador.get("email").toString(), "userPerfil", "documento.usuario", mongo, false);
+			if (userPerfil == null){
+				userPerfil = criaUserPerfil(colaborador, empresaId, mongo);
+			};
+			perfilEmpresa = "colaborador";
+		};
+		
+		for (int i = 0; i < colaboradores.size(); i++) {
+			BasicDBObject colaborador = new BasicDBObject();
+			colaborador.putAll((Map) colaboradores.get(i));
+			criaHierarquia(colaborador, empresaId, mongo);
+		};
+
+		mongo.close();
+		return Response.status(200).entity(true).build();	
+*/
+		return null;
+	};	
+	
 };
