@@ -576,14 +576,14 @@ public class Commons {
 			removeString(habilidadesArray, habilidadesOut.get(i).toString());
 		};
 		return habilidadesArray;
-	}
+	};
 
 	@SuppressWarnings("unchecked")
 	public int tamanhoArray(Object object) {
 		
 		ArrayList<String> array = (ArrayList<String>) object;	
 		return array.size();
-	}
+	};
 
 	public Object frase(String motivo, String elemento, String numero, String id, MongoClient mongo) {
 

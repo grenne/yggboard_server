@@ -3,10 +3,6 @@ package com.yggboard.yggboard_server;
 import java.util.ArrayList;
 import java.util.Map;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.json.simple.JSONArray;
@@ -63,13 +59,13 @@ public class Avaliacao {
   			JSONObject avaliacao = new JSONObject();
   			ArrayList<JSONObject> arrayVazia = new ArrayList<>();
   			avaliacao.put("id", avaliacaoId);
-  			avaliacao.put("superiores", hierarquia(hierarquia.get("colaborador").toString(), "colaborador", "superior", hierarquia.get("colaborador").toString(), mongo));
+  			avaliacao.put("superiores", hierarquia(hierarquia.get("colaborador").toString(), "colaborador", "superior", hierarquia.get("colaborador").toString(), empresaId, mongo));
   			avaliacao.put("superioresOut", arrayVazia);
-  			avaliacao.put("subordinados", hierarquia(hierarquia.get("colaborador").toString(), "superior", "colaborador", hierarquia.get("colaborador").toString(), mongo));
+  			avaliacao.put("subordinados", hierarquia(hierarquia.get("colaborador").toString(), "superior", "colaborador", hierarquia.get("colaborador").toString(), empresaId, mongo));
   			avaliacao.put("subordinadosOut", arrayVazia);
-  			avaliacao.put("parceiros", hierarquia(hierarquia.get("superior").toString(), "superior","colaborador", hierarquia.get("colaborador").toString(), mongo));
+  			avaliacao.put("parceiros", hierarquia(hierarquia.get("superior").toString(), "superior","colaborador", hierarquia.get("colaborador").toString(), empresaId, mongo));
   			avaliacao.put("parceirosOut", arrayVazia);
-  			avaliacao.put("clientes", hierarquia(hierarquia.get("colaborador").toString(), "clientes", "colaborador", hierarquia.get("colaborador").toString(), mongo));
+  			avaliacao.put("clientes", hierarquia(hierarquia.get("colaborador").toString(), "clientes", "colaborador", hierarquia.get("colaborador").toString(), empresaId, mongo));
   			avaliacao.put("objetivoId", hierarquia.get("objetivoId").toString());
   			avaliacao.put("habilidades", arrayVazia);
   			avaliacao.put("habilidadesOut", arrayVazia);
@@ -176,7 +172,7 @@ public class Avaliacao {
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private ArrayList<String> hierarquia(String usuarioId, String tipo, String resultado, String colaboradorId, MongoClient mongo) {
+	private ArrayList<String> hierarquia(String usuarioId, String tipo, String resultado, String colaboradorId, String empresaId, MongoClient mongo) {
 
 		ArrayList<Object> hierarquias = new ArrayList<Object>(); 
 		hierarquias = commons_db.getCollectionLista(usuarioId, "hierarquias", "documento." + tipo, mongo, false);
@@ -185,7 +181,7 @@ public class Avaliacao {
 		for (int i = 0; i < hierarquias.size(); i++) {
 			BasicDBObject hierarquia = new BasicDBObject();
 			hierarquia.putAll((Map) hierarquias.get(i));
-			if (!colaboradorId.equals(hierarquia.get(resultado).toString()) && !hierarquia.get(resultado).toString().equals("")) {
+			if (!colaboradorId.equals(hierarquia.get(resultado).toString()) && !hierarquia.get(resultado).toString().equals("") && hierarquia.get("empresaId").toString().equals(empresaId)) {
 				commons.addString(arrayColaboradores, hierarquia.get(resultado).toString());
 			};
 		};
@@ -563,30 +559,41 @@ public class Avaliacao {
 		return false;
 	}
 
-	@SuppressWarnings("rawtypes")
-	public boolean emailsFechamento(MongoClient mongo) {
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public JSONObject emailsFechamento(MongoClient mongo) {
 		
+		JSONObject result = new JSONObject();
 		JSONArray avaliacoes = commons_db.getCollectionListaNoKey("avaliacoes", mongo, false);
-		
+		JSONArray resultArray = new JSONArray();
+		Boolean enviouEmail = false;
+		result.put("Resultado", "Emails enviados");
 		for (int i = 0; i < avaliacoes.size(); i++) {
 			BasicDBObject avaliacao = new BasicDBObject();
 			avaliacao.putAll((Map) avaliacoes.get(i));
 			if (avaliacao.get("dataEnvio") != null) {
 				if (commons.calcTime(avaliacao.get("dataEnvio").toString().replace("-", "")).equals(commons.calcTime(commons.todaysDate("yyyymmdd")))) {
-					testaMapaAvaliacao(avaliacao.get("_id").toString(), true, "inicio-avaliacao", avaliacao, mongo);
+					testaMapaAvaliacao(avaliacao.get("_id").toString(), true, "inicio-avaliacao", avaliacao, resultArray, mongo);
+					enviouEmail = true;
 				};
 				if (commons.calcTime(avaliacao.get("dataConclusao").toString().replace("-", "")).equals(commons.calcTime(commons.todaysDate("yyyymmdd")))) {
-					testaMapaAvaliacao(avaliacao.get("_id").toString(), false, "conclusao-avaliacao", avaliacao, mongo);
+					testaMapaAvaliacao(avaliacao.get("_id").toString(), false, "conclusao-avaliacao", avaliacao, resultArray, mongo);
+					enviouEmail = true;
 				};
 			};
+		};
+		if (!enviouEmail) {
+			result.put("Resultado", " Sem emails para enviar");
 		}
-		return true;
+	
+		result.put("Emails", resultArray);
+		return result;
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private void testaMapaAvaliacao(String idAvaliacao, Boolean gestores, String tipo, BasicDBObject avaliacao, MongoClient mongo) {
-		
+	private void testaMapaAvaliacao(String idAvaliacao, Boolean gestores, String tipo, BasicDBObject avaliacao, JSONArray resultArray, MongoClient mongo) {
+				
 		JSONArray mapasAvaliacao = commons_db.getCollectionLista(idAvaliacao, "mapaAvaliacao", "documento.avaliacoes.id", mongo, false);
+		ArrayList<String> emailsEnviados = new ArrayList<>();
 		
 		for (int i = 0; i < mapasAvaliacao.size(); i++) {
 			BasicDBObject mapaAvaliacao = new BasicDBObject();
@@ -607,18 +614,17 @@ public class Avaliacao {
 							enviarEmail = true;
 						};
 						if (enviarEmail) {
-							enviarEmailAvaliacao(mapaAvaliacao.get("usuarioId").toString(), avaliacao, tipo, mongo);
+							enviarEmailAvaliacao(mapaAvaliacao.get("usuarioId").toString(), avaliacao, tipo, resultArray, emailsEnviados, mongo);
 						};
 					};
 				}
 			};
 		};
-	
 		
 	};
 
-	private void enviarEmailAvaliacao(String usuarioId, BasicDBObject avaliacao, String tipo, MongoClient mongo) {
-		
+	private void enviarEmailAvaliacao(String usuarioId, BasicDBObject avaliacao, String tipo, JSONArray resultArray, ArrayList<String> emailsEnviados, MongoClient mongo) {
+			
 		BasicDBObject usuario = commons_db.getCollectionDoc(usuarioId, "usuarios", "_id", mongo, false);
 		
 		if (usuario == null){
@@ -627,17 +633,18 @@ public class Avaliacao {
 
 		switch (tipo) {
 		case "inicio-avaliacao":
-			emailInicioAvaliacao ("Yggboard - Inicie suas avaliações, conclua até " + avaliacao.get("dataConclusao"), usuario, avaliacao);
+			emailInicioAvaliacao ("Yggboard - Inicie suas avaliações, conclua até " + avaliacao.get("dataConclusao"), usuario, avaliacao, resultArray, emailsEnviados);
 			break;
 		case "conclusao-avaliacao":
-			emailConclusaoAvaliacao ("Yggboard - Veja os resultados da avaliação " + avaliacao.get("nome"), usuario, avaliacao );
+			emailConclusaoAvaliacao ("Yggboard - Veja os resultados da avaliação " + avaliacao.get("nome"), usuario, avaliacao, resultArray, emailsEnviados );
 			break;
 		default:
 			break;
 		};
 	};
 
-	private void emailInicioAvaliacao(String subject, BasicDBObject usuario, BasicDBObject avaliacao) {
+	@SuppressWarnings("unchecked")
+	private void emailInicioAvaliacao(String subject, BasicDBObject usuario, BasicDBObject avaliacao, JSONArray resultArray, ArrayList<String> emailsEnviados) {
 
 		String conteudo = "<h1>Olá, <b>" + usuario.get("firstName") + " " + usuario.get("lastName") + "<b></h1>";
 				conteudo = conteudo + "<p>Foi iniciado o período de avaliação da <b>\"" + avaliacao.get("nome") + "<b> em Yggboard.</p>";
@@ -646,20 +653,28 @@ public class Avaliacao {
 				conteudo = conteudo + "<p>Acesse as avaliações clicando na link abaixo.</p><br>";
 				conteudo = conteudo + "<p><a href=\"" + commons.getProperties().get("host").toString() + "dashboard/?page=empresa#avaliacao\\\" target=\\\"_blank\\\" title=\\\"Mapa de avaliações\\\">Acesse aqui</a></p><br>";
 				
-				
-		sendEmailHtml.sendEmailHtml(usuario.get("email").toString(), subject, templateEmail.emailYggboard(conteudo));
+		if (!commons.testaElementoArray(usuario.get("email").toString(), emailsEnviados)) {
+			sendEmailHtml.sendEmailHtml(usuario.get("email").toString(), subject, templateEmail.emailYggboard(conteudo));		
+			resultArray.add("Inicio avaliação-" + avaliacao.get("nome") + " " + usuario.get("firstName") + " " + usuario.get("lastName"));
+			emailsEnviados.add(usuario.get("email").toString());
+		};
 			
 	};
 
-	private void emailConclusaoAvaliacao(String subject, BasicDBObject  usuario, BasicDBObject avaliacao) {
+	@SuppressWarnings("unchecked")
+	private void emailConclusaoAvaliacao(String subject, BasicDBObject  usuario, BasicDBObject avaliacao, JSONArray resultArray, ArrayList<String> emailsEnviados) {
 
-		String conteudo = "<h1>Olá, <b>" + usuario.get("fisrtName") + " " + usuario.get("lastName") + "<b></h1>";
+		String conteudo = "<h1>Olá, <b>" + usuario.get("firstName") + " " + usuario.get("lastName") + "<b></h1>";
 				conteudo = conteudo + "<p>Foi encerrado o ciclo da avaliação <b>\"" + avaliacao.get("nome") + "<b>.</p>";
 				conteudo = conteudo + "<p>Para checar seus resultados por favor clique no link abaico.</p>";
 				conteudo = conteudo + "<p>Obrigado por participar de mais im ciclo avaliação de habilidades em Yggboard.</p><br>";
 				conteudo = conteudo + "<div style=\"margin-left:15px;\"><!--[if mso]><v:roundrect xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:w=\"urn:schemas-microsoft-com:office:word\" href=\"" +  commons.getProperties().get("host").toString() +  "dashboard/?page=empresa#avaliacao\" style=\"height:35px;v-text-anchor:middle;width:200px;\" arcsize=\"12%\" stroke=\"f\" fill=\"t\"><v:fill type=\"tile\" src=\"https://www.yggboard.com/emkt/btn.jpg\" color=\"#79bd58\" /><w:anchorlock/><center style=\"color:#ffffff;font-family:sans-serif;font-size:13px;font-weight:bold;\">Acessar avaliação</center></v:roundrect><![endif]--><a href=\"" +  commons.getProperties().get("host").toString() +  "dashboard/?page=empresa#avaliacao\" target=\"_blank\" style=\"background-color:#79bd58;background-image:url(https://www.yggboard.com/emkt/btn.jpg);border-radius:4px;color:#ffffff;display:inline-block;font-family:sans-serif;font-size:13px;font-weight:bold;line-height:35px;text-align:center;text-decoration:none;width:200px;-webkit-text-size-adjust:none;mso-hide:all;\">Acessar avaliação</a></div>";
-								
-		sendEmailHtml.sendEmailHtml(usuario.get("email").toString(), subject, templateEmail.emailYggboard(conteudo));
+		
+		if (!commons.testaElementoArray(usuario.get("email").toString(), emailsEnviados)) {
+			sendEmailHtml.sendEmailHtml(usuario.get("email").toString(), subject, templateEmail.emailYggboard(conteudo));
+			resultArray.add("Conclusáo avaliação-" + avaliacao.get("nome") + " " + usuario.get("firstName") + " " + usuario.get("lastName"));
+			emailsEnviados.add(usuario.get("email").toString());
+		};
 		
 	};
 

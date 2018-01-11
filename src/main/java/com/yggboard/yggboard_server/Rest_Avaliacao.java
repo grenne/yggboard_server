@@ -393,22 +393,26 @@ public class Rest_Avaliacao {
 		return result;
 	};
 
+	@SuppressWarnings("unchecked")
 	@Path("/emails")	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public Boolean Emails(@QueryParam("token") String token)  {
+	public JSONObject Emails(@QueryParam("token") String token)  {
+		JSONObject result = new JSONObject();
 		if (token == null) {
 			mongo.close();
-			return false;
+			result.put("Resultado", "Não informado token");
+			return result;
 		};
 		if ((commons_db.getCollection(token, "usuarios", "documento.token", mongo, false)) == null) {
 			mongo.close();
-			return false;
+			result.put("Resultado", "Token inválido");
+			return result;
 		};
 
-		avaliacao.emailsFechamento(mongo);
+		result = avaliacao.emailsFechamento(mongo);
 		mongo.close();
-		return true;
+		return result;
 	};
 	
 };
