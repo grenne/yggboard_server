@@ -1,5 +1,6 @@
 package com.yggboard.yggboard_server;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -848,6 +849,10 @@ public class Avaliacao {
   				resultadoResult.put("habilidadeId", habilidadeDoc.get("id"));
   				resultadoResult.put("habilidadeNome", habilidadeDoc.get("nome"));
   				resultadoResult.put("nota", resultado.get("nota").toString());
+  				resultadoResult.put("mediaSubordinados", mediaNotas(avaliacao, habilidadeDoc.get("id").toString(), "subordinados"));
+  				resultadoResult.put("mediaSuperiores", mediaNotas(avaliacao, habilidadeDoc.get("id").toString(), "superiores"));
+  				resultadoResult.put("mediaParceiros", mediaNotas(avaliacao, habilidadeDoc.get("id").toString(), "parceiros"));
+  				resultadoResult.put("mediaClientes", mediaNotas(avaliacao, habilidadeDoc.get("id").toString(), "clientes"));
   				resultados.add(resultadoResult);
   			};
 			};
@@ -856,6 +861,29 @@ public class Avaliacao {
 		return resultados;
 		
 	};
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private String mediaNotas(BasicDBObject avaliacao, String habilidadeId, String relacionamento) {
+		
+		ArrayList<Object> resultadosArray = (ArrayList<Object>) avaliacao.get(relacionamento);
+
+		int qtde = 0;
+		double totalNotas = 0.00;
+			
+		for (int z = 0; z < resultadosArray.size(); z++) {
+			BasicDBObject resultado = new BasicDBObject(); 
+			resultado.putAll((Map) resultadosArray.get(z));
+			totalNotas = totalNotas + Double.valueOf(resultado.get("nota").toString());
+			qtde++;
+		};
+		
+		if (qtde != 0 ) {
+			DecimalFormat df = new DecimalFormat("#0.00"); 
+			return String.valueOf(df.format(totalNotas / qtde));
+		}else {
+			return "0.00";
+		}
+	}
 
 	@SuppressWarnings({ "rawtypes" })	
 	private BasicDBObject getMapa(String usuarioId, MongoClient mongo) {

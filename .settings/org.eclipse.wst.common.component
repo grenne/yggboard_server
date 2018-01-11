@@ -2,7 +2,6 @@
     <wb-module deploy-name="yggboard_server">
         <wb-resource deploy-path="/" source-path="/src/main/webapp" tag="defaultRootSource"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/resources"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/java"/>
         <property name="context-root" value="yggboard_server"/>
         <property name="java-output-path" value="/yggboard_server/target/classes"/>
     </wb-module>
