@@ -181,6 +181,12 @@ public class Rest_Hierarquia {
 			return null;
 		};
 		
+		Boolean envioEmail = true;
+		
+		if (hierarquiaJson.get("envioEmail") == null) {
+			envioEmail = (Boolean) hierarquiaJson.get("envioEmail");
+		};		
+		
 		String empresaId = (String) hierarquiaJson.get("empresaId");
 		
 		ArrayList<JSONObject> keysArray = new ArrayList<>();
@@ -200,7 +206,7 @@ public class Rest_Hierarquia {
 			BasicDBObject usuario = new BasicDBObject();
 			usuario = commons_db.getCollection(colaborador.get("email").toString(), "usuarios", "documento.email", mongo, false);
 			if (usuario == null){
-				usuario = criaUsuario(colaborador, empresaId, mongo, false);
+				usuario = criaUsuario(colaborador, empresaId, envioEmail, mongo, false);
 			}else {
 				keysArray = new ArrayList<>();
 				key = new JSONObject();
@@ -247,7 +253,7 @@ public class Rest_Hierarquia {
 	};	
 
 	@SuppressWarnings("rawtypes")
-	private BasicDBObject criaUsuario(BasicDBObject usuarioIn, String empresaId, MongoClient mongo, boolean close) {
+	private BasicDBObject criaUsuario(BasicDBObject usuarioIn, String empresaId, Boolean envioEmail, MongoClient mongo, boolean close) {
 
 		BasicDBObject usuario = new BasicDBObject();
 		BasicDBObject usuarioDoc = new BasicDBObject();
@@ -273,7 +279,7 @@ public class Rest_Hierarquia {
 		usuarioDoc.put("photo", usuarioIn.get("email") + ".jpg");
 		usuario.put("documento", usuarioDoc);
 
-		if (commons.getProperties().get("database").toString().equals("yggboard")){
+		if (commons.getProperties().get("database").toString().equals("yggboard") && envioEmail){
 			emailBemVindo ("Bem vindo a Yggboard", usuarioDoc, "mudar@123");
 		};
 		
