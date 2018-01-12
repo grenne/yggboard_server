@@ -88,6 +88,9 @@ $( ".teste" ).click(function() {
 	case "testaCriarHierarquia":
 		testaCriarHierarquia();
 		break;
+	case "importarHistorico":
+		importarHistorico();
+		break;
 		
 	default:
 		break;

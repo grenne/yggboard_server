@@ -91,6 +91,68 @@ function testaCriarHierarquia() {
 	});
 };
 
+function importarHistorico() {
+	var objJson = {
+			token: sessionStorage.token,
+			
+			empresaId : "5a37e91ba0dddfbdf44fabff",
+			historicos : 
+				[ 
+				{
+					empresaId:"5a37e91ba0dddfbdf44fabff",
+					nome:"1 tri 2015",
+					dataEnvio:"2015-01-15",
+					dataConclusao:"2015-02-15",
+					email:"antonio.orlandi@rodobens.com",
+					objetivoId:"91",
+					habilidadeId:"10828",
+					nota:"4.33"				}, 
+				{
+					empresaId:"5a37e91ba0dddfbdf44fabff",
+					nome:"1 tri 2015",
+					dataEnvio:"2015-01-15",
+					dataConclusao:"2015-02-15",
+					email:"antonio.orlandi@rodobens.com",
+					objetivoId:"91",
+					habilidadeId:"10040",
+					nota:"4.33"				},
+					{
+						empresaId:"5a37e91ba0dddfbdf44fabff",
+						nome:"1 tri 2015",
+						dataEnvio:"2015-01-15",
+						dataConclusao:"2015-02-15",
+						email:"antonio.orlandi@rodobens.com",
+						objetivoId:"91",
+						habilidadeId:"10040",
+						nota:"4.00"				}, 
+					{
+						empresaId:"5a37e91ba0dddfbdf44fabff",
+						nome:"1 tri 2015",
+						dataEnvio:"2015-01-15",
+						dataConclusao:"2015-02-15",
+						email:"chucrutes@rodobens.com",
+						objetivoId:"91",
+						habilidadeId:"10040",
+						nota:"4.00"				} 
+				]
+	};
+	$.ajax({
+		type : "POST",
+		url : localStorage.mainUrl + "yggboard_server/rest/avaliacao/importar-historico",
+		contentType : "application/json; charset=utf-8",
+		dataType : 'json',
+		data : JSON.stringify(objJson),
+		async : true
+
+	}).done(function(data) {
+		console.log("done: " + data);
+	}).fail(function(data) {
+		console.log("fail: " + data);
+	}).always(function(data) {
+		console.log("always: " + data);
+	});
+};
+
 function testaObter() {
 	var objJson = {
 		token: sessionStorage.token,

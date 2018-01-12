@@ -4,11 +4,14 @@ package com.yggboard;
 import java.util.ArrayList;
 
 import javax.inject.Singleton;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -27,6 +30,7 @@ public class Rest_Avaliacao {
 	Commons_DB commons_db = new Commons_DB();
 	Commons commons = new Commons();
 	Avaliacao avaliacao = new Avaliacao();
+	Usuario usuario = new Usuario();
 
 	@Path("/cria/mapa")	
 	@GET
@@ -415,5 +419,33 @@ public class Rest_Avaliacao {
 		mongo.close();
 		return result;
 	};
+	
+	@SuppressWarnings({ })
+	@Path("/importar-historico")
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response importaHistorico(BasicDBObject historicosJson)  {
+
+		if (historicosJson.get("token") == null) {
+			mongo.close();
+			return null;
+		};
+		if ((commons_db.getCollection(historicosJson.get("token").toString(), "usuarios", "documento.token", mongo, false)) == null) {
+			mongo.close();
+			return null;
+		};
+		if (historicosJson.get("empresaId") == null) {
+			mongo.close();
+			return null;
+		};
+		System.out.println("historicos - " + historicosJson.toString());
+		
+		avaliacao.criaHistorico(historicosJson, mongo);
+
+		mongo.close();
+		return Response.status(200).entity(true).build();	
+	
+	}
+	
 	
 };
