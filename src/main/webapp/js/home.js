@@ -91,6 +91,9 @@ $( ".teste" ).click(function() {
 	case "importarHistorico":
 		importarHistorico();
 		break;
+	case "testaInsert":
+		testaInsert();
+		break;
 		
 	default:
 		break;

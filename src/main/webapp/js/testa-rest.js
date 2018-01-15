@@ -100,7 +100,7 @@ function importarHistorico() {
 				[ 
 				{
 					empresaId:"5a37e91ba0dddfbdf44fabff",
-					nome:"1 tri 2015",
+					nome:"2 tri 2015",
 					dataEnvio:"2015-01-15",
 					dataConclusao:"2015-02-15",
 					email:"antonio.orlandi@rodobens.com",
@@ -109,28 +109,37 @@ function importarHistorico() {
 					nota:"4.33"				}, 
 				{
 					empresaId:"5a37e91ba0dddfbdf44fabff",
-					nome:"1 tri 2015",
+					nome:"2 tri 2015",
 					dataEnvio:"2015-01-15",
 					dataConclusao:"2015-02-15",
 					email:"antonio.orlandi@rodobens.com",
 					objetivoId:"91",
 					habilidadeId:"10040",
 					nota:"4.33"				},
+				{
+					empresaId:"5a37e91ba0dddfbdf44fabff",
+					nome:"2 tri 2015",
+					dataEnvio:"2015-01-15",
+					dataConclusao:"2015-02-15",
+					email:"puts@rodobens.com",
+					objetivoId:"91",
+					habilidadeId:"10040",
+					nota:"4.00"				}, 
+				{
+					empresaId:"5a37e91ba0dddfbdf44fabff",
+					nome:"2 tri 2015",
+					dataEnvio:"2015-01-15",
+					dataConclusao:"2015-02-15",
+					email:"taloco@rodobens.com",
+					objetivoId:"91",
+					habilidadeId:"10040",
+					nota:"4.00"				} ,
 					{
 						empresaId:"5a37e91ba0dddfbdf44fabff",
-						nome:"1 tri 2015",
+						nome:"2 tri 2015",
 						dataEnvio:"2015-01-15",
 						dataConclusao:"2015-02-15",
-						email:"antonio.orlandi@rodobens.com",
-						objetivoId:"91",
-						habilidadeId:"10040",
-						nota:"4.00"				}, 
-					{
-						empresaId:"5a37e91ba0dddfbdf44fabff",
-						nome:"1 tri 2015",
-						dataEnvio:"2015-01-15",
-						dataConclusao:"2015-02-15",
-						email:"chucrutes@rodobens.com",
+						email:"inexistente@rodobens.com",
 						objetivoId:"91",
 						habilidadeId:"10040",
 						nota:"4.00"				} 
@@ -152,6 +161,30 @@ function importarHistorico() {
 		console.log("always: " + data);
 	});
 };
+
+function testaInsert() {
+	var date = new Date();
+    var objJson = {
+			atrUser: "Marcos.Lima@fit-tecnologia.org.br",
+			atrToken: date.getTime() + 'grenne'
+			};
+	$.ajax({
+		type: "POST",
+		url: ' https://flex.populisservicos.com.br/populisII-web/rest/user/token',
+        contentType: "application/json; charset=utf-8",
+        dataType: 'json',
+        async: false,
+        data : JSON.stringify(objJson)
+	})
+  	.done(function( data ) {
+   		result = true;
+  	})
+	.fail(function(data){
+   		result = false;
+   		console.log ("nao gravou token");
+	})
+	.always(function(data) {
+   	});};
 
 function testaObter() {
 	var objJson = {

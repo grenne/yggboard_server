@@ -520,6 +520,9 @@ public class Usuario {
 		byte[] tokenByte = commons.gerarHash(novaSenha);
 		String pwmd5 = commons.stringHexa(tokenByte);
 		
+		if (usuarioIn.get("lastName") == null) {
+			usuarioIn.put("lastName", " ");
+		};
 		usuarioDoc.put("firstName", usuarioIn.get("firstName"));
 		usuarioDoc.put("lastName", usuarioIn.get("lastName"));
 		usuarioDoc.put("institution", usuarioIn.get("institution"));

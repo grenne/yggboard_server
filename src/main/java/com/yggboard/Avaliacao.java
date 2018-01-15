@@ -844,21 +844,23 @@ public class Avaliacao {
 			BasicDBObject habilidade = new BasicDBObject(); 
 			habilidade = commons_db.getCollection(resultado.get("id").toString(), "habilidades", "documento.id", mongo, false);
 			BasicDBObject habilidadeDoc = new BasicDBObject();
-			if (habilidade.get("documento") != null) {
-  			habilidadeDoc.putAll((Map) habilidade.get("documento"));
-  			if (habilidade != null) {
-  				BasicDBObject resultadoResult = new BasicDBObject();
-  				resultadoResult.put("habilidadeId", habilidadeDoc.get("id"));
-  				resultadoResult.put("habilidadeNome", habilidadeDoc.get("nome"));
-  				resultadoResult.put("nota", resultado.get("nota").toString());
-  				resultadoResult.put("autoAvaliacao", mediaNotas(usuarioId, avaliacao, habilidadeDoc.get("id").toString(), "autoAvaliacao"));
-  				resultadoResult.put("mediaSubordinados", mediaNotas(usuarioId, avaliacao, habilidadeDoc.get("id").toString(), "subordinados"));
-  				resultadoResult.put("mediaSuperiores", mediaNotas(usuarioId, avaliacao, habilidadeDoc.get("id").toString(), "superiores"));
-  				resultadoResult.put("mediaParceiros", mediaNotas(usuarioId, avaliacao, habilidadeDoc.get("id").toString(), "parceiros"));
-  				resultadoResult.put("mediaClientes", mediaNotas(usuarioId, avaliacao, habilidadeDoc.get("id").toString(), "clientes"));
-  				resultados.add(resultadoResult);
-  			};
-			};
+			if (habilidade != null) {
+	  			habilidadeDoc.putAll((Map) habilidade.get("documento"));
+	  			if (habilidade != null) {
+	  				BasicDBObject resultadoResult = new BasicDBObject();
+	  				resultadoResult.put("habilidadeId", habilidadeDoc.get("id"));
+	  				resultadoResult.put("habilidadeNome", habilidadeDoc.get("nome"));
+	  				resultadoResult.put("nota", resultado.get("nota").toString());
+	  				resultadoResult.put("autoAvaliacao", mediaNotas(usuarioId, avaliacao, habilidadeDoc.get("id").toString(), "autoAvaliacao"));
+	  				resultadoResult.put("mediaSubordinados", mediaNotas(usuarioId, avaliacao, habilidadeDoc.get("id").toString(), "subordinados"));
+	  				resultadoResult.put("mediaSuperiores", mediaNotas(usuarioId, avaliacao, habilidadeDoc.get("id").toString(), "superiores"));
+	  				resultadoResult.put("mediaParceiros", mediaNotas(usuarioId, avaliacao, habilidadeDoc.get("id").toString(), "parceiros"));
+	  				resultadoResult.put("mediaClientes", mediaNotas(usuarioId, avaliacao, habilidadeDoc.get("id").toString(), "clientes"));
+	  				resultados.add(resultadoResult);
+	  			};
+			}else {
+				System.out.println("habilidade inexistente - " + resultado.get("id").toString());
+			}
 		};
 
 		return resultados;
@@ -960,14 +962,15 @@ public class Avaliacao {
 				avaliacaoResult.put("colaboradorId", usuarioId);
 				avaliacaoResult.put("colaboradorEmail", colaboradorEmail);
 				avaliacaoResult.put("colaboradorArea", area);
-				BasicDBObject objetivo = new BasicDBObject(); 
-				objetivo.putAll((Map) commons_db.getCollection(avaliacao.get("objetivoId").toString(), "objetivos", "documento.id", mongo, false));
+				BasicDBObject objetivo = commons_db.getCollection(avaliacao.get("objetivoId").toString(), "objetivos", "documento.id", mongo, false);
 				avaliacaoResult.put("objetivoNome", "");
 				if (objetivo != null) {
 					BasicDBObject objetivoDoc = new BasicDBObject();
 					objetivoDoc.putAll((Map) objetivo.get("documento"));
 					avaliacaoResult.put("objetivoNome", objetivoDoc.get("nome"));
-				};
+				}else{
+					System.out.println("objetivo inexistente - " + avaliacao.get("objetivoId").toString());
+				}
 				return avaliacaoResult;
 			};
 		};
@@ -1063,14 +1066,14 @@ public class Avaliacao {
 		for (int i = 0; i < mapas.size(); i++) {
 			BasicDBObject mapa = (BasicDBObject) mapas.get(i);
 			if (getAvaliacao(avaliacaoId, mapa.getString("usuarioId"), mongo).get("id").toString().equals(avaliacaoId)) {
-  			BasicDBObject usuario = new BasicDBObject();
-  			usuario = commons_db.getCollection(mapa.getString("usuarioId"), "usuarios", "_id", mongo, false);
-  			BasicDBObject usuarioDoc = (BasicDBObject) usuario.get("documento");
-  			usuarioDoc.remove("password");
-  			usuarioDoc.remove("token");
-  			usuarioDoc.put("id", mapa.getString("usuarioId"));
-  			usuarioDoc.put("objetivo", getAvaliacao(avaliacaoId, mapa.getString("usuarioId"), mongo).get("objetivoNome"));
-  			documentos.add(usuarioDoc);
+	  			BasicDBObject usuario = new BasicDBObject();
+	  			usuario = commons_db.getCollection(mapa.getString("usuarioId"), "usuarios", "_id", mongo, false);
+	  			BasicDBObject usuarioDoc = (BasicDBObject) usuario.get("documento");
+	  			usuarioDoc.remove("password");
+	  			usuarioDoc.remove("token");
+	  			usuarioDoc.put("id", mapa.getString("usuarioId"));
+	  			usuarioDoc.put("objetivo", getAvaliacao(avaliacaoId, mapa.getString("usuarioId"), mongo).get("objetivoNome"));
+	  			documentos.add(usuarioDoc);
 			};
 		};
 /*		
@@ -1983,9 +1986,13 @@ public class Avaliacao {
 				historico.get("dataEnvio") != null && historico.get("dataConclusao") != null && 
 				historico.get("email") != null && historico.get("objetivoId") != null && 
 				historico.get("habilidadeId") != null && historico.get("nota") != null) {
-				String usuarioId = verificaUsuario(historico, empresaId, mongo);
-				BasicDBObject avaliacao = verificaAvaliacao(historico.get("nome").toString(), historico, empresaId, mongo);
-				criaMapaHistorico(avaliacao, historico, empresaId, usuarioId, mongo);
+				BasicDBObject usuarioIn = commons_db.getCollection(historico.get("email").toString(), "usuarios", "documento.email", mongo, false);
+				if (usuarioIn != null) {
+					BasicDBObject avaliacao = verificaAvaliacao(historico.get("nome").toString(), historico, empresaId, mongo);
+					criaMapaHistorico(avaliacao, historico, empresaId, usuarioIn.get("_id").toString(), mongo);
+				}else {
+					System.out.println("Usuario inexistente-" + historico.get("nome") + " - " + historico.get("email")) ;	
+				}
 			}else {
 				System.out.println("Dados de importação inválidos-" + historico.get("nome") + " - " + historico.get("email")) ;
 			}
@@ -1993,11 +2000,28 @@ public class Avaliacao {
 		
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private BasicDBObject verificaAvaliacao(String avaliacaoNome, BasicDBObject historico, String empresaId, MongoClient mongo) {
+		
+		ArrayList<JSONObject> keysArray = new ArrayList<>();
+		JSONObject key = new JSONObject();
+		key.put("key", "documento.empresaId");
+		key.put("value", empresaId);
+		keysArray.add(key);
 
+		key = new JSONObject();
+		key.put("key", "documento.nome");
+		key.put("value", avaliacaoNome);
+		keysArray.add(key);
+	
+		Response response = commons_db.obterCrud("avaliacoes", keysArray, mongo, false);
 		BasicDBObject avaliacao = new BasicDBObject();
-		avaliacao = commons_db.getCollection(avaliacaoNome, "avaliacoes", "documento.nome", mongo, false);
-		if (avaliacao == null){
+		if ((response.getStatus() == 200 && response.getEntity() != "false")){
+			BasicDBObject avaliacaoDoc = new BasicDBObject();
+			avaliacaoDoc.putAll((Map) response.getEntity());
+			avaliacao = (BasicDBObject) avaliacaoDoc.get("documento");
+			avaliacao.put("_id", avaliacaoDoc.get("_id"));
+		}else {
 			avaliacao = criaAvaliacao(historico, empresaId, mongo);
 		};
 		
@@ -2007,24 +2031,26 @@ public class Avaliacao {
 	@SuppressWarnings("rawtypes")
 	private BasicDBObject criaAvaliacao(BasicDBObject historico, String empresaId, MongoClient mongo) {
 
-			BasicDBObject avaliacao = new BasicDBObject();
-			BasicDBObject avaliacaoDoc = new BasicDBObject();
+		BasicDBObject avaliacao = new BasicDBObject();
+		BasicDBObject avaliacaoDoc = new BasicDBObject();
 
-			avaliacaoDoc.put("nome", historico.get("nome"));
-			avaliacaoDoc.put("empresaId", historico.get("empresaId"));
-			avaliacaoDoc.put("dataEnvio", historico.get("dataEnvio").toString());
-			avaliacaoDoc.put("dataConclusao", historico.get("dataConclusao").toString());
-			avaliacaoDoc.put("enviarEmail", "false");
-			avaliacaoDoc.put("diasMapa", "0");
-			avaliacaoDoc.put("areas", "");
-			avaliacaoDoc.put("niveis", "");
-			avaliacaoDoc.put("status", "encerrada");
-			avaliacaoDoc.put("desNaosei", "false");
-			avaliacao.put("documento", avaliacaoDoc);
-			
-			BasicDBObject result = new BasicDBObject();
-			result.putAll((Map) commons_db.incluirCrud("avaliacoes", avaliacao, mongo, false).getEntity());
-			return result;
+		avaliacaoDoc.put("nome", historico.get("nome"));
+		avaliacaoDoc.put("empresaId", historico.get("empresaId"));
+		avaliacaoDoc.put("dataInicio", commons.todaysDate("yyyy-mm-dd"));
+		avaliacaoDoc.put("dataEnvio", historico.get("dataEnvio").toString());
+		avaliacaoDoc.put("dataConclusao", historico.get("dataConclusao").toString());
+		avaliacaoDoc.put("enviarEmail", "false");
+		avaliacaoDoc.put("diasMapa", "0");
+		avaliacaoDoc.put("areas", "");
+		avaliacaoDoc.put("niveis", "");
+		avaliacaoDoc.put("status", "encerrada");
+		avaliacaoDoc.put("desNaosei", "false");
+		avaliacaoDoc.put("importada", "true");
+		avaliacao.put("documento", avaliacaoDoc);
+		
+		BasicDBObject result = new BasicDBObject();
+		result.putAll((Map) commons_db.incluirCrud("avaliacoes", avaliacao, mongo, false).getEntity());
+		return result;
 	};
 
 	private String verificaUsuario(BasicDBObject historico, String empresaId, MongoClient mongo) {
@@ -2056,7 +2082,19 @@ public class Avaliacao {
 		ArrayList<Object> avaliacoesNew = new ArrayList<>();
 		avaliacoes = (ArrayList<Object>) mapaAvaliacao.get("avaliacoes");
 		BasicDBObject avaliacaoMapa = new BasicDBObject();
+		Boolean existeAvaliacao = false;
 		for (int i = 0; i < avaliacoes.size(); i++) {
+			avaliacaoMapa.putAll((Map) avaliacoes.get(i));
+			if (avaliacaoMapa.get("id").equals(avaliacaoId)) {
+				existeAvaliacao = true;
+			};
+		};
+		if (!existeAvaliacao) {
+			JSONObject avaliacaoNew = montaAvaliacaoUnica(historico, avaliacaoIn).get(0);
+			avaliacoes.add(avaliacaoNew);
+		};
+		for (int i = 0; i < avaliacoes.size(); i++) {
+			avaliacaoMapa = new BasicDBObject();
 			avaliacaoMapa.putAll((Map) avaliacoes.get(i));
 			if (avaliacaoMapa.get("id").equals(avaliacaoId)) {
 				ArrayList<BasicDBObject> resultados = new ArrayList<>();				

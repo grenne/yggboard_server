@@ -1423,7 +1423,11 @@ public class Rest_Index {
 						jsonDocumento.put("assunto", index.get("assunto"));
 						jsonDocumento.put("entidade", index.get("entidade"));
 						jsonDocumento.put("id", getOriginalId(index.get("assunto").toString(),index.get("id").toString(), mongo));
-						jsonDocumento.put("descricao", index.get("descricao"));
+						if (index.get("descricao") != null && !index.get("descricao").equals("")) {
+							jsonDocumento.put("descricao", index.get("descricao"));
+						}else {
+							jsonDocumento.put("descricao", " ");
+						};
 						if (assunto.equals("usuarios")) {
 							BasicDBObject userPerfil = restuserPerfil.obterUserPerfil(index.get("id").toString(), mongo);
 							if (userPerfil != null) {
