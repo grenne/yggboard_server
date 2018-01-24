@@ -523,6 +523,9 @@ public class Usuario {
 		if (usuarioIn.get("lastName") == null) {
 			usuarioIn.put("lastName", " ");
 		};
+		if (envioEmail == null) {
+			envioEmail = false;
+		};
 		usuarioDoc.put("firstName", usuarioIn.get("firstName"));
 		usuarioDoc.put("lastName", usuarioIn.get("lastName"));
 		usuarioDoc.put("institution", usuarioIn.get("institution"));

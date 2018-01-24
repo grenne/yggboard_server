@@ -32,6 +32,8 @@ public class Rest_UserPerfil {
 	
 	Commons commons = new Commons();
 	Commons_DB commons_db = new Commons_DB();
+	
+	
 
 	@Path("/obter")	
 	@GET
@@ -39,6 +41,33 @@ public class Rest_UserPerfil {
 	public BasicDBObject ObterUsuario(@QueryParam("usuario") String usuario, @QueryParam("usuarioConsultaId") String usuarioConsultaId){
 		Commons_DB commons_db = new Commons_DB();
 		return commons_db.getCollection(usuario, "userPerfil", "documento.token", mongo, true);
+	};
+
+	@Path("/obter-estatistica")	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public BasicDBObject ObterEstatistica(@QueryParam("token") String token, @QueryParam("id") String id, @QueryParam("item") String item){
+	
+		UserPerfil userPerfil = new UserPerfil();
+		
+		if (token == null) {
+			mongo.close();
+			return null;
+		};
+		if ((commons_db.getCollection(token, "usuarios", "documento.token", mongo, false)) == null) {
+			mongo.close();
+			return null;
+		};
+		if (id == null){
+			mongo.close();
+			return null;
+		};
+		if (item == null){
+			mongo.close();
+			return null;
+		};
+
+		return userPerfil.obterEstatistica(id, item, mongo); 
 	};
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })

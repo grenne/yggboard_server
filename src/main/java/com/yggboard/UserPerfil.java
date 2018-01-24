@@ -2,6 +2,7 @@ package com.yggboard;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.json.simple.JSONObject;
@@ -105,4 +106,46 @@ public class UserPerfil {
 		};
 		return result;
 	};
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public BasicDBObject obterEstatistica(String id, String item, MongoClient mongo) {
+		
+		BasicDBObject userPerfil = commons_db.getCollectionDoc(id, "userPerfil", "_id", mongo, false);
+
+		ArrayList<String> objetivosInteresse = (ArrayList<String>) userPerfil.get("carreirasInteresse");
+		ArrayList<String> habilidadesInteresse = (ArrayList<String>) userPerfil.get("habilidadesInteresse");
+		ArrayList<String> cursosInteresse = (ArrayList<String>) userPerfil.get("cursosInteresse");
+		ArrayList<String> habilidades = (ArrayList<String>) userPerfil.get("habilidades");
+
+		BasicDBObject result = new BasicDBObject();
+		
+		result.put("objetuvosInteresse", Integer.toString(objetivosInteresse.size()));
+		result.put("habilidadesInteresse", Integer.toString(habilidadesInteresse.size()));
+		result.put("cursosInteresse", Integer.toString(cursosInteresse.size()));
+		result.put("habilidadesNecessarias", Integer.toString(habilidadesNecessarias(objetivosInteresse,habilidades, mongo).size()));
+		return result;
+	
+	}
+
+	@SuppressWarnings("unchecked")
+	private ArrayList<String> habilidadesNecessarias(ArrayList<String> objetivosInteresse, ArrayList<String> habilidades, MongoClient mongo) {
+		
+		ArrayList<String> result = new ArrayList<>();
+		
+		for (int i = 0; i < objetivosInteresse.size(); i++) {
+			BasicDBObject objetivo = commons_db.getCollectionDoc(objetivosInteresse.get(i).toString(), "objetivos", "documento.id", mongo, false);
+			if (objetivo != null) {
+				ArrayList<String> habilidadesNecessarias = (ArrayList<String>) objetivo.get("necessarios");
+				if (habilidadesNecessarias != null) {
+					for (int j = 0; j < habilidadesNecessarias.size(); j++) {
+						if (!commons.testaElementoArray(habilidadesNecessarias.get(j), habilidades)) {
+							commons.addStringArrayList(result, habilidadesNecessarias.get(j));
+						};
+					};
+				};
+			};
+		};
+		
+		return result;
+	}
 };

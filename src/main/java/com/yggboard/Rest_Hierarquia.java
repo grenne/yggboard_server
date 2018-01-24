@@ -128,7 +128,7 @@ public class Rest_Hierarquia {
 			objetivoEmpresa.putAll((Map) objetivos.get(i));
 			if (objetivoEmpresa.get("objetivoId") != null) {
 				BasicDBObject objetivo = commons_db.getCollection(objetivoEmpresa.get("objetivoId").toString(), "objetivos", "documento.id", mongo, false);
-				if (objetivo.get("documento") != null) {
+				if (objetivo != null) {
 					BasicDBObject objetivoDoc = new BasicDBObject();
 					objetivoDoc.putAll((Map) objetivo.get("documento"));
 					BasicDBObject nivel = new BasicDBObject();
@@ -139,7 +139,9 @@ public class Rest_Hierarquia {
 						nivel.put("select", "false");
 					};
 					commons.addObjeto(niveis, nivel);
-				};
+				}else {
+					System.out.println("Objeetivo inexistente - " + objetivoEmpresa.get("objetivoId").toString());
+				}
 			};
 		};
 		mongo.close();
