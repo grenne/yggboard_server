@@ -6,11 +6,15 @@ import java.util.Map;
 
 import javax.inject.Singleton;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.mongodb.BasicDBObject;
@@ -142,6 +146,64 @@ public class Rest_Crud {
 			mongo.close();
 			return Response.status(400).entity(null).build();	
 		}
+	};
+
+	@Path("/lista/nokey")	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public JSONArray listaNoKey(@QueryParam("token") String token, @QueryParam("collection") String collection)  {
+		System.out.println("lista:" + collection);
+		Commons_DB commons_db = new Commons_DB();
+		if (collection == null){
+  			mongo.close();
+			return null;
+		};
+		if (collection == "usuarios"){
+  			mongo.close();
+			return null;
+		};
+		if (token == null){
+  			mongo.close();
+			return null;
+		};
+  		if (commons_db.getCollection(token, "usuarios", "documento.token", mongo, false) == null){
+  			mongo.close();
+  			return null;	
+  		};
+		return commons_db.getCollectionListaNoKey(collection, mongo, false);
+	};
+
+	@Path("/lista/onekey")	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public JSONArray listaOneKey(@QueryParam("token") String token, @QueryParam("collection") String collection, @QueryParam("keyName") String keyName, @QueryParam("keyValue") String keyValue)  {
+		System.out.println("lista:" + collection);
+		Commons_DB commons_db = new Commons_DB();
+		if (collection == null){
+  			mongo.close();
+			return null;
+		};
+		if (collection == "usuarios"){
+  			mongo.close();
+			return null;
+		};
+		if (keyName == null){
+  			mongo.close();
+			return null;
+		};
+		if (keyValue == null){
+  			mongo.close();
+			return null;
+		};
+		if (token == null){
+  			mongo.close();
+			return null;
+		};
+  		if (commons_db.getCollection(token, "usuarios", "documento.token", mongo, false) == null){
+  			mongo.close();
+  			return null;	
+  		};
+		return commons_db.getCollectionLista(keyValue, collection, keyName, mongo, false);
 	};
 
 	@Path("/remover/all")

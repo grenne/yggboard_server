@@ -94,6 +94,56 @@ public class Rest_Avaliacao {
 		return result;
 	};
 
+	@Path("/colaboradores/ultimas-5-avaliacoes")	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public JSONArray ColaboradoresUltimas5(@QueryParam("token") String token, @QueryParam("usuarioId") String usuarioId)  {
+		if ((commons_db.getCollection(token, "usuarios", "documento.token", mongo, false)) == null) {
+			mongo.close();
+			return null;
+		};
+		
+		JSONArray result = avaliacao.colaboradoresUltimas5Avaliacoes(usuarioId, mongo);
+		mongo.close();
+		return result;
+	};
+
+	@Path("/colaboradores/avaliacao")	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public JSONArray ColaboradoresAvaliacao(@QueryParam("token") String token,  @QueryParam("avaliacaoId") String avaliacaoId)  {
+		if ((commons_db.getCollection(token, "usuarios", "documento.token", mongo, false)) == null) {
+			mongo.close();
+			return null;
+		};
+		if (avaliacaoId == null) {
+			mongo.close();
+			return null;
+		};
+		
+		JSONArray result = avaliacao.colaboradoresAvaliacao(avaliacaoId, mongo);
+		mongo.close();
+		return result;
+	};
+
+	@Path("/colaboradores/avaliacao/notas")	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public JSONArray ColaboradoresAvaliacaoNotas(@QueryParam("token") String token,  @QueryParam("avaliacaoId") String avaliacaoId)  {
+		if ((commons_db.getCollection(token, "usuarios", "documento.token", mongo, false)) == null) {
+			mongo.close();
+			return null;
+		};
+		if (avaliacaoId == null) {
+			mongo.close();
+			return null;
+		};
+		
+		JSONArray result = avaliacao.colaboradoresAvaliacaoNotas(avaliacaoId, mongo);
+		mongo.close();
+		return result;
+	};
+
 	@Path("/colaborador")	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)

@@ -38,7 +38,7 @@ public class Habilidade {
 		ArrayList<String> interesseHabilidades = (ArrayList<String>) userPerfil.get("habilidadesInteresse");
 
 		result.put("possuiHabilidade", commons.testaElementoArray(id, possuiHabilidades));
-		result.put("interesseHabiliade",commons.testaElementoArray(id, interesseHabilidades));
+		result.put("interesseHabilidade",commons.testaElementoArray(id, interesseHabilidades));
 
 		ArrayList<String> array = (ArrayList<String>) result.get("cursos");
 		JSONArray arrayPossui = new JSONArray();

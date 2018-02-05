@@ -51,10 +51,20 @@ public class Objetivo {
 				};
 			};
 		};
-		
+
 		result.put("possuiHabilidade", arrayPossui);
 		result.put("interesseHabilidade", arrayInteresse);
 		
+		if (userPerfil != null) {
+			//  **** calcula percentual de habilidades que o usuario possui dentro do objetivo
+			ArrayList<String> necessarios = (ArrayList<String>) result.get("necessarios");
+			ArrayList<String> habilidadesPossui = (ArrayList<String>) userPerfil.get("habilidades");
+			int qtdeHabilidadesPossui = commons.testaArrayElementosIguais(necessarios, habilidadesPossui);
+			int qtdeNecessarios = necessarios.size();
+			double percentual = ((double)qtdeHabilidadesPossui / (double)qtdeNecessarios) * 100;
+			DecimalFormat formatador = new DecimalFormat("0.00");
+			result.put("percentual", formatador.format(percentual).toString());
+		};		
 		return result;
 	
 	};
