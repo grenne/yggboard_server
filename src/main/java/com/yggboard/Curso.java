@@ -153,14 +153,14 @@ public class Curso {
 		return result;
 	
 	}
-	public Object getBadges(String objetivoPar, String usuarioParametro, String string, String full,
+	public JSONArray getBadges(String objetivoPar, String usuarioParametro, String string, String full,
 			MongoClient mongo) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 	
 	@SuppressWarnings("unchecked")
-	public Object getHabilidades(String id, String usuarioParametro, String tipo, String full, MongoClient mongo) {
+	public JSONArray getHabilidades(String id, String usuarioParametro, String tipo, String full, MongoClient mongo) {
 
 		BasicDBObject curso = commons_db.getCollectionDoc(id, "cursos", "documento.id", mongo, false);
 

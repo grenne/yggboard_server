@@ -160,7 +160,7 @@ public class Objetivo {
 		return result;
 	
 	}
-	public Object getUsuarios(String id, String usuarioParametro, String string, String full, MongoClient mongo) {
+	public JSONArray getUsuarios(String id, String usuarioParametro, String string, String full, MongoClient mongo) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -230,7 +230,7 @@ public class Objetivo {
 		return finalResult;
 	}
 	@SuppressWarnings("unchecked")
-	public Object getAreaAtuacao(String id, String usuarioParametro, String tipo, String full, MongoClient mongo) {
+	public JSONArray getAreaAtuacao(String id, String usuarioParametro, String tipo, String full, MongoClient mongo) {
 		BasicDBObject objetivo = commons_db.getCollectionDoc(id, "objetivos", "documento.id", mongo, false);
 
 		if (objetivo == null) {

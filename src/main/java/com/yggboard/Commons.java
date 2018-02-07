@@ -606,4 +606,15 @@ public class Commons {
 		return frase;
 	}
 
+	@SuppressWarnings("unchecked")
+	public JSONArray controlaLimite(JSONArray source, int limite, int start) {
+		JSONArray result = new JSONArray();
+		if (start < source.size()) {
+			for (int i = start; i < source.size() && i < limite; i++) {
+				result.add(source.get(i));
+			};
+		};
+		return null;
+	};	
+
 };

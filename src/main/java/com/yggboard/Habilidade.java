@@ -161,12 +161,12 @@ public class Habilidade {
 		return result;
 	
 	}
-	public Object getUsuarios(String objetivoPar, String usuarioParametro, String string, String full, MongoClient mongo) {
+	public JSONArray getUsuarios(String objetivoPar, String usuarioParametro, String string, String full, MongoClient mongo) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 	@SuppressWarnings("unchecked")
-	public Object getCursos(String id, String usuarioParametro, String tipo, String full, MongoClient mongo) {
+	public JSONArray getCursos(String id, String usuarioParametro, String tipo, String full, MongoClient mongo) {
 		BasicDBObject habilidade = commons_db.getCollectionDoc(id, "habilidades", "documento.id", mongo, false);
 
 		if (habilidade == null) {
@@ -221,7 +221,7 @@ public class Habilidade {
 		return result;
 	}
 	@SuppressWarnings("unchecked")
-	public Object getAreaConhecimento(String id, String usuarioParametro, String tipo, String full, MongoClient mongo) {
+	public JSONArray getAreaConhecimento(String id, String usuarioParametro, String tipo, String full, MongoClient mongo) {
 		BasicDBObject habilidade = commons_db.getCollectionDoc(id, "habilidades", "documento.id", mongo, false);
 
 		if (habilidade == null) {
@@ -250,7 +250,7 @@ public class Habilidade {
 		return result;
 	}
 	@SuppressWarnings("unchecked")
-	public Object getObjetivos(String id, String usuarioParametro, String tipo, String full, MongoClient mongo) {
+	public JSONArray getObjetivos(String id, String usuarioParametro, String tipo, String full, MongoClient mongo) {
 		BasicDBObject habilidade = commons_db.getCollectionDoc(id, "habilidades", "documento.id", mongo, false);
 
 		if (habilidade == null) {

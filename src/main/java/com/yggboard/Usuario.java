@@ -373,7 +373,7 @@ public class Usuario {
 	}
 
 	@SuppressWarnings("unchecked")
-	public Object getCursos(String usuarioPar, String usuarioParametro, String tipo, String full, MongoClient mongo) {
+	public JSONArray getCursos(String usuarioPar, String usuarioParametro, String tipo, String full, MongoClient mongo) {
 		
 		BasicDBObject userPerfil = getUserPerfil(usuarioPar, mongo);
 		if (userPerfil == null) {
@@ -412,7 +412,7 @@ public class Usuario {
 	}
 
 	@SuppressWarnings("unchecked")
-	public Object getBadges(String usuarioPar, String usuarioParametro, String tipo, String full, MongoClient mongo) {
+	public JSONArray getBadges(String usuarioPar, String usuarioParametro, String tipo, String full, MongoClient mongo) {
 		
 		BasicDBObject userPerfil = getUserPerfil(usuarioPar, mongo);
 		if (userPerfil == null) {
@@ -456,7 +456,7 @@ public class Usuario {
 	}
 
 	@SuppressWarnings("unchecked")
-	public Object getAreaAtuacao(String usuarioPar, String usuarioParametro, String tipo, String full, MongoClient mongo) {
+	public JSONArray getAreaAtuacao(String usuarioPar, String usuarioParametro, String tipo, String full, MongoClient mongo) {
 		
 		BasicDBObject userPerfil = getUserPerfil(usuarioPar, mongo);
 		if (userPerfil == null) {
