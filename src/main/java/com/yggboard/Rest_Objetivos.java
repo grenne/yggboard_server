@@ -19,20 +19,32 @@ import com.mongodb.MongoClient;
 	
 @Singleton
 // @Lock(LockType.READ)
-@Path("/carreiras")
+@Path("/objetivos")
 
-public class Rest_Carreira {
+public class Rest_Objetivos {
 
 	MongoClient mongo = new MongoClient();
-	
-	@Path("/okta")	
+	Commons_DB commons_db = new Commons_DB();
+	Commons commons = new Commons();
+	Objetivo objetivo = new Objetivo();
+
+	@Path("/filtros")	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public JSONObject okta(@QueryParam("token") String token) {
-
+	public JSONArray CriaMapa(@QueryParam("token") String token, @QueryParam("areasAtuacao") String areaAtuacao, @QueryParam("niveis") String niveis,  @QueryParam("usuarioParametro") String usuarioParametro)  {
+	
+		if (token == null) {
+			mongo.close();
+			return null;
+		};
+		if ((commons_db.getCollection(token, "usuarios", "documento.token", mongo, false)) == null) {
+			mongo.close();
+			return null;
+		};
 		
-		System.out.println("token:" + token);
-		return null;
+		JSONArray result = objetivo.filtros(areaAtuacao, niveis, usuarioParametro, mongo);
+		mongo.close();
+		return result;
 	};
 	
 	@SuppressWarnings({ "unchecked" })

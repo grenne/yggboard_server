@@ -301,6 +301,18 @@ public class Commons {
 	};
 
 	@SuppressWarnings("rawtypes")
+	public boolean testaArrayTodosElementos(ArrayList arrayOrigem, ArrayList arrayElementos) {
+		for (int w = 0; w < arrayOrigem.size(); w++) {
+			for (int i = 0; i < arrayElementos.size(); i++) {
+				if (arrayOrigem.get(w).toString().equals(arrayElementos.get(i))){
+					return true;		
+				};
+			};
+		};
+		return false;
+	};
+
+	@SuppressWarnings("rawtypes")
 	public int testaArrayElementosIguais(ArrayList arrayOrigem, ArrayList arrayElementos) {
 		
 		int elementosIguais = 0;
@@ -610,11 +622,11 @@ public class Commons {
 	public JSONArray controlaLimite(JSONArray source, int limite, int start) {
 		JSONArray result = new JSONArray();
 		if (start < source.size()) {
-			for (int i = start; i < source.size() && i < limite; i++) {
+			for (int i = start; i < source.size() && i < (limite + start); i++) {
 				result.add(source.get(i));
 			};
 		};
-		return null;
+		return result;
 	};	
 
 };

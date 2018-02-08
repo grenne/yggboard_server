@@ -3,6 +3,8 @@ package com.yggboard;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import org.json.simple.JSONArray;
@@ -65,6 +67,70 @@ public class Objetivo {
 			DecimalFormat formatador = new DecimalFormat("0.00");
 			result.put("percentual", formatador.format(percentual).toString());
 		};		
+		return result;
+	
+	};
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public JSONArray filtros(String areaAtuacaoSource, String niveisSource, String usuarioParametro, MongoClient mongo) {
+		
+		BasicDBObject userPerfil = new BasicDBObject();
+
+		userPerfil = null;
+
+		if (usuarioParametro != null) {
+			userPerfil = usuario.getUserPerfil(usuarioParametro, mongo);
+		};
+	
+		String[] areaAtuacaoStringArray =  new String[100];
+		List<String> areaAtuacaoList = new ArrayList<String>();
+		if (areaAtuacaoSource != null) {
+			areaAtuacaoStringArray = areaAtuacaoSource.split(";");
+			areaAtuacaoList = Arrays.asList(areaAtuacaoStringArray);
+		};
+		ArrayList<String> areaAtuacao = new ArrayList<String>(areaAtuacaoList);
+
+		String[] niveisArrayString =  new String[100];
+		List<String> niveisList = new ArrayList<String>();
+		if (niveisSource != null) {
+			niveisArrayString = niveisSource.split(";");
+			niveisList = Arrays.asList(niveisArrayString);
+		};
+		ArrayList<String> niveis = new ArrayList<String>(niveisList);
+		
+		JSONArray result = new JSONArray();
+		JSONArray array = commons_db.getCollectionListaNoKey("objetivos", mongo, false);
+		for (int i = 0; i < array.size(); i++) {
+			BasicDBObject objetivo = new BasicDBObject();
+			objetivo.putAll((Map) array.get(i));
+			BasicDBObject item = new BasicDBObject();
+			Boolean itemOK = true;
+			if (niveisSource != null && !commons.testaElementoArray(objetivo.get("nivel").toString(), niveis)) {
+				itemOK = false;
+			};
+			ArrayList<String> areaAtuacaoObjetivo = (ArrayList<String>) objetivo.get("areaAtuacao");
+			if (areaAtuacaoSource != null && !commons.testaArrayTodosElementos(areaAtuacao, areaAtuacaoObjetivo)){
+				itemOK = false;
+			};
+			if (itemOK) {
+				item.put("possui", "false");
+				item.put("interesse", "false");
+				item.put("id", objetivo.get("id").toString());
+				item.put("nome", objetivo.get("nome").toString());
+				if (userPerfil != null) {
+					if (userPerfil.get("objetivos") != null) {
+		  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("objetivos");
+		  				item.put("possui", commons.testaElementoArray(item.get("id").toString(), itens));
+					};
+					if (userPerfil.get("objetivosInteresse") != null) {
+		  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("objetivosInteresse");
+		  				item.put("interesse", commons.testaElementoArray(item.get("id").toString(), itens));
+					};
+				};
+				result.add(item);
+			};
+		};
+		
 		return result;
 	
 	};
@@ -254,6 +320,6 @@ public class Objetivo {
 			result.add(item);
 		};
 		return result;
-	};
+	}
 	
 };
