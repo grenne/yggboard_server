@@ -27,7 +27,9 @@ public class Rest_Habilidade {
 	MongoClient mongo = new MongoClient();
 	Commons commons = new Commons();
 	Commons_DB commons_db = new Commons_DB();
+	Habilidade habilidade = new Habilidade();
 	Usuario usuario = new Usuario();
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Path("/lista")	
 	@GET
@@ -120,5 +122,25 @@ public class Rest_Habilidade {
 		mongo.close();
 		return results;
 	};
+	
+	@Path("/filtros")	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public JSONArray filtros(@QueryParam("token") String token, @QueryParam("areasConhecimento") String areaConhecimento,  @QueryParam("usuarioParametro") String usuarioParametro)  {
+	
+		if (token == null) {
+			mongo.close();
+			return null;
+		};
+		if ((commons_db.getCollection(token, "usuarios", "documento.token", mongo, false)) == null) {
+			mongo.close();
+			return null;
+		};
+		
+		JSONArray result = habilidade.filtros(areaConhecimento, usuarioParametro, mongo);
+		mongo.close();
+		return result;
+	};
 
 }
+

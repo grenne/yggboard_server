@@ -2,6 +2,8 @@ package com.yggboard;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import org.json.simple.JSONArray;
@@ -82,6 +84,59 @@ public class Habilidade {
 		result.put("possuiObjetivo", arrayPossui);
 		result.put("interesseObjetivo", arrayInteresse);
 
+		return result;
+	
+	};
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public JSONArray filtros(String areaConhecimentoSource, String usuarioParametro, MongoClient mongo) {
+		
+		BasicDBObject userPerfil = new BasicDBObject();
+
+		userPerfil = null;
+
+		if (usuarioParametro != null) {
+			userPerfil = usuario.getUserPerfil(usuarioParametro, mongo);
+		};
+	
+		String[] areaConhecimentoStringArray =  new String[100];
+		List<String> areaConhecimentoList = new ArrayList<String>();
+		if (areaConhecimentoSource != null) {
+			areaConhecimentoStringArray = areaConhecimentoSource.split(";");
+			areaConhecimentoList = Arrays.asList(areaConhecimentoStringArray);
+		};
+		ArrayList<String> areaConhecimento = new ArrayList<String>(areaConhecimentoList);
+		
+		JSONArray result = new JSONArray();
+		JSONArray array = commons_db.getCollectionListaNoKey("habilidades", mongo, false);
+		for (int i = 0; i < array.size(); i++) {
+			BasicDBObject habilidade = new BasicDBObject();
+			habilidade.putAll((Map) array.get(i));
+			BasicDBObject item = new BasicDBObject();
+			Boolean itemOK = true;
+			ArrayList<String> areaConhecimentoHabilidade = (ArrayList<String>) habilidade.get("areaConhecimento");
+			if (areaConhecimentoSource != null && !commons.testaArrayTodosElementos(areaConhecimento, areaConhecimentoHabilidade)){
+				itemOK = false;
+			};
+			if (itemOK) {
+				item.put("possui", "false");
+				item.put("interesse", "false");
+				item.put("id", habilidade.get("id").toString());
+				item.put("nome", habilidade.get("nome").toString());
+				if (userPerfil != null) {
+					if (userPerfil.get("habilidades") != null) {
+		  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("habilidades");
+		  				item.put("possui", commons.testaElementoArray(item.get("id").toString(), itens));
+					};
+					if (userPerfil.get("habilidadesInteresse") != null) {
+		  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("habilidadesInteresse");
+		  				item.put("interesse", commons.testaElementoArray(item.get("id").toString(), itens));
+					};
+				};
+				result.add(item);
+			};
+		};
+		
 		return result;
 	
 	};

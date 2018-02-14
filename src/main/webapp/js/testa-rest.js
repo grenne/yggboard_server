@@ -228,7 +228,9 @@ function testaIncluir() {
 function testaAtualizar() {
  
 	var objJson = 
-			{"token":"939c381184bac73457e3eca584fb1838","collection":"usuarios","keys":[{"key":"documento.email","value":"grenneglr@gmail.com"}],"update":[{"field":"password","value":"turi"}]};
+			{"token":"939c381184bac73457e3eca584fb1838",
+			"collection":"usuarios",
+			"keys":[{"key":"documento.email","value":"grenneglr@gmail.com"}],"update":[{"field":"password","value":"turi"}]};
 	$.ajax({
 		type : "POST",
 		url : localStorage.mainUrl + "yggboard_server/rest/crud/atualizar",

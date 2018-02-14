@@ -19,7 +19,7 @@ public class ApplicationConfig extends Application {
            		Rest_Habilidade.class,
            		Rest_Curso.class,
            		Rest_Badge.class,
-           		Rest_Objetivos.class,
+           		Rest_Objetivo.class,
            		Rest_Email.class,
            		Rest_Usuario.class,
            		Rest_ProcessosBatch.class,
@@ -28,8 +28,9 @@ public class ApplicationConfig extends Application {
            		Rest_Avaliacao.class,
            		Rest_Hierarquia.class,
            		Rest_Eventos.class,
-           		Rest_Objetos.class,
-           		Rest_Actions.class
+           		Rest_Objeto.class,
+           		Rest_Actions.class,
+           		Rest_AreaConhecimento.class
            	        		));
     }
 

@@ -18,7 +18,7 @@ import com.mongodb.MongoClient;
 // @Lock(LockType.READ)
 @Path("/objetos")
 
-public class Rest_Objetos {
+public class Rest_Objeto {
 	
 	MongoClient mongo = new MongoClient();
 	
@@ -328,7 +328,7 @@ public class Rest_Objetos {
 	};
 
 	String[] arrayHabilidades = new String[100]; 
-	if (arrayHabilidades != null) {
+	if (habilidadePar != null) {
 		arrayHabilidades = habilidadePar.split(";");
 	};
 	
@@ -382,7 +382,7 @@ public class Rest_Objetos {
 	};
 
 	String[] arrayObjetivos = new String[100]; 
-	if (arrayObjetivos != null) {
+	if (objetivoPar != null) {
 		arrayObjetivos = objetivoPar.split(";");
 	};
 
@@ -457,7 +457,7 @@ public class Rest_Objetos {
 	};
 
 	String[] arrayCursos = new String[100]; 
-	if (arrayCursos != null) {
+	if (cursoPar != null) {
 		arrayCursos = cursoPar.split(";");
 	};
 	

@@ -21,7 +21,7 @@ import com.mongodb.MongoClient;
 // @Lock(LockType.READ)
 @Path("/objetivos")
 
-public class Rest_Objetivos {
+public class Rest_Objetivo {
 
 	MongoClient mongo = new MongoClient();
 	Commons_DB commons_db = new Commons_DB();
@@ -31,7 +31,7 @@ public class Rest_Objetivos {
 	@Path("/filtros")	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public JSONArray CriaMapa(@QueryParam("token") String token, @QueryParam("areasAtuacao") String areaAtuacao, @QueryParam("niveis") String niveis,  @QueryParam("usuarioParametro") String usuarioParametro)  {
+	public JSONArray filtros(@QueryParam("token") String token, @QueryParam("areasAtuacao") String areaAtuacao, @QueryParam("niveis") String niveis,  @QueryParam("usuarioParametro") String usuarioParametro)  {
 	
 		if (token == null) {
 			mongo.close();
