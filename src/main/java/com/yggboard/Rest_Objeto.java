@@ -112,7 +112,7 @@ public class Rest_Objeto {
 				break;
 			case "Cursos":
 				if (full.equals("0")) {
-				finalResult.put("Cursos", commons.controlaLimite(curso.getIdNome(usuarioParametro, mongo), limite, start));
+					finalResult.put("Cursos", commons.controlaLimite(curso.getIdNome(usuarioParametro, mongo), limite, start));
 				}else {
 					if (full.equals("1")) {
   					finalResult.put("Cursos", commons.controlaLimite(curso.getAll(usuarioParametro, mongo), limite, start));
@@ -175,22 +175,22 @@ public class Rest_Objeto {
 	 					mongo.close();
 	 					return null;					
 	 				}else {
-  					for (int j = 0; j < arrayAssuntos.length; j++) {
-  						switch (arrayAssuntos[j]) {
-  						case "possui":
-  							finalResult.put("usuarioObjetivosPossui", commons.controlaLimite(usuario.getObjetivos(usuarioPar, usuarioPar, "carreiras",full, mongo), limite, start));							
-  							break;
-  						case "interesse":
-  							finalResult.put("usuarioObjetivosInteresse", commons.controlaLimite(usuario.getObjetivos(usuarioPar, usuarioPar, "carreirasInteresse",full, mongo), limite, start));							
-  							break;
-  						case "sugeridos":
-  							finalResult.put("usuarioObjetivosSugeridos", commons.controlaLimite(usuario.getObjetivos(usuarioPar, usuarioPar, "carreirasSugeridas",full,  mongo), limite, start));							
-  							break;
-  						default:
-  							System.out.println("Assunto invalido:" + arrayAssuntos[j]);
-  							break;
-  						}
-  					};
+	  					for (int j = 0; j < arrayAssuntos.length; j++) {
+	  						switch (arrayAssuntos[j]) {
+	  						case "possui":
+	  							finalResult.put("usuarioObjetivosPossui", commons.controlaLimite(usuario.getObjetivos(usuarioPar, usuarioPar, "carreiras",full, mongo), limite, start));							
+	  							break;
+	  						case "interesse":
+	  							finalResult.put("usuarioObjetivosInteresse", commons.controlaLimite(usuario.getObjetivos(usuarioPar, usuarioPar, "carreirasInteresse",full, mongo), limite, start));							
+	  							break;
+	  						case "sugeridos":
+	  							finalResult.put("usuarioObjetivosSugeridos", commons.controlaLimite(usuario.getObjetivos(usuarioPar, usuarioPar, "carreirasSugeridas",full,  mongo), limite, start));							
+	  							break;
+	  						default:
+	  							System.out.println("Assunto invalido:" + arrayAssuntos[j]);
+	  							break;
+	  						}
+	  					};
 	 				};
 					break;
 				case "Habilidades":

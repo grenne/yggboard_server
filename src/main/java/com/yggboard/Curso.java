@@ -123,6 +123,7 @@ public class Curso {
 			item.put("_id", obj.get("_id"));
 			item.put("id", obj.get("id"));
 			item.put("nome", obj.get("nome"));
+			item.put("escola", obj.get("escola"));
 			item.put("possui", "false");
 			item.put("interesse", "false");
 			if (userPerfil != null) {
@@ -146,8 +147,8 @@ public class Curso {
   				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("cursosSugeridos");
   				item.put("sugeridos", commons.testaElementoArray(item.getString("id"), itens));
 				};
-				result.add(item);
 			};
+			result.add(item);
 		};
 		
 		return result;

@@ -846,27 +846,30 @@ public class Avaliacao {
 		
 		for (int z = 0; z < resultadosArray.size(); z++) {
 			BasicDBObject resultado = new BasicDBObject(); 
-			resultado.putAll((Map) resultadosArray.get(z)); 
-			BasicDBObject habilidade = new BasicDBObject(); 
-			habilidade = commons_db.getCollection(resultado.get("id").toString(), "habilidades", "documento.id", mongo, false);
-			BasicDBObject habilidadeDoc = new BasicDBObject();
-			if (habilidade != null) {
-	  			habilidadeDoc.putAll((Map) habilidade.get("documento"));
-	  			if (habilidade != null) {
-	  				BasicDBObject resultadoResult = new BasicDBObject();
-	  				resultadoResult.put("habilidadeId", habilidadeDoc.get("id"));
-	  				resultadoResult.put("habilidadeNome", habilidadeDoc.get("nome"));
-	  				resultadoResult.put("nota", resultado.get("nota").toString());
-	  				resultadoResult.put("autoAvaliacao", mediaNotas(usuarioId, avaliacao, habilidadeDoc.get("id").toString(), "autoAvaliacao"));
-	  				resultadoResult.put("mediaSubordinados", mediaNotas(usuarioId, avaliacao, habilidadeDoc.get("id").toString(), "subordinados"));
-	  				resultadoResult.put("mediaSuperiores", mediaNotas(usuarioId, avaliacao, habilidadeDoc.get("id").toString(), "superiores"));
-	  				resultadoResult.put("mediaParceiros", mediaNotas(usuarioId, avaliacao, habilidadeDoc.get("id").toString(), "parceiros"));
-	  				resultadoResult.put("mediaClientes", mediaNotas(usuarioId, avaliacao, habilidadeDoc.get("id").toString(), "clientes"));
-	  				resultados.add(resultadoResult);
-	  			};
+			if (resultadosArray.get(z) instanceof String){
 			}else {
-				System.out.println("habilidade inexistente - " + resultado.get("id").toString());
-			}
+				resultado.putAll((Map) resultadosArray.get(z)); 
+				BasicDBObject habilidade = new BasicDBObject(); 
+				habilidade = commons_db.getCollection(resultado.get("id").toString(), "habilidades", "documento.id", mongo, false);
+				BasicDBObject habilidadeDoc = new BasicDBObject();
+				if (habilidade != null) {
+		  			habilidadeDoc.putAll((Map) habilidade.get("documento"));
+		  			if (habilidade != null) {
+		  				BasicDBObject resultadoResult = new BasicDBObject();
+		  				resultadoResult.put("habilidadeId", habilidadeDoc.get("id"));
+		  				resultadoResult.put("habilidadeNome", habilidadeDoc.get("nome"));
+		  				resultadoResult.put("nota", resultado.get("nota").toString());
+		  				resultadoResult.put("autoAvaliacao", mediaNotas(usuarioId, avaliacao, habilidadeDoc.get("id").toString(), "autoAvaliacao"));
+		  				resultadoResult.put("mediaSubordinados", mediaNotas(usuarioId, avaliacao, habilidadeDoc.get("id").toString(), "subordinados"));
+		  				resultadoResult.put("mediaSuperiores", mediaNotas(usuarioId, avaliacao, habilidadeDoc.get("id").toString(), "superiores"));
+		  				resultadoResult.put("mediaParceiros", mediaNotas(usuarioId, avaliacao, habilidadeDoc.get("id").toString(), "parceiros"));
+		  				resultadoResult.put("mediaClientes", mediaNotas(usuarioId, avaliacao, habilidadeDoc.get("id").toString(), "clientes"));
+		  				resultados.add(resultadoResult);
+		  			};
+				}else {
+					System.out.println("habilidade inexistente - " + resultado.get("id").toString());
+				};
+			};
 		};
 
 		return resultados;
