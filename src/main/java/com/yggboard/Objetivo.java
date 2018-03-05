@@ -105,7 +105,7 @@ public class Objetivo {
 			objetivo.putAll((Map) array.get(i));
 			BasicDBObject item = new BasicDBObject();
 			Boolean itemOK = true;
-			if (niveisSource != null && !commons.testaElementoArray(objetivo.get("nivel").toString(), niveis)) {
+			if (niveisSource != null && !commons.testaElementoArray(objetivo.get("nivelFiltro").toString(), niveis)) {
 				itemOK = false;
 			};
 			ArrayList<String> areaAtuacaoObjetivo = (ArrayList<String>) objetivo.get("areaAtuacao");

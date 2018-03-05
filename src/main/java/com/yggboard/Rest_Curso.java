@@ -24,6 +24,29 @@ import com.mongodb.MongoClient;
 public class Rest_Curso {
 
 	MongoClient mongo = new MongoClient();
+	Commons_DB commons_db = new Commons_DB();
+	Commons commons = new Commons();
+	Curso curso = new Curso();
+
+	@Path("/filtros")	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public JSONArray filtros(@QueryParam("token") String token, @QueryParam("areasConhecimento") String areasConhecimento, @QueryParam("niveis") String niveis,  @QueryParam("usuarioParametro") String usuarioParametro)  {
+	
+		if (token == null) {
+			mongo.close();
+			return null;
+		};
+		if ((commons_db.getCollection(token, "usuarios", "documento.token", mongo, false)) == null) {
+			mongo.close();
+			return null;
+		};
+		
+		JSONArray result = curso.filtros(areasConhecimento, niveis, usuarioParametro, mongo);
+		mongo.close();
+		return result;
+	};
+	
 	
 	@SuppressWarnings({ "unchecked" })
 	@Path("/obter")	

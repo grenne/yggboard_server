@@ -3,6 +3,8 @@ package com.yggboard;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import org.json.simple.JSONArray;
@@ -57,6 +59,71 @@ public class Curso {
 		return result;
 	
 	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public JSONArray filtros(String areaCoonhecimentoSource, String niveisSource, String usuarioParametro, MongoClient mongo) {
+		
+		BasicDBObject userPerfil = new BasicDBObject();
+
+		userPerfil = null;
+
+		if (usuarioParametro != null) {
+			userPerfil = usuario.getUserPerfil(usuarioParametro, mongo);
+		};
+	
+		String[] areaConhecimetnoStringArray =  new String[100];
+		List<String> areaConhecimentoList = new ArrayList<String>();
+		if (areaCoonhecimentoSource != null) {
+			areaConhecimetnoStringArray = areaCoonhecimentoSource.split(";");
+			areaConhecimentoList = Arrays.asList(areaConhecimetnoStringArray);
+		};
+		ArrayList<String> areaConhecimento = new ArrayList<String>(areaConhecimentoList);
+
+		String[] niveisArrayString =  new String[100];
+		List<String> niveisList = new ArrayList<String>();
+		if (niveisSource != null) {
+			niveisArrayString = niveisSource.split(";");
+			niveisList = Arrays.asList(niveisArrayString);
+		};
+		ArrayList<String> niveis = new ArrayList<String>(niveisList);
+		
+		JSONArray result = new JSONArray();
+		JSONArray array = commons_db.getCollectionListaNoKey("cursos", mongo, false);
+		for (int i = 0; i < array.size(); i++) {
+			BasicDBObject curso = new BasicDBObject();
+			curso.putAll((Map) array.get(i));
+			BasicDBObject item = new BasicDBObject();
+			Boolean itemOK = true;
+			if (niveisSource != null && !commons.testaElementoArray(curso.get("classificacao").toString(), niveis)) {
+				itemOK = false;
+			};
+			ArrayList<String> areaConhecimentoCurso = (ArrayList<String>) curso.get("areaConhecimento");
+			if (areaCoonhecimentoSource != null && !commons.testaArrayTodosElementos(areaConhecimento, areaConhecimentoCurso)){
+				itemOK = false;
+			};
+			if (itemOK) {
+				item.put("possui", "false");
+				item.put("interesse", "false");
+				item.put("id", curso.get("id").toString());
+				item.put("nome", curso.get("nome").toString());
+				item.put("escola", curso.get("escola").toString());
+				if (userPerfil != null) {
+					if (userPerfil.get("cursos") != null) {
+		  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("cursos");
+		  				item.put("possui", commons.testaElementoArray(item.get("id").toString(), itens));
+					};
+					if (userPerfil.get("cursosInteresse") != null) {
+		  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("cursosInteresse");
+		  				item.put("interesse", commons.testaElementoArray(item.get("id").toString(), itens));
+					};
+				};
+				result.add(item);
+			};
+		};
+		
+		return result;
+	
+	};
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public JSONArray getAll(String usuarioParametro, MongoClient mongo) {
@@ -166,7 +233,7 @@ public class Curso {
 		BasicDBObject curso = commons_db.getCollectionDoc(id, "cursos", "documento.id", mongo, false);
 
 		if (curso == null) {
-			System.out.println("objetivo invalido");
+			System.out.println("curso invalido");
 			return null;
 		};
 		
@@ -184,27 +251,66 @@ public class Curso {
 		
 		for (int i = 0; i < array.size(); i++) {
 			System.out.println("habilidade" + array.get(i).toString());
-			BasicDBObject cursoObj = commons_db.getCollectionDoc(array.get(i).toString(), "habilidades", "documento.id", mongo, false);
-			if (cursoObj != null) {
+			BasicDBObject habilidadeObj = commons_db.getCollectionDoc(array.get(i).toString(), "habilidades", "documento.id", mongo, false);
+			if (habilidadeObj != null) {
 				BasicDBObject item = new BasicDBObject();
 				if (full.equals("0")) {
-					item.put("_id", cursoObj.get("_id"));
-					item.put("id", cursoObj.get("id"));
-					item.put("nome", cursoObj.get("nome"));
+					item.put("_id", habilidadeObj.get("_id"));
+					item.put("id", habilidadeObj.get("id"));
+					item.put("nome", habilidadeObj.get("nome"));
 				}else {
-					item.put("documento", cursoObj);						
+					item.put("documento", habilidadeObj);						
 				};
 				item.put("possui", "false");
 				item.put("interesse", "false");
 				if (userPerfil != null) {
 					if (userPerfil.get("habilidades") != null) {
 		  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("habilidades");
-		  				item.put("possui", commons.testaElementoArray(cursoObj.get("id").toString(), itens));
+		  				item.put("possui", commons.testaElementoArray(habilidadeObj.get("id").toString(), itens));
 					};
 					if (userPerfil.get("habilidadesInteresse") != null) {
 		  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("habilidadesInteresse");
-		  				item.put("interesse", commons.testaElementoArray(cursoObj.get("id").toString(), itens));
+		  				item.put("interesse", commons.testaElementoArray(habilidadeObj.get("id").toString(), itens));
 					};
+				};
+				result.add(item);
+			};
+		};
+		return result;
+	}
+	@SuppressWarnings("unchecked")
+	public JSONArray getAreaConhecimento(String id, String usuarioParametro, String tipo, String full, MongoClient mongo) {
+
+		BasicDBObject curso = commons_db.getCollectionDoc(id, "cursos", "documento.id", mongo, false);
+
+		if (curso == null) {
+			System.out.println("curso invalido");
+			return null;
+		};
+		
+		BasicDBObject userPerfil = new BasicDBObject();
+
+		userPerfil = null;
+
+		if (usuarioParametro != null) {
+			userPerfil = usuario.getUserPerfil(usuarioParametro, mongo);
+		};
+		
+		JSONArray result = new JSONArray();
+		
+		ArrayList<String> array = (ArrayList<String>) curso.get(tipo);
+		
+		for (int i = 0; i < array.size(); i++) {
+			System.out.println("area conhecimento curso" + array.get(i).toString());
+			BasicDBObject areaConhecimentoCursoObj = commons_db.getCollectionDoc(array.get(i).toString(), "areaConhecimentoCurso", "documento.id", mongo, false);
+			if (areaConhecimentoCursoObj != null) {
+				BasicDBObject item = new BasicDBObject();
+				if (full.equals("0")) {
+					item.put("_id", areaConhecimentoCursoObj.get("_id"));
+					item.put("id", areaConhecimentoCursoObj.get("id"));
+					item.put("nome", areaConhecimentoCursoObj.get("nome"));
+				}else {
+					item.put("documento", areaConhecimentoCursoObj);						
 				};
 				result.add(item);
 			};

@@ -31,6 +31,7 @@ public class Rest_Objeto {
 	Curso curso = new Curso();
 	AreaAtuacao areaAtuacao = new AreaAtuacao();
 	AreaConhecimento areaConhecimento = new AreaConhecimento();
+	AreaConhecimentoCurso areaConhecimentoCurso = new AreaConhecimentoCurso();
 	Badge badge = new Badge();
 
 	@Path("/obter")	
@@ -49,6 +50,7 @@ public class Rest_Objeto {
 													@QueryParam("curso") String cursoPar,
 													@QueryParam("areaAtuacao") String areaAtuacaoPar,
 													@QueryParam("areaConhecimento") String areaConhecimentoPar,
+													@QueryParam("areaConhecimentoCurso") String areaConhecimentoCursoPar,
 													@QueryParam("badge") String badgePar
 													)  {
 		
@@ -80,7 +82,7 @@ public class Rest_Objeto {
 	
 	String[] arrayItens = itens.split(";");
 	
-	if (usuarioPar == null && objetivoPar == null && habilidadePar == null && cursoPar == null && areaAtuacaoPar == null && areaConhecimentoPar == null && badgePar == null) {
+	if (usuarioPar == null && objetivoPar == null && habilidadePar == null && cursoPar == null && areaAtuacaoPar == null && areaConhecimentoPar == null && areaConhecimentoCursoPar == null && badgePar == null) {
 		for (int i = 0; i < arrayItens.length; i++) {
 			switch (arrayItens[i]) {
 			case "Usuarios":
@@ -121,7 +123,7 @@ public class Rest_Objeto {
 				break;
 			case "AreaAtuacao":
 				if (full.equals("0")) {
-				finalResult.put("AreaAtuacao", commons.controlaLimite(areaAtuacao.getIdNome(usuarioParametro, mongo), limite, start));
+					finalResult.put("AreaAtuacao", commons.controlaLimite(areaAtuacao.getIdNome(usuarioParametro, mongo), limite, start));
 				}else {
 					if (full.equals("1")) {
   					finalResult.put("AreaAtuacao", commons.controlaLimite(areaAtuacao.getAll(usuarioParametro, mongo), limite, start));
@@ -130,16 +132,25 @@ public class Rest_Objeto {
 				break;
 			case "AreaConhecimento":
 				if (full.equals("0")) {
-				finalResult.put("AreaConhecimento", commons.controlaLimite(areaConhecimento.getIdNome(usuarioParametro, mongo), limite, start));
+					finalResult.put("AreaConhecimento", commons.controlaLimite(areaConhecimento.getIdNome(usuarioParametro, mongo), limite, start));
 				}else {
 					if (full.equals("1")) {
   					finalResult.put("AreaConhecimento", commons.controlaLimite(areaConhecimento.getAll(usuarioParametro, mongo), limite, start));
 					};
 				};
 				break;
+			case "AreaConhecimentoCurso":
+				if (full.equals("0")) {
+					finalResult.put("AreaConhecimentoCurso", commons.controlaLimite(areaConhecimentoCurso.getIdNome(usuarioParametro, mongo), limite, start));
+				}else {
+					if (full.equals("1")) {
+  					finalResult.put("AreaConhecimentoCurso", commons.controlaLimite(areaConhecimentoCurso.getAll(usuarioParametro, mongo), limite, start));
+					};
+				};
+				break;
 			case "Badges":
 				if (full.equals("0")) {
-				finalResult.put("Badges", commons.controlaLimite(badge.getIdNome(usuarioParametro, mongo), limite, start));
+					finalResult.put("Badges", commons.controlaLimite(badge.getIdNome(usuarioParametro, mongo), limite, start));
 				}else {
 					if (full.equals("1")) {
   					finalResult.put("Badges", commons.controlaLimite(badge.getAll(usuarioParametro, mongo), limite, start));
@@ -474,7 +485,9 @@ public class Rest_Objeto {
 						case "Badges":
 							cursoDoc.put("badgesCurso", commons.controlaLimite(curso.getBadges(cursoId, usuarioParametro, "carreiras",full, mongo), limite, start));							
 						case "Habilidades":
-							cursoDoc.put("badgesHabilidades", commons.controlaLimite(curso.getHabilidades(cursoId, usuarioParametro, "necessarios", full, mongo), limite, start));							
+							cursoDoc.put("habilidadesCurso", commons.controlaLimite(curso.getHabilidades(cursoId, usuarioParametro, "necessarios", full, mongo), limite, start));							
+						case "AreaConhecimento":
+							cursoDoc.put("areaConhecimentoCurso", commons.controlaLimite(curso.getAreaConhecimento(cursoId, usuarioParametro, "areaConhecimento", full, mongo), limite, start));							
 						default:
 							break;
 						};

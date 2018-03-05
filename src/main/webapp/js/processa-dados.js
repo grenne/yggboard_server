@@ -16,6 +16,9 @@ function carregaDados(data){
 	case "areaConhecimento":
 		processaAreaConhecimento(data);
 		break;
+	case "areaConhecimentoCursos":
+		processaAreaConhecimentoCurso(data);
+		break;
 	case "areaAtuacao":
 		processaAreaAtuacao(data);
 		break;
@@ -66,7 +69,8 @@ function processaCursos (data){
 					tags:[],
 					logo:fields[20],
 					classificacao:fields[21],
-					areaConhecimento:[],
+					semestre:fields[22],
+					areaConhecimento:[]
 					}
 				}
 		};
@@ -96,17 +100,17 @@ function processaCursos (data){
 		}
 	};
 	if (fields[19]){
-	var array = fields[19].split(",");
+		var array = fields[19].split(",");
 		for (var i = 0; i < array.length; i++) {
 			objJson.insert.documento.tags.push(array[i]);
 		}
 	};
 	if (fields[23]){
 		var array = fields[23].split(",");
-			for (var i = 0; i < array.length; i++) {
-				objJson.insert.documento.tags.push(array[i]);
-			}
-		};
+		for (var i = 0; i < array.length; i++) {
+			objJson.insert.documento.areaConhecimento.push(array[i]);
+		}
+	};
 	
 	if (fields[0]){
 		rest_incluir (objJson, restOk, semAcao);
@@ -388,6 +392,31 @@ function processaAreaConhecimento (data){
 	if (fields[0]){
 		rest_incluir (objJson, semAcao, semAcao);
 		$("#registros").prepend('<li class="output"><strong class="label">Id:</strong><small class="field">' + fields[0] + '</small><strong class="label"> Nome:</strong><small class="field">' + fields[4] + '</small></li>');
+	};
+};
+
+function processaAreaConhecimentoCurso (data){
+	
+	var fields = data.split(";");
+	
+	var objJson = 
+		{
+			token: sessionStorage.token,
+			async : false,
+			collection : "areaConhecimentoCurso",
+			insert :
+				{
+				documento : 
+					{
+					id:fields[0],
+					nome:fields[1],
+					}
+				}
+		};
+	
+	if (fields[0]){
+		rest_incluir (objJson, semAcao, semAcao);
+		$("#registros").prepend('<li class="output"><strong class="label">Id:</strong><small class="field">' + fields[0] + '</small><strong class="label"> Nome:</strong><small class="field">' + fields[1] + '</small></li>');
 	};
 };
 
