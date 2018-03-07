@@ -255,9 +255,9 @@ public class Avaliacao {
 		documentos.put("clientesConvitesAceitos", clientesConvitesAceitosArray);
 		documentos.put("clientesConvitesRecusados", clientesConvitesRecusadosArray);
 		if (avaliacao != null) {
-  		documentos.put("habilidades", carregaHabilidades(avaliacao, empresaId, usuarioId, mongo).get("habilidades"));
-  		documentos.put("avaliacoes", carregaAvaliacoes(avaliacao, mongo).get("avaliacoes"));
-  		documentos.put("objetivo", avaliacao.get("objetivoNome"));
+	  		documentos.put("habilidades", carregaHabilidades(avaliacao, empresaId, usuarioId, mongo).get("habilidades"));
+	  		documentos.put("avaliacoes", carregaAvaliacoes(avaliacao, mongo).get("avaliacoes"));
+	  		documentos.put("objetivo", avaliacao.get("objetivoNome"));
 		};
 		return documentos;
 	};
@@ -425,7 +425,11 @@ public class Avaliacao {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private BasicDBObject carregaAvaliacoes(BasicDBObject avaliacao, MongoClient mongo) {
 		
-		ArrayList<Object> avaliacoesArray = (ArrayList<Object>) avaliacao.get("habilidades");
+		ArrayList<Object> habilidadesId = (ArrayList<Object>) avaliacao.get("habilidadesId");
+		ArrayList<Object> habilidadesNome = (ArrayList<Object>) avaliacao.get("habilidades");
+		ArrayList<Object> notas = (ArrayList<Object>) avaliacao.get("notas");
+		ArrayList<Object> avaliadoresId = (ArrayList<Object>) avaliacao.get("avaliadoresId");
+		ArrayList<Object> avaliadoresNome = (ArrayList<Object>) avaliacao.get("avaliadores");
 		ArrayList<String> habilidadesOut = new ArrayList<>();
 		if (avaliacao.get("habilidadesOut") != null) {
 			habilidadesOut = (ArrayList<String>) avaliacao.get("habilidadesOut");
@@ -433,30 +437,15 @@ public class Avaliacao {
 
 		JSONArray avaliacoes = new JSONArray();
 		
-		for (int z = 0; z < avaliacoesArray.size(); z++) {
-			BasicDBObject avaliacaoDoc = new BasicDBObject(); 
-			avaliacaoDoc.putAll((Map) avaliacoesArray.get(z)); 
-			if (!commons.testaElementoArray(avaliacaoDoc.get("id").toString(), habilidadesOut)) {
-  			BasicDBObject habilidade = new BasicDBObject(); 
-  			habilidade = commons_db.getCollection(avaliacaoDoc.get("id").toString(), "habilidades", "documento.id", mongo, false);
-  			BasicDBObject habilidadeDoc = new BasicDBObject();
-  			habilidadeDoc.putAll((Map) habilidade.get("documento"));
-  			if (habilidade != null) {
+		for (int z = 0; z < habilidadesId.size(); z++) {
+			if (!commons.testaElementoArray(habilidadesId.get(z).toString(), habilidadesOut)) {
   				BasicDBObject avaliacaoResult = new BasicDBObject();
-  				avaliacaoResult.put("habilidadeId", habilidadeDoc.get("id"));
-  				avaliacaoResult.put("habilidadeNome", habilidadeDoc.get("nome"));
-  				avaliacaoResult.put("nota", avaliacaoDoc.get("nota").toString());
-  				avaliacaoResult.put("avaliadorId", avaliacaoDoc.get("avaliadorId").toString());
-    			BasicDBObject usuario = commons_db.getCollection(avaliacaoDoc.get("avaliadorId").toString(), "usuarios", "_id", mongo, false);
-    			if (usuario != null) {
-    				BasicDBObject usuarioDoc = new BasicDBObject();
-    				usuarioDoc.putAll((Map) usuario.get("documento"));
-    				avaliacaoResult.put("avaliadorNome", usuarioDoc.get("firstName") + " " + usuarioDoc.get("lastName"));
-    			}else {
-    				avaliacaoResult.put("avaliadorNome", " ");
-    			};
+  				avaliacaoResult.put("habilidadeId", habilidadesId.get(z).toString());
+  				avaliacaoResult.put("habilidadeNome", habilidadesNome.get(z).toString());
+  				avaliacaoResult.put("nota", notas.get(z).toString());
+  				avaliacaoResult.put("avaliadorId", avaliadoresId.get(z).toString());
+   				avaliacaoResult.put("avaliadorNome", avaliadoresNome.get(z).toString());
   				avaliacoes.add(avaliacaoResult);
-  			};
 			};
 		};
 		
@@ -976,7 +965,9 @@ public class Avaliacao {
 				ArrayList<Object> notas = (ArrayList<Object>) avaliacao.get("habilidades");
 				avaliacaoResult.put("notas", getNotas(notas, mongo));
 				avaliacaoResult.put("avaliadores", getAvaliadores(notas, mongo));
+				avaliacaoResult.put("avaliadoresId", getAvaliadoresId(notas, mongo));
 				avaliacaoResult.put("habilidades", getHabilidades(notas, mongo));
+				avaliacaoResult.put("habilidadesId", getHabilidadesId(notas, mongo));
 				avaliacaoResult.put("relacao", getRelacao(avaliacao, notas, mongo));
 				BasicDBObject objetivo = commons_db.getCollection(avaliacao.get("objetivoId").toString(), "objetivos", "documento.id", mongo, false);
 				avaliacaoResult.put("objetivoNome", "");
@@ -1013,6 +1004,22 @@ public class Avaliacao {
 			BasicDBObject habilidade = commons_db.getCollectionDoc(nota.get("id").toString(), "habilidades", "documento.id", mongo, false);
 			if (habilidade != null) {
 				habilidades.add(habilidade.get("nome").toString());
+			}else {
+				habilidades.add("Habilildade inexistente");
+			}
+		}
+		return habilidades;
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private Object getHabilidadesId(ArrayList<Object> notas, MongoClient mongo) {
+		ArrayList<String> habilidades = new ArrayList<>();
+		for (int i = 0; i < notas.size(); i++) {
+			JSONObject nota = new JSONObject();
+			nota.putAll((Map) notas.get(i));
+			BasicDBObject habilidade = commons_db.getCollectionDoc(nota.get("id").toString(), "habilidades", "documento.id", mongo, false);
+			if (habilidade != null) {
+				habilidades.add(habilidade.get("id").toString());
 			}else {
 				habilidades.add("Habilildade inexistente");
 			}
@@ -1066,6 +1073,17 @@ public class Avaliacao {
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private Object getAvaliadoresId(ArrayList<Object> notas, MongoClient mongo) {
+		ArrayList<String> avaliadores = new ArrayList<>();
+		for (int i = 0; i < notas.size(); i++) {
+			JSONObject nota = new JSONObject();
+			nota.putAll((Map) notas.get(i));
+			avaliadores.add(nota.get("avaliadorId").toString());
+		}
+		return avaliadores;
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private Object getResultado(ArrayList<Object> resultados, MongoClient mongo) {
 		ArrayList<String> resultadosResult = new ArrayList<>();
 		for (int i = 0; i < resultados.size(); i++) {
@@ -1103,28 +1121,22 @@ public class Avaliacao {
 		return resultadosNome;
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ "unchecked" })
 	private BasicDBObject getAvaliacaoHabilidade(BasicDBObject avaliacao, String habilidadeId, String avaliadorId, MongoClient mongo) {
 		
 		if (avaliacao == null) {
 			return null;
 		};
-		ArrayList<Object> habilidades = (ArrayList<Object>) avaliacao.get("habilidades");
+		ArrayList<Object> habilidades = (ArrayList<Object>) avaliacao.get("habilidadesId");
+		ArrayList<Object> notas = (ArrayList<Object>) avaliacao.get("notas");
+		ArrayList<Object> avaliadoresId = (ArrayList<Object>) avaliacao.get("avaliadoresId");
+		ArrayList<Object> avaliadoresNome = (ArrayList<Object>) avaliacao.get("avaliadores");
 		for (int j = 0; j < habilidades.size(); j++) {
-			BasicDBObject habilidade = new BasicDBObject();
-			habilidade.putAll((Map) habilidades.get(j));
-			if (habilidade.get("id").equals(habilidadeId) && habilidade.get("avaliadorId").equals(avaliadorId)) {
+			if (habilidades.get(j).equals(habilidadeId) && avaliadoresId.get(j).equals(avaliadorId)) {
 				BasicDBObject avaliacaoResult = new BasicDBObject();
-				avaliacaoResult.put("nota", habilidade.get("nota"));
-				avaliacaoResult.put("avaliadorId", habilidade.get("avaliadorId"));
-  			BasicDBObject usuario = commons_db.getCollection(habilidade.get("avaliadorId").toString(), "usuarios", "_id", mongo, false);
-  			if (usuario != null) {
-  				BasicDBObject usuarioDoc = new BasicDBObject();
-  				usuarioDoc.putAll((Map) usuario.get("documento"));
-  				avaliacaoResult.put("avaliadorNome", usuarioDoc.get("firstName") + " " + usuarioDoc.get("lastName"));
-  			}else {
-  				avaliacaoResult.put("avaliadorNome", " ");
-  			};
+				avaliacaoResult.put("nota", notas.get(j));
+				avaliacaoResult.put("avaliadorId", avaliadoresId.get(j));
+  				avaliacaoResult.put("avaliadorNome", avaliadoresNome.get(j));
 				return avaliacaoResult;
 			};
 		};

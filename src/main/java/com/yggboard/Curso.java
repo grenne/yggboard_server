@@ -97,27 +97,30 @@ public class Curso {
 			if (niveisSource != null && !commons.testaElementoArray(curso.get("classificacao").toString(), niveis)) {
 				itemOK = false;
 			};
-			ArrayList<String> areaConhecimentoCurso = (ArrayList<String>) curso.get("areaConhecimento");
-			if (areaCoonhecimentoSource != null && !commons.testaArrayTodosElementos(areaConhecimento, areaConhecimentoCurso)){
-				itemOK = false;
-			};
-			if (itemOK) {
-				item.put("possui", "false");
-				item.put("interesse", "false");
-				item.put("id", curso.get("id").toString());
-				item.put("nome", curso.get("nome").toString());
-				item.put("escola", curso.get("escola").toString());
-				if (userPerfil != null) {
-					if (userPerfil.get("cursos") != null) {
-		  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("cursos");
-		  				item.put("possui", commons.testaElementoArray(item.get("id").toString(), itens));
-					};
-					if (userPerfil.get("cursosInteresse") != null) {
-		  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("cursosInteresse");
-		  				item.put("interesse", commons.testaElementoArray(item.get("id").toString(), itens));
-					};
+			ArrayList<String> parents = (ArrayList<String>) curso.get("parents");
+			if (parents.size() == 0) {
+				ArrayList<String> areaConhecimentoCurso = (ArrayList<String>) curso.get("areaConhecimento");
+				if (areaCoonhecimentoSource != null && !commons.testaArrayTodosElementos(areaConhecimento, areaConhecimentoCurso)){
+					itemOK = false;
 				};
-				result.add(item);
+				if (itemOK) {
+					item.put("possui", "false");
+					item.put("interesse", "false");
+					item.put("id", curso.get("id").toString());
+					item.put("nome", curso.get("nome").toString());
+					item.put("escola", curso.get("escola").toString());
+					if (userPerfil != null) {
+						if (userPerfil.get("cursos") != null) {
+			  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("cursos");
+			  				item.put("possui", commons.testaElementoArray(item.get("id").toString(), itens));
+						};
+						if (userPerfil.get("cursosInteresse") != null) {
+			  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("cursosInteresse");
+			  				item.put("interesse", commons.testaElementoArray(item.get("id").toString(), itens));
+						};
+					};
+					result.add(item);
+				};
 			};
 		};
 		
@@ -139,31 +142,34 @@ public class Curso {
 		for (int i = 0; i < array.size(); i++) {
 			BasicDBObject item = new BasicDBObject();
 			item.putAll((Map) array.get(i));
-			item.put("possui", "false");
-			item.put("interesse", "false");
-			if (userPerfil != null) {
-				if (userPerfil.get("cursos") != null) {
-  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("cursos");
-  				item.put("possui", commons.testaElementoArray(item.getString("id"), itens));
+			ArrayList<String> parents = (ArrayList<String>) item.get("parents");
+			if (parents.size() == 0) {
+				item.put("possui", "false");
+				item.put("interesse", "false");
+				if (userPerfil != null) {
+					if (userPerfil.get("cursos") != null) {
+	  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("cursos");
+	  				item.put("possui", commons.testaElementoArray(item.getString("id"), itens));
+					};
+					if (userPerfil.get("cursosInteresse") != null) {
+	  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("cursosInteresse");
+	  				item.put("interesse", commons.testaElementoArray(item.getString("id"), itens));
+					};
+					if (userPerfil.get("cursosAndamento") != null) {
+	  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("cursosAndamento");
+	  				item.put("andamento", commons.testaElementoArray(item.getString("id"), itens));
+					};
+					if (userPerfil.get("cursosInscritos") != null) {
+	  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("cursosInscritos");
+	  				item.put("inscritos", commons.testaElementoArray(item.getString("id"), itens));
+					};
+					if (userPerfil.get("cursosSugeridos") != null) {
+	  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("cursosSugeridos");
+	  				item.put("sugeridos", commons.testaElementoArray(item.getString("id"), itens));
+					};
 				};
-				if (userPerfil.get("cursosInteresse") != null) {
-  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("cursosInteresse");
-  				item.put("interesse", commons.testaElementoArray(item.getString("id"), itens));
-				};
-				if (userPerfil.get("cursosAndamento") != null) {
-  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("cursosAndamento");
-  				item.put("andamento", commons.testaElementoArray(item.getString("id"), itens));
-				};
-				if (userPerfil.get("cursosInscritos") != null) {
-  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("cursosInscritos");
-  				item.put("inscritos", commons.testaElementoArray(item.getString("id"), itens));
-				};
-				if (userPerfil.get("cursosSugeridos") != null) {
-  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("cursosSugeridos");
-  				item.put("sugeridos", commons.testaElementoArray(item.getString("id"), itens));
-				};
+				result.add(item);
 			};
-			result.add(item);
 		};
 		
 		return result;
@@ -187,35 +193,38 @@ public class Curso {
 			BasicDBObject item = new BasicDBObject();
 			BasicDBObject obj = new BasicDBObject();
 			obj.putAll((Map) resultAll.get(i));
-			item.put("_id", obj.get("_id"));
-			item.put("id", obj.get("id"));
-			item.put("nome", obj.get("nome"));
-			item.put("escola", obj.get("escola"));
-			item.put("possui", "false");
-			item.put("interesse", "false");
-			if (userPerfil != null) {
-				if (userPerfil.get("cursos") != null) {
-  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("cursos");
-  				item.put("possui", commons.testaElementoArray(item.getString("id"), itens));
+			ArrayList<String> parents = (ArrayList<String>) obj.get("parents");
+			if (parents.size() == 0 ) {
+				item.put("_id", obj.get("_id"));
+				item.put("id", obj.get("id"));
+				item.put("nome", obj.get("nome"));
+				item.put("escola", obj.get("escola"));
+				item.put("possui", "false");
+				item.put("interesse", "false");
+				if (userPerfil != null) {
+					if (userPerfil.get("cursos") != null) {
+		  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("cursos");
+		  				item.put("possui", commons.testaElementoArray(item.getString("id"), itens));
+					};
+					if (userPerfil.get("cursosInteresse") != null) {
+		  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("cursosInteresse");
+		  				item.put("interesse", commons.testaElementoArray(item.getString("id"), itens));
+					};
+					if (userPerfil.get("cursosAndamento") != null) {
+		  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("cursosAndamento");
+		  				item.put("andamento", commons.testaElementoArray(item.getString("id"), itens));
+					};
+					if (userPerfil.get("cursosInscritos") != null) {
+		  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("cursosInscritos");
+		  				item.put("inscritos", commons.testaElementoArray(item.getString("id"), itens));
+					};
+					if (userPerfil.get("cursosSugeridos") != null) {
+		  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("cursosSugeridos");
+		  				item.put("sugeridos", commons.testaElementoArray(item.getString("id"), itens));
+					};
 				};
-				if (userPerfil.get("cursosInteresse") != null) {
-  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("cursosInteresse");
-  				item.put("interesse", commons.testaElementoArray(item.getString("id"), itens));
-				};
-				if (userPerfil.get("cursosAndamento") != null) {
-  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("cursosAndamento");
-  				item.put("andamento", commons.testaElementoArray(item.getString("id"), itens));
-				};
-				if (userPerfil.get("cursosInscritos") != null) {
-  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("cursosInscritos");
-  				item.put("inscritos", commons.testaElementoArray(item.getString("id"), itens));
-				};
-				if (userPerfil.get("cursosSugeridos") != null) {
-  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("cursosSugeridos");
-  				item.put("sugeridos", commons.testaElementoArray(item.getString("id"), itens));
-				};
+				result.add(item);
 			};
-			result.add(item);
 		};
 		
 		return result;

@@ -31,7 +31,12 @@ public class Rest_Objetivo {
 	@Path("/filtros")	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public JSONArray filtros(@QueryParam("token") String token, @QueryParam("areasAtuacao") String areaAtuacao, @QueryParam("niveis") String niveis,  @QueryParam("usuarioParametro") String usuarioParametro)  {
+	public JSONArray filtros(@QueryParam("token") String token, 
+							@QueryParam("areasAtuacao") String areaAtuacao, 
+							@QueryParam("niveis") String niveis,  
+							@QueryParam("usuarioParametro") String usuarioParametro,
+							@QueryParam("limite") int limite,
+							@QueryParam("start") int start)  {							
 	
 		if (token == null) {
 			mongo.close();
@@ -41,8 +46,12 @@ public class Rest_Objetivo {
 			mongo.close();
 			return null;
 		};
+
+		if (limite == 0) {
+			limite = 999999999;
+		};
 		
-		JSONArray result = objetivo.filtros(areaAtuacao, niveis, usuarioParametro, mongo);
+		JSONArray result = commons.controlaLimite(objetivo.filtros(areaAtuacao, niveis, usuarioParametro, mongo),limite, start);
 		mongo.close();
 		return result;
 	};

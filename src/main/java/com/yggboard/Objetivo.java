@@ -61,7 +61,10 @@ public class Objetivo {
 			//  **** calcula percentual de habilidades que o usuario possui dentro do objetivo
 			ArrayList<String> necessarios = (ArrayList<String>) result.get("necessarios");
 			ArrayList<String> habilidadesPossui = (ArrayList<String>) userPerfil.get("habilidades");
-			int qtdeHabilidadesPossui = commons.testaArrayElementosIguais(necessarios, habilidadesPossui);
+			int qtdeHabilidadesPossui = 0;
+			if (necessarios != null && habilidadesPossui != null) {
+				qtdeHabilidadesPossui = commons.testaArrayElementosIguais(necessarios, habilidadesPossui);
+			}
 			int qtdeNecessarios = necessarios.size();
 			double percentual = ((double)qtdeHabilidadesPossui / (double)qtdeNecessarios) * 100;
 			DecimalFormat formatador = new DecimalFormat("0.00");

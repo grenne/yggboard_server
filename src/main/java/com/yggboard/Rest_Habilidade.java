@@ -126,7 +126,11 @@ public class Rest_Habilidade {
 	@Path("/filtros")	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public JSONArray filtros(@QueryParam("token") String token, @QueryParam("areasConhecimento") String areaConhecimento,  @QueryParam("usuarioParametro") String usuarioParametro)  {
+	public JSONArray filtros(@QueryParam("token") String token, 
+							@QueryParam("areasConhecimento") String areaConhecimento,  
+							@QueryParam("usuarioParametro") String usuarioParametro,
+							@QueryParam("limite") int limite,
+							@QueryParam("start") int start)  {
 	
 		if (token == null) {
 			mongo.close();
@@ -136,8 +140,12 @@ public class Rest_Habilidade {
 			mongo.close();
 			return null;
 		};
+
+		if (limite == 0) {
+			limite = 999999999;
+		};
 		
-		JSONArray result = habilidade.filtros(areaConhecimento, usuarioParametro, mongo);
+		JSONArray result = commons.controlaLimite(habilidade.filtros(areaConhecimento, usuarioParametro, mongo),limite, start);
 		mongo.close();
 		return result;
 	};

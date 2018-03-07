@@ -422,35 +422,37 @@ public class Usuario {
 		JSONArray result = new JSONArray();
 		
 		ArrayList<String> array = (ArrayList<String>) userPerfil.get(tipo);
-		
-		for (int i = 0; i < array.size(); i++) {
-			BasicDBObject badge = commons_db.getCollectionDoc(array.get(i).toString(), "badges", "documento.id", mongo, false);
-			BasicDBObject item = new BasicDBObject();
-			if (full.equals("0")) {
-				item.put("_id", badge.get("_id"));
-				item.put("id", badge.get("id"));
-				item.put("nome", badge.get("nome"));
-			}else {
-				item.put("documento", badge);						
-			}
-			item.put("possui", "false");
-			item.put("interesse", "false");
-			item.put("show", "false");
-			if (userPerfil != null) {
-				if (userPerfil.get("badges") != null) {
-	  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("badges");
-	  				item.put("possui", commons.testaElementoArray(badge.get("id").toString(), itens));
+
+		if (array != null) {
+			for (int i = 0; i < array.size(); i++) {
+				BasicDBObject badge = commons_db.getCollectionDoc(array.get(i).toString(), "badges", "documento.id", mongo, false);
+				BasicDBObject item = new BasicDBObject();
+				if (full.equals("0")) {
+					item.put("_id", badge.get("_id"));
+					item.put("id", badge.get("id"));
+					item.put("nome", badge.get("nome"));
+				}else {
+					item.put("documento", badge);						
+				}
+				item.put("possui", "false");
+				item.put("interesse", "false");
+				item.put("show", "false");
+				if (userPerfil != null) {
+					if (userPerfil.get("badges") != null) {
+		  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("badges");
+		  				item.put("possui", commons.testaElementoArray(badge.get("id").toString(), itens));
+					};
+					if (userPerfil.get("badgesInteresse") != null) {
+		  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("badgesInteresse");
+		  				item.put("interesse", commons.testaElementoArray(badge.get("id").toString(), itens));
+					};
+					if (userPerfil.get("showBadges") != null) {
+		  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("showBadges");
+		  				item.put("show", commons.testaElementoArray(badge.get("id").toString(), itens));
+					};
 				};
-				if (userPerfil.get("badgesInteresse") != null) {
-	  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("badgesInteresse");
-	  				item.put("interesse", commons.testaElementoArray(badge.get("id").toString(), itens));
-				};
-				if (userPerfil.get("showBadges") != null) {
-	  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("showBadges");
-	  				item.put("show", commons.testaElementoArray(badge.get("id").toString(), itens));
-				};
+				result.add(item);
 			};
-			result.add(item);
 		};
 		return result;
 	}
