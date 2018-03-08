@@ -121,12 +121,12 @@ public class Objetivo {
 				item.put("id", objetivo.get("id").toString());
 				item.put("nome", objetivo.get("nome").toString());
 				if (userPerfil != null) {
-					if (userPerfil.get("objetivos") != null) {
-		  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("objetivos");
+					if (userPerfil.get("carreiras") != null) {
+		  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("carreiras");
 		  				item.put("possui", commons.testaElementoArray(item.get("id").toString(), itens));
 					};
-					if (userPerfil.get("objetivosInteresse") != null) {
-		  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("objetivosInteresse");
+					if (userPerfil.get("carreirasInteresse") != null) {
+		  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("carreirasInteresse");
 		  				item.put("interesse", commons.testaElementoArray(item.get("id").toString(), itens));
 					};
 				};
@@ -157,12 +157,12 @@ public class Objetivo {
 			item.put("possui", "false");
 			item.put("interesse", "false");
 			if (userPerfil != null) {
-				if (userPerfil.get("objetivos") != null) {
-	  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("objetivos");
+				if (userPerfil.get("carreiras") != null) {
+	  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("carreiras");
 	  				item.put("possui", commons.testaElementoArray(item.get("id").toString(), itens));
 				};
-				if (userPerfil.get("objetivosInteresse") != null) {
-	  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("objetivosInteresse");
+				if (userPerfil.get("carreirasInteresse") != null) {
+	  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("carreirasInteresse");
 	  				item.put("interesse", commons.testaElementoArray(item.get("id").toString(), itens));
 				};
 				//  **** calcula percentual de habilidades que o usuario possui dentro do objetivo
@@ -206,13 +206,13 @@ public class Objetivo {
 			item.put("possui", "false");
 			item.put("interesse", "false");
 			if (userPerfil != null) {
-				if (userPerfil.get("objetivos") != null) {
-	  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("objetivos");
+				if (userPerfil.get("carreiras") != null) {
+	  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("carreiras");
 	  				item.put("possui", commons.testaElementoArray(obj.get("id").toString(), itens));
 				};
-				if (userPerfil.get("objetivosInteresse") != null) {
-	  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("objetivosInteresse");
-	  				item.put("interesses", commons.testaElementoArray(obj.get("id").toString(), itens));
+				if (userPerfil.get("carreirasInteresse") != null) {
+	  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("carreirasInteresse");
+	  				item.put("interesse", commons.testaElementoArray(obj.get("id").toString(), itens));
 				};
 				//  **** calcula percentual de habilidades que o usuario possui dentro do objetivo
 				ArrayList<String> necessarios = (ArrayList<String>) obj.get("necessarios");
