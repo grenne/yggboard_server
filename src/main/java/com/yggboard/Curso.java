@@ -99,7 +99,10 @@ public class Curso {
 			};
 			ArrayList<String> parents = (ArrayList<String>) curso.get("parents");
 			if (parents.size() == 0) {
-				ArrayList<String> areaConhecimentoCurso = (ArrayList<String>) curso.get("areaConhecimento");
+				ArrayList<String> areaConhecimentoCurso = new ArrayList<>();
+				if (curso.get("areaConhecimento") != null) {
+					areaConhecimentoCurso = (ArrayList<String>) curso.get("areaConhecimento");
+				};
 				if (areaCoonhecimentoSource != null && !commons.testaArrayTodosElementos(areaConhecimento, areaConhecimentoCurso)){
 					itemOK = false;
 				};

@@ -869,10 +869,13 @@ public class Avaliacao {
 			resultadosArray = new ArrayList<>();
 			resultadosArray.add(usuarioId);
 		};
-		ArrayList<Object> habilidades = (ArrayList<Object>) avaliacao.get("habilidades");
+		ArrayList<Object> habilidades = (ArrayList<Object>) avaliacao.get("habilidadesId");
 		ArrayList<Object> notas = (ArrayList<Object>) avaliacao.get("notas");
-		ArrayList<Object> avaliadores = (ArrayList<Object>) avaliacao.get("avaliadores");
-
+		ArrayList<Object> avaliadores = (ArrayList<Object>) avaliacao.get("avaliadoresId");
+		System.out.println("habilidadeId:" + habilidadeId);
+		System.out.println("habilidadesId:" + habilidades);
+		System.out.println("avaliadores:" + avaliadores);
+		System.out.println("notas:" + notas);
 		int qtde = 0;
 		double totalNotas = 0.00;
 
@@ -959,8 +962,9 @@ public class Avaliacao {
 				avaliacaoResult.put("colaboradorEmail", colaboradorEmail);
 				avaliacaoResult.put("colaboradorArea", area);
 				ArrayList<Object> resultados = (ArrayList<Object>) avaliacao.get("resultados");
-				avaliacaoResult.put("resultados", getResultado(resultados, mongo));
 				avaliacaoResult.put("resultadosNota", getResultadoNota(resultados, mongo));
+				avaliacaoResult.put("resultados", getResultado(resultados, mongo));
+				avaliacaoResult.put("resultadosObj", resultados);
 				avaliacaoResult.put("resultadosNome", getResultadosNome(resultados, mongo));
 				ArrayList<Object> notas = (ArrayList<Object>) avaliacao.get("habilidades");
 				avaliacaoResult.put("notas", getNotas(notas, mongo));

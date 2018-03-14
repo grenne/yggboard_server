@@ -270,7 +270,9 @@ public class Commons_DB {
 			setQuery.putAll((Map) arraySetQuery.get(i));
 			searchQuery.put((String) setQuery.get("key"), (String) setQuery.get("value"));
 		};
-		FindIterable<Document> cursor = collection.find(searchQuery);
+		BasicDBObject setSort = new BasicDBObject();
+		setSort.put("documento.nome", 1);
+		FindIterable<Document> cursor = collection.find(searchQuery).sort(setSort);
 		JSONArray documentos = new JSONArray();
 		System.out.println("chamou lista:" + collectionName);
 		if (cursor.first() != null) {

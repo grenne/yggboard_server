@@ -127,7 +127,7 @@ public class Rest_Habilidade {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public JSONArray filtros(@QueryParam("token") String token, 
-							@QueryParam("areasConhecimento") String areaConhecimento,  
+							@QueryParam("areasConhecimento") String areaConhecimento,
 							@QueryParam("usuarioParametro") String usuarioParametro,
 							@QueryParam("limite") int limite,
 							@QueryParam("start") int start)  {
