@@ -56,6 +56,33 @@ public class Rest_Curso {
 		return result;
 	};
 	
+	@Path("/habilidades")	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public JSONArray filtros(@QueryParam("token") String token, 
+							@QueryParam("cursoId") String cursoId,
+							@QueryParam("usuarioParametro") String usuarioParametro,
+							@QueryParam("limite") int limite,
+							@QueryParam("start") int start)  {
+	
+		if (token == null) {
+			mongo.close();
+			return null;
+		};
+		if ((commons_db.getCollection(token, "usuarios", "documento.token", mongo, false)) == null) {
+			mongo.close();
+			return null;
+		};
+
+		if (limite == 0) {
+			limite = 999999999;
+		};
+		
+		JSONArray result = commons.controlaLimite(curso.getHabilidades(cursoId, usuarioParametro, "habilidades", "0", mongo), limite, start);
+		mongo.close();
+		return result;
+	};
+	
 	
 	@SuppressWarnings({ "unchecked" })
 	@Path("/obter")	

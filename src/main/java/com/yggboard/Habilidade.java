@@ -252,6 +252,7 @@ public class Habilidade {
 							item.put("_id", curso.get("_id"));
 							item.put("id", curso.get("id"));
 							item.put("nome", curso.get("nome"));
+							item.put("escola", curso.get("escola"));
 						}else {
 							item.put("documento", curso);						
 						};
@@ -289,15 +290,15 @@ public class Habilidade {
 		ArrayList<String> array = (ArrayList<String>) habilidade.get(tipo);
 		
 		for (int i = 0; i < array.size(); i++) {
-			BasicDBObject curso = commons_db.getCollectionDoc(array.get(i).toString(), "areaConhecimento", "documento.id", mongo, false);
-			if (curso != null) {
+			BasicDBObject areaConhecimento = commons_db.getCollectionDoc(array.get(i).toString(), "areaConhecimento", "documento.id", mongo, false);
+			if (areaConhecimento != null) {
 				BasicDBObject item = new BasicDBObject();
 				if (full.equals("0")) {
-					item.put("_id", curso.get("_id"));
-					item.put("id", curso.get("id"));
-					item.put("nome", curso.get("nome"));
+					item.put("_id", areaConhecimento.get("_id"));
+					item.put("id", areaConhecimento.get("id"));
+					item.put("nome", areaConhecimento.get("nome"));
 				}else {
-					item.put("documento", curso);						
+					item.put("documento", areaConhecimento);						
 				};
 				result.add(item);
 			};
@@ -318,15 +319,15 @@ public class Habilidade {
 		ArrayList<String> array = (ArrayList<String>) habilidade.get(tipo);
 		
 		for (int i = 0; i < array.size(); i++) {
-			BasicDBObject curso = commons_db.getCollectionDoc(array.get(i).toString(), "areaConhecimento", "documento.id", mongo, false);
-			if (curso != null) {
+			BasicDBObject objetivo = commons_db.getCollectionDoc(array.get(i).toString(), "objetivos", "documento.id", mongo, false);
+			if (objetivo != null) {
 				BasicDBObject item = new BasicDBObject();
 				if (full.equals("0")) {
-					item.put("_id", curso.get("_id"));
-					item.put("id", curso.get("id"));
-					item.put("nome", curso.get("nome"));
+					item.put("_id", objetivo.get("_id"));
+					item.put("id", objetivo.get("id"));
+					item.put("nome", objetivo.get("nome"));
 				}else {
-					item.put("documento", curso);						
+					item.put("documento", objetivo);						
 				};
 				result.add(item);
 			};

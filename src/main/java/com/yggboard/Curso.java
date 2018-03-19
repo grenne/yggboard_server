@@ -261,31 +261,33 @@ public class Curso {
 		
 		ArrayList<String> array = (ArrayList<String>) curso.get(tipo);
 		
-		for (int i = 0; i < array.size(); i++) {
-			System.out.println("habilidade" + array.get(i).toString());
-			BasicDBObject habilidadeObj = commons_db.getCollectionDoc(array.get(i).toString(), "habilidades", "documento.id", mongo, false);
-			if (habilidadeObj != null) {
-				BasicDBObject item = new BasicDBObject();
-				if (full.equals("0")) {
-					item.put("_id", habilidadeObj.get("_id"));
-					item.put("id", habilidadeObj.get("id"));
-					item.put("nome", habilidadeObj.get("nome"));
-				}else {
-					item.put("documento", habilidadeObj);						
-				};
-				item.put("possui", "false");
-				item.put("interesse", "false");
-				if (userPerfil != null) {
-					if (userPerfil.get("habilidades") != null) {
-		  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("habilidades");
-		  				item.put("possui", commons.testaElementoArray(habilidadeObj.get("id").toString(), itens));
+		if (array != null) {
+			for (int i = 0; i < array.size(); i++) {
+				System.out.println("habilidade" + array.get(i).toString());
+				BasicDBObject habilidadeObj = commons_db.getCollectionDoc(array.get(i).toString(), "habilidades", "documento.id", mongo, false);
+				if (habilidadeObj != null) {
+					BasicDBObject item = new BasicDBObject();
+					if (full.equals("0")) {
+						item.put("_id", habilidadeObj.get("_id"));
+						item.put("id", habilidadeObj.get("id"));
+						item.put("nome", habilidadeObj.get("nome"));
+					}else {
+						item.put("documento", habilidadeObj);						
 					};
-					if (userPerfil.get("habilidadesInteresse") != null) {
-		  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("habilidadesInteresse");
-		  				item.put("interesse", commons.testaElementoArray(habilidadeObj.get("id").toString(), itens));
+					item.put("possui", "false");
+					item.put("interesse", "false");
+					if (userPerfil != null) {
+						if (userPerfil.get("habilidades") != null) {
+			  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("habilidades");
+			  				item.put("possui", commons.testaElementoArray(habilidadeObj.get("id").toString(), itens));
+						};
+						if (userPerfil.get("habilidadesInteresse") != null) {
+			  				ArrayList<String> itens = (ArrayList<String>) userPerfil.get("habilidadesInteresse");
+			  				item.put("interesse", commons.testaElementoArray(habilidadeObj.get("id").toString(), itens));
+						};
 					};
+					result.add(item);
 				};
-				result.add(item);
 			};
 		};
 		return result;

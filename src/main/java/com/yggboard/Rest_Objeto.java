@@ -10,6 +10,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import org.json.simple.JSONArray;
+
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
 
@@ -381,7 +383,7 @@ public class Rest_Objeto {
 						habilidadeDoc.put("habilidadesObjetivos", commons.controlaLimite(habilidade.getObjetivos(habilidadeId, usuarioParametro, "objetivos", full, mongo), limite, start));				
 						break;
 					case "AreaConhecimento":
-						habilidadeDoc.put("objetivoAreasAtuacao", commons.controlaLimite(habilidade.getAreaConhecimento(habilidadeId, usuarioParametro, "areaConhecimento", full, mongo), limite, start));							
+						habilidadeDoc.put("habilidadesAreaConhecimento", commons.controlaLimite(habilidade.getAreaConhecimento(habilidadeId, usuarioParametro, "areaConhecimento", full, mongo), limite, start));							
 					default:
 						break;
 					};
@@ -483,9 +485,9 @@ public class Rest_Objeto {
 				for (int i = 0; i < arrayItens.length; i++) {
 					switch (arrayItens[i]) {
 						case "Badges":
-							cursoDoc.put("badgesCurso", commons.controlaLimite(curso.getBadges(cursoId, usuarioParametro, "carreiras",full, mongo), limite, start));							
+							cursoDoc.put("badgesCurso", commons.controlaLimite(curso.getBadges(cursoId, usuarioParametro, "badges",full, mongo), limite, start));							
 						case "Habilidades":
-							cursoDoc.put("habilidadesCurso", commons.controlaLimite(curso.getHabilidades(cursoId, usuarioParametro, "necessarios", full, mongo), limite, start));							
+							cursoDoc.put("habilidadesCurso", commons.controlaLimite(curso.getHabilidades(cursoId, usuarioParametro, "habilidades", full, mongo), limite, start));							
 						case "AreaConhecimento":
 							cursoDoc.put("areaConhecimentoCurso", commons.controlaLimite(curso.getAreaConhecimento(cursoId, usuarioParametro, "areaConhecimento", full, mongo), limite, start));							
 						default:
@@ -501,4 +503,6 @@ public class Rest_Objeto {
 	mongo.close();
 	return finalResult;
 	}
+
+
 };
