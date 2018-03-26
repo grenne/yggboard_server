@@ -54,7 +54,6 @@ public class Rest_Hierarquia {
 		return results;
 	};
 
-	@SuppressWarnings({"unchecked", "rawtypes" })
 	@Path("/niveis")	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)

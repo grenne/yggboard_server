@@ -1,8 +1,6 @@
 package com.yggboard;
 
 
-import java.util.ArrayList;
-
 import javax.inject.Singleton;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -26,7 +24,6 @@ public class Rest_Actions {
 	Commons_DB commons_db = new Commons_DB();
 	Actions actions = new Actions(); 
 
-	@SuppressWarnings({ "unchecked" })
 	@Path("/set")	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)

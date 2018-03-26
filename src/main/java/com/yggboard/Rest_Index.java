@@ -1,7 +1,6 @@
 package com.yggboard;
 
 import java.io.IOException;
-import java.util.Map;
 
 import javax.inject.Singleton;
 import javax.ws.rs.Consumes;

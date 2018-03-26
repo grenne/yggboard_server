@@ -642,6 +642,7 @@ public class Commons {
 		};
 		return result;
 	};	
+	@SuppressWarnings("unused")
 	private String limpaChar(String characters) {
 		characters = characters.toLowerCase();
 		switch (characters) {

@@ -3,7 +3,6 @@ package com.yggboard;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Map;
 
 import javax.ws.rs.core.Response;
@@ -422,7 +421,7 @@ public class Avaliacao {
 		return documento;
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({ "unchecked" })
 	private BasicDBObject carregaAvaliacoes(BasicDBObject avaliacao, MongoClient mongo) {
 		
 		ArrayList<Object> habilidadesId = (ArrayList<Object>) avaliacao.get("habilidadesId");
@@ -861,7 +860,7 @@ public class Avaliacao {
 		
 	};
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ "unchecked" })
 	private String mediaNotas(String usuarioId, BasicDBObject avaliacao, String habilidadeId, String relacionamento) {
 		
 		ArrayList<String> resultadosArray = (ArrayList<String>) avaliacao.get(relacionamento);
@@ -2395,6 +2394,7 @@ public class Avaliacao {
 		return result;
 	};
 
+	@SuppressWarnings("unused")
 	private String verificaUsuario(BasicDBObject historico, String empresaId, MongoClient mongo) {
 
 		BasicDBObject usuarioIn = new BasicDBObject();

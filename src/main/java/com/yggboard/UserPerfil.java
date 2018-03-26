@@ -2,7 +2,6 @@ package com.yggboard;
 
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -110,7 +109,7 @@ public class UserPerfil {
 		return result;
 	};
 	
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({ "unchecked" })
 	public BasicDBObject obterEstatistica(String id, String item, MongoClient mongo) {
 		
 		BasicDBObject userPerfil = commons_db.getCollectionDoc(id, "userPerfil", "_id", mongo, false);

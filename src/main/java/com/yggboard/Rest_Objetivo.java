@@ -1,8 +1,6 @@
 package com.yggboard;
 
 
-import java.util.Map;
-
 import javax.inject.Singleton;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -13,7 +11,6 @@ import javax.ws.rs.core.MediaType;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
 
 	
