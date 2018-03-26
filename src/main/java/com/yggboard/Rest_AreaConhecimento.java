@@ -30,7 +30,6 @@ public class Rest_AreaConhecimento {
 	UserPerfil userPerfil = new UserPerfil();
 	AreaConhecimento areaConhecimento = new AreaConhecimento();
 
-	@SuppressWarnings({ "unchecked" })
 	@Path("/lista/primarias")	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)

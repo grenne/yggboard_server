@@ -56,45 +56,18 @@ public class Rest_Objetivo {
 		return result;
 	};
 	
-	@SuppressWarnings({ "unchecked" })
 	@Path("/obter")	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public JSONObject ObterCarreira(@QueryParam("carreira") String id) {
-		Commons_DB commons_db = new Commons_DB();
-
-		BasicDBObject cursor = commons_db.getCollection(id, "objetivos", "documento.id", mongo, false);
-		if (cursor != null){
-			JSONObject documento = new JSONObject();
-			BasicDBObject obj = (BasicDBObject) cursor.get("documento");
-			documento.put("documento", obj);
-			mongo.close();
-			return documento;
-		};
-		mongo.close();
+		System.out.println("Metodo deperecate");
 		return null;
 	};
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Path("/lista")	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public JSONArray ObterCarreiras() {
-		Commons_DB commons_db = new Commons_DB();
-		JSONArray cursor = commons_db.getCollectionListaNoKey("objetivos", mongo, false);		
-		if (cursor != null){
-			JSONArray documentos = new JSONArray();
-			for (int i = 0; i < cursor.size(); i++) {
-				BasicDBObject objCarreiras = new BasicDBObject();
-				objCarreiras.putAll((Map) cursor.get(i));
-				JSONObject jsonDocumento = new JSONObject();
-				jsonDocumento.put("_id", objCarreiras.getString("_id"));
-				jsonDocumento.put("documento", objCarreiras);
-				documentos.add(jsonDocumento);				
-			};
-			mongo.close();
-			return documentos;
-		};
-		mongo.close();
+		System.out.println("Metodo deperecate");
 		return null;
 	};
 };
