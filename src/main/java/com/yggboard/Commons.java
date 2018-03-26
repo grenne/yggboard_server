@@ -114,19 +114,33 @@ public class Commons {
 	public String todaysDate(String type) {
 		
 		Calendar calendar = Calendar.getInstance();
-		//getTime() returns the current date in default time zone
-		Date date = calendar.getTime();
+		
+		return convertDateToString (calendar, type);
+   
+	}
+	public String calcDate (int numeroDiasParaSubtrair, String type) {
+		// data final igual a hoje
+        Date dataFinal = new Date();
+        // usa calendar para subtrair data
+        Calendar calendarData = Calendar.getInstance();
+        calendarData.setTime(dataFinal);
+        calendarData.add(Calendar.DATE,numeroDiasParaSubtrair);
+
+		return convertDateToString (calendarData, type);
+	};
+
+	public String convertDateToString (Calendar calendar, String type) {
+
 		int day = calendar.get(Calendar.DATE);
 		//Note: +1 the month for current month
 		int month = calendar.get(Calendar.MONTH) + 1;
 		int year = calendar.get(Calendar.YEAR);
-		int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
-		int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
-		int dayOfYear = calendar.get(Calendar.DAY_OF_YEAR);
+//		int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+//		int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
+//		int dayOfYear = calendar.get(Calendar.DAY_OF_YEAR);
 		
 		String dayString = "";
 		String monthString = "";
-		String yearString = "";
 
 		if (day < 10){
 			dayString = "0" + String.valueOf(day);
@@ -152,7 +166,7 @@ public class Commons {
  		};
 		  
 		return dateString;
-   
+		
 	}
 	
 	public Long calcTime (String date){

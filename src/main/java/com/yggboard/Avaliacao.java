@@ -569,11 +569,11 @@ public class Avaliacao {
 			BasicDBObject avaliacao = new BasicDBObject();
 			avaliacao.putAll((Map) avaliacoes.get(i));
 			if (avaliacao.get("dataEnvio") != null) {
-				if (commons.calcTime(avaliacao.get("dataEnvio").toString().replace("-", "")).equals(commons.calcTime(commons.todaysDate("yyyymmdd")))) {
-					testaMapaAvaliacao(avaliacao.get("_id").toString(), true, "inicio-avaliacao", avaliacao, resultArray, mongo);
+				if (commons.calcTime(avaliacao.get("dataEnvio").toString().replace("-", "")).equals(commons.calcTime(commons.calcDate(-1, "yyyymmdd")))) {
+					testaMapaAvaliacao(avaliacao.get("_id").toString(), false, "inicio-avaliacao", avaliacao, resultArray, mongo);
 					enviouEmail = true;
 				};
-				if (commons.calcTime(avaliacao.get("dataConclusao").toString().replace("-", "")).equals(commons.calcTime(commons.todaysDate("yyyymmdd")))) {
+				if (commons.calcTime(avaliacao.get("dataConclusao").toString().replace("-", "")).equals(commons.calcTime(commons.calcDate(-1, "yyyymmdd")))) {
 					testaMapaAvaliacao(avaliacao.get("_id").toString(), false, "conclusao-avaliacao", avaliacao, resultArray, mongo);
 					enviouEmail = true;
 				};
@@ -587,7 +587,7 @@ public class Avaliacao {
 		return result;
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({ "rawtypes", "unchecked",  })
 	private void testaMapaAvaliacao(String idAvaliacao, Boolean gestores, String tipo, BasicDBObject avaliacao, JSONArray resultArray, MongoClient mongo) {
 				
 		JSONArray mapasAvaliacao = commons_db.getCollectionLista(idAvaliacao, "mapaAvaliacao", "documento.avaliacoes.id", mongo, false);
@@ -649,7 +649,7 @@ public class Avaliacao {
 				conteudo = conteudo + "<p>Por favor complete as avaliações dos colaboaradoes listados em seu painel de avaliações até o dia " + avaliacao.get("dataConclusao") + ".</p>";
 				conteudo = conteudo + "<p>Para avaliar simplesmente atribua o conceito de domínio de habilidade que mais se aproxima da realidade.</p>";
 				conteudo = conteudo + "<p>Acesse as avaliações clicando na link abaixo.</p><br>";
-				conteudo = conteudo + "<p><a href=\"" + commons.getProperties().get("host").toString() + "dashboard/?page=empresa#avaliacao\\\" target=\\\"_blank\\\" title=\\\"Mapa de avaliações\\\">Acesse aqui</a></p><br>";
+				conteudo = conteudo + "<p><a href=\"" + commons.getProperties().get("host").toString() + "dashboard/?page=empresa#avaliacao\" target=\"_blank\" title=\"Mapa de avaliações\">Acesse aqui</a></p><br>";
 				
 		if (!commons.testaElementoArray(usuario.get("email").toString(), emailsEnviados)) {
 			sendEmailHtml.sendEmailHtml(usuario.get("email").toString(), subject, templateEmail.emailYggboard(conteudo));		
