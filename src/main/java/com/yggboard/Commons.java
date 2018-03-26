@@ -642,5 +642,51 @@ public class Commons {
 		};
 		return result;
 	};	
+	private String limpaChar(String characters) {
+		characters = characters.toLowerCase();
+		switch (characters) {
+		case "ã":
+			characters = "a";
+	        break;
+		case "à":
+			characters = "a";
+	        break;
+		case "á":
+	        characters = "a";
+	        break;
+		case "â":
+	        characters = "a";
+	        break;
+	    case "é":
+	    	characters = "e";
+	        break;
+	    case "ê":
+	    	characters = "e";
+			break;
+		case "í":
+			characters = "i";
+	        break;
+	    case "ô":
+	    	characters = "o";
+	        break;
+	    case "õ":
+	    	characters = "o";
+	        break;
+	    case "ó":
+	    	characters = "o";
+	        break;
+	    case "ú":
+	    	characters = "u";
+	        break;
+	    case "ç":
+	    	characters = "c";
+	        break;
+		default:
+			break;
+		};
+		return characters;
+
+	};
+	
 
 };
