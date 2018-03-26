@@ -3,7 +3,10 @@ package com.yggboard;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import javax.ws.rs.core.Response;
 
 import org.json.simple.JSONObject;
 
@@ -148,4 +151,39 @@ public class UserPerfil {
 		
 		return result;
 	}
+	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public Response atualizaSugestaoColetiva(JSONObject inputCursosSugeridos, String nameArray, MongoClient mongo) {
+		
+		Commons commons = new Commons();
+		Commons_DB commons_db = new Commons_DB();
+		List arrayCursosSugestao = (List) inputCursosSugeridos.get(nameArray);
+		for (int i = 0; i < arrayCursosSugestao.size(); i++) {
+			JSONObject cursosSugestao = new JSONObject();
+			cursosSugestao.putAll((Map) arrayCursosSugestao.get(i));
+			String usuario = cursosSugestao.get("usuario").toString();
+			BasicDBObject cursor = commons_db.getCollection(usuario, "userPerfil", "documento.usuario", mongo, false);
+			if (cursor != null){
+				BasicDBObject objUserPerfilUpdate = (BasicDBObject) cursor.get("documento");
+				objUserPerfilUpdate.remove(nameArray);
+				objUserPerfilUpdate.put(nameArray, cursosSugestao.get("cursos"));
+				BasicDBObject objUserPerfilDocumento = new BasicDBObject();
+				objUserPerfilDocumento.put("documento", objUserPerfilUpdate);
+				Response atualizacao = commons_db.atualizaDocumento(objUserPerfilDocumento,  "cursos", "documento.token", usuario.toString(), mongo, false);
+				if (atualizacao.getStatus() == 200) {
+					// incluir evento
+					BasicDBObject evento = new BasicDBObject();
+					evento.put("idUsuario", usuario);
+					evento.put("evento", "userPerfil");
+					evento.put("idEvento", nameArray);
+					evento.put("motivo", "inclusao");
+					evento.put("elemento", nameArray);
+					evento.put("idElemento", cursosSugestao.get("cursos"));
+					commons.insereEvento(evento, mongo);
+				};
+			};
+		};
+		return Response.status(200).build();		
+	};
+	
 };
