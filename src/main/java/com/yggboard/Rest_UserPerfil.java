@@ -1,28 +1,26 @@
 package com.yggboard;
 
 
-import java.util.Map;
-
-import javax.inject.Singleton;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-	
-@Singleton
+import javax.ws.rs.Consumes;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.util.Map;
+
+
 // @Lock(LockType.READ)
-@Path("/userPerfil")
+@RestController
+@RequestMapping("/userPerfil")
 
 public class Rest_UserPerfil {
 	
@@ -31,18 +29,18 @@ public class Rest_UserPerfil {
 	Commons commons = new Commons();
 	Commons_DB commons_db = new Commons_DB();
 	UserPerfil userPerfil = new UserPerfil();
-	@Path("/obter")	
-	@GET
+	@GetMapping("/obter")	
+	
 	@Produces(MediaType.APPLICATION_JSON)
-	public BasicDBObject ObterUsuario(@QueryParam("usuario") String usuario, @QueryParam("usuarioConsultaId") String usuarioConsultaId){
+	public BasicDBObject ObterUsuario(@RequestParam("usuario") String usuario, @RequestParam("usuarioConsultaId") String usuarioConsultaId){
 		Commons_DB commons_db = new Commons_DB();
 		return commons_db.getCollection(usuario, "userPerfil", "documento.token", mongo, true);
 	};
 
-	@Path("/obter-estatistica")	
-	@GET
+	@GetMapping("/obter-estatistica")	
+	
 	@Produces(MediaType.APPLICATION_JSON)
-	public BasicDBObject ObterEstatistica(@QueryParam("token") String token, @QueryParam("id") String id, @QueryParam("item") String item){
+	public BasicDBObject ObterEstatistica(@RequestParam("token") String token, @RequestParam("id") String id, @RequestParam("item") String item){
 	
 		UserPerfil userPerfil = new UserPerfil();
 		
@@ -66,10 +64,10 @@ public class Rest_UserPerfil {
 		return userPerfil.obterEstatistica(id, item, mongo); 
 	};
 	
-	@Path("/obter/itens")	
-	@GET
+	@GetMapping("/obter/itens")	
+	
 	@Produces(MediaType.APPLICATION_JSON)
-	public JSONArray ObterCarreiras(@QueryParam("usuario") String usuario, @QueryParam("usuarioConsultaId") String usuarioConsultaId, @QueryParam("userPerfilConsultaId") String userPerfilConsultaId, @QueryParam("item") String item, @QueryParam("elemento") String elemento){
+	public JSONArray ObterCarreiras(@RequestParam("usuario") String usuario, @RequestParam("usuarioConsultaId") String usuarioConsultaId, @RequestParam("userPerfilConsultaId") String userPerfilConsultaId, @RequestParam("item") String item, @RequestParam("elemento") String elemento){
 		
 		System.out.println("Método deprecate" );
 		return null;
@@ -89,16 +87,14 @@ public class Rest_UserPerfil {
 		return null;
 	};
 
-	@Path("/atualizar/perfil")
-	@POST
+	@PostMapping("/atualizar/perfil")
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response AtualizarPerfil(JSONObject newPerfil){
 		System.out.println("Método deprecate");
 		return null;
 	};
 	
-	@Path("/cursosSugeridos")
-	@POST
+	@PostMapping("/cursosSugeridos")
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response CursosSugeridos(JSONObject inputCursosSugeridos)  {
 				
@@ -106,8 +102,7 @@ public class Rest_UserPerfil {
 		return userPerfil.atualizaSugestaoColetiva (inputCursosSugeridos, "cursosSugeridos", mongo);
 		
 	};
-	@Path("/carreirasSugeridas")
-	@POST
+	@PostMapping("/carreirasSugeridas")
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response CarreirasSugeridos(JSONObject inputCarreirasSugeridas)  {
 		

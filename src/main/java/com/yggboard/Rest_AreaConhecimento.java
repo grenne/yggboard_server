@@ -1,22 +1,20 @@
 package com.yggboard;
 
 
-import javax.inject.Singleton;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
+import com.mongodb.MongoClient;
+import org.json.simple.JSONArray;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import org.json.simple.JSONArray;
 
-import com.mongodb.MongoClient;
-
-	
-@Singleton
 // @Lock(LockType.READ)
-@Path("/areaConhecimento")
-
+@RestController
+@RequestMapping("/areaConhecimento")
 public class Rest_AreaConhecimento {
 	
 	MongoClient mongo = new MongoClient();
@@ -27,10 +25,10 @@ public class Rest_AreaConhecimento {
 	UserPerfil userPerfil = new UserPerfil();
 	AreaConhecimento areaConhecimento = new AreaConhecimento();
 
-	@Path("/lista/primarias")	
-	@GET
+	@GetMapping("/lista/primarias")	
+	
 	@Produces(MediaType.APPLICATION_JSON)
-	public JSONArray listaPrimarias(@QueryParam("token") String token)
+	public JSONArray listaPrimarias(@RequestParam("token") String token)
 	{
 		
 	System.out.println("actions");
@@ -52,10 +50,10 @@ public class Rest_AreaConhecimento {
 	};
 
 	@SuppressWarnings({ })
-	@Path("/lista/parents")	
-	@GET
+	@GetMapping("/lista/parents")	
+	
 	@Produces(MediaType.APPLICATION_JSON)
-	public JSONArray listaParents(@QueryParam("token") String token,@QueryParam("primarias") String primarias)
+	public JSONArray listaParents(@RequestParam("token") String token,@RequestParam("primarias") String primarias)
 	{
 		
 	System.out.println("actions");

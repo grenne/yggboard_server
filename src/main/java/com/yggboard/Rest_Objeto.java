@@ -1,22 +1,21 @@
 package com.yggboard;
 
 
-import java.util.ArrayList;
-
-import javax.inject.Singleton;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-	
-@Singleton
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import java.util.ArrayList;
+
+
 // @Lock(LockType.READ)
-@Path("/objetos")
+@RestController
+@RequestMapping("/objetos")
 
 public class Rest_Objeto {
 	
@@ -34,24 +33,24 @@ public class Rest_Objeto {
 	AreaConhecimentoCurso areaConhecimentoCurso = new AreaConhecimentoCurso();
 	Badge badge = new Badge();
 
-	@Path("/obter")	
-	@GET
+	@GetMapping("/obter")	
+	
 	@Produces(MediaType.APPLICATION_JSON)
-	public BasicDBObject obter(@QueryParam("token") String token, 
-													@QueryParam("itens") String itens, 
-													@QueryParam("start") int start ,
-													@QueryParam("limite") int limite,
-													@QueryParam("full") String full,
-													@QueryParam("assuntos") String assuntos,
-													@QueryParam("usuarioParametro") String usuarioParametro,
-													@QueryParam("usuario") String usuarioPar,
-													@QueryParam("objetivo") String objetivoPar,
-													@QueryParam("habilidade") String habilidadePar,
-													@QueryParam("curso") String cursoPar,
-													@QueryParam("areaAtuacao") String areaAtuacaoPar,
-													@QueryParam("areaConhecimento") String areaConhecimentoPar,
-													@QueryParam("areaConhecimentoCurso") String areaConhecimentoCursoPar,
-													@QueryParam("badge") String badgePar
+	public BasicDBObject obter(@RequestParam("token") String token,
+													@RequestParam("itens") String itens, 
+													@RequestParam("start") int start ,
+													@RequestParam("limite") int limite,
+													@RequestParam("full") String full,
+													@RequestParam("assuntos") String assuntos,
+													@RequestParam("usuarioParametro") String usuarioParametro,
+													@RequestParam("usuario") String usuarioPar,
+													@RequestParam("objetivo") String objetivoPar,
+													@RequestParam("habilidade") String habilidadePar,
+													@RequestParam("curso") String cursoPar,
+													@RequestParam("areaAtuacao") String areaAtuacaoPar,
+													@RequestParam("areaConhecimento") String areaConhecimentoPar,
+													@RequestParam("areaConhecimentoCurso") String areaConhecimentoCursoPar,
+													@RequestParam("badge") String badgePar
 													)  {
 		
 	System.out.println("lista objetos");

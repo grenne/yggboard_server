@@ -1,26 +1,24 @@
 package com.yggboard;
 
 
-import java.util.ArrayList;
-
-import javax.inject.Singleton;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
-import org.bson.types.ObjectId;
-import org.json.simple.JSONObject;
-
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
+import org.bson.types.ObjectId;
+import org.json.simple.JSONObject;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-	
-@Singleton
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.util.ArrayList;
+
+
 // @Lock(LockType.READ)
-@Path("/usuario")
+@RestController
+@RequestMapping("/usuario")
 
 public class Rest_Usuario {
 
@@ -31,10 +29,10 @@ public class Rest_Usuario {
 	Usuario usuario = new Usuario();
  	
 	@SuppressWarnings({ "unchecked" })
-	@Path("/confirma")	
-	@GET
+	@GetMapping("/confirma")	
+	
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response ConfirmaSenha(@QueryParam("id") String id) {
+	public Response ConfirmaSenha(@RequestParam("id") String id) {
 		
 		ObjectId idObject = new ObjectId(id);
 		
@@ -55,10 +53,10 @@ public class Rest_Usuario {
 
 	};
 
-	@Path("/reseta")	
-	@GET
+	@GetMapping("/reseta")	
+	
 	@Produces(MediaType.APPLICATION_JSON)
-	public BasicDBObject ResetaSenha(@QueryParam("email") String email) {
+	public BasicDBObject ResetaSenha(@RequestParam("email") String email) {
 	
 		BasicDBObject result = usuario.resetaSenha (email, mongo);
 		mongo.close();
@@ -66,20 +64,20 @@ public class Rest_Usuario {
 
 	};		
 
-	@Path("/login")	
-	@GET
+	@GetMapping("/login")	
+	
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response Login(@QueryParam("email") String email, @QueryParam("password") String password, @QueryParam("tokenadm") String tokenadm) {
+	public Response Login(@RequestParam("email") String email, @RequestParam("password") String password, @RequestParam("tokenadm") String tokenadm) {
 
 		usuario.processaLogin (email, password, tokenadm, mongo);
 		mongo.close();
 		return Response.status(200).entity(false).build();
 	};
 	
-	@Path("/inout/curso/selecionados")	
-	@GET
+	@GetMapping("/inout/curso/selecionados")	
+	
 	@Produces(MediaType.APPLICATION_JSON)
-	public Boolean MontaCursosSelecionados(@QueryParam("token") String token, @QueryParam("cursoId") String cursoId, @QueryParam("usuarioId") String usuarioId)  {
+	public Boolean MontaCursosSelecionados(@RequestParam("token") String token, @RequestParam("cursoId") String cursoId, @RequestParam("usuarioId") String usuarioId)  {
 		if ((commons_db.getCollection(token, "userPerfil", "documento.token", mongo, false)) == null) {
 			mongo.close();
 			return null;
@@ -97,10 +95,10 @@ public class Rest_Usuario {
 		return result;
 	};
 	
-	@Path("/status/curso/selecionado")	
-	@GET
+	@GetMapping("/status/curso/selecionado")	
+	
 	@Produces(MediaType.APPLICATION_JSON)
-	public Boolean MontaCursosSelecionados(@QueryParam("token") String token, @QueryParam("cursoId") String cursoId, @QueryParam("status") String status, @QueryParam("usuarioId") String usuarioId)  {
+	public Boolean MontaCursosSelecionados(@RequestParam("token") String token, @RequestParam("cursoId") String cursoId, @RequestParam("status") String status, @RequestParam("usuarioId") String usuarioId)  {
 		if ((commons_db.getCollection(token, "userPerfil", "documento.token", mongo, false)) == null) {
 			mongo.close();
 			return null;
@@ -122,10 +120,10 @@ public class Rest_Usuario {
 		return result;
 	};
 
-	@Path("/token")	
-	@GET
+	@GetMapping("/token")	
+	
 	@Produces(MediaType.APPLICATION_JSON)
-	public Boolean Token(@QueryParam("token") String token) {
+	public Boolean Token(@RequestParam("token") String token) {
 
 		if (commons_db.getCollection(token, "usuarios", "documento.token", mongo, false) == null) {
 			mongo.close();

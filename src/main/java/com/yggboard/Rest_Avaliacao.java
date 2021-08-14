@@ -1,27 +1,26 @@
 package com.yggboard;
 
 
-import java.util.ArrayList;
-
-import javax.inject.Singleton;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-@Singleton
+import javax.ws.rs.Consumes;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.util.ArrayList;
+
+
 //@Lock(LockType.READ)
-@Path("/avaliacao")
+@RestController
+@RequestMapping("/avaliacao")
 
 public class Rest_Avaliacao {
 
@@ -32,10 +31,10 @@ public class Rest_Avaliacao {
 	Avaliacao avaliacao = new Avaliacao();
 	Usuario usuario = new Usuario();
 
-	@Path("/cria/mapa")	
-	@GET
+	@GetMapping("/cria/mapa")	
+	
 	@Produces(MediaType.APPLICATION_JSON)
-	public JSONObject CriaMapa(@QueryParam("token") String token, @QueryParam("empresaId") String empresaId, @QueryParam("avaliacaoId") String avaliacaoId)  {
+	public JSONObject CriaMapa(@RequestParam("token") String token, @RequestParam("empresaId") String empresaId, @RequestParam("avaliacaoId") String avaliacaoId)  {
 	
 		if (token == null) {
 			mongo.close();
@@ -50,10 +49,10 @@ public class Rest_Avaliacao {
 		mongo.close();
 		return result;
 	};
-	@Path("/mapa")	
-	@GET
+	@GetMapping("/mapa")	
+	
 	@Produces(MediaType.APPLICATION_JSON)
-	public BasicDBObject Mapa(@QueryParam("token") String token, @QueryParam("usuarioId") String usuarioId, @QueryParam("empresaId") String empresaId, @QueryParam("avaliacaoId") String avaliacaoId)  {
+	public BasicDBObject Mapa(@RequestParam("token") String token, @RequestParam("usuarioId") String usuarioId, @RequestParam("empresaId") String empresaId, @RequestParam("avaliacaoId") String avaliacaoId)  {
 		if (token == null) {
 			mongo.close();
 			return null;
@@ -72,10 +71,10 @@ public class Rest_Avaliacao {
 		return result;
 	};
 
-	@Path("/colaboradores")	
-	@GET
+	@GetMapping("/colaboradores")	
+	
 	@Produces(MediaType.APPLICATION_JSON)
-	public JSONArray Colaboradores(@QueryParam("token") String token, @QueryParam("empresaId") String empresaId, @QueryParam("avaliacaoId") String avaliacaoId, @QueryParam("usuarioId") String usuarioId, @QueryParam("perfil") String perfil)  {
+	public JSONArray Colaboradores(@RequestParam("token") String token, @RequestParam("empresaId") String empresaId, @RequestParam("avaliacaoId") String avaliacaoId, @RequestParam("usuarioId") String usuarioId, @RequestParam("perfil") String perfil)  {
 		if ((commons_db.getCollection(token, "usuarios", "documento.token", mongo, false)) == null) {
 			mongo.close();
 			return null;
@@ -94,10 +93,10 @@ public class Rest_Avaliacao {
 		return result;
 	};
 
-	@Path("/colaboradores/ultimas-5-avaliacoes")	
-	@GET
+	@GetMapping("/colaboradores/ultimas-5-avaliacoes")	
+	
 	@Produces(MediaType.APPLICATION_JSON)
-	public JSONArray ColaboradoresUltimas5(@QueryParam("token") String token, @QueryParam("usuarioId") String usuarioId)  {
+	public JSONArray ColaboradoresUltimas5(@RequestParam("token") String token, @RequestParam("usuarioId") String usuarioId)  {
 		if ((commons_db.getCollection(token, "usuarios", "documento.token", mongo, false)) == null) {
 			mongo.close();
 			return null;
@@ -108,10 +107,10 @@ public class Rest_Avaliacao {
 		return result;
 	};
 
-	@Path("/colaboradores/avaliacao")	
-	@GET
+	@GetMapping("/colaboradores/avaliacao")	
+	
 	@Produces(MediaType.APPLICATION_JSON)
-	public JSONArray ColaboradoresAvaliacao(@QueryParam("token") String token,  @QueryParam("avaliacaoId") String avaliacaoId)  {
+	public JSONArray ColaboradoresAvaliacao(@RequestParam("token") String token,  @RequestParam("avaliacaoId") String avaliacaoId)  {
 		if ((commons_db.getCollection(token, "usuarios", "documento.token", mongo, false)) == null) {
 			mongo.close();
 			return null;
@@ -126,10 +125,10 @@ public class Rest_Avaliacao {
 		return result;
 	};
 
-	@Path("/colaboradores/avaliacao/notas")	
-	@GET
+	@GetMapping("/colaboradores/avaliacao/notas")	
+	
 	@Produces(MediaType.APPLICATION_JSON)
-	public JSONArray ColaboradoresAvaliacaoNotas(@QueryParam("token") String token,  @QueryParam("avaliacaoId") String avaliacaoId)  {
+	public JSONArray ColaboradoresAvaliacaoNotas(@RequestParam("token") String token,  @RequestParam("avaliacaoId") String avaliacaoId)  {
 		if ((commons_db.getCollection(token, "usuarios", "documento.token", mongo, false)) == null) {
 			mongo.close();
 			return null;
@@ -144,10 +143,10 @@ public class Rest_Avaliacao {
 		return result;
 	};
 
-	@Path("/colaborador")	
-	@GET
+	@GetMapping("/colaborador")	
+	
 	@Produces(MediaType.APPLICATION_JSON)
-	public BasicDBObject Colaborador(@QueryParam("token") String token, @QueryParam("avaliacaoId") String avaliacaoId, @QueryParam("usuarioId") String usuarioId)  {
+	public BasicDBObject Colaborador(@RequestParam("token") String token, @RequestParam("avaliacaoId") String avaliacaoId, @RequestParam("usuarioId") String usuarioId)  {
 		if ((commons_db.getCollection(token, "usuarios", "documento.token", mongo, false)) == null) {
 			mongo.close();
 			return null;
@@ -166,10 +165,10 @@ public class Rest_Avaliacao {
 		return result;
 	};
 	
-	@Path("/inout")	
-	@GET
+	@GetMapping("/inout")	
+	
 	@Produces(MediaType.APPLICATION_JSON)
-	public Boolean MontaMapa(@QueryParam("token") String token, @QueryParam("colaboradorId") String colaboradorId, @QueryParam("colaboradorObjetoId") String colaboradorObjetoId, @QueryParam("assunto") String assunto, @QueryParam("empresaId") String empresaId, @QueryParam("avaliacaoId") String avaliacaoId)  {
+	public Boolean MontaMapa(@RequestParam("token") String token, @RequestParam("colaboradorId") String colaboradorId, @RequestParam("colaboradorObjetoId") String colaboradorObjetoId, @RequestParam("assunto") String assunto, @RequestParam("empresaId") String empresaId, @RequestParam("avaliacaoId") String avaliacaoId)  {
 		if ((commons_db.getCollection(token, "usuarios", "documento.token", mongo, false)) == null) {
 			mongo.close();
 			return null;
@@ -188,10 +187,10 @@ public class Rest_Avaliacao {
 		return result;
 	};
 	
-	@Path("/inout/cliente")	
-	@GET
+	@GetMapping("/inout/cliente")	
+	
 	@Produces(MediaType.APPLICATION_JSON)
-	public Boolean MontaMapaCliente(@QueryParam("token") String token, @QueryParam("colaboradorId") String colaboradorId, @QueryParam("colaboradorObjetoId") String colaboradorObjetoId, @QueryParam("empresaId") String empresaId, @QueryParam("avaliacaoId") String avaliacaoId, @QueryParam("status") String status)  {
+	public Boolean MontaMapaCliente(@RequestParam("token") String token, @RequestParam("colaboradorId") String colaboradorId, @RequestParam("colaboradorObjetoId") String colaboradorObjetoId, @RequestParam("empresaId") String empresaId, @RequestParam("avaliacaoId") String avaliacaoId, @RequestParam("status") String status)  {
 		if ((commons_db.getCollection(token, "usuarios", "documento.token", mongo, false)) == null) {
 			mongo.close();
 			return null;
@@ -210,10 +209,10 @@ public class Rest_Avaliacao {
 		return result;
 	};
 	
-	@Path("/inout/habilidade")	
-	@GET
+	@GetMapping("/inout/habilidade")	
+	
 	@Produces(MediaType.APPLICATION_JSON)
-	public Boolean MontaMapaHabilidade(@QueryParam("token") String token, @QueryParam("usuarioId") String usuarioId, @QueryParam("habilidadeId") String habilidadeId, @QueryParam("empresaId") String empresaId, @QueryParam("avaliacaoId") String avaliacaoId)  {
+	public Boolean MontaMapaHabilidade(@RequestParam("token") String token, @RequestParam("usuarioId") String usuarioId, @RequestParam("habilidadeId") String habilidadeId, @RequestParam("empresaId") String empresaId, @RequestParam("avaliacaoId") String avaliacaoId)  {
 		if ((commons_db.getCollection(token, "usuarios", "documento.token", mongo, false)) == null) {
 			mongo.close();
 			return null;
@@ -232,10 +231,10 @@ public class Rest_Avaliacao {
 		return result;
 	};
 	
-	@Path("/atualiza/nota")	
-	@GET
+	@GetMapping("/atualiza/nota")	
+	
 	@Produces(MediaType.APPLICATION_JSON)
-	public Boolean AtualizaNota(@QueryParam("token") String token, @QueryParam("colaboradorId") String colaboradorId, @QueryParam("avaliadorId") String avaliadorId, @QueryParam("habilidadeId") String habilidadeId, @QueryParam("nota") String nota, @QueryParam("avaliacaoId") String avaliacaoId)  {
+	public Boolean AtualizaNota(@RequestParam("token") String token, @RequestParam("colaboradorId") String colaboradorId, @RequestParam("avaliadorId") String avaliadorId, @RequestParam("habilidadeId") String habilidadeId, @RequestParam("nota") String nota, @RequestParam("avaliacaoId") String avaliacaoId)  {
 		if (token == null) {
 			mongo.close();
 			return false;
@@ -266,10 +265,10 @@ public class Rest_Avaliacao {
 		return result;
 	};
 	
-	@Path("/avaliacoes")	
-	@GET
+	@GetMapping("/avaliacoes")	
+	
 	@Produces(MediaType.APPLICATION_JSON)
-	public JSONArray Avaliacoes(@QueryParam("token") String token, @QueryParam("avaliadorId") String avaliadorId, @QueryParam("avaliacaoId") String avaliacaoId)  {
+	public JSONArray Avaliacoes(@RequestParam("token") String token, @RequestParam("avaliadorId") String avaliadorId, @RequestParam("avaliacaoId") String avaliacaoId)  {
 		if (token == null) {
 			mongo.close();
 			return null;
@@ -292,10 +291,10 @@ public class Rest_Avaliacao {
 		return result;
 	};
 	
-	@Path("/resultados")	
-	@GET
+	@GetMapping("/resultados")	
+	
 	@Produces(MediaType.APPLICATION_JSON)
-	public JSONObject Resultados(@QueryParam("token") String token, @QueryParam("usuarioId") String usuarioId, @QueryParam("avaliacaoId") String avaliacaoId)  {
+	public JSONObject Resultados(@RequestParam("token") String token, @RequestParam("usuarioId") String usuarioId, @RequestParam("avaliacaoId") String avaliacaoId)  {
 		if (token == null) {
 			mongo.close();
 			return null;
@@ -318,10 +317,10 @@ public class Rest_Avaliacao {
 		return result;
 	};
 	
-	@Path("/ultimos/resultados")	
-	@GET
+	@GetMapping("/ultimos/resultados")	
+	
 	@Produces(MediaType.APPLICATION_JSON)
-	public JSONObject UltimosResultados(@QueryParam("token") String token, @QueryParam("usuarioId") String usuarioId)  {
+	public JSONObject UltimosResultados(@RequestParam("token") String token, @RequestParam("usuarioId") String usuarioId)  {
 		if (token == null) {
 			mongo.close();
 			return null;
@@ -340,10 +339,10 @@ public class Rest_Avaliacao {
 		return result;
 	};
 
-	@Path("/lista")	
-	@GET
+	@GetMapping("/lista")	
+	
 	@Produces(MediaType.APPLICATION_JSON)
-	public ArrayList<Object> Lista(@QueryParam("token") String token, @QueryParam("empresaId") String empresaId, @QueryParam("usuarioId") String usuarioId)  {
+	public ArrayList<Object> Lista(@RequestParam("token") String token, @RequestParam("empresaId") String empresaId, @RequestParam("usuarioId") String usuarioId)  {
 		if (token == null) {
 			mongo.close();
 			return null;
@@ -362,10 +361,10 @@ public class Rest_Avaliacao {
 		return result;
 	};
 
-	@Path("/fecha/mapa")	
-	@GET
+	@GetMapping("/fecha/mapa")	
+	
 	@Produces(MediaType.APPLICATION_JSON)
-	public JSONObject FechaMapa(@QueryParam("token") String token, @QueryParam("empresaId") String empresaId, @QueryParam("avaliacaoId") String avaliacaoId, @QueryParam("usuarioId") String usuarioId)  {
+	public JSONObject FechaMapa(@RequestParam("token") String token, @RequestParam("empresaId") String empresaId, @RequestParam("avaliacaoId") String avaliacaoId, @RequestParam("usuarioId") String usuarioId)  {
 		if (token == null) {
 			mongo.close();
 			return null;
@@ -392,10 +391,10 @@ public class Rest_Avaliacao {
 		return result;
 	};
 
-	@Path("/convites")	
-	@GET
+	@GetMapping("/convites")	
+	
 	@Produces(MediaType.APPLICATION_JSON)
-	public JSONObject Convites(@QueryParam("token") String token, @QueryParam("empresaId") String empresaId, @QueryParam("avaliacaoId") String avaliacaoId, @QueryParam("usuarioId") String usuarioId)  {
+	public JSONObject Convites(@RequestParam("token") String token, @RequestParam("empresaId") String empresaId, @RequestParam("avaliacaoId") String avaliacaoId, @RequestParam("usuarioId") String usuarioId)  {
 		if (token == null) {
 			mongo.close();
 			return null;
@@ -422,10 +421,10 @@ public class Rest_Avaliacao {
 		return result;
 	};
 
-	@Path("/estatistica")	
-	@GET
+	@GetMapping("/estatistica")	
+	
 	@Produces(MediaType.APPLICATION_JSON)
-	public JSONObject EstatisticaMapa(@QueryParam("token") String token, @QueryParam("empresaId") String empresaId, @QueryParam("avaliacaoId") String avaliacaoId)  {
+	public JSONObject EstatisticaMapa(@RequestParam("token") String token, @RequestParam("empresaId") String empresaId, @RequestParam("avaliacaoId") String avaliacaoId)  {
 		if (token == null) {
 			mongo.close();
 			return null;
@@ -449,10 +448,10 @@ public class Rest_Avaliacao {
 	};
 
 	@SuppressWarnings("unchecked")
-	@Path("/emails")	
-	@GET
+	@GetMapping("/emails")	
+	
 	@Produces(MediaType.APPLICATION_JSON)
-	public JSONObject Emails(@QueryParam("token") String token)  {
+	public JSONObject Emails(@RequestParam("token") String token)  {
 		JSONObject result = new JSONObject();
 		if (token == null) {
 			mongo.close();
@@ -471,8 +470,7 @@ public class Rest_Avaliacao {
 	};
 	
 	@SuppressWarnings({ })
-	@Path("/importar-historico")
-	@POST
+	@PostMapping("/importar-historico")
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response importaHistorico(BasicDBObject historicosJson)  {
 

@@ -1,17 +1,15 @@
 package com.yggboard;
 
 
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Map;
-
-import javax.ws.rs.core.Response;
-
+import com.mongodb.BasicDBObject;
+import com.mongodb.MongoClient;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.MongoClient;
+import javax.ws.rs.core.Response;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Map;
 
 public class Usuario {
 

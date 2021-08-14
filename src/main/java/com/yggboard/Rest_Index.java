@@ -1,27 +1,25 @@
 package com.yggboard;
 
-import java.io.IOException;
-
-import javax.inject.Singleton;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-
-import org.codehaus.jackson.JsonParseException;
-import org.codehaus.jackson.map.JsonMappingException;
-import org.json.simple.JSONArray;
-
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
+import org.json.simple.JSONArray;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-@Singleton
+import javax.ws.rs.Consumes;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import java.io.IOException;
+
+//
 // @Lock(LockType.READ)
-@Path("/index")
+//@GetMapping("/index")
 
+@RestController
+@RequestMapping("/index")
 public class Rest_Index {
 
 	MongoClient mongo = new MongoClient();
@@ -29,32 +27,31 @@ public class Rest_Index {
 	Commons_DB commons_db = new Commons_DB();
 	Commons commons = new Commons();
 
-	@Path("/obter/itens")
-	@GET
+//	@GetMapping("/obter/itens")
+//	
 	@Produces(MediaType.APPLICATION_JSON)
-	public BasicDBObject ObterItens(@QueryParam("assunto") String assunto, @QueryParam("id") String id,
-			@QueryParam("usuario") String usuario, @QueryParam("empresaId") String empresaId) {
+	@GetMapping("/obter/itens")
+	public BasicDBObject ObterItens(@RequestParam("assunto") String assunto, @RequestParam("id") String id,
+									@RequestParam("usuario") String usuario, @RequestParam("empresaId") String empresaId) {
 
 		System.out.println("Metodo deperecate");
 		return null;
 	};
 
-	@Path("/obter/filtro")
-	@POST
+	@PostMapping("/obter/filtro")
 	@Consumes(MediaType.APPLICATION_JSON)
-	public BasicDBObject ObterItensFiltro(JSONArray objFiltros)
-			throws JsonParseException, JsonMappingException, IOException {
+	public BasicDBObject ObterItensFiltro(JSONArray objFiltros) throws  IOException {
 
 		System.out.println("Metodo deperecate");
 		return null;
 	};
 
-	@Path("/lista")
-	@GET
+	@GetMapping("/lista")
+	
 	@Produces(MediaType.APPLICATION_JSON)
-	public BasicDBObject ObterLista(@QueryParam("characters") String characters,
-			@QueryParam("planejamentoLista") String planejamentoLista, @QueryParam("usuario") String usuario,
-			@QueryParam("empresaId") String empresaId) {
+	public BasicDBObject ObterLista(@RequestParam("characters") String characters,
+			@RequestParam("planejamentoLista") String planejamentoLista, @RequestParam("usuario") String usuario,
+			@RequestParam("empresaId") String empresaId) {
 
 		System.out.println("Metodo deperecate");
 		return null;

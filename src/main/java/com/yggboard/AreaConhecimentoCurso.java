@@ -1,12 +1,11 @@
 package com.yggboard;
 
 
-import java.util.Map;
-
-import org.json.simple.JSONArray;
-
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
+import org.json.simple.JSONArray;
+
+import java.util.Map;
 
 public class AreaConhecimentoCurso {
 

@@ -1,16 +1,14 @@
 package com.yggboard;
 
 
-import java.text.DecimalFormat;
+import com.mongodb.BasicDBObject;
+import com.mongodb.MongoClient;
+import org.json.simple.JSONArray;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-
-import org.json.simple.JSONArray;
-
-import com.mongodb.BasicDBObject;
-import com.mongodb.MongoClient;
 
 @SuppressWarnings("unused")
 public class Curso {
