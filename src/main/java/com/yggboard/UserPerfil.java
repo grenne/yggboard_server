@@ -1,16 +1,14 @@
 package com.yggboard;
 
 
+import com.mongodb.BasicDBObject;
+import com.mongodb.MongoClient;
+import org.json.simple.JSONObject;
+
+import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import javax.ws.rs.core.Response;
-
-import org.json.simple.JSONObject;
-
-import com.mongodb.BasicDBObject;
-import com.mongodb.MongoClient;
 
 public class UserPerfil {
 

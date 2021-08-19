@@ -1,20 +1,20 @@
 package com.yggboard;
 
 
-import javax.inject.Singleton;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
+import com.mongodb.MongoClient;
+import org.json.simple.JSONArray;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import org.json.simple.JSONArray;
 
-import com.mongodb.MongoClient;
-
-@Singleton
 //@Lock(LockType.READ)
-@Path("/evento")
+@RestController
+@RequestMapping("/evento")
 
 public class Rest_Eventos {
 
@@ -24,10 +24,10 @@ public class Rest_Eventos {
 	Commons commons = new Commons();
 	Eventos eventos = new Eventos();
 
-	@Path("/feed")	
-	@GET
+	@GetMapping("/feed")	
+	
 	@Produces(MediaType.APPLICATION_JSON)
-	public JSONArray Colaboradores(@QueryParam("token") String token, @QueryParam("usuarioId") String usuarioId)  {
+	public JSONArray Colaboradores(@RequestParam("token") String token, @RequestParam("usuarioId") String usuarioId)  {
 		if ((commons_db.getCollection(token, "usuarios", "documento.token", mongo, false)) == null) {
 			mongo.close();
 			return null;

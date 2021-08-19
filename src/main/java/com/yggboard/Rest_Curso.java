@@ -1,22 +1,22 @@
 package com.yggboard;
 
 
-import javax.inject.Singleton;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-
+import com.mongodb.MongoClient;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import com.mongodb.MongoClient;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 
-	
-@Singleton
+
 // @Lock(LockType.READ)
-@Path("/cursos")
+
+@RestController
+@RequestMapping("/cursos")
 
 public class Rest_Curso {
 
@@ -25,15 +25,15 @@ public class Rest_Curso {
 	Commons commons = new Commons();
 	Curso curso = new Curso();
 
-	@Path("/filtros")	
-	@GET
+	@GetMapping("/filtros")	
+	
 	@Produces(MediaType.APPLICATION_JSON)
-	public JSONArray filtros(@QueryParam("token") String token, 
-							@QueryParam("areasConhecimento") String areasConhecimento, 
-							@QueryParam("niveis") String niveis,  
-							@QueryParam("usuarioParametro") String usuarioParametro,
-							@QueryParam("limite") int limite,
-							@QueryParam("start") int start)  {
+	public JSONArray filtros(@RequestParam("token") String token,
+							@RequestParam("areasConhecimento") String areasConhecimento, 
+							@RequestParam("niveis") String niveis,  
+							@RequestParam("usuarioParametro") String usuarioParametro,
+							@RequestParam("limite") int limite,
+							@RequestParam("start") int start)  {
 	
 		if (token == null) {
 			mongo.close();
@@ -53,14 +53,14 @@ public class Rest_Curso {
 		return result;
 	};
 	
-	@Path("/habilidades")	
-	@GET
+	@GetMapping("/habilidades")	
+	
 	@Produces(MediaType.APPLICATION_JSON)
-	public JSONArray filtros(@QueryParam("token") String token, 
-							@QueryParam("cursoId") String cursoId,
-							@QueryParam("usuarioParametro") String usuarioParametro,
-							@QueryParam("limite") int limite,
-							@QueryParam("start") int start)  {
+	public JSONArray filtros(@RequestParam("token") String token, 
+							@RequestParam("cursoId") String cursoId,
+							@RequestParam("usuarioParametro") String usuarioParametro,
+							@RequestParam("limite") int limite,
+							@RequestParam("start") int start)  {
 	
 		if (token == null) {
 			mongo.close();
@@ -81,16 +81,16 @@ public class Rest_Curso {
 	};
 	
 	
-	@Path("/obter")	
-	@GET
+	@GetMapping("/obter")	
+	
 	@Produces(MediaType.APPLICATION_JSON)
-	public JSONObject ObterCurso(@QueryParam("mail") String id)  {
+	public JSONObject ObterCurso(@RequestParam("mail") String id)  {
 		System.out.println("Metodo deperecate");
 		return null;
 	};
 
-	@Path("/lista")	
-	@GET
+	@GetMapping("/lista")	
+	
 	@Produces(MediaType.APPLICATION_JSON)
 	public JSONArray ObterCursos() {
 		System.out.println("Metodo deperecate");

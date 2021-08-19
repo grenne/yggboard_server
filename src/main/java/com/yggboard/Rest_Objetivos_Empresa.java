@@ -1,26 +1,25 @@
 package com.yggboard;
 
 
+import com.mongodb.BasicDBObject;
+import com.mongodb.MongoClient;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.Map;
 
-import javax.inject.Singleton;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
-import com.mongodb.BasicDBObject;
-import com.mongodb.MongoClient;
-
-@Singleton
 //@Lock(LockType.READ)
-@Path("/objetivos/empresa")
+@RestController
+@RequestMapping("/objetivos/empresa")
 
 
 public class Rest_Objetivos_Empresa {
@@ -31,10 +30,10 @@ public class Rest_Objetivos_Empresa {
 	Commons_DB commons_db = new Commons_DB();
 
 	@SuppressWarnings({ "unchecked" })
-	@Path("/lista")	
-	@GET
+	@GetMapping("/lista")	
+	
 	@Produces(MediaType.APPLICATION_JSON)
-	public JSONArray Lista(@QueryParam("token") String token, @QueryParam("empresaId") String empresaId)  {
+	public JSONArray Lista(@RequestParam("token") String token, @RequestParam("empresaId") String empresaId)  {
 		if ((commons_db.getCollection(token, "userPerfil", "documento.token", mongo, false)) == null) {
 			mongo.close();
 			return null;
@@ -62,10 +61,10 @@ public class Rest_Objetivos_Empresa {
 	};
 
 	@SuppressWarnings({ "unchecked" })
-	@Path("/areaAtuacao/lista")	
-	@GET
+	@GetMapping("/areaAtuacao/lista")	
+	
 	@Produces(MediaType.APPLICATION_JSON)
-	public JSONArray ListaAreaAtuacao(@QueryParam("token") String token, @QueryParam("empresaId") String empresaId)  {
+	public JSONArray ListaAreaAtuacao(@RequestParam("token") String token, @RequestParam("empresaId") String empresaId)  {
 		if ((commons_db.getCollection(token, "userPerfil", "documento.token", mongo, false)) == null) {
 			mongo.close();
 			return null;
@@ -88,10 +87,10 @@ public class Rest_Objetivos_Empresa {
 	};
 
 	@SuppressWarnings({ "unchecked" })
-	@Path("/areaConhecimento/lista")	
-	@GET
+	@GetMapping("/areaConhecimento/lista")	
+	
 	@Produces(MediaType.APPLICATION_JSON)
-	public JSONArray ListaAreaConhecimento(@QueryParam("token") String token, @QueryParam("empresaId") String empresaId)  {
+	public JSONArray ListaAreaConhecimento(@RequestParam("token") String token, @RequestParam("empresaId") String empresaId)  {
 		if ((commons_db.getCollection(token, "userPerfil", "documento.token", mongo, false)) == null) {
 			mongo.close();
 			return null;
@@ -114,10 +113,10 @@ public class Rest_Objetivos_Empresa {
 	};
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	@Path("/objetivo/listas")	
-	@GET
+	@GetMapping("/objetivo/listas")	
+	
 	@Produces(MediaType.APPLICATION_JSON)
-	public JSONObject ObjetivoListas(@QueryParam("token") String token, @QueryParam("empresaId") String empresaId, @QueryParam("objetivoId") String objetivoId, @QueryParam("usuarioId") String usuarioId, @QueryParam("opcao") String opcao)  {
+	public JSONObject ObjetivoListas(@RequestParam("token") String token, @RequestParam("empresaId") String empresaId, @RequestParam("objetivoId") String objetivoId, @RequestParam("usuarioId") String usuarioId, @RequestParam("opcao") String opcao)  {
 	
 		
 		if ((commons_db.getCollection(token, "userPerfil", "documento.token", mongo, false)) == null) {
@@ -254,10 +253,10 @@ public class Rest_Objetivos_Empresa {
 	};
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	@Path("/habilidades/areaAtuacao")	
-	@GET
+	@GetMapping("/habilidades/areaAtuacao")	
+	
 	@Produces(MediaType.APPLICATION_JSON)
-	public JSONObject HabildadesAreaAtuacao(@QueryParam("token") String token, @QueryParam("empresaId") String empresaId, @QueryParam("objetivoId") String objetivoId, @QueryParam("areaAtuacaoId") String areaAtuacaoId)  {
+	public JSONObject HabildadesAreaAtuacao(@RequestParam("token") String token, @RequestParam("empresaId") String empresaId, @RequestParam("objetivoId") String objetivoId, @RequestParam("areaAtuacaoId") String areaAtuacaoId)  {
 		if ((commons_db.getCollection(token, "userPerfil", "documento.token", mongo, false)) == null) {
 			mongo.close();
 			return null;
@@ -297,10 +296,10 @@ public class Rest_Objetivos_Empresa {
 	};
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	@Path("/habilidades/areaConhecimento")	
-	@GET
+	@GetMapping("/habilidades/areaConhecimento")	
+	
 	@Produces(MediaType.APPLICATION_JSON)
-	public JSONObject HabildadesAreaConhecimento(@QueryParam("token") String token, @QueryParam("empresaId") String empresaId, @QueryParam("objetivoId") String objetivoId, @QueryParam("areaConhecimentoId") String areaConhecimentoId)  {
+	public JSONObject HabildadesAreaConhecimento(@RequestParam("token") String token, @RequestParam("empresaId") String empresaId, @RequestParam("objetivoId") String objetivoId, @RequestParam("areaConhecimentoId") String areaConhecimentoId)  {
 		if ((commons_db.getCollection(token, "userPerfil", "documento.token", mongo, false)) == null) {
 			mongo.close();
 			return null;
@@ -334,10 +333,10 @@ public class Rest_Objetivos_Empresa {
 	};
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	@Path("/habilidades/todas")	
-	@GET
+	@GetMapping("/habilidades/todas")	
+	
 	@Produces(MediaType.APPLICATION_JSON)
-	public JSONObject HabildadesTodas(@QueryParam("token") String token, @QueryParam("empresaId") String empresaId, @QueryParam("objetivoId") String objetivoId)  {
+	public JSONObject HabildadesTodas(@RequestParam("token") String token, @RequestParam("empresaId") String empresaId, @RequestParam("objetivoId") String objetivoId)  {
 		if ((commons_db.getCollection(token, "userPerfil", "documento.token", mongo, false)) == null) {
 			mongo.close();
 			return null;
@@ -366,10 +365,10 @@ public class Rest_Objetivos_Empresa {
 	};
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	@Path("/inout")	
-	@GET
+	@GetMapping("/inout")	
+	
 	@Produces(MediaType.APPLICATION_JSON)
-	public Boolean MontaObjetivo(@QueryParam("token") String token, @QueryParam("empresaId") String empresaId, @QueryParam("objetivoId") String objetivoId, @QueryParam("habilidadeId") String habilidadeId)  {
+	public Boolean MontaObjetivo(@RequestParam("token") String token, @RequestParam("empresaId") String empresaId, @RequestParam("objetivoId") String objetivoId, @RequestParam("habilidadeId") String habilidadeId)  {
 		if ((commons_db.getCollection(token, "userPerfil", "documento.token", mongo, false)) == null) {
 			mongo.close();
 			return null;

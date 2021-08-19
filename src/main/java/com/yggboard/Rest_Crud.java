@@ -1,36 +1,33 @@
 package com.yggboard;
 
 
+import com.mongodb.BasicDBObject;
+import com.mongodb.MongoClient;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.Map;
 
-import javax.inject.Singleton;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
-import com.mongodb.BasicDBObject;
-import com.mongodb.MongoClient;
-
-
-@Singleton
 //@Lock(LockType.READ)
-@Path("/crud")
+@RestController
+@RequestMapping("/crud")
 
 public class Rest_Crud {
 
 	MongoClient mongo = new MongoClient();
 	
-	@Path("/obter")
-	@POST
+	@PostMapping("/obter")
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response Obter(JSONObject queryParam)  {
 		System.out.println("obter:" + queryParam.get ("collection").toString());
@@ -61,8 +58,7 @@ public class Rest_Crud {
 	};
 
 	@SuppressWarnings("rawtypes")
-	@Path("/incluir")
-	@POST
+	@PostMapping("/incluir")
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response Incluir(JSONObject queryParam)  {
 		System.out.println("incluir:" + queryParam.get ("collection").toString());
@@ -102,8 +98,7 @@ public class Rest_Crud {
 		}
 	};
 
-	@Path("/atualizar")
-	@POST
+	@PostMapping("/atualizar")
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response Atualizar(JSONObject queryParam)  {
 		System.out.println("atualizar:" + queryParam.get ("collection").toString());
@@ -125,8 +120,7 @@ public class Rest_Crud {
 		}
 	};
 
-	@Path("/lista")
-	@POST
+	@PostMapping("/lista")
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response Lista(JSONObject queryParam)  {
 		System.out.println("lista:" + queryParam.get ("collection").toString());
@@ -148,10 +142,10 @@ public class Rest_Crud {
 		}
 	};
 
-	@Path("/lista/nokey")	
-	@GET
+	@GetMapping("/lista/nokey")	
+	
 	@Produces(MediaType.APPLICATION_JSON)
-	public JSONArray listaNoKey(@QueryParam("token") String token, @QueryParam("collection") String collection)  {
+	public JSONArray listaNoKey(@RequestParam("token") String token, @RequestParam("collection") String collection)  {
 		System.out.println("lista:" + collection);
 		Commons_DB commons_db = new Commons_DB();
 		if (collection == null){
@@ -173,10 +167,10 @@ public class Rest_Crud {
 		return commons_db.getCollectionListaNoKey(collection, mongo, false);
 	};
 
-	@Path("/lista/onekey")	
-	@GET
+	@GetMapping("/lista/onekey")	
+	
 	@Produces(MediaType.APPLICATION_JSON)
-	public JSONArray listaOneKey(@QueryParam("token") String token, @QueryParam("collection") String collection, @QueryParam("keyName") String keyName, @QueryParam("keyValue") String keyValue)  {
+	public JSONArray listaOneKey(@RequestParam("token") String token, @RequestParam("collection") String collection, @RequestParam("keyName") String keyName, @RequestParam("keyValue") String keyValue)  {
 		System.out.println("lista:" + collection);
 		Commons_DB commons_db = new Commons_DB();
 		if (collection == null){
@@ -206,8 +200,7 @@ public class Rest_Crud {
 		return commons_db.getCollectionLista(keyValue, collection, keyName, mongo, false);
 	};
 
-	@Path("/remover/all")
-	@POST
+	@PostMapping("/remover/all")
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response RemoverAll(JSONObject queryParam)  {
 		Commons_DB commons_db = new Commons_DB();
@@ -228,8 +221,7 @@ public class Rest_Crud {
 		}
 	};
 	@SuppressWarnings("unchecked")
-	@Path("/remover")
-	@POST
+	@PostMapping("/remover")
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response Remover(JSONObject queryParam)  {
 		Commons_DB commons_db = new Commons_DB();

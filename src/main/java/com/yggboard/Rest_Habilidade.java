@@ -1,21 +1,20 @@
 package com.yggboard;
 
 
-import javax.inject.Singleton;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
+import com.mongodb.MongoClient;
+import org.json.simple.JSONArray;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import org.json.simple.JSONArray;
 
-import com.mongodb.MongoClient;
-
-	
-@Singleton
 // @Lock(LockType.READ)
-@Path("/habilidades")
+@RestController
+@RequestMapping("/habilidades")
 
 public class Rest_Habilidade {
 
@@ -25,18 +24,18 @@ public class Rest_Habilidade {
 	Habilidade habilidade = new Habilidade();
 	Usuario usuario = new Usuario();
 
-	@Path("/lista")	
-	@GET
+	@GetMapping("/lista")	
+	
 	@Produces(MediaType.APPLICATION_JSON)
 	public JSONArray ObterHabilidades() {
 		System.out.println("Metodo deperecate");
 		return null;
 	};
 
-	@Path("/cursos")	
-	@GET
+	@GetMapping("/cursos")	
+	
 	@Produces(MediaType.APPLICATION_JSON)
-	public JSONArray ObterHabilidade(@QueryParam("token") String token, @QueryParam("habilidadeId") String habilidadeId, @QueryParam("usuarioId") String usuarioId) {
+	public JSONArray ObterHabilidade(@RequestParam("token") String token, @RequestParam("habilidadeId") String habilidadeId, @RequestParam("usuarioId") String usuarioId) {
 		if ((commons_db.getCollection(token, "usuarios", "documento.token", mongo, false)) == null) {
 			mongo.close();
 			return null;
@@ -52,14 +51,14 @@ public class Rest_Habilidade {
 
 	};
 	
-	@Path("/filtros")	
-	@GET
+	@GetMapping("/filtros")	
+	
 	@Produces(MediaType.APPLICATION_JSON)
-	public JSONArray filtros(@QueryParam("token") String token, 
-							@QueryParam("areasConhecimento") String areaConhecimento,
-							@QueryParam("usuarioParametro") String usuarioParametro,
-							@QueryParam("limite") int limite,
-							@QueryParam("start") int start)  {
+	public JSONArray filtros(@RequestParam("token") String token, 
+							@RequestParam("areasConhecimento") String areaConhecimento,
+							@RequestParam("usuarioParametro") String usuarioParametro,
+							@RequestParam("limite") int limite,
+							@RequestParam("start") int start)  {
 	
 		if (token == null) {
 			mongo.close();

@@ -1,38 +1,37 @@
 package com.yggboard;
 
 
-import javax.inject.Singleton;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-	
-@Singleton
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+
+
 // @Lock(LockType.READ)
-@Path("/actions")
-
+@RestController
+@RequestMapping("/actions")
 public class Rest_Actions {
 	
 	MongoClient mongo = new MongoClient();
 	
 	Commons commons = new Commons();
 	Commons_DB commons_db = new Commons_DB();
-	Actions actions = new Actions(); 
+	Actions actions = new Actions();
 
-	@Path("/set")	
-	@GET
+	@GetMapping("/set")	
+	
 	@Produces(MediaType.APPLICATION_JSON)
-	public BasicDBObject obter(@QueryParam("token") String token, 
-													@QueryParam("action") String action, 
-													@QueryParam("objeto") String objeto ,
-													@QueryParam("usuario") String usuarioPar,
-													@QueryParam("id") String ids,
-													@QueryParam("atualizacaoDireta") Boolean atualizacaoDireta)
+	public BasicDBObject obter(@RequestParam("token") String token,
+													@RequestParam("action") String action,
+													@RequestParam("objeto") String objeto ,
+													@RequestParam("usuario") String usuarioPar,
+													@RequestParam("id") String ids,
+													@RequestParam("atualizacaoDireta") Boolean atualizacaoDireta)
 	{
 		
 		System.out.println("actions");

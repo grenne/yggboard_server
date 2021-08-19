@@ -1,9 +1,9 @@
 package com.yggboard;
 
-import java.util.ArrayList;
-
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
+
+import java.util.ArrayList;
 
 public class Actions {
 	
